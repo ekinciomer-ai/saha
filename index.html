@@ -1,0 +1,954 @@
+<meta charset="utf-8">
+<title>SHAMS-1 · TR-1 Saha Takip</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#EFEFF1;--card:#FFFFFF;--panel:#FFFFFF;--panel2:#FFFFFF;
+    --ink:#16161A;--txt:#16161A;--ink-soft:#3A3A42;--muted:#6B6B76;--faint:#9A9AA5;--label:#9A9AA5;
+    --line:#E9E9EF;
+    --solar:#FF5722;--accent2:#FF7A45;--soft:#FFEDE5;--grad:linear-gradient(135deg,#FF7A45,#FF5722);
+    --dc:#0E9E97;--ac:#2D6BE0;--mv:#E5484D;--gnd:#2FA86A;--slate:#C9CCD6;--conc:#B79A78;
+    --shadow:0 18px 44px -22px rgba(24,24,33,.20);--shadowsm:0 10px 22px -12px rgba(255,87,34,.5);
+    --r:22px;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+    --head:'Sora',system-ui,-apple-system,"Segoe UI",sans-serif;
+    --sans:'Plus Jakarta Sans',system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+  body{padding:clamp(10px,2.5vw,24px);line-height:1.5}
+  .wrap{max-width:1060px;margin:0 auto}
+  .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+  h1{font-family:var(--head);font-size:clamp(19px,3.2vw,27px);margin:0;font-weight:700;letter-spacing:-.02em;color:var(--ink)}h1 b{color:var(--solar)}
+  .ey{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--label);font-weight:700}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px;margin-bottom:16px;box-shadow:var(--shadow)}
+  .card h2{font-family:var(--head);font-size:14px;margin:0 0 12px;font-weight:600}
+  .btn{background:var(--grad);color:#fff;border:none;border-radius:13px;padding:11px 17px;font-weight:700;font-size:14px;cursor:pointer;font-family:var(--sans);box-shadow:var(--shadowsm)}
+  .btn:active{transform:translateY(1px)}.btn.ghost{background:#fff;color:var(--ink-soft);border:1px solid var(--line);font-weight:700;box-shadow:none}
+  .btn.sm{padding:7px 12px;font-size:12px;border-radius:10px}
+  .top{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+  .live{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted)}
+  .pulse{width:9px;height:9px;border-radius:50%;background:var(--gnd);animation:pl 2s infinite}
+  @keyframes pl{0%{box-shadow:0 0 0 0 rgba(47,168,106,.5)}70%{box-shadow:0 0 0 7px rgba(47,168,106,0)}100%{box-shadow:0 0 0 0 rgba(47,168,106,0)}}
+  .summary{display:grid;grid-template-columns:repeat(5,1fr);gap:11px;margin-bottom:16px}
+  .sb{border:1px solid var(--line);border-radius:18px;padding:14px;background:var(--card);box-shadow:var(--shadow)}
+  .sb .s{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--label);font-weight:700}
+  .sb .a{font-family:var(--head);font-size:22px;font-weight:700;margin-top:4px;letter-spacing:-.5px}
+  .sb.tot .a{color:var(--gnd)}.sb.cash .a{color:var(--solar)}.sb.rok .a{color:var(--mv)}
+  .tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+  .tab{padding:10px 16px;font-size:13.5px;font-weight:700;color:var(--muted);cursor:pointer;border:1px solid var(--line);background:#fff;border-radius:999px;font-family:var(--sans)}
+  .tab.on{color:#fff;background:var(--grad);border-color:transparent;box-shadow:var(--shadowsm)}
+  .pane{display:none}.pane.on{display:block}
+  .form{display:grid;grid-template-columns:1.6fr .9fr .9fr 1.1fr 1.4fr;gap:10px;align-items:end}
+  label{display:block;font-size:11px;color:var(--muted);margin-bottom:5px;font-weight:600}
+  select,input,textarea{width:100%;background:#F6F6F9;border:1px solid var(--line);color:var(--ink);border-radius:12px;padding:11px 12px;font-size:14px;font-family:var(--sans)}
+  input.num{font-family:var(--mono);text-align:right}textarea{resize:vertical;min-height:54px}
+  select:focus,input:focus,textarea:focus{outline:none;border-color:var(--solar);background:#fff}
+  .unit{font-family:var(--mono);font-size:11px;color:var(--label);margin-top:4px}.hint{font-size:12px;color:var(--muted)}
+  .pr{display:grid;grid-template-columns:160px 1fr 140px;gap:12px;align-items:center;margin:11px 0}
+  .pr .nm{font-size:13px;font-weight:600}.pr .nm small{display:block;color:var(--label);font-size:10px;text-transform:uppercase;font-weight:700}
+  .track{height:15px;background:#EDEDF1;border-radius:8px;overflow:hidden}
+  .fill{height:100%;border-radius:8px;transition:width .5s cubic-bezier(.2,.7,.2,1);min-width:2px}
+  .fMEK{background:linear-gradient(90deg,#FF7A45,#FF5722)}.fELK{background:linear-gradient(90deg,#2D6BE0,#0E9E97)}
+  .pr .q{font-family:var(--mono);font-size:12px;text-align:right;color:var(--muted)}.pr .q b{color:var(--ink)}
+  .pr .pct{font-family:var(--head);font-size:14px;text-align:right;font-weight:700}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th{text-align:left;color:var(--label);font-size:10px;letter-spacing:.07em;text-transform:uppercase;padding:6px 8px;border-bottom:1px solid var(--line)}
+  td{padding:8px;border-bottom:1px solid var(--line)}td.m{font-family:var(--mono);text-align:right;white-space:nowrap}
+  .tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:7px;background:#F0F0F4;color:var(--muted);font-weight:600}
+  .del{background:none;border:none;color:var(--mv);cursor:pointer;opacity:.7}.del:hover{opacity:1}
+  .empty{color:var(--label);font-size:13px;padding:16px;text-align:center}
+  .planhead{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+  .legend{display:flex;gap:13px;flex-wrap:wrap;font-size:11px;color:var(--muted)}
+  .lg{display:flex;align-items:center;gap:6px}.dotc{width:11px;height:11px;border-radius:3px}
+  .planbox{position:relative;background:#F6F6F9;border:1px solid var(--line);border-radius:16px;padding:10px;overflow:auto}
+  svg{display:block;width:100%;height:auto;touch-action:manipulation}
+  rect.t{cursor:pointer;stroke:rgba(0,0,0,.12);stroke-width:.6}rect.t:hover{stroke:var(--ink);stroke-width:1.4}rect.t.sel{stroke:var(--solar);stroke-width:2.4}
+  .minii{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+  .mi{border:1px solid var(--line);border-radius:14px;padding:11px;text-align:center;background:#fff;box-shadow:var(--shadow)}
+  .mi .a{font-family:var(--head);font-size:17px;font-weight:700}.mi .s{font-size:9.5px;color:var(--label);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+  .mi.rok .a{color:var(--mv)}
+  /* editor modal */
+  .backdrop{position:fixed;inset:0;background:rgba(24,24,33,.34);backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:.2s;z-index:30}
+  .backdrop.on{opacity:1;pointer-events:auto}
+  .editor{position:fixed;left:50%;top:50%;transform:translate(-50%,-46%);width:min(560px,calc(100vw - 24px));max-height:92vh;overflow:auto;
+    background:#fff;border:1px solid var(--line);border-radius:24px;padding:20px;box-shadow:0 40px 90px -30px rgba(24,24,33,.4);opacity:0;pointer-events:none;transition:.22s;z-index:31}
+  .editor.on{transform:translate(-50%,-50%);opacity:1;pointer-events:auto}
+  .editor h3{font-family:var(--head);margin:0;font-size:18px;font-weight:700}.editor .adr{font-family:var(--mono);font-size:12px;color:var(--dc);margin:2px 0 4px}
+  .edx{position:absolute;top:14px;right:16px;background:#F0F0F4;border:none;color:var(--muted);font-size:20px;cursor:pointer;width:32px;height:32px;border-radius:10px}
+  .seg{margin:14px 0 6px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--label);font-weight:700;border-top:1px solid var(--line);padding-top:12px}
+  .stp{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;margin:7px 0}
+  .stp .nm{font-size:13px;font-weight:600}.stp .nm i{font-style:normal;color:var(--mv);font-size:10px;margin-left:6px}
+  .stepper{display:flex;gap:5px;align-items:center}
+  .stepper button{width:32px;height:32px;border-radius:10px;border:1px solid var(--line);background:#F6F6F9;color:var(--ink);font-size:17px;cursor:pointer}
+  .stepper input{width:48px;text-align:center;font-family:var(--mono);padding:7px 4px}
+  .stepper .mx{font-size:10px;color:var(--label);width:30px}
+  .tg{padding:9px 12px;border-radius:11px;border:1px solid var(--line);background:#F6F6F9;color:var(--muted);font-weight:700;cursor:pointer;font-size:12.5px;min-width:104px;text-align:center}
+  .tg.act{background:var(--soft);color:var(--solar);border-color:var(--solar)}
+  .schem{background:#F6F6F9;border:1px solid var(--line);border-radius:14px;padding:8px;margin:6px 0 4px}
+  .media{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .mth{position:relative;width:74px;height:74px;border-radius:11px;overflow:hidden;border:1px solid var(--line)}
+  .mth img{width:100%;height:100%;object-fit:cover}
+  .mth .x{position:absolute;top:2px;right:2px;background:rgba(0,0,0,.55);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:11px;width:18px;height:18px}
+  .mvid{display:flex;align-items:center;gap:6px;font-size:12px;background:#F6F6F9;border:1px solid var(--line);border-radius:11px;padding:7px 10px}
+  .mvid a{color:var(--ac);text-decoration:none}
+  .mediabtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .fbtn{display:inline-flex;align-items:center;gap:6px;background:#F6F6F9;border:1px solid var(--line);color:var(--ink);border-radius:11px;padding:9px 12px;font-size:12.5px;cursor:pointer}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;font-weight:700;padding:12px 20px;border-radius:14px;opacity:0;transition:.3s;font-size:14px;z-index:60;box-shadow:var(--shadow)}
+  .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+  details{margin-top:8px}summary{cursor:pointer;color:var(--muted);font-size:12px}
+  .tgrid{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;margin-top:8px}.tgrid input{width:120px}
+  @media(max-width:820px){.summary{grid-template-columns:repeat(3,1fr)}.form{grid-template-columns:1fr 1fr}.form .full{grid-column:1/-1}
+    .pr{grid-template-columns:120px 1fr 86px}.pr .q{display:none}.minii{grid-template-columns:repeat(2,1fr)}}
+  .navrow{display:flex;gap:12px;align-items:stretch;flex-wrap:wrap;margin-bottom:6px}
+  .navright{flex:1;min-width:240px;display:flex;flex-direction:column;gap:8px}
+  .minimap{flex:0 0 auto;width:92px;background:#F6F6F9;border:1px solid var(--line);border-radius:13px;padding:6px}
+  .minimap svg{width:100%;height:auto;display:block}.minimap .cap{font-size:8.5px;color:var(--label);text-align:center;margin-top:4px;font-family:var(--mono);letter-spacing:.04em}
+  .minimap rect.tr{cursor:pointer}
+  .zonechips{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+  .zchip{flex:0 0 auto;font-family:var(--mono);font-size:12px;padding:8px 13px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--muted);cursor:pointer;white-space:nowrap}
+  .zchip.on{background:var(--soft);border-color:var(--solar);color:var(--solar);font-weight:700}
+  .planwrap{position:relative}
+  .zoomctl{position:absolute;top:10px;right:10px;z-index:5;display:flex;flex-direction:column;gap:7px}
+  .zbtn{width:40px;height:40px;border-radius:13px;border:1px solid var(--line);background:rgba(255,255,255,.94);color:var(--ink);font-size:19px;font-weight:700;cursor:pointer;backdrop-filter:blur(3px);line-height:1;box-shadow:var(--shadow)}
+  .zbtn:active{transform:translateY(1px)}
+  .pzbox{overflow:hidden;touch-action:none;cursor:grab}.pzbox:active{cursor:grabbing}
+  .pzbox svg{touch-action:none}
+  .zonemasa{margin-top:12px}
+  .zmhead{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--label);font-weight:700;margin:4px 0 8px}
+  .mbtns{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:8px}
+  .mbtn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:58px;border-radius:14px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;padding:8px 4px;font-family:var(--mono);box-shadow:var(--shadow)}
+  .mbtn:active{transform:translateY(1px)}
+  .mbtn .no{font-size:17px;font-weight:700;line-height:1}
+  .mbtn .st{font-size:9.5px;color:var(--muted);line-height:1.1}
+  .mbtn .pc{font-size:9px;font-weight:700}
+  .mbtn.done{border-color:var(--gnd);background:#ECFBF3}.mbtn.part{border-color:var(--solar);background:var(--soft)}
+  /* sub-tabs (montaj) */
+  .subtabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:14px;padding-bottom:6px;-webkit-overflow-scrolling:touch}
+  .subtab{flex:0 0 auto;padding:9px 14px;font-size:12.5px;font-weight:700;color:var(--muted);cursor:pointer;border:1px solid var(--line);background:#fff;border-radius:11px;white-space:nowrap;font-family:var(--sans)}
+  .subtab.on{color:#fff;background:var(--grad);border-color:transparent}
+  .mpane{display:none}.mpane.on{display:block}
+  .sspane{display:none}.sspane.on{display:block}
+  /* technical cards */
+  .tk2{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
+  .tk2 h3{font-family:var(--head);margin:0 0 4px;font-size:15px;font-weight:600}.tk2 .sub{color:var(--muted);font-size:11.5px;margin-bottom:10px}
+  .spec{display:grid;grid-template-columns:170px 1fr;gap:6px 12px;font-size:12.5px}
+  .spec dt{color:var(--muted);font-family:var(--mono);font-size:11.5px}
+  .spec dd{margin:0;color:var(--ink)}
+  .spec dd b{color:var(--solar)}
+  .chips2{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0}
+  .std{font-family:var(--mono);font-size:10.5px;color:var(--dc);background:rgba(14,158,151,.10);border:1px solid rgba(14,158,151,.30);border-radius:7px;padding:2px 8px}
+  .det{font-size:13px;color:var(--ink-soft);line-height:1.55}
+  .det li{margin:3px 0}
+  .det ul{margin:6px 0;padding-left:18px}
+  .det b{color:var(--ink)}
+  /* manual % tracker */
+  .mtrack{display:flex;align-items:center;gap:12px;margin-top:10px;flex-wrap:wrap}
+  .mtrack input[type=range]{flex:1;min-width:160px;accent-color:var(--solar)}
+  .mtrack .pct{font-family:var(--head);font-size:22px;font-weight:700;min-width:62px;text-align:right}
+  .mtrack .q{font-family:var(--mono);font-size:11px;color:var(--muted)}
+  /* project card */
+  .pcard{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px;margin-bottom:16px;box-shadow:var(--shadow)}
+  .pcard h2{font-family:var(--head);font-weight:700}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+  .kpi{border:1px solid var(--line);border-radius:14px;padding:13px;background:#F8F8FB}
+  .kpi .a{font-family:var(--head);font-size:20px;font-weight:700;color:var(--solar);letter-spacing:-.5px}
+  .kpi .s{font-size:9.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--label);margin-top:3px;font-weight:700}
+  .parties{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:10px}
+  .party{border:1px solid var(--line);border-radius:14px;padding:13px;background:#F8F8FB}
+  .party .r{font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--label);font-weight:700}
+  .party .n{font-size:13.5px;font-weight:700;margin-top:3px}.party .m{font-size:11px;color:var(--muted);font-family:var(--mono)}
+  .maplink{display:inline-flex;align-items:center;gap:8px;background:var(--grad);color:#fff;border:none;border-radius:13px;padding:12px 18px;font-weight:700;font-size:14px;cursor:pointer;text-decoration:none;font-family:var(--sans);box-shadow:var(--shadowsm)}
+  /* accordion */
+  .acc{border:1px solid var(--line);border-radius:14px;margin-bottom:10px;overflow:hidden;background:#fff;box-shadow:var(--shadow)}
+  .acc>summary{cursor:pointer;padding:14px 16px;font-weight:700;font-size:13.5px;list-style:none;display:flex;justify-content:space-between;align-items:center;font-family:var(--head)}
+  .acc>summary::-webkit-details-marker{display:none}
+  .acc>summary::after{content:'+';color:var(--solar);font-size:18px}
+  .acc[open]>summary::after{content:'−'}
+  .acc .body{padding:0 16px 15px}
+  /* ana ekran / rol / proje */
+  .home{max-width:680px;margin:0 auto;padding:6vh 16px}
+  .home .ey{text-align:center;color:var(--label)}
+  .homecard{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:30px 28px;margin-top:12px;box-shadow:var(--shadow)}
+  .homecard h1{font-family:var(--head);font-size:28px;margin:2px 0 0;font-weight:700}
+  .rlabel{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--label);font-weight:700;margin:22px 0 10px}
+  .roles{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .rolebtn{display:flex;flex-direction:column;gap:4px;align-items:flex-start;padding:18px;border-radius:16px;border:1px solid var(--line);background:#F8F8FB;color:var(--ink);font-size:16px;font-weight:700;cursor:pointer;text-align:left;font-family:var(--head)}
+  .rolebtn small{font-weight:500;color:var(--muted);font-size:11.5px;font-family:var(--sans)}
+  .rolebtn.on{border-color:var(--solar);background:var(--soft)}
+  .pinbox{display:flex;gap:10px;align-items:center;margin-top:14px;flex-wrap:wrap}
+  .pinbox input{font-family:var(--mono);font-size:16px;letter-spacing:.25em;width:150px}
+  .projbox{margin-top:6px}
+  .projcard{display:block;width:100%;text-align:left;padding:18px;border-radius:16px;border:1px solid var(--line);background:#F8F8FB;color:var(--ink);cursor:pointer;margin-bottom:10px;font-family:var(--sans);transition:transform .25s,box-shadow .25s,border-color .25s}
+  .projcard .pn{font-family:var(--head);font-size:17px;font-weight:700}.projcard .pm{font-size:12px;color:var(--muted);font-family:var(--mono);margin-top:3px}
+  .projcard:hover{border-color:var(--solar);box-shadow:var(--shadowsm);transform:translateY(-3px)}
+  .projcard.disabled{opacity:.5;cursor:default;border-style:dashed}
+  .projcard.disabled:hover{transform:none;box-shadow:none;border-color:var(--line)}
+  .rolebadge{font-family:var(--mono);font-size:11px;padding:5px 11px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:#fff}
+  .rolebadge.admin{color:var(--solar);border-color:var(--solar)}.rolebadge.usta{color:var(--dc);border-color:var(--dc)}
+  .hidden{display:none!important}
+  #app.usta .money,#app.usta .adminonly{display:none!important}
+  .gh{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+  .gh input{font-family:var(--mono);font-size:12px;width:100%}
+  .ghrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+</style>
+
+<div id="home" class="home">
+  <div class="ey">Aksaray Enerji</div>
+  <div class="homecard">
+    <div class="ey">AE · Proje Yönetim</div>
+    <h1>Saha Yönetim Sayfası</h1>
+    <div class="hint">Giriş türünü seç, sonra projeyi aç. Yönetici tüm verileri (parasal dâhil) görür ve girer; Usta sadece proje bilgisi görür ve veri girişi yapar.</div>
+    <div class="rlabel">Giriş türü</div>
+    <div class="roles">
+      <button class="rolebtn" id="rb_admin" onclick="pickRole('admin')">🔑 Yönetici<small>Tüm yetki · hakediş & parasal · veri girişi</small></button>
+      <button class="rolebtn" id="rb_usta" onclick="pickRole('usta')">🦺 Usta<small>Sadece proje bilgisi + saha veri girişi</small></button>
+    </div>
+    <div class="pinbox" id="pinbox" style="display:none">
+      <input id="pin" type="password" inputmode="numeric" placeholder="Yönetici PIN" onkeydown="if(event.key==='Enter')adminLogin()">
+      <button class="btn" onclick="adminLogin()">Gir</button>
+      <span class="hint" id="pinerr" style="color:var(--mv)"></span>
+    </div>
+    <div class="projbox" id="projbox" style="display:none">
+      <div class="rlabel">Proje seç</div>
+      <button class="projcard" onclick="openProject('shams1')">
+        <div class="pn">SHAMS-1 GES</div><div class="pm">Nahçıvan, Azerbaycan · 6,9 MWp Faz (TR-1)</div></button>
+      <div class="projcard disabled"><div class="pn">+ Yeni proje</div><div class="pm">yakında</div></div>
+    </div>
+  </div>
+</div>
+
+<div id="app" class="hidden">
+<div class="wrap">
+  <div class="top">
+    <div><div class="ey">Aksaray Enerji · Saha Yönetim</div><h1>SHAMS-1 GES · <b>6,9 MWp Faz (TR-1)</b></h1></div>
+    <div style="text-align:right">
+      <div style="display:flex;gap:8px;align-items:center;justify-content:flex-end;margin-bottom:6px"><span class="rolebadge" id="rolebadge">—</span><button class="btn ghost sm" onclick="goHome()">← Projeler</button></div>
+      <div class="live"><span class="pulse"></span><span id="status">yükleniyor…</span></div>
+      <button class="btn ghost sm" style="margin-top:8px" onclick="reloadAll()">↻ Yenile</button></div>
+  </div>
+  <div class="summary">
+    <div class="sb tot"><div class="s">Toplam İlerleme</div><div class="a" id="s_tot">%0</div></div>
+    <div class="sb cash money"><div class="s">Hakediş Kümülatif</div><div class="a" id="s_usd">0</div></div>
+    <div class="sb"><div class="s">Mekanik</div><div class="a" id="s_mek">%0</div></div>
+    <div class="sb"><div class="s">Elektrik</div><div class="a" id="s_elk">%0</div></div>
+    <div class="sb rok"><div class="s">Rok delinen ayak</div><div class="a" id="s_rok">0</div></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" onclick="tabTo(0,this)">▣ Proje</button>
+    <button class="tab" onclick="tabTo(1,this)">◫ Montaj</button>
+    <button class="tab adminonly" onclick="tabTo(2,this)">▤ Hakediş</button>
+    <button class="tab" onclick="tabTo(3,this)">▦ Bilgi Bankası</button>
+  </div>
+
+  <!-- ===== PROJE ===== -->
+  <div class="pane on" id="pane0"><div id="proje"></div></div>
+
+  <!-- ===== MONTAJ ===== -->
+  <div class="pane" id="pane1">
+    <div class="subtabs" id="msub">
+      <button class="subtab on" onclick="mTo(0,this)">Konstrüksiyon</button>
+      <button class="subtab" onclick="mTo(1,this)">Kablo</button>
+      <button class="subtab" onclick="mTo(2,this)">Bina · Trafo · Pano</button>
+      <button class="subtab" onclick="mTo(3,this)">Topraklama</button>
+      <button class="subtab" onclick="mTo(4,this)">CCTV · Aydınlatma</button>
+      <button class="subtab" onclick="mTo(5,this)">İnverter · SCADA</button>
+      <button class="subtab" onclick="mTo(6,this)">Test · Devreye Alma</button>
+    </div>
+
+    <!-- Konstrüksiyon -->
+    <div class="mpane on" id="mpane0">
+      <div class="card">
+        <div class="planhead">
+          <div><h2 style="margin:0">Konstrüksiyon — Yerleşim Planı</h2>
+            <div class="hint">Faz seç · masaya/butona dokun → işaretle. Dolgu = seçili faz tamamlanma · çerçeve = inverter bölgesi.</div></div>
+          <div style="text-align:right"><label style="text-align:left">Usta / Ekip</label><input id="usta2" type="text" placeholder="adın" style="width:140px" oninput="syncUsta(this)"></div>
+        </div>
+        <input type="hidden" id="usta">
+        <div class="subtabs" id="phasechips"></div>
+        <div class="navrow">
+          <div class="minimap"><div id="minimap"></div><div class="cap">SAHA · TR seç</div></div>
+          <div class="navright">
+            <div class="kfind"><input id="k_find" placeholder="Konum bul:  masa no · INV5 · STR3 · INV5-STR3" oninput="locate(this.value)" autocomplete="off"><span id="k_found" class="hint"></span></div>
+            <div class="zonechips" id="zonechips"></div>
+          </div>
+        </div>
+        <div class="legend" style="margin:6px 0 10px">
+          <span class="lg"><span class="dotc" style="background:var(--slate)"></span>0%</span>
+          <span class="lg"><span class="dotc" style="background:var(--solar)"></span>kısmi</span>
+          <span class="lg"><span class="dotc" style="background:var(--gnd)"></span>tam</span>
+          <span class="lg" style="margin-left:auto;color:var(--faint)" id="phaselbl">Tüm konstrüksiyon</span>
+        </div>
+        <div class="planwrap">
+          <div class="zoomctl">
+            <button class="zbtn" onclick="pzBtn('k2',0.7)">＋</button>
+            <button class="zbtn" onclick="pzBtn('k2',1.42)">−</button>
+            <button class="zbtn" onclick="focusZone(0)">⟳</button>
+          </div>
+          <div class="planbox pzbox" id="planbox2"><div id="plan2"></div></div>
+        </div>
+        <div id="zonemasa" class="zonemasa"></div>
+        <div id="kbars" style="margin-top:12px"></div>
+      </div>
+      <div id="konstTek"></div>
+    </div>
+
+    <div class="mpane" id="mpane1"><div id="m_kablo"></div></div>
+    <div class="mpane" id="mpane2"><div id="m_bina"></div></div>
+    <div class="mpane" id="mpane3"><div id="m_toprak"></div></div>
+    <div class="mpane" id="mpane4"><div id="m_cctv"></div></div>
+    <div class="mpane" id="mpane5"><div id="m_inv"></div></div>
+    <div class="mpane" id="mpane6"><div id="m_test"></div></div>
+  </div>
+
+  <!-- ===== HAKEDİŞ ===== -->
+  <div class="pane" id="pane2">
+    <div class="card"><h2>İlerleme — ağırlıklı (pursantaj)</h2><div id="progress"></div></div>
+    <div class="card"><h2>Hakediş Hesabı (götürü 258.624 USD)</h2><div id="hkkesinti"></div></div>
+  </div>
+
+  <!-- ===== BİLGİ BANKASI ===== -->
+  <div class="pane" id="pane3"><div id="bilgi"></div></div>
+</div>
+
+<div class="backdrop" id="backdrop" onclick="closeEd()"></div>
+<div class="editor" id="editor">
+  <button class="edx" onclick="closeEd()">×</button>
+  <h3 id="ed_t">Masa</h3><div class="adr" id="ed_adr"></div>
+  <div class="schem" id="ed_schem"></div>
+
+  <div class="seg">Ayak / Kolon Süreci — her adım /14 ayak</div>
+  <div id="ed_ayak"></div>
+
+  <div class="seg">Konstrüksiyon Montajı</div>
+  <div id="ed_konst"></div>
+
+  <div class="seg">Foto / Video / Açıklama</div>
+  <div class="mediabtns">
+    <label class="fbtn">📷 Foto<input type="file" accept="image/*" capture="environment" style="display:none" onchange="addPhoto(this)"></label>
+    <button class="fbtn" onclick="addVideo()">🎥 Video linki</button>
+    <button class="fbtn" onclick="addNote()">📝 Açıklama</button>
+  </div>
+  <div class="media" id="ed_media"></div>
+</div>
+<div class="toast" id="toast"></div>
+</div><!-- /#app -->
+
+<script>
+const LAYOUT={"minx": 524727.4693144722, "maxx": 525033.6262205316, "miny": 4343349.506696181, "maxy": 4343641.561963264, "tables": [{"i": 1, "x": 524911.72, "y": 4343641.56, "adr": "INV1·STR2", "adrf": "TR1-ACB1-INV1-STR2"}, {"i": 2, "x": 524929.24, "y": 4343641.56, "adr": "INV1·STR1", "adrf": "TR1-ACB1-INV1-STR1"}, {"i": 3, "x": 524946.77, "y": 4343641.56, "adr": "INV1·STR4", "adrf": "TR1-ACB1-INV1-STR4"}, {"i": 4, "x": 524964.3, "y": 4343641.56, "adr": "INV1·STR3", "adrf": "TR1-ACB1-INV1-STR3"}, {"i": 5, "x": 524981.83, "y": 4343641.56, "adr": "INV1·STR5", "adrf": "TR1-ACB1-INV1-STR5"}, {"i": 6, "x": 524911.12, "y": 4343633.11, "adr": "INV1·STR7", "adrf": "TR1-ACB1-INV1-STR7"}, {"i": 7, "x": 524928.64, "y": 4343633.11, "adr": "INV1·STR6", "adrf": "TR1-ACB1-INV1-STR6"}, {"i": 8, "x": 524946.17, "y": 4343633.11, "adr": "INV1·STR9", "adrf": "TR1-ACB1-INV1-STR9"}, {"i": 9, "x": 524963.7, "y": 4343633.11, "adr": "INV1·STR8", "adrf": "TR1-ACB1-INV1-STR8"}, {"i": 10, "x": 524981.23, "y": 4343633.11, "adr": "INV1·STR5", "adrf": "TR1-ACB1-INV1-STR5"}, {"i": 11, "x": 524998.76, "y": 4343633.11, "adr": "INV1·STR10", "adrf": "TR1-ACB1-INV1-STR10"}, {"i": 12, "x": 524910.52, "y": 4343624.66, "adr": "INV1·STR13", "adrf": "TR1-ACB1-INV1-STR13"}, {"i": 13, "x": 524928.04, "y": 4343624.66, "adr": "INV1·STR12", "adrf": "TR1-ACB1-INV1-STR12"}, {"i": 14, "x": 524945.57, "y": 4343624.66, "adr": "INV1·STR15", "adrf": "TR1-ACB1-INV1-STR15"}, {"i": 15, "x": 524963.1, "y": 4343624.66, "adr": "INV1·STR14", "adrf": "TR1-ACB1-INV1-STR14"}, {"i": 16, "x": 524980.63, "y": 4343624.66, "adr": "INV1·STR17", "adrf": "TR1-ACB1-INV1-STR17"}, {"i": 17, "x": 524998.16, "y": 4343624.66, "adr": "INV1·STR16", "adrf": "TR1-ACB1-INV1-STR16"}, {"i": 18, "x": 524909.92, "y": 4343616.2, "adr": "INV2·STR2", "adrf": "TR1-ACB1-INV2-STR2"}, {"i": 19, "x": 524927.44, "y": 4343616.2, "adr": "INV2·STR1", "adrf": "TR1-ACB1-INV2-STR1"}, {"i": 20, "x": 524944.97, "y": 4343616.2, "adr": "INV2·STR3", "adrf": "TR1-ACB1-INV2-STR3"}, {"i": 21, "x": 524962.5, "y": 4343616.2, "adr": "INV1·STR18", "adrf": "TR1-ACB1-INV1-STR18"}, {"i": 22, "x": 524980.03, "y": 4343616.2, "adr": "INV1·STR20", "adrf": "TR1-ACB1-INV1-STR20"}, {"i": 23, "x": 524997.56, "y": 4343616.2, "adr": "INV1·STR19", "adrf": "TR1-ACB1-INV1-STR19"}, {"i": 24, "x": 524909.32, "y": 4343607.75, "adr": "INV2·STR5", "adrf": "TR1-ACB1-INV2-STR5"}, {"i": 25, "x": 524926.84, "y": 4343607.75, "adr": "INV2·STR4", "adrf": "TR1-ACB1-INV2-STR4"}, {"i": 26, "x": 524944.37, "y": 4343607.75, "adr": "INV2·STR7", "adrf": "TR1-ACB1-INV2-STR7"}, {"i": 27, "x": 524961.9, "y": 4343607.75, "adr": "INV2·STR6", "adrf": "TR1-ACB1-INV2-STR6"}, {"i": 28, "x": 524979.43, "y": 4343607.75, "adr": "INV2·STR9", "adrf": "TR1-ACB1-INV2-STR9"}, {"i": 29, "x": 524996.96, "y": 4343607.75, "adr": "INV2·STR8", "adrf": "TR1-ACB1-INV2-STR8"}, {"i": 30, "x": 524908.74, "y": 4343599.3, "adr": "INV2·STR11", "adrf": "TR1-ACB1-INV2-STR11"}, {"i": 31, "x": 524926.24, "y": 4343599.3, "adr": "INV2·STR10", "adrf": "TR1-ACB1-INV2-STR10"}, {"i": 32, "x": 524943.77, "y": 4343599.3, "adr": "INV2·STR13", "adrf": "TR1-ACB1-INV2-STR13"}, {"i": 33, "x": 524961.3, "y": 4343599.3, "adr": "INV2·STR12", "adrf": "TR1-ACB1-INV2-STR12"}, {"i": 34, "x": 524978.83, "y": 4343599.3, "adr": "INV2·STR20", "adrf": "TR1-ACB1-INV2-STR20"}, {"i": 35, "x": 524996.36, "y": 4343599.3, "adr": "INV2·STR14", "adrf": "TR1-ACB1-INV2-STR14"}, {"i": 36, "x": 524908.14, "y": 4343590.84, "adr": "INV2·STR17", "adrf": "TR1-ACB1-INV2-STR17"}, {"i": 37, "x": 524925.66, "y": 4343590.84, "adr": "INV2·STR16", "adrf": "TR1-ACB1-INV2-STR16"}, {"i": 38, "x": 524943.17, "y": 4343590.84, "adr": "INV2·STR19", "adrf": "TR1-ACB1-INV2-STR19"}, {"i": 39, "x": 524960.7, "y": 4343590.84, "adr": "INV2·STR18", "adrf": "TR1-ACB1-INV2-STR18"}, {"i": 40, "x": 524978.23, "y": 4343590.84, "adr": "INV2·STR20", "adrf": "TR1-ACB1-INV2-STR20"}, {"i": 41, "x": 524865.48, "y": 4343582.39, "adr": "INV10·STR2", "adrf": "TR1-ACB1-INV10-STR2"}, {"i": 42, "x": 524883.01, "y": 4343582.39, "adr": "INV10·STR1", "adrf": "TR1-ACB1-INV10-STR1"}, {"i": 43, "x": 524907.54, "y": 4343582.39, "adr": "INV3·STR2", "adrf": "TR1-ACB1-INV3-STR2"}, {"i": 44, "x": 524925.06, "y": 4343582.39, "adr": "INV3·STR1", "adrf": "TR1-ACB1-INV3-STR1"}, {"i": 45, "x": 524942.58, "y": 4343582.39, "adr": "INV3·STR4", "adrf": "TR1-ACB1-INV3-STR4"}, {"i": 46, "x": 524960.1, "y": 4343582.39, "adr": "INV3·STR3", "adrf": "TR1-ACB1-INV3-STR3"}, {"i": 47, "x": 524977.63, "y": 4343582.39, "adr": "INV3·STR5", "adrf": "TR1-ACB1-INV3-STR5"}, {"i": 48, "x": 524847.35, "y": 4343573.94, "adr": "INV10·STR5", "adrf": "TR1-ACB1-INV10-STR5"}, {"i": 49, "x": 524864.88, "y": 4343573.94, "adr": "INV10·STR5", "adrf": "TR1-ACB1-INV10-STR5"}, {"i": 50, "x": 524882.41, "y": 4343573.94, "adr": "INV10·STR3", "adrf": "TR1-ACB1-INV10-STR3"}, {"i": 51, "x": 524906.94, "y": 4343573.94, "adr": "INV3·STR7", "adrf": "TR1-ACB1-INV3-STR7"}, {"i": 52, "x": 524924.46, "y": 4343573.94, "adr": "INV3·STR6", "adrf": "TR1-ACB1-INV3-STR6"}, {"i": 53, "x": 524941.99, "y": 4343573.94, "adr": "INV3·STR9", "adrf": "TR1-ACB1-INV3-STR9"}, {"i": 54, "x": 524959.5, "y": 4343573.94, "adr": "INV3·STR8", "adrf": "TR1-ACB1-INV3-STR8"}, {"i": 55, "x": 524846.75, "y": 4343565.48, "adr": "INV10·STR8", "adrf": "TR1-ACB1-INV10-STR8"}, {"i": 56, "x": 524864.28, "y": 4343565.48, "adr": "INV10·STR8", "adrf": "TR1-ACB1-INV10-STR8"}, {"i": 57, "x": 524881.81, "y": 4343565.48, "adr": "INV10·STR6", "adrf": "TR1-ACB1-INV10-STR6"}, {"i": 58, "x": 524906.34, "y": 4343565.48, "adr": "INV3·STR11", "adrf": "TR1-ACB1-INV3-STR11"}, {"i": 59, "x": 524923.86, "y": 4343565.48, "adr": "INV3·STR10", "adrf": "TR1-ACB1-INV3-STR10"}, {"i": 60, "x": 524941.41, "y": 4343565.48, "adr": "INV3·STR13", "adrf": "TR1-ACB1-INV3-STR13"}, {"i": 61, "x": 524958.9, "y": 4343565.48, "adr": "INV3·STR12", "adrf": "TR1-ACB1-INV3-STR12"}, {"i": 62, "x": 524846.15, "y": 4343557.03, "adr": "INV10·STR11", "adrf": "TR1-ACB1-INV10-STR11"}, {"i": 63, "x": 524863.68, "y": 4343557.03, "adr": "INV10·STR11", "adrf": "TR1-ACB1-INV10-STR11"}, {"i": 64, "x": 524881.21, "y": 4343557.03, "adr": "INV10·STR9", "adrf": "TR1-ACB1-INV10-STR9"}, {"i": 65, "x": 524905.74, "y": 4343557.03, "adr": "INV3·STR15", "adrf": "TR1-ACB1-INV3-STR15"}, {"i": 66, "x": 524923.26, "y": 4343557.03, "adr": "INV3·STR14", "adrf": "TR1-ACB1-INV3-STR14"}, {"i": 67, "x": 524940.81, "y": 4343557.03, "adr": "INV3·STR17", "adrf": "TR1-ACB1-INV3-STR17"}, {"i": 68, "x": 524958.3, "y": 4343557.03, "adr": "INV3·STR16", "adrf": "TR1-ACB1-INV3-STR16"}, {"i": 69, "x": 524845.56, "y": 4343548.58, "adr": "INV10·STR14", "adrf": "TR1-ACB1-INV10-STR14"}, {"i": 70, "x": 524863.08, "y": 4343548.58, "adr": "INV10·STR14", "adrf": "TR1-ACB1-INV10-STR14"}, {"i": 71, "x": 524880.61, "y": 4343548.58, "adr": "INV10·STR12", "adrf": "TR1-ACB1-INV10-STR12"}, {"i": 72, "x": 524905.13, "y": 4343548.58, "adr": "INV4·STR1", "adrf": "TR1-ACB1-INV4-STR1"}, {"i": 73, "x": 524922.66, "y": 4343548.58, "adr": "INV3·STR18", "adrf": "TR1-ACB1-INV3-STR18"}, {"i": 74, "x": 524940.21, "y": 4343548.58, "adr": "INV3·STR20", "adrf": "TR1-ACB1-INV3-STR20"}, {"i": 75, "x": 524957.7, "y": 4343548.58, "adr": "INV3·STR19", "adrf": "TR1-ACB1-INV3-STR19"}, {"i": 76, "x": 524844.95, "y": 4343540.0, "adr": "INV10·STR17", "adrf": "TR1-ACB1-INV10-STR17"}, {"i": 77, "x": 524862.47, "y": 4343540.0, "adr": "INV10·STR17", "adrf": "TR1-ACB1-INV10-STR17"}, {"i": 78, "x": 524880.0, "y": 4343540.0, "adr": "INV10·STR15", "adrf": "TR1-ACB1-INV10-STR15"}, {"i": 79, "x": 524904.51, "y": 4343540.0, "adr": "INV4·STR3", "adrf": "TR1-ACB1-INV4-STR3"}, {"i": 80, "x": 524922.04, "y": 4343540.0, "adr": "INV4·STR2", "adrf": "TR1-ACB1-INV4-STR2"}, {"i": 81, "x": 524939.6, "y": 4343540.0, "adr": "INV4·STR5", "adrf": "TR1-ACB1-INV4-STR5"}, {"i": 82, "x": 524957.09, "y": 4343540.0, "adr": "INV4·STR4", "adrf": "TR1-ACB1-INV4-STR4"}, {"i": 83, "x": 524809.25, "y": 4343531.14, "adr": "INV10·STR20", "adrf": "TR1-ACB1-INV10-STR20"}, {"i": 84, "x": 524826.79, "y": 4343531.14, "adr": "INV10·STR20", "adrf": "TR1-ACB1-INV10-STR20"}, {"i": 85, "x": 524844.31, "y": 4343531.14, "adr": "INV10·STR18", "adrf": "TR1-ACB1-INV10-STR18"}, {"i": 86, "x": 524861.84, "y": 4343531.14, "adr": "INV11·STR2", "adrf": "TR1-ACB1-INV11-STR2"}, {"i": 87, "x": 524879.37, "y": 4343531.14, "adr": "INV11·STR1", "adrf": "TR1-ACB1-INV11-STR1"}, {"i": 88, "x": 524903.88, "y": 4343531.14, "adr": "INV4·STR7", "adrf": "TR1-ACB1-INV4-STR7"}, {"i": 89, "x": 524921.41, "y": 4343531.14, "adr": "INV4·STR6", "adrf": "TR1-ACB1-INV4-STR6"}, {"i": 90, "x": 524938.95, "y": 4343531.14, "adr": "INV4·STR9", "adrf": "TR1-ACB1-INV4-STR9"}, {"i": 91, "x": 524956.46, "y": 4343531.14, "adr": "INV4·STR8", "adrf": "TR1-ACB1-INV4-STR8"}, {"i": 92, "x": 524808.65, "y": 4343522.66, "adr": "INV11·STR7", "adrf": "TR1-ACB1-INV11-STR7"}, {"i": 93, "x": 524826.18, "y": 4343522.66, "adr": "INV11·STR7", "adrf": "TR1-ACB1-INV11-STR7"}, {"i": 94, "x": 524843.71, "y": 4343522.66, "adr": "INV11·STR5", "adrf": "TR1-ACB1-INV11-STR5"}, {"i": 95, "x": 524861.24, "y": 4343522.66, "adr": "INV10·STR19", "adrf": "TR1-ACB1-INV10-STR19"}, {"i": 96, "x": 524878.77, "y": 4343522.66, "adr": "INV11·STR3", "adrf": "TR1-ACB1-INV11-STR3"}, {"i": 97, "x": 524903.28, "y": 4343522.66, "adr": "INV4·STR11", "adrf": "TR1-ACB1-INV4-STR11"}, {"i": 98, "x": 524920.8, "y": 4343522.66, "adr": "INV4·STR10", "adrf": "TR1-ACB1-INV4-STR10"}, {"i": 99, "x": 524938.33, "y": 4343522.66, "adr": "INV4·STR13", "adrf": "TR1-ACB1-INV4-STR13"}, {"i": 100, "x": 524955.87, "y": 4343522.66, "adr": "INV4·STR12", "adrf": "TR1-ACB1-INV4-STR12"}, {"i": 101, "x": 524808.06, "y": 4343514.21, "adr": "INV11·STR12", "adrf": "TR1-ACB1-INV11-STR12"}, {"i": 102, "x": 524825.58, "y": 4343514.21, "adr": "INV11·STR12", "adrf": "TR1-ACB1-INV11-STR12"}, {"i": 103, "x": 524843.11, "y": 4343514.21, "adr": "INV11·STR10", "adrf": "TR1-ACB1-INV11-STR10"}, {"i": 104, "x": 524860.64, "y": 4343514.21, "adr": "INV11·STR6", "adrf": "TR1-ACB1-INV11-STR6"}, {"i": 105, "x": 524878.17, "y": 4343514.21, "adr": "INV11·STR8", "adrf": "TR1-ACB1-INV11-STR8"}, {"i": 106, "x": 524902.68, "y": 4343514.21, "adr": "INV4·STR15", "adrf": "TR1-ACB1-INV4-STR15"}, {"i": 107, "x": 524920.2, "y": 4343514.21, "adr": "INV4·STR14", "adrf": "TR1-ACB1-INV4-STR14"}, {"i": 108, "x": 524937.73, "y": 4343514.21, "adr": "INV4·STR17", "adrf": "TR1-ACB1-INV4-STR17"}, {"i": 109, "x": 524955.28, "y": 4343514.21, "adr": "INV4·STR16", "adrf": "TR1-ACB1-INV4-STR16"}, {"i": 110, "x": 524807.46, "y": 4343505.76, "adr": "INV11·STR17", "adrf": "TR1-ACB1-INV11-STR17"}, {"i": 111, "x": 524824.98, "y": 4343505.76, "adr": "INV11·STR17", "adrf": "TR1-ACB1-INV11-STR17"}, {"i": 112, "x": 524842.51, "y": 4343505.76, "adr": "INV11·STR15", "adrf": "TR1-ACB1-INV11-STR15"}, {"i": 113, "x": 524860.04, "y": 4343505.76, "adr": "INV11·STR11", "adrf": "TR1-ACB1-INV11-STR11"}, {"i": 114, "x": 524877.57, "y": 4343505.76, "adr": "INV11·STR13", "adrf": "TR1-ACB1-INV11-STR13"}, {"i": 115, "x": 524902.08, "y": 4343505.76, "adr": "INV4·STR19", "adrf": "TR1-ACB1-INV4-STR19"}, {"i": 116, "x": 524919.6, "y": 4343505.76, "adr": "INV4·STR18", "adrf": "TR1-ACB1-INV4-STR18"}, {"i": 117, "x": 524937.13, "y": 4343505.76, "adr": "INV5·STR1", "adrf": "TR1-ACB1-INV5-STR1"}, {"i": 118, "x": 524954.68, "y": 4343505.76, "adr": "INV4·STR20", "adrf": "TR1-ACB1-INV4-STR20"}, {"i": 119, "x": 524972.19, "y": 4343505.76, "adr": "INV5·STR2", "adrf": "TR1-ACB1-INV5-STR2"}, {"i": 120, "x": 524806.86, "y": 4343497.3, "adr": "INV11·STR20", "adrf": "TR1-ACB1-INV11-STR20"}, {"i": 121, "x": 524824.39, "y": 4343497.3, "adr": "INV11·STR20", "adrf": "TR1-ACB1-INV11-STR20"}, {"i": 122, "x": 524841.91, "y": 4343497.3, "adr": "INV11·STR18", "adrf": "TR1-ACB1-INV11-STR18"}, {"i": 123, "x": 524859.44, "y": 4343497.3, "adr": "INV11·STR16", "adrf": "TR1-ACB1-INV11-STR16"}, {"i": 124, "x": 524876.97, "y": 4343497.3, "adr": "INV12·STR1", "adrf": "TR1-ACB1-INV12-STR1"}, {"i": 125, "x": 524901.48, "y": 4343497.3, "adr": "INV5·STR4", "adrf": "TR1-ACB1-INV5-STR4"}, {"i": 126, "x": 524919.01, "y": 4343497.3, "adr": "INV5·STR3", "adrf": "TR1-ACB1-INV5-STR3"}, {"i": 127, "x": 524936.53, "y": 4343497.3, "adr": "INV5·STR6", "adrf": "TR1-ACB1-INV5-STR6"}, {"i": 128, "x": 524954.08, "y": 4343497.3, "adr": "INV5·STR5", "adrf": "TR1-ACB1-INV5-STR5"}, {"i": 129, "x": 524971.59, "y": 4343497.3, "adr": "INV5·STR7", "adrf": "TR1-ACB1-INV5-STR7"}, {"i": 130, "x": 524788.73, "y": 4343488.85, "adr": "INV14·STR6", "adrf": "TR1-ACB1-INV14-STR6"}, {"i": 131, "x": 524806.26, "y": 4343488.85, "adr": "INV12·STR7", "adrf": "TR1-ACB1-INV12-STR7"}, {"i": 132, "x": 524823.79, "y": 4343488.85, "adr": "INV14·STR4", "adrf": "TR1-ACB1-INV14-STR4"}, {"i": 133, "x": 524841.32, "y": 4343488.85, "adr": "INV12·STR5", "adrf": "TR1-ACB1-INV12-STR5"}, {"i": 134, "x": 524858.84, "y": 4343488.85, "adr": "INV11·STR19", "adrf": "TR1-ACB1-INV11-STR19"}, {"i": 135, "x": 524876.37, "y": 4343488.85, "adr": "INV12·STR3", "adrf": "TR1-ACB1-INV12-STR3"}, {"i": 136, "x": 524900.88, "y": 4343488.85, "adr": "INV5·STR9", "adrf": "TR1-ACB1-INV5-STR9"}, {"i": 137, "x": 524918.41, "y": 4343488.85, "adr": "INV5·STR8", "adrf": "TR1-ACB1-INV5-STR8"}, {"i": 138, "x": 524935.93, "y": 4343488.85, "adr": "INV5·STR11", "adrf": "TR1-ACB1-INV5-STR11"}, {"i": 139, "x": 524953.48, "y": 4343488.85, "adr": "INV5·STR10", "adrf": "TR1-ACB1-INV5-STR10"}, {"i": 140, "x": 524970.99, "y": 4343488.85, "adr": "INV5·STR12", "adrf": "TR1-ACB1-INV5-STR12"}, {"i": 141, "x": 524770.58, "y": 4343480.19, "adr": "INV12·STR15", "adrf": "TR1-ACB1-INV12-STR15"}, {"i": 142, "x": 524788.11, "y": 4343480.19, "adr": "INV12·STR15", "adrf": "TR1-ACB1-INV12-STR15"}, {"i": 143, "x": 524805.64, "y": 4343480.19, "adr": "INV12·STR13", "adrf": "TR1-ACB1-INV12-STR13"}, {"i": 144, "x": 524823.17, "y": 4343480.19, "adr": "INV12·STR8", "adrf": "TR1-ACB1-INV12-STR8"}, {"i": 145, "x": 524840.7, "y": 4343480.19, "adr": "INV12·STR11", "adrf": "TR1-ACB1-INV12-STR11"}, {"i": 146, "x": 524858.23, "y": 4343480.19, "adr": "INV12·STR6", "adrf": "TR1-ACB1-INV12-STR6"}, {"i": 147, "x": 524875.76, "y": 4343480.19, "adr": "INV12·STR9", "adrf": "TR1-ACB1-INV12-STR9"}, {"i": 148, "x": 524900.26, "y": 4343480.19, "adr": "INV5·STR14", "adrf": "TR1-ACB1-INV5-STR14"}, {"i": 149, "x": 524917.79, "y": 4343480.19, "adr": "INV5·STR13", "adrf": "TR1-ACB1-INV5-STR13"}, {"i": 150, "x": 524935.32, "y": 4343480.19, "adr": "INV5·STR16", "adrf": "TR1-ACB1-INV5-STR16"}, {"i": 151, "x": 524952.86, "y": 4343480.19, "adr": "INV5·STR15", "adrf": "TR1-ACB1-INV5-STR15"}, {"i": 152, "x": 524970.38, "y": 4343480.19, "adr": "INV5·STR17", "adrf": "TR1-ACB1-INV5-STR17"}, {"i": 153, "x": 524769.98, "y": 4343471.74, "adr": "INV13·STR2", "adrf": "TR1-ACB1-INV13-STR2"}, {"i": 154, "x": 524787.51, "y": 4343471.74, "adr": "INV13·STR2", "adrf": "TR1-ACB1-INV13-STR2"}, {"i": 155, "x": 524805.04, "y": 4343471.74, "adr": "INV12·STR20", "adrf": "TR1-ACB1-INV12-STR20"}, {"i": 156, "x": 524822.57, "y": 4343471.74, "adr": "INV12·STR14", "adrf": "TR1-ACB1-INV12-STR14"}, {"i": 157, "x": 524840.11, "y": 4343471.74, "adr": "INV12·STR18", "adrf": "TR1-ACB1-INV12-STR18"}, {"i": 158, "x": 524857.63, "y": 4343471.74, "adr": "INV12·STR12", "adrf": "TR1-ACB1-INV12-STR12"}, {"i": 159, "x": 524875.16, "y": 4343471.74, "adr": "INV12·STR16", "adrf": "TR1-ACB1-INV12-STR16"}, {"i": 160, "x": 524899.66, "y": 4343471.74, "adr": "INV5·STR19", "adrf": "TR1-ACB1-INV5-STR19"}, {"i": 161, "x": 524917.19, "y": 4343471.74, "adr": "INV5·STR18", "adrf": "TR1-ACB1-INV5-STR18"}, {"i": 162, "x": 524934.72, "y": 4343471.74, "adr": "INV6·STR1", "adrf": "TR1-ACB1-INV6-STR1"}, {"i": 163, "x": 524952.25, "y": 4343471.74, "adr": "INV5·STR20", "adrf": "TR1-ACB1-INV5-STR20"}, {"i": 164, "x": 524969.78, "y": 4343471.74, "adr": "INV6·STR2", "adrf": "TR1-ACB1-INV6-STR2"}, {"i": 165, "x": 524751.87, "y": 4343463.28, "adr": "INV18·STR15", "adrf": "TR1-ACB1-INV18-STR15"}, {"i": 166, "x": 524769.38, "y": 4343463.28, "adr": "INV13·STR9", "adrf": "TR1-ACB1-INV13-STR9"}, {"i": 167, "x": 524786.91, "y": 4343463.28, "adr": "INV13·STR4", "adrf": "TR1-ACB1-INV13-STR4"}, {"i": 168, "x": 524804.44, "y": 4343463.28, "adr": "INV13·STR7", "adrf": "TR1-ACB1-INV13-STR7"}, {"i": 169, "x": 524821.97, "y": 4343463.28, "adr": "INV13·STR1", "adrf": "TR1-ACB1-INV13-STR1"}, {"i": 170, "x": 524839.51, "y": 4343463.28, "adr": "INV13·STR5", "adrf": "TR1-ACB1-INV13-STR5"}, {"i": 171, "x": 524857.03, "y": 4343463.28, "adr": "INV12·STR19", "adrf": "TR1-ACB1-INV12-STR19"}, {"i": 172, "x": 524874.56, "y": 4343463.28, "adr": "INV13·STR3", "adrf": "TR1-ACB1-INV13-STR3"}, {"i": 173, "x": 524934.12, "y": 4343463.28, "adr": "INV6·STR4", "adrf": "TR1-ACB1-INV6-STR4"}, {"i": 174, "x": 524951.65, "y": 4343463.28, "adr": "INV6·STR3", "adrf": "TR1-ACB1-INV6-STR3"}, {"i": 175, "x": 524969.18, "y": 4343463.28, "adr": "INV6·STR2", "adrf": "TR1-ACB1-INV6-STR2"}, {"i": 176, "x": 524986.71, "y": 4343463.28, "adr": "INV6·STR5", "adrf": "TR1-ACB1-INV6-STR5"}, {"i": 177, "x": 524751.27, "y": 4343454.83, "adr": "INV18·STR16", "adrf": "TR1-ACB1-INV18-STR16"}, {"i": 178, "x": 524768.78, "y": 4343454.83, "adr": "INV13·STR17", "adrf": "TR1-ACB1-INV13-STR17"}, {"i": 179, "x": 524786.31, "y": 4343454.83, "adr": "INV13·STR10", "adrf": "TR1-ACB1-INV13-STR10"}, {"i": 180, "x": 524803.84, "y": 4343454.83, "adr": "INV13·STR15", "adrf": "TR1-ACB1-INV13-STR15"}, {"i": 181, "x": 524821.37, "y": 4343454.83, "adr": "INV13·STR8", "adrf": "TR1-ACB1-INV13-STR8"}, {"i": 182, "x": 524838.91, "y": 4343454.83, "adr": "INV13·STR13", "adrf": "TR1-ACB1-INV13-STR13"}, {"i": 183, "x": 524856.44, "y": 4343454.83, "adr": "INV13·STR6", "adrf": "TR1-ACB1-INV13-STR6"}, {"i": 184, "x": 524873.96, "y": 4343454.83, "adr": "INV13·STR11", "adrf": "TR1-ACB1-INV13-STR11"}, {"i": 185, "x": 524933.52, "y": 4343454.83, "adr": "INV6·STR8", "adrf": "TR1-ACB1-INV6-STR8"}, {"i": 186, "x": 524951.05, "y": 4343454.83, "adr": "INV6·STR7", "adrf": "TR1-ACB1-INV6-STR7"}, {"i": 187, "x": 524968.58, "y": 4343454.83, "adr": "INV6·STR10", "adrf": "TR1-ACB1-INV6-STR10"}, {"i": 188, "x": 524986.11, "y": 4343454.83, "adr": "INV6·STR9", "adrf": "TR1-ACB1-INV6-STR9"}, {"i": 189, "x": 524750.66, "y": 4343446.38, "adr": "INV18·STR13", "adrf": "TR1-ACB1-INV18-STR13"}, {"i": 190, "x": 524768.18, "y": 4343446.38, "adr": "INV13·STR19", "adrf": "TR1-ACB1-INV13-STR19"}, {"i": 191, "x": 524785.71, "y": 4343446.38, "adr": "INV13·STR18", "adrf": "TR1-ACB1-INV13-STR18"}, {"i": 192, "x": 524803.23, "y": 4343446.38, "adr": "INV14·STR5", "adrf": "TR1-ACB1-INV14-STR5"}, {"i": 193, "x": 524820.77, "y": 4343446.38, "adr": "INV13·STR16", "adrf": "TR1-ACB1-INV13-STR16"}, {"i": 194, "x": 524838.31, "y": 4343446.38, "adr": "INV14·STR3", "adrf": "TR1-ACB1-INV14-STR3"}, {"i": 195, "x": 524855.84, "y": 4343446.38, "adr": "INV13·STR14", "adrf": "TR1-ACB1-INV13-STR14"}, {"i": 196, "x": 524873.36, "y": 4343446.38, "adr": "INV14·STR1", "adrf": "TR1-ACB1-INV14-STR1"}, {"i": 197, "x": 524932.92, "y": 4343446.38, "adr": "INV6·STR12", "adrf": "TR1-ACB1-INV6-STR12"}, {"i": 198, "x": 524950.45, "y": 4343446.38, "adr": "INV6·STR11", "adrf": "TR1-ACB1-INV6-STR11"}, {"i": 199, "x": 524967.98, "y": 4343446.38, "adr": "INV6·STR14", "adrf": "TR1-ACB1-INV6-STR14"}, {"i": 200, "x": 524985.51, "y": 4343446.38, "adr": "INV6·STR13", "adrf": "TR1-ACB1-INV6-STR13"}, {"i": 201, "x": 524749.85, "y": 4343435.02, "adr": "INV18·STR11", "adrf": "TR1-ACB1-INV18-STR11"}, {"i": 202, "x": 524767.38, "y": 4343435.02, "adr": "INV14·STR13", "adrf": "TR1-ACB1-INV14-STR13"}, {"i": 203, "x": 524784.91, "y": 4343435.02, "adr": "INV13·STR20", "adrf": "TR1-ACB1-INV13-STR20"}, {"i": 204, "x": 524802.43, "y": 4343435.02, "adr": "INV14·STR11", "adrf": "TR1-ACB1-INV14-STR11"}, {"i": 205, "x": 524819.97, "y": 4343435.02, "adr": "INV14·STR12", "adrf": "TR1-ACB1-INV14-STR12"}, {"i": 206, "x": 524837.51, "y": 4343435.02, "adr": "INV14·STR9", "adrf": "TR1-ACB1-INV14-STR9"}, {"i": 207, "x": 524855.04, "y": 4343435.02, "adr": "INV14·STR10", "adrf": "TR1-ACB1-INV14-STR10"}, {"i": 208, "x": 524872.55, "y": 4343435.02, "adr": "INV14·STR7", "adrf": "TR1-ACB1-INV14-STR7"}, {"i": 209, "x": 524897.06, "y": 4343435.02, "adr": "INV6·STR16", "adrf": "TR1-ACB1-INV6-STR16"}, {"i": 210, "x": 524914.59, "y": 4343435.02, "adr": "INV6·STR15", "adrf": "TR1-ACB1-INV6-STR15"}, {"i": 211, "x": 524932.12, "y": 4343435.02, "adr": "INV6·STR18", "adrf": "TR1-ACB1-INV6-STR18"}, {"i": 212, "x": 524949.64, "y": 4343435.02, "adr": "INV6·STR17", "adrf": "TR1-ACB1-INV6-STR17"}, {"i": 213, "x": 524967.18, "y": 4343435.02, "adr": "INV6·STR20", "adrf": "TR1-ACB1-INV6-STR20"}, {"i": 214, "x": 524984.71, "y": 4343435.02, "adr": "INV6·STR19", "adrf": "TR1-ACB1-INV6-STR19"}, {"i": 215, "x": 525002.23, "y": 4343435.02, "adr": "INV7·STR1", "adrf": "TR1-ACB1-INV7-STR1"}, {"i": 216, "x": 524731.71, "y": 4343426.13, "adr": "INV14·STR20", "adrf": "TR1-ACB1-INV14-STR20"}, {"i": 217, "x": 524749.22, "y": 4343426.13, "adr": "INV14·STR20", "adrf": "TR1-ACB1-INV14-STR20"}, {"i": 218, "x": 524766.75, "y": 4343426.13, "adr": "INV14·STR18", "adrf": "TR1-ACB1-INV14-STR18"}, {"i": 219, "x": 524784.27, "y": 4343426.13, "adr": "INV14·STR14", "adrf": "TR1-ACB1-INV14-STR14"}, {"i": 220, "x": 524801.8, "y": 4343426.13, "adr": "INV14·STR16", "adrf": "TR1-ACB1-INV14-STR16"}, {"i": 221, "x": 524819.34, "y": 4343426.13, "adr": "INV15·STR5", "adrf": "TR1-ACB1-INV15-STR5"}, {"i": 222, "x": 524836.88, "y": 4343426.13, "adr": "INV14·STR15", "adrf": "TR1-ACB1-INV14-STR15"}, {"i": 223, "x": 524854.41, "y": 4343426.13, "adr": "INV15·STR2", "adrf": "TR1-ACB1-INV15-STR2"}, {"i": 224, "x": 524871.92, "y": 4343426.13, "adr": "INV15·STR1", "adrf": "TR1-ACB1-INV15-STR1"}, {"i": 225, "x": 524896.43, "y": 4343426.13, "adr": "INV7·STR3", "adrf": "TR1-ACB1-INV7-STR3"}, {"i": 226, "x": 524913.96, "y": 4343426.13, "adr": "INV7·STR2", "adrf": "TR1-ACB1-INV7-STR2"}, {"i": 227, "x": 524931.48, "y": 4343426.13, "adr": "INV7·STR5", "adrf": "TR1-ACB1-INV7-STR5"}, {"i": 228, "x": 524949.01, "y": 4343426.13, "adr": "INV7·STR4", "adrf": "TR1-ACB1-INV7-STR4"}, {"i": 229, "x": 524966.55, "y": 4343426.13, "adr": "INV7·STR7", "adrf": "TR1-ACB1-INV7-STR7"}, {"i": 230, "x": 524984.09, "y": 4343426.13, "adr": "INV7·STR6", "adrf": "TR1-ACB1-INV7-STR6"}, {"i": 231, "x": 525001.6, "y": 4343426.13, "adr": "INV7·STR8", "adrf": "TR1-ACB1-INV7-STR8"}, {"i": 232, "x": 524731.11, "y": 4343417.58, "adr": "INV15·STR12", "adrf": "TR1-ACB1-INV15-STR12"}, {"i": 233, "x": 524748.61, "y": 4343417.58, "adr": "INV15·STR12", "adrf": "TR1-ACB1-INV15-STR12"}, {"i": 234, "x": 524766.14, "y": 4343417.58, "adr": "INV15·STR10", "adrf": "TR1-ACB1-INV15-STR10"}, {"i": 235, "x": 524783.66, "y": 4343417.58, "adr": "INV14·STR19", "adrf": "TR1-ACB1-INV14-STR19"}, {"i": 236, "x": 524801.2, "y": 4343417.58, "adr": "INV15·STR8", "adrf": "TR1-ACB1-INV15-STR8"}, {"i": 237, "x": 524818.73, "y": 4343417.58, "adr": "INV14·STR17", "adrf": "TR1-ACB1-INV14-STR17"}, {"i": 238, "x": 524836.28, "y": 4343417.58, "adr": "INV15·STR6", "adrf": "TR1-ACB1-INV15-STR6"}, {"i": 239, "x": 524853.8, "y": 4343417.58, "adr": "INV15·STR3", "adrf": "TR1-ACB1-INV15-STR3"}, {"i": 240, "x": 524871.32, "y": 4343417.58, "adr": "INV15·STR4", "adrf": "TR1-ACB1-INV15-STR4"}, {"i": 241, "x": 524895.82, "y": 4343417.58, "adr": "INV7·STR10", "adrf": "TR1-ACB1-INV7-STR10"}, {"i": 242, "x": 524913.35, "y": 4343417.58, "adr": "INV7·STR9", "adrf": "TR1-ACB1-INV7-STR9"}, {"i": 243, "x": 524930.88, "y": 4343417.58, "adr": "INV7·STR12", "adrf": "TR1-ACB1-INV7-STR12"}, {"i": 244, "x": 524948.41, "y": 4343417.58, "adr": "INV7·STR11", "adrf": "TR1-ACB1-INV7-STR11"}, {"i": 245, "x": 524965.95, "y": 4343417.58, "adr": "INV7·STR14", "adrf": "TR1-ACB1-INV7-STR14"}, {"i": 246, "x": 524983.49, "y": 4343417.58, "adr": "INV7·STR13", "adrf": "TR1-ACB1-INV7-STR13"}, {"i": 247, "x": 525001.01, "y": 4343417.58, "adr": "INV7·STR15", "adrf": "TR1-ACB1-INV7-STR15"}, {"i": 248, "x": 524730.5, "y": 4343409.13, "adr": "INV15·STR20", "adrf": "TR1-ACB1-INV15-STR20"}, {"i": 249, "x": 524748.01, "y": 4343409.13, "adr": "INV15·STR20", "adrf": "TR1-ACB1-INV15-STR20"}, {"i": 250, "x": 524765.53, "y": 4343409.13, "adr": "INV15·STR18", "adrf": "TR1-ACB1-INV15-STR18"}, {"i": 251, "x": 524783.06, "y": 4343409.13, "adr": "INV15·STR11", "adrf": "TR1-ACB1-INV15-STR11"}, {"i": 252, "x": 524800.6, "y": 4343409.13, "adr": "INV15·STR16", "adrf": "TR1-ACB1-INV15-STR16"}, {"i": 253, "x": 524818.13, "y": 4343409.13, "adr": "INV15·STR9", "adrf": "TR1-ACB1-INV15-STR9"}, {"i": 254, "x": 524835.67, "y": 4343409.13, "adr": "INV15·STR14", "adrf": "TR1-ACB1-INV15-STR14"}, {"i": 255, "x": 524853.2, "y": 4343409.13, "adr": "INV15·STR7", "adrf": "TR1-ACB1-INV15-STR7"}, {"i": 256, "x": 524870.72, "y": 4343409.13, "adr": "INV15·STR13", "adrf": "TR1-ACB1-INV15-STR13"}, {"i": 257, "x": 524895.22, "y": 4343409.13, "adr": "INV8·STR2", "adrf": "TR1-ACB1-INV8-STR2"}, {"i": 258, "x": 524912.75, "y": 4343409.13, "adr": "INV8·STR1", "adrf": "TR1-ACB1-INV8-STR1"}, {"i": 259, "x": 524930.28, "y": 4343409.13, "adr": "INV8·STR3", "adrf": "TR1-ACB1-INV8-STR3"}, {"i": 260, "x": 524947.81, "y": 4343409.13, "adr": "INV7·STR16", "adrf": "TR1-ACB1-INV7-STR16"}, {"i": 261, "x": 524965.35, "y": 4343409.13, "adr": "INV7·STR18", "adrf": "TR1-ACB1-INV7-STR18"}, {"i": 262, "x": 524982.89, "y": 4343409.13, "adr": "INV7·STR17", "adrf": "TR1-ACB1-INV7-STR17"}, {"i": 263, "x": 525000.42, "y": 4343409.13, "adr": "INV7·STR15", "adrf": "TR1-ACB1-INV7-STR15"}, {"i": 264, "x": 525017.92, "y": 4343409.13, "adr": "INV7·STR19", "adrf": "TR1-ACB1-INV7-STR19"}, {"i": 265, "x": 524729.88, "y": 4343400.36, "adr": "INV16·STR10", "adrf": "TR1-ACB1-INV16-STR10"}, {"i": 266, "x": 524747.39, "y": 4343400.36, "adr": "INV16·STR10", "adrf": "TR1-ACB1-INV16-STR10"}, {"i": 267, "x": 524764.91, "y": 4343400.36, "adr": "INV16·STR8", "adrf": "TR1-ACB1-INV16-STR8"}, {"i": 268, "x": 524782.43, "y": 4343400.36, "adr": "INV15·STR19", "adrf": "TR1-ACB1-INV15-STR19"}, {"i": 269, "x": 524799.98, "y": 4343400.36, "adr": "INV16·STR6", "adrf": "TR1-ACB1-INV16-STR6"}, {"i": 270, "x": 524817.51, "y": 4343400.36, "adr": "INV15·STR17", "adrf": "TR1-ACB1-INV15-STR17"}, {"i": 271, "x": 524835.05, "y": 4343400.36, "adr": "INV16·STR4", "adrf": "TR1-ACB1-INV16-STR4"}, {"i": 272, "x": 524852.57, "y": 4343400.36, "adr": "INV15·STR15", "adrf": "TR1-ACB1-INV15-STR15"}, {"i": 273, "x": 524870.1, "y": 4343400.36, "adr": "INV16·STR2", "adrf": "TR1-ACB1-INV16-STR2"}, {"i": 274, "x": 524894.6, "y": 4343400.36, "adr": "INV8·STR5", "adrf": "TR1-ACB1-INV8-STR5"}, {"i": 275, "x": 524912.13, "y": 4343400.36, "adr": "INV8·STR4", "adrf": "TR1-ACB1-INV8-STR4"}, {"i": 276, "x": 524929.66, "y": 4343400.36, "adr": "INV8·STR7", "adrf": "TR1-ACB1-INV8-STR7"}, {"i": 277, "x": 524947.19, "y": 4343400.36, "adr": "INV8·STR6", "adrf": "TR1-ACB1-INV8-STR6"}, {"i": 278, "x": 524964.73, "y": 4343400.36, "adr": "INV8·STR9", "adrf": "TR1-ACB1-INV8-STR9"}, {"i": 279, "x": 524982.27, "y": 4343400.36, "adr": "INV8·STR8", "adrf": "TR1-ACB1-INV8-STR8"}, {"i": 280, "x": 524999.8, "y": 4343400.36, "adr": "INV8·STR11", "adrf": "TR1-ACB1-INV8-STR11"}, {"i": 281, "x": 525017.3, "y": 4343400.36, "adr": "INV8·STR10", "adrf": "TR1-ACB1-INV8-STR10"}, {"i": 282, "x": 524729.27, "y": 4343391.84, "adr": "INV16·STR19", "adrf": "TR1-ACB1-INV16-STR19"}, {"i": 283, "x": 524746.79, "y": 4343391.84, "adr": "INV16·STR19", "adrf": "TR1-ACB1-INV16-STR19"}, {"i": 284, "x": 524764.3, "y": 4343391.84, "adr": "INV16·STR17", "adrf": "TR1-ACB1-INV16-STR17"}, {"i": 285, "x": 524781.83, "y": 4343391.84, "adr": "INV16·STR9", "adrf": "TR1-ACB1-INV16-STR9"}, {"i": 286, "x": 524799.37, "y": 4343391.84, "adr": "INV16·STR15", "adrf": "TR1-ACB1-INV16-STR15"}, {"i": 287, "x": 524816.91, "y": 4343391.84, "adr": "INV16·STR7", "adrf": "TR1-ACB1-INV16-STR7"}, {"i": 288, "x": 524834.46, "y": 4343391.84, "adr": "INV16·STR13", "adrf": "TR1-ACB1-INV16-STR13"}, {"i": 289, "x": 524851.96, "y": 4343391.84, "adr": "INV16·STR5", "adrf": "TR1-ACB1-INV16-STR5"}, {"i": 290, "x": 524869.49, "y": 4343391.84, "adr": "INV16·STR11", "adrf": "TR1-ACB1-INV16-STR11"}, {"i": 291, "x": 524893.99, "y": 4343391.84, "adr": "INV8·STR13", "adrf": "TR1-ACB1-INV8-STR13"}, {"i": 292, "x": 524911.52, "y": 4343391.84, "adr": "INV8·STR12", "adrf": "TR1-ACB1-INV8-STR12"}, {"i": 293, "x": 524929.05, "y": 4343391.84, "adr": "INV8·STR15", "adrf": "TR1-ACB1-INV8-STR15"}, {"i": 294, "x": 524946.58, "y": 4343391.84, "adr": "INV8·STR14", "adrf": "TR1-ACB1-INV8-STR14"}, {"i": 295, "x": 524964.13, "y": 4343391.84, "adr": "INV8·STR17", "adrf": "TR1-ACB1-INV8-STR17"}, {"i": 296, "x": 524981.67, "y": 4343391.84, "adr": "INV8·STR16", "adrf": "TR1-ACB1-INV8-STR16"}, {"i": 297, "x": 524999.2, "y": 4343391.84, "adr": "INV8·STR19", "adrf": "TR1-ACB1-INV8-STR19"}, {"i": 298, "x": 525016.72, "y": 4343391.84, "adr": "INV8·STR18", "adrf": "TR1-ACB1-INV8-STR18"}, {"i": 299, "x": 524728.67, "y": 4343383.38, "adr": "INV16·STR20", "adrf": "TR1-ACB1-INV16-STR20"}, {"i": 300, "x": 524746.19, "y": 4343383.38, "adr": "INV16·STR20", "adrf": "TR1-ACB1-INV16-STR20"}, {"i": 301, "x": 524763.7, "y": 4343383.38, "adr": "INV17·STR7", "adrf": "TR1-ACB1-INV17-STR7"}, {"i": 302, "x": 524781.23, "y": 4343383.38, "adr": "INV16·STR18", "adrf": "TR1-ACB1-INV16-STR18"}, {"i": 303, "x": 524798.77, "y": 4343383.38, "adr": "INV17·STR5", "adrf": "TR1-ACB1-INV17-STR5"}, {"i": 304, "x": 524816.32, "y": 4343383.38, "adr": "INV16·STR16", "adrf": "TR1-ACB1-INV16-STR16"}, {"i": 305, "x": 524833.86, "y": 4343383.38, "adr": "INV17·STR3", "adrf": "TR1-ACB1-INV17-STR3"}, {"i": 306, "x": 524851.36, "y": 4343383.38, "adr": "INV16·STR14", "adrf": "TR1-ACB1-INV16-STR14"}, {"i": 307, "x": 524868.89, "y": 4343383.38, "adr": "INV17·STR1", "adrf": "TR1-ACB1-INV17-STR1"}, {"i": 308, "x": 524893.39, "y": 4343383.38, "adr": "INV9·STR1", "adrf": "TR1-ACB1-INV9-STR1"}, {"i": 309, "x": 524910.92, "y": 4343383.38, "adr": "INV8·STR20", "adrf": "TR1-ACB1-INV8-STR20"}, {"i": 310, "x": 524928.45, "y": 4343383.38, "adr": "INV9·STR3", "adrf": "TR1-ACB1-INV9-STR3"}, {"i": 311, "x": 524945.98, "y": 4343383.38, "adr": "INV9·STR2", "adrf": "TR1-ACB1-INV9-STR2"}, {"i": 312, "x": 524963.53, "y": 4343383.38, "adr": "INV9·STR5", "adrf": "TR1-ACB1-INV9-STR5"}, {"i": 313, "x": 524981.07, "y": 4343383.38, "adr": "INV9·STR4", "adrf": "TR1-ACB1-INV9-STR4"}, {"i": 314, "x": 524998.6, "y": 4343383.38, "adr": "INV9·STR7", "adrf": "TR1-ACB1-INV9-STR7"}, {"i": 315, "x": 525016.12, "y": 4343383.38, "adr": "INV9·STR6", "adrf": "TR1-ACB1-INV9-STR6"}, {"i": 316, "x": 525033.63, "y": 4343383.38, "adr": "INV9·STR8", "adrf": "TR1-ACB1-INV9-STR8"}, {"i": 317, "x": 524728.07, "y": 4343374.87, "adr": "INV17·STR17", "adrf": "TR1-ACB1-INV17-STR17"}, {"i": 318, "x": 524745.57, "y": 4343374.87, "adr": "INV17·STR17", "adrf": "TR1-ACB1-INV17-STR17"}, {"i": 319, "x": 524763.09, "y": 4343374.87, "adr": "INV17·STR15", "adrf": "TR1-ACB1-INV17-STR15"}, {"i": 320, "x": 524780.62, "y": 4343374.87, "adr": "INV17·STR8", "adrf": "TR1-ACB1-INV17-STR8"}, {"i": 321, "x": 524798.17, "y": 4343374.87, "adr": "INV17·STR13", "adrf": "TR1-ACB1-INV17-STR13"}, {"i": 322, "x": 524815.72, "y": 4343374.87, "adr": "INV17·STR6", "adrf": "TR1-ACB1-INV17-STR6"}, {"i": 323, "x": 524833.26, "y": 4343374.87, "adr": "INV17·STR11", "adrf": "TR1-ACB1-INV17-STR11"}, {"i": 324, "x": 524850.76, "y": 4343374.87, "adr": "INV17·STR4", "adrf": "TR1-ACB1-INV17-STR4"}, {"i": 325, "x": 524868.29, "y": 4343374.87, "adr": "INV17·STR9", "adrf": "TR1-ACB1-INV17-STR9"}, {"i": 326, "x": 524892.79, "y": 4343374.87, "adr": "INV9·STR10", "adrf": "TR1-ACB1-INV9-STR10"}, {"i": 327, "x": 524910.32, "y": 4343374.87, "adr": "INV9·STR9", "adrf": "TR1-ACB1-INV9-STR9"}, {"i": 328, "x": 524927.85, "y": 4343374.87, "adr": "INV9·STR12", "adrf": "TR1-ACB1-INV9-STR12"}, {"i": 329, "x": 524945.38, "y": 4343374.87, "adr": "INV9·STR11", "adrf": "TR1-ACB1-INV9-STR11"}, {"i": 330, "x": 524962.92, "y": 4343374.87, "adr": "INV9·STR14", "adrf": "TR1-ACB1-INV9-STR14"}, {"i": 331, "x": 524980.46, "y": 4343374.87, "adr": "INV9·STR13", "adrf": "TR1-ACB1-INV9-STR13"}, {"i": 332, "x": 524998.0, "y": 4343374.87, "adr": "INV9·STR16", "adrf": "TR1-ACB1-INV9-STR16"}, {"i": 333, "x": 525015.51, "y": 4343374.87, "adr": "INV9·STR15", "adrf": "TR1-ACB1-INV9-STR15"}, {"i": 334, "x": 525033.02, "y": 4343374.87, "adr": "INV9·STR17", "adrf": "TR1-ACB1-INV9-STR17"}, {"i": 335, "x": 524727.47, "y": 4343366.41, "adr": "INV17·STR19", "adrf": "TR1-ACB1-INV17-STR19"}, {"i": 336, "x": 524744.96, "y": 4343366.41, "adr": "INV17·STR19", "adrf": "TR1-ACB1-INV17-STR19"}, {"i": 337, "x": 524762.48, "y": 4343366.41, "adr": "INV17·STR18", "adrf": "TR1-ACB1-INV17-STR18"}, {"i": 338, "x": 524780.02, "y": 4343366.41, "adr": "INV17·STR16", "adrf": "TR1-ACB1-INV17-STR16"}, {"i": 339, "x": 524797.57, "y": 4343366.41, "adr": "INV18·STR5", "adrf": "TR1-ACB1-INV18-STR5"}, {"i": 340, "x": 524815.12, "y": 4343366.41, "adr": "INV17·STR14", "adrf": "TR1-ACB1-INV17-STR14"}, {"i": 341, "x": 524832.66, "y": 4343366.41, "adr": "INV18·STR3", "adrf": "TR1-ACB1-INV18-STR3"}, {"i": 342, "x": 524850.16, "y": 4343366.41, "adr": "INV17·STR12", "adrf": "TR1-ACB1-INV17-STR12"}, {"i": 343, "x": 524867.69, "y": 4343366.41, "adr": "INV18·STR1", "adrf": "TR1-ACB1-INV18-STR1"}, {"i": 344, "x": 524892.19, "y": 4343366.41, "adr": "INV19·STR2", "adrf": "TR1-ACB1-INV19-STR2"}, {"i": 345, "x": 524909.72, "y": 4343366.41, "adr": "INV19·STR1", "adrf": "TR1-ACB1-INV19-STR1"}, {"i": 346, "x": 524927.25, "y": 4343366.41, "adr": "INV19·STR4", "adrf": "TR1-ACB1-INV19-STR4"}, {"i": 347, "x": 524944.78, "y": 4343366.41, "adr": "INV19·STR3", "adrf": "TR1-ACB1-INV19-STR3"}, {"i": 348, "x": 524962.32, "y": 4343366.41, "adr": "INV19·STR6", "adrf": "TR1-ACB1-INV19-STR6"}, {"i": 349, "x": 524979.86, "y": 4343366.41, "adr": "INV19·STR5", "adrf": "TR1-ACB1-INV19-STR5"}, {"i": 350, "x": 524997.39, "y": 4343366.41, "adr": "INV9·STR19", "adrf": "TR1-ACB1-INV9-STR19"}, {"i": 351, "x": 525014.9, "y": 4343366.41, "adr": "INV9·STR18", "adrf": "TR1-ACB1-INV9-STR18"}, {"i": 352, "x": 525032.42, "y": 4343366.41, "adr": "INV9·STR20", "adrf": "TR1-ACB1-INV9-STR20"}, {"i": 353, "x": 524744.37, "y": 4343357.96, "adr": "INV18·STR16", "adrf": "TR1-ACB1-INV18-STR16"}, {"i": 354, "x": 524761.88, "y": 4343357.96, "adr": "INV18·STR14", "adrf": "TR1-ACB1-INV18-STR14"}, {"i": 355, "x": 524779.42, "y": 4343357.96, "adr": "INV18·STR7", "adrf": "TR1-ACB1-INV18-STR7"}, {"i": 356, "x": 524796.97, "y": 4343357.96, "adr": "INV18·STR12", "adrf": "TR1-ACB1-INV18-STR12"}, {"i": 357, "x": 524814.53, "y": 4343357.96, "adr": "INV18·STR6", "adrf": "TR1-ACB1-INV18-STR6"}, {"i": 358, "x": 524832.07, "y": 4343357.96, "adr": "INV18·STR10", "adrf": "TR1-ACB1-INV18-STR10"}, {"i": 359, "x": 524849.56, "y": 4343357.96, "adr": "INV18·STR4", "adrf": "TR1-ACB1-INV18-STR4"}, {"i": 360, "x": 524867.08, "y": 4343357.96, "adr": "INV18·STR8", "adrf": "TR1-ACB1-INV18-STR8"}, {"i": 361, "x": 524891.59, "y": 4343357.96, "adr": "INV19·STR8", "adrf": "TR1-ACB1-INV19-STR8"}, {"i": 362, "x": 524909.12, "y": 4343357.96, "adr": "INV19·STR7", "adrf": "TR1-ACB1-INV19-STR7"}, {"i": 363, "x": 524926.65, "y": 4343357.96, "adr": "INV19·STR10", "adrf": "TR1-ACB1-INV19-STR10"}, {"i": 364, "x": 524944.18, "y": 4343357.96, "adr": "INV19·STR9", "adrf": "TR1-ACB1-INV19-STR9"}, {"i": 365, "x": 524961.72, "y": 4343357.96, "adr": "INV7·STR20", "adrf": "TR1-ACB1-INV7-STR20"}, {"i": 366, "x": 524979.27, "y": 4343357.96, "adr": "INV19·STR11", "adrf": "TR1-ACB1-INV19-STR11"}, {"i": 367, "x": 524996.79, "y": 4343357.96, "adr": "INV19·STR15", "adrf": "TR1-ACB1-INV19-STR15"}, {"i": 368, "x": 525014.3, "y": 4343357.96, "adr": "INV19·STR13", "adrf": "TR1-ACB1-INV19-STR13"}, {"i": 369, "x": 525031.82, "y": 4343357.96, "adr": "INV19·STR15", "adrf": "TR1-ACB1-INV19-STR15"}, {"i": 370, "x": 524866.47, "y": 4343349.51, "adr": "INV18·STR17", "adrf": "TR1-ACB1-INV18-STR17"}, {"i": 371, "x": 524890.99, "y": 4343349.51, "adr": "INV19·STR17", "adrf": "TR1-ACB1-INV19-STR17"}, {"i": 372, "x": 524908.52, "y": 4343349.51, "adr": "INV19·STR16", "adrf": "TR1-ACB1-INV19-STR16"}, {"i": 373, "x": 524926.05, "y": 4343349.51, "adr": "INV19·STR19", "adrf": "TR1-ACB1-INV19-STR19"}, {"i": 374, "x": 524943.58, "y": 4343349.51, "adr": "INV19·STR18", "adrf": "TR1-ACB1-INV19-STR18"}, {"i": 375, "x": 524961.13, "y": 4343349.51, "adr": "INV9·STR20", "adrf": "TR1-ACB1-INV9-STR20"}, {"i": 376, "x": 524978.66, "y": 4343349.51, "adr": "INV19·STR12", "adrf": "TR1-ACB1-INV19-STR12"}, {"i": 377, "x": 524996.19, "y": 4343349.51, "adr": "INV9·STR17", "adrf": "TR1-ACB1-INV9-STR17"}, {"i": 378, "x": 525013.7, "y": 4343349.51, "adr": "INV19·STR14", "adrf": "TR1-ACB1-INV19-STR14"}], "invs": [{"x": 524912.41, "y": 4343631.76}, {"x": 524910.01, "y": 4343597.95}, {"x": 524907.62, "y": 4343564.13}, {"x": 524904.57, "y": 4343521.32}, {"x": 524903.25, "y": 4343487.5}, {"x": 524934.82, "y": 4343453.48}, {"x": 524897.16, "y": 4343416.24}, {"x": 524895.93, "y": 4343399.01}, {"x": 524894.11, "y": 4343373.52}, {"x": 524896.24, "y": 4343555.68}, {"x": 524893.21, "y": 4343512.86}, {"x": 524890.79, "y": 4343478.84}, {"x": 524889.59, "y": 4343461.94}, {"x": 524887.59, "y": 4343433.68}, {"x": 524886.33, "y": 4343416.24}, {"x": 524885.11, "y": 4343399.01}, {"x": 524883.32, "y": 4343373.52}, {"x": 524882.12, "y": 4343356.61}, {"x": 524892.92, "y": 4343356.61}]};
+const MEK=139796.80, ELK=118827.28;
+const GEN=[
+ {id:'kanal',ad:'AG-OG Kablo Kanalı',birim:'m',hedef:2108,dis:'ELK',pur:0.30},
+ {id:'solar',ad:'Solar Kablo (DC 1x6)',birim:'m',hedef:45052,dis:'ELK',pur:0.16},
+ {id:'ogbas',ad:'OG Başlık',birim:'adet',hedef:6,dis:'ELK',pur:0.07},
+ {id:'kosk', ad:'Köşk OG Hücre / Pano',birim:'%',hedef:100,dis:'ELK',pur:0.11},
+ {id:'invtr',ad:'İnverter + Trafo',birim:'adet',hedef:20,dis:'ELK',pur:0.17},
+ {id:'cctv', ad:'CCTV - Aydınlatma',birim:'%',hedef:100,dis:'ELK',pur:0.14},
+ {id:'test', ad:'Testler & Devreye Alma',birim:'%',hedef:100,dis:'ELK',pur:0.05},
+];
+// ayak adımları (her biri 0-14)
+const AYAK=[
+ {k:'a1',ad:'Harita işaretleme'},
+ {k:'a2',ad:'Rok ile delme',isv:true},
+ {k:'a3',ad:'Ayak sabitleme'},
+ {k:'a4',ad:'Beton atılması'},
+ {k:'a5',ad:'Teraziye alma'},
+];
+// konstrüksiyon (k1-k6 ikili, k7 panel 0-26)
+const KONST=[
+ {k:'k1',ad:'Ön kolon (P1)'},{k:'k2',ad:'Arka kolon (P2 / P6)'},{k:'k3',ad:'Diyagonal makas (P5)'},
+ {k:'k4',ad:'Üst kuşak (P3)'},{k:'k5',ad:'Alt kuşak (P4-1)'},{k:'k6',ad:'Terazi + cıvata tork'},
+];
+// Saha — 5 TR bölgesi (DXF genel yerleşimden). Aksaray kapsamı = TR-1.
+const PLANT={minx:524678,maxx:525047,miny:4342655,maxy:4343640,
+ trs:[{id:'TR1',n:413,minx:524735,maxx:525042,miny:4343346,maxy:4343640,scope:true},
+      {id:'TR2',n:402,minx:524723,maxx:525047,miny:4343158,maxy:4343348},
+      {id:'TR3',n:391,minx:524703,maxx:525032,miny:4342988,maxy:4343169},
+      {id:'TR4',n:380,minx:524690,maxx:525023,miny:4342798,maxy:4342990},
+      {id:'TR5',n:376,minx:524678,maxx:525009,miny:4342655,maxy:4342826}]};
+const bedel=it=>(it.dis==='MEK'?MEK:ELK)*it.pur;
+const tr=n=>Number(n).toLocaleString('tr-TR',{maximumFractionDigits:0});
+let ENTRIES=[],TARGETS={},PLAN={},MEDIA={},SEL=null,MPCT={},CURPHASE='all';
+async function setMpct(id,v){v=Math.max(0,Math.min(100,parseInt(v)||0));MPCT[id]=v;await sset('mpct',MPCT);const e=document.getElementById('mp_'+id);if(e)e.textContent='%'+v;renderProgress();}
+
+/* ===== ROL & VERİ HAVUZU (window.storage / GitHub / geçici) ===== */
+let ROLE=null, BACKEND='mem', POOL={}, MEM={}, GH=null, poolSha=null, pushTimer=null, POLL=null;
+const ADMIN_PIN='1453'; // ← yönetici PIN (buradan değiştir)
+function nowt(){return new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});}
+function ghUrl(){return 'https://api.github.com/repos/'+GH.owner+'/'+GH.repo+'/contents/'+encodeURIComponent(GH.path).replace(/%2F/g,'/');}
+function ghHeaders(){return {'Authorization':'token '+GH.token,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};}
+function b64enc(x){return btoa(unescape(encodeURIComponent(x)));}
+function b64dec(x){return decodeURIComponent(escape(atob((x||'').replace(/\s/g,''))));}
+function ghStat(m){const e=document.getElementById('ghstat');if(e)e.textContent=m;const s=document.getElementById('status');if(s&&BACKEND==='gh')s.textContent=m;}
+async function ghPull(){if(!GH||!GH.token)throw 'cfg';
+  const r=await fetch(ghUrl()+'?ref='+encodeURIComponent(GH.branch||'main')+'&t='+Date.now(),{headers:ghHeaders()});
+  if(r.status===404){POOL={};poolSha=null;return false;}
+  if(!r.ok)throw 'HTTP '+r.status;
+  const j=await r.json();poolSha=j.sha;POOL=JSON.parse(b64dec(j.content)||'{}');return true;}
+async function ghBuildPool(){if(BACKEND==='gh')return POOL;
+  const pool={};for(const pre of ['tr1g:','log:','tr1m:'])for(const k of await slist(pre))pool[k]=await sget(k);
+  pool['mpct']=await sget('mpct');pool['targets']=await sget('targets');return pool;}
+async function ghPush(){if(!GH||!GH.token)return;let sha=poolSha;
+  try{const r=await fetch(ghUrl()+'?ref='+encodeURIComponent(GH.branch||'main')+'&t='+Date.now(),{headers:ghHeaders()});
+    if(r.ok){const j=await r.json();sha=j.sha;if(BACKEND==='gh'){const rem=JSON.parse(b64dec(j.content)||'{}');for(const k in rem)if(!(k in POOL))POOL[k]=rem[k];}}
+    else if(r.status===404)sha=null;}catch(e){}
+  const pool=await ghBuildPool();pool._updated=Date.now();
+  const body={message:'saha veri '+new Date().toISOString().slice(0,16),content:b64enc(JSON.stringify(pool)),branch:GH.branch||'main'};if(sha)body.sha=sha;
+  const pr=await fetch(ghUrl(),{method:'PUT',headers:ghHeaders(),body:JSON.stringify(body)});
+  if(!pr.ok)throw 'PUT '+pr.status;const j=await pr.json();poolSha=j.content&&j.content.sha;ghStat('● GitHub havuz · '+nowt());}
+function schedulePush(){if(!GH||!GH.token||GH.autosync===false)return;clearTimeout(pushTimer);pushTimer=setTimeout(()=>ghPush().catch(()=>ghStat('GitHub yazma hatası')),1600);}
+
+async function sget(k){if(BACKEND==='gh')return (k in POOL)?POOL[k]:null;
+  if(BACKEND==='ws'){try{const r=await window.storage.get(k,true);return r?JSON.parse(r.value):null;}catch(e){return null;}}
+  return (k in MEM)?MEM[k]:null;}
+async function sset(k,v){if(BACKEND==='gh'){POOL[k]=v;schedulePush();return true;}
+  if(BACKEND==='ws'){try{await window.storage.set(k,JSON.stringify(v),true);}catch(e){return false;}if(GH&&GH.autosync!==false)schedulePush();return true;}
+  MEM[k]=v;return true;}
+async function sdel(k){if(BACKEND==='gh'){delete POOL[k];schedulePush();return;}
+  if(BACKEND==='ws'){try{await window.storage.delete(k,true);}catch(e){}if(GH&&GH.autosync!==false)schedulePush();return;}
+  delete MEM[k];}
+async function slist(p){if(BACKEND==='gh')return Object.keys(POOL).filter(k=>k.startsWith(p));
+  if(BACKEND==='ws'){try{const r=await window.storage.list(p,true);return (r&&r.keys)||[];}catch(e){return [];}}
+  return Object.keys(MEM).filter(k=>k.startsWith(p));}
+
+async function loadGhCfg(){try{if(window.storage){const r=await window.storage.get('ghcfg',true);if(r)GH=JSON.parse(r.value);}}catch(e){}
+  if(!GH){try{const j=localStorage.getItem('ghcfg');if(j)GH=JSON.parse(j);}catch(e){}}}
+async function saveGhCfg(){try{if(window.storage)await window.storage.set('ghcfg',JSON.stringify(GH),true);}catch(e){}
+  try{localStorage.setItem('ghcfg',JSON.stringify(GH));}catch(e){}}
+async function chooseBackend(){await loadGhCfg();
+  if(GH&&GH.owner&&GH.repo&&GH.path&&GH.token){try{await ghPull();BACKEND='gh';return;}catch(e){}}
+  BACKEND=window.storage?'ws':'mem';}
+
+/* ----- GitHub ayar UI ----- */
+function readGhForm(){GH=GH||{};['owner','repo','path','branch','token'].forEach(f=>{const e=document.getElementById('gh_'+f);if(e)GH[f]=e.value.trim();});
+  const a=document.getElementById('gh_auto');if(a)GH.autosync=a.checked;if(!GH.branch)GH.branch='main';if(!GH.path)GH.path='shams1-pool.json';}
+async function ghConnectUI(){readGhForm();await saveGhCfg();ghStat('bağlanıyor…');
+  try{await ghPull();BACKEND='gh';ghStat('● Bağlandı — havuz çekildi · '+nowt());initForm();await reloadAll();}
+  catch(e){ghStat('Bağlanamadı ('+e+'). Claude içinde GitHub engelli olabilir; HTML\'i barındırınca (Pages) çalışır.');}}
+async function ghPushUI(){readGhForm();await saveGhCfg();ghStat('gönderiliyor…');try{await ghPush();}catch(e){ghStat('Hata: '+e);}}
+function saveGhCfgUI(){readGhForm();saveGhCfg();ghStat('ayar kaydedildi');}
+
+/* ----- ROL & ANA EKRAN ----- */
+function pickRole(r){document.querySelectorAll('.rolebtn').forEach(b=>b.classList.remove('on'));
+  const rb=document.getElementById('rb_'+r);if(rb)rb.classList.add('on');
+  if(r==='admin'){document.getElementById('pinbox').style.display='flex';document.getElementById('projbox').style.display='none';ROLE=null;document.getElementById('pin').focus();}
+  else{ROLE='usta';document.getElementById('pinbox').style.display='none';showProjects();}}
+function adminLogin(){const v=(document.getElementById('pin').value||'').trim();
+  if(v===ADMIN_PIN){ROLE='admin';document.getElementById('pinerr').textContent='';showProjects();}
+  else document.getElementById('pinerr').textContent='PIN hatalı';}
+function showProjects(){document.getElementById('projbox').style.display='block';}
+async function openProject(id){document.getElementById('home').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');applyRole();
+  await chooseBackend();initForm();await reloadAll();
+  if(!POLL)POLL=setInterval(pollSync,25000);}
+function applyRole(){const app=document.getElementById('app');
+  app.classList.toggle('usta',ROLE==='usta');app.classList.toggle('admin',ROLE==='admin');
+  const b=document.getElementById('rolebadge');if(b){b.textContent=ROLE==='admin'?'Yönetici':'Usta';b.className='rolebadge '+(ROLE||'');}}
+function goHome(){document.getElementById('app').classList.add('hidden');document.getElementById('home').classList.remove('hidden');
+  if(POLL){clearInterval(POLL);POLL=null;}}
+async function pollSync(){if(SEL!=null)return;if(BACKEND==='gh'){try{await ghPull();}catch(e){}renderAll();}else if(BACKEND==='ws')await reloadAll();}
+function grpOf(i){return Math.floor((i-1)/20);}
+
+let MCUR=0;
+function tabTo(n,el){document.querySelectorAll('.tabs .tab').forEach(t=>t.classList.remove('on'));el.classList.add('on');
+  for(let i=0;i<4;i++)document.getElementById('pane'+i).classList.toggle('on',i===n);
+  if(n===0)renderProje();
+  if(n===1)mShow();
+  if(n===2){renderProgress();renderHakedisKesinti();}
+  if(n===3)renderBilgi();}
+function mTo(n,el){MCUR=n;document.querySelectorAll('#msub .subtab').forEach(t=>t.classList.remove('on'));el.classList.add('on');
+  for(let i=0;i<7;i++)document.getElementById('mpane'+i).classList.toggle('on',i===n);mShow();}
+function mShow(){if(MCUR===0){renderPhaseChips();renderZoneChips();renderMinimap();renderZoneMasa();renderKonstPlan();konstStats();renderKonstTek();}
+  else renderMontajScope(MCUR);}
+function syncUnit(){if(!document.getElementById('f_item'))return;const it=GEN.find(x=>x.id===document.getElementById('f_item').value);
+  document.getElementById('f_unit').textContent='birim: '+it.birim+(it.birim!=='%'?' · hedef '+tr(TARGETS[it.id]??it.hedef):'');}
+function initForm(){const s=document.getElementById('f_item');if(!s)return;s.innerHTML=GEN.map(i=>`<option value="${i.id}">${i.ad}</option>`).join('');
+  document.getElementById('f_date').value=new Date().toISOString().slice(0,10);syncUnit();}
+
+async function reloadAll(){
+  const st=document.getElementById('status');
+  if(BACKEND==='gh'){try{await ghPull();}catch(e){if(st)st.textContent='GitHub erişilemiyor — Pages\'te çalışır';}}
+  else if(BACKEND==='mem'){if(st)st.textContent='⚠ Geçici — kalıcı kayıt yok';renderAll();return;}
+  if(st)st.textContent='senkron…';
+  TARGETS=await sget('targets')||{};MPCT=await sget('mpct')||{};
+  const lk=await slist('log:');const arr=[];for(const k of lk){const e=await sget(k);if(e){e._key=k;arr.push(e);}}
+  arr.sort((a,b)=>b.ts-a.ts);ENTRIES=arr;
+  PLAN={};const gk=await slist('tr1g:');for(const k of gk){const g=await sget(k);if(g)Object.assign(PLAN,g);}
+  if(st)st.textContent=(BACKEND==='gh'?'● GitHub havuz · ':'● Canlı · ')+nowt();
+  renderAll();
+}
+async function addEntry(){const it=GEN.find(x=>x.id===document.getElementById('f_item').value);
+  const qty=parseFloat(document.getElementById('f_qty').value);if(!(qty>0)){toast('Miktar girin');return;}
+  const e={id:it.id,qty,date:document.getElementById('f_date').value,kisi:document.getElementById('f_kisi').value.trim()||'—',ts:Date.now()};
+  const key='log:'+e.ts+'-'+Math.random().toString(36).slice(2,6);
+  if(BACKEND==='mem'){e._key=key;ENTRIES.unshift(e);renderAll();toast('Kaydedildi (geçici)');return;}
+  if(await sset(key,e)){toast('✓ Kaydedildi');document.getElementById('f_qty').value='';await reloadAll();}else toast('Hata');}
+async function delEntry(k){if(!confirm('Sil?'))return;await sdel(k);await reloadAll();}
+async function setTarget(id,v){v=parseFloat(v);if(!(v>0))return;TARGETS[id]=v;await sset('targets',TARGETS);renderAll();syncUnit();}
+
+function doneGen(id){return ENTRIES.filter(e=>e.id===id).reduce((s,e)=>s+(+e.qty||0),0);}
+function sumP(f){let s=0;for(const k in PLAN)s+=(+PLAN[k][f]||0);return s;}
+function cntK(f){let c=0;for(const k in PLAN)if(PLAN[k][f])c++;return c;}
+
+// mekanik kalemler (plandan)
+function mechItems(){
+  const T1=378;
+  return [
+   {id:'harita',ad:'Harita Aplikasyon',dis:'MEK',pur:0.00,birim:'ayak',done:sumP('a1'),hedef:5292,plan:1},
+   {id:'cakma',ad:'Çakma Kolon',dis:'MEK',pur:0.42,birim:'ayak',done:sumP('a3')+sumP('a4')+sumP('a5'),hedef:3*5292,plan:1},
+   {id:'ustm',ad:'Üst Montaj / Aşık',dis:'MEK',pur:0.31,birim:'adım',done:cntK('k1')+cntK('k2')+cntK('k3')+cntK('k4')+cntK('k5')+cntK('k6'),hedef:6*T1,plan:1},
+   {id:'panel',ad:'Panel Montajı',dis:'MEK',pur:0.27,birim:'panel',done:sumP('k7'),hedef:9828,plan:1},
+  ];
+}
+function renderAll(){renderProgress();renderProje();if(document.getElementById('pane1').classList.contains('on'))mShow();}
+
+function itemPct(it){if(it.plan)return it.hedef>0?Math.max(0,Math.min(100,it.done/it.hedef*100)):0;return Math.max(0,Math.min(100,MPCT[it.id]||0));}
+const SOZBEDEL=258624.08;
+function renderProgress(){
+  const items=[...mechItems(),...GEN.map(g=>({...g,plan:0}))];
+  let html='',totUsd=0,mek=0,mekW=0,elk=0,elkW=0;
+  for(const it of items){
+    const pct=itemPct(it);totUsd+=bedel(it)*pct/100;
+    if(it.dis==='MEK'){mek+=it.pur*pct;mekW+=it.pur;}else{elk+=it.pur*pct;elkW+=it.pur;}
+    html+=`<div class="pr"><div class="nm">${it.ad}<small>${it.dis==='MEK'?'Mek':'Elk'} · ${(it.pur*100).toFixed(0)}%${it.plan?' · plandan':' · manuel'}</small></div>
+      <div class="track"><div class="fill f${it.dis}" style="width:${pct}%"></div></div>
+      <div style="text-align:right"><div class="pct" style="color:${pct>=100?'var(--gnd)':'var(--txt)'}">%${pct.toFixed(0)}</div></div></div>`;
+  }
+  const pr=document.getElementById('progress');if(pr)pr.innerHTML=html;
+  document.getElementById('s_tot').textContent='%'+(totUsd/SOZBEDEL*100).toFixed(1);
+  document.getElementById('s_usd').textContent=tr(totUsd)+' $';
+  document.getElementById('s_mek').textContent='%'+(mekW?mek/mekW:0).toFixed(0);
+  document.getElementById('s_elk').textContent='%'+(elkW?elk/elkW:0).toFixed(0);
+  document.getElementById('s_rok').textContent=tr(sumP('a2'));
+  refreshKonst();
+}
+function renderTargets(){if(!document.getElementById('targets'))return;document.getElementById('targets').innerHTML=GEN.filter(i=>i.birim!=='%').map(i=>{const h=TARGETS[i.id]??i.hedef;
+  return `<div class="tgrid"><span style="font-size:12px">${i.ad} <span class="mono" style="color:var(--faint)">(${i.birim})</span></span><input class="num" type="number" value="${h}" onchange="setTarget('${i.id}',this.value)"></div>`;}).join('');}
+function renderLog(){const lw=document.getElementById('logwrap');if(!lw)return;if(!ENTRIES.length){lw.innerHTML='<div class="empty">Henüz giriş yok.</div>';return;}
+  const rows=ENTRIES.slice(0,40).map(e=>{const it=GEN.find(x=>x.id===e.id)||{ad:e.id,birim:''};
+    return `<tr><td class="m">${e.date||''}</td><td><span class="tag">${it.ad}</span></td><td class="m"><b>${tr(e.qty)}</b> ${it.birim}</td><td>${e.kisi||'—'}</td><td style="text-align:right"><button class="del" onclick="delEntry('${e._key}')">sil</button></td></tr>`;}).join('');
+  lw.innerHTML=`<table><thead><tr><th>Tarih</th><th>Kalem</th><th>Miktar</th><th>Kişi</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;}
+
+/* ---- PLAN ---- */
+function tStatus(s){if(!s)return 0;if((s.k7||0)>=26)return 4;if(s.k1||s.k2||s.k3||s.k4||s.k5||s.k6)return 3;
+  if((s.a3||0)+(s.a4||0)+(s.a5||0)>0)return 2;if((s.a2||0)>0||(s.a1||0)>0)return 1;return 0;}
+const STC=['var(--slate)','var(--mv)','var(--solar)','var(--ac)','var(--gnd)'];
+function renderPlan(){
+  if(!document.getElementById('plan'))return;
+  const W=1000,dx=LAYOUT.maxx-LAYOUT.minx,dy=LAYOUT.maxy-LAYOUT.miny,H=Math.round(W*dy/dx);
+  const rw=17.2/dx*W,rh=Math.max(4.34/dx*W,3),sx=x=>(x-LAYOUT.minx)/dx*W,sy=y=>(LAYOUT.maxy-y)/dy*H;
+  let r=`<svg viewBox="-6 -6 ${W+12} ${H+12}">`;
+  for(const t of LAYOUT.tables){const st=tStatus(PLAN[t.i]);const x=sx(t.x)-rw/2,y=sy(t.y)-rh/2;
+    r+=`<rect class="t${SEL===t.i?' sel':''}" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${rw.toFixed(1)}" height="${rh.toFixed(1)}" rx="1.4" fill="${STC[st]}" onclick="openEd(${t.i})"></rect>`;}
+  r+='</svg>';document.getElementById('plan').innerHTML=r;renderPlanSummary();
+}
+function renderPlanSummary(){
+  if(!document.getElementById('m_rok'))return;
+  document.getElementById('m_rok').textContent=tr(sumP('a2'))+' / 5.292';
+  document.getElementById('m_ayak').textContent=tr(sumP('a3')+sumP('a4')+sumP('a5'))+' / 15.876';
+  document.getElementById('m_konst').textContent=tr(cntK('k1'))+' / 378';
+  document.getElementById('m_panel').textContent=tr(sumP('k7'))+' / 9.828';
+}
+
+/* ---- masa şeması (statikten) ---- */
+function schematic(s){
+  s=s||{};const W=480,H=430;
+  const colA=['#D8DCE2','#B9C0CC','var(--mv)','var(--solar)','var(--conc)','var(--gnd)'];
+  const k=f=>!!s[f];const on=(c,a)=>a?c:'#C9CCD6';
+  let ay=0;for(const a of ['a1','a2','a3','a4','a5']){if((s[a]||0)>=14)ay++;else break;}
+  const k7=Math.max(0,Math.min(26,s.k7||0)),pf=k7/26;
+  const F=(n)=>n.toFixed(1);
+  const T=(x,y,t,c,anc)=>`<text x="${x}" y="${y}" font-size="9.5" fill="${c||'#6B6B76'}" font-family="monospace"${anc?' text-anchor="'+anc+'"':''}>${t}</text>`;
+  let g=`<svg viewBox="0 0 ${W} ${H}">`;
+
+  /* ===== ÖN GÖRÜNÜŞ ===== */
+  g+=T(16,20,'ÖN GÖRÜNÜŞ · 7 eksen · 14 ayak','#9A9AA5');
+  const gY=176,pX=44,pW=392,pY=40,pH=46,cols=13;
+  // panel alanı 13x2 = 26
+  for(let c=0;c<cols;c++)for(let row=0;row<2;row++){const idx=row*cols+c,fill=idx<k7;
+    g+=`<rect x="${F(pX+c*(pW/cols))}" y="${F(pY+row*(pH/2))}" width="${F(pW/cols-1.5)}" height="${F(pH/2-1.5)}" rx="1" fill="${fill?'var(--gnd)':'#E7EAF0'}" stroke="#D6DAE2" stroke-width=".5"/>`;}
+  // P3 üst kuşak / P4-1 alt kuşak
+  g+=`<line x1="${pX-4}" y1="${pY-3}" x2="${pX+pW+4}" y2="${pY-3}" stroke="${on('#FF5722',k('k4'))}" stroke-width="2.6"/>`;
+  g+=`<line x1="${pX-4}" y1="${pY+pH+3}" x2="${pX+pW+4}" y2="${pY+pH+3}" stroke="${on('#0E9E97',k('k5'))}" stroke-width="2.6"/>`;
+  // 7 ayak ekseni + rüzgar bağlantısı + kazıklar
+  for(let p=0;p<7;p++){const x=pX+(p+0.5)*(pW/7);
+    g+=`<line x1="${F(x)}" y1="${pY+pH+3}" x2="${F(x)}" y2="${gY}" stroke="${on('#2D6BE0',k('k1'))}" stroke-width="3.4"/>`;
+    if(p<6){const x2=pX+(p+1.5)*(pW/7);g+=`<line x1="${F(x)}" y1="${gY-4}" x2="${F(x2)}" y2="${pY+pH+10}" stroke="${on('#FF5722',k('k3'))}" stroke-width="1.6"/>`;}
+    g+=`<rect x="${F(x-7)}" y="${gY}" width="4.5" height="30" rx="2" fill="${colA[ay]}"/>`;
+    g+=`<rect x="${F(x+3)}" y="${gY}" width="4.5" height="20" rx="2" fill="${colA[ay]}"/>`;}
+  g+=`<line x1="20" y1="${gY}" x2="${W-20}" y2="${gY}" stroke="#C9CCD6" stroke-width="1.6"/>`;
+  g+=T(pX,pY-8,'P3 üst kuşak','#FF5722');g+=T(pX+pW+4,pY+pH+14,'P4-1','#0E9E97','end');
+  g+=T(W-20,pY+6,`${k7}/26 panel`,'#9A9AA5','end');
+
+  /* ===== YAN GÖRÜNÜŞ (kesit) ===== */
+  const oy=212;
+  g+=T(16,oy-6,'YAN GÖRÜNÜŞ (kesit A-A)','#9A9AA5');
+  const gy=oy+150,Ax=118,Ay=oy+24,Bx=392,By=oy+112;
+  const dx=Bx-Ax,dy=By-Ay,L=Math.hypot(dx,dy),ux=dx/L,uy=dy/L,nx=-uy,ny=ux,off=11;
+  g+=`<rect x="20" y="${gy}" width="${W-40}" height="60" fill="#EFF0F4"/>`;
+  g+=`<line x1="20" y1="${gy}" x2="${W-20}" y2="${gy}" stroke="#C9CCD6" stroke-width="2"/>`;
+  g+=`<rect x="${Ax-3}" y="${gy}" width="6" height="48" rx="2" fill="${colA[ay]}"/>`;
+  g+=`<text x="${Ax-2}" y="${gy+58}" font-size="8" fill="#9A9AA5" font-family="monospace" text-anchor="middle">Ø200·1300/1400</text>`;
+  g+=`<rect x="${Bx-3}" y="${gy}" width="6" height="34" rx="2" fill="${colA[ay]}"/>`;
+  g+=`<text x="${Bx-2}" y="${gy+46}" font-size="8" fill="#9A9AA5" font-family="monospace" text-anchor="middle">Ø200·1100/1200</text>`;
+  g+=`<line x1="${F(Ax+4)}" y1="${gy-6}" x2="${F((Ax+Bx)/2-6)}" y2="${F((Ay+By)/2+8)}" stroke="${on('#FF5722',k('k3'))}" stroke-width="3.4"/>`;
+  g+=`<line x1="${Ax}" y1="${gy}" x2="${Ax}" y2="${F(Ay)}" stroke="${on('#0E9E97',k('k2'))}" stroke-width="4"/>`;
+  g+=`<line x1="${Ax+7}" y1="${gy}" x2="${Ax+7}" y2="${F(Ay+4)}" stroke="${on('#0E9E97',k('k2'))}" stroke-width="2"/>`;
+  g+=`<line x1="${Bx}" y1="${gy}" x2="${Bx}" y2="${F(By)}" stroke="${on('#2D6BE0',k('k1'))}" stroke-width="4"/>`;
+  const p1=[Ax+nx*off,Ay+ny*off],p2=[Bx+nx*off,By+ny*off],p3=[Bx-nx*off,By-ny*off],p4=[Ax-nx*off,Ay-ny*off];
+  g+=`<polygon points="${F(p1[0])},${F(p1[1])} ${F(p2[0])},${F(p2[1])} ${F(p3[0])},${F(p3[1])} ${F(p4[0])},${F(p4[1])}" fill="#E7EAF0" stroke="#CDD2DB"/>`;
+  if(pf>0){const fx=Ax+ux*L*pf,fy=Ay+uy*L*pf;
+    const q1=[Ax+nx*off,Ay+ny*off],q2=[fx+nx*off,fy+ny*off],q3=[fx-nx*off,fy-ny*off],q4=[Ax-nx*off,Ay-ny*off];
+    g+=`<polygon points="${F(q1[0])},${F(q1[1])} ${F(q2[0])},${F(q2[1])} ${F(q3[0])},${F(q3[1])} ${F(q4[0])},${F(q4[1])}" fill="var(--gnd)" opacity=".85"/>`;}
+  g+=`<line x1="${F(Ax-nx*off+ux*6)}" y1="${F(Ay-ny*off+uy*6)}" x2="${F(Bx-nx*off-ux*6)}" y2="${F(By-ny*off-uy*6)}" stroke="${on('#FF5722',k('k4'))}" stroke-width="2.6"/>`;
+  g+=`<line x1="${F(Ax+nx*off+ux*6)}" y1="${F(Ay+ny*off+uy*6)}" x2="${F(Bx+nx*off-ux*6)}" y2="${F(By+ny*off-uy*6)}" stroke="${on('#0E9E97',k('k5'))}" stroke-width="2.6"/>`;
+  g+=`<path d="M ${Bx-36} ${F(By)} A 36 36 0 0 0 ${F(Bx-36*Math.cos(25*Math.PI/180))} ${F(By-36*Math.sin(25*Math.PI/180))}" fill="none" stroke="#9A9AA5" stroke-width="1"/>`;
+  g+=`<g transform="translate(26,${oy+182})"><rect width="34" height="13" rx="6" fill="#F6F6F9" stroke="${on('#2FA86A',k('k6'))}"/><circle cx="${k('k6')?22:11}" cy="6.5" r="4" fill="${on('#2FA86A',k('k6'))}"/></g><text x="66" y="${oy+192}" font-size="8.5" fill="#9A9AA5" font-family="monospace">terazi+tork</text>`;
+  g+=T(Bx+6,F(By+22),'P1','#2D6BE0');g+=T(Ax-30,F(Ay-2),'P2/P6','#0E9E97');g+=T((Ax+Bx)/2-30,F((Ay+By)/2+4),'P5 · 2410','#FF5722');g+=T(Bx-46,F(By-6),'25°');
+  g+=`<text x="${W-12}" y="${oy-6}" text-anchor="end" font-size="9" fill="#9A9AA5" font-family="monospace">17.339 mm · 6×2600+870</text>`;
+  g+='</svg>';return g;
+}
+
+/* ---- editor ---- */
+function tbl(i){return LAYOUT.tables.find(t=>t.i===i);}
+async function openEd(i){SEL=i;const t=tbl(i),s=PLAN[i]||{};
+  document.getElementById('ed_t').textContent='Masa #'+i;
+  document.getElementById('ed_adr').textContent='DC string: '+(t.adrf||t.adr||'—');
+  // ayak adımları
+  document.getElementById('ed_ayak').innerHTML=AYAK.map(a=>{
+    const v=s[a.k]||0;
+    return `<div class="stp"><div class="nm">${a.ad}${a.isv?'<i>İşveren (rok delgi hariç)</i>':''}</div>
+      <div class="stepper"><button onclick="bump('${a.k}',-1,14)">−</button>
+      <input class="num" id="i_${a.k}" type="number" min="0" max="14" value="${v}" onchange="setv('${a.k}',this.value,14)">
+      <button onclick="bump('${a.k}',1,14)">+</button><button class="tg" style="min-width:70px" onclick="setv('${a.k}',14,14)">Tümü 14</button></div></div>`;
+  }).join('');
+  // konstrüksiyon
+  let kh=KONST.map(c=>`<div class="stp"><div class="nm">${c.ad}</div>
+    <button class="tg ${s[c.k]?'act':''}" id="t_${c.k}" onclick="toggle('${c.k}')">${s[c.k]?'Yapıldı ✓':'Yapılmadı'}</button></div>`).join('');
+  kh+=`<div class="stp"><div class="nm">Panel montaj</div><div class="stepper"><button onclick="bump('k7',-1,26)">−</button>
+    <input class="num" id="i_k7" type="number" min="0" max="26" value="${s.k7||0}" onchange="setv('k7',this.value,26)">
+    <button onclick="bump('k7',1,26)">+</button><button class="tg" style="min-width:70px" onclick="setv('k7',26,26)">Tümü 26</button></div></div>`;
+  document.getElementById('ed_konst').innerHTML=kh;
+  drawSchem();
+  // media yükle
+  MEDIA[i]=await sget('tr1m:'+i)||[];renderMedia();
+  document.getElementById('editor').classList.add('on');document.getElementById('backdrop').classList.add('on');renderPlan();refreshKonst();
+}
+function closeEd(){SEL=null;document.getElementById('editor').classList.remove('on');document.getElementById('backdrop').classList.remove('on');renderPlan();refreshKonst();}
+function drawSchem(){document.getElementById('ed_schem').innerHTML=schematic(PLAN[SEL]||{});}
+function bump(f,d,mx){const s=PLAN[SEL]||{};setv(f,Math.max(0,Math.min(mx,(+s[f]||0)+d)),mx);}
+async function setv(f,val,mx){if(SEL==null)return;val=Math.max(0,Math.min(mx,parseFloat(val)||0));
+  const s=PLAN[SEL]||{};s[f]=val;await saveTbl(s);const el=document.getElementById('i_'+f);if(el)el.value=val;drawSchem();}
+async function toggle(f){if(SEL==null)return;const s=PLAN[SEL]||{};s[f]=s[f]?0:1;await saveTbl(s);
+  const b=document.getElementById('t_'+f);b.classList.toggle('act',!!s[f]);b.textContent=s[f]?'Yapıldı ✓':'Yapılmadı';drawSchem();}
+async function saveTbl(s){s.by=document.getElementById('usta').value.trim()||'—';s.at=Date.now();PLAN[SEL]=s;
+  const g=grpOf(SEL),obj={};for(const t of LAYOUT.tables){if(grpOf(t.i)===g&&PLAN[t.i])obj[t.i]=PLAN[t.i];}
+  await sset('tr1g:'+g,obj);renderProgress();renderPlan();}
+
+/* ---- media ---- */
+function renderMedia(){const arr=MEDIA[SEL]||[];
+  document.getElementById('ed_media').innerHTML=arr.map((m,idx)=>{
+    if(m.type==='foto')return `<div class="mth"><img src="${m.val}"><button class="x" onclick="delMedia(${idx})">×</button></div>`;
+    if(m.type==='video')return `<div class="mvid">🎥 <a href="${m.val}" target="_blank">video</a> <button class="del" onclick="delMedia(${idx})">sil</button></div>`;
+    return `<div class="mvid">📝 ${m.val} <button class="del" onclick="delMedia(${idx})">sil</button></div>`;
+  }).join('')||'<span class="hint">Henüz medya yok.</span>';}
+async function saveMedia(){await sset('tr1m:'+SEL,MEDIA[SEL]||[]);}
+async function addMediaItem(o){MEDIA[SEL]=MEDIA[SEL]||[];o.by=document.getElementById('usta').value.trim()||'—';o.at=Date.now();
+  MEDIA[SEL].push(o);await saveMedia();renderMedia();toast('✓ eklendi');}
+async function delMedia(idx){MEDIA[SEL].splice(idx,1);await saveMedia();renderMedia();}
+function addPhoto(input){const f=input.files[0];if(!f)return;const rd=new FileReader();
+  rd.onload=e=>{const img=new Image();img.onload=async()=>{const cv=document.createElement('canvas');let w=img.width,h=img.height;const mx=640;
+    if(w>h&&w>mx){h=Math.round(h*mx/w);w=mx;}else if(h>mx){w=Math.round(w*mx/h);h=mx;}
+    cv.width=w;cv.height=h;cv.getContext('2d').drawImage(img,0,0,w,h);
+    await addMediaItem({type:'foto',val:cv.toDataURL('image/jpeg',0.55)});};img.src=e.target.result;};
+  rd.readAsDataURL(f);input.value='';}
+async function addVideo(){const u=prompt('Video bağlantısı (Drive/WhatsApp/YouTube linki):');if(u)await addMediaItem({type:'video',val:u.trim()});}
+async function addNote(){const n=prompt('Açıklama:');if(n)await addMediaItem({type:'not',val:n.trim()});}
+
+let tT;function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('on'),1400);}
+/* ---- KONSTRÜKSİYON SEKMESİ ---- */
+let KFIND=null, ZONE=0, MAXINV=0;
+function syncUsta(el){const u=document.getElementById('usta');if(u)u.value=el.value;}
+function invOf(t){const m=(t.adr||t.adrf||'').match(/INV(\d+)/);return m?+m[1]:0;}
+function invColor(n){const h=(n*53)%360;return 'hsl('+h+',62%,58%)';}
+function konstFrac(s){if(!s)return 0;let d=0;for(const k of ['k1','k2','k3','k4','k5','k6'])if(s[k])d++;if((s.k7||0)>=26)d++;return d/7;}
+function konstFill(f){if(f<=0)return 'var(--slate)';if(f>=1)return 'var(--gnd)';
+  const a=[244,178,62],b=[143,210,122],c=a.map((v,i)=>Math.round(v+(b[i]-v)*f));return 'rgb('+c[0]+','+c[1]+','+c[2]+')';}
+function konstScale(){const W=1000,dx=LAYOUT.maxx-LAYOUT.minx,dy=LAYOUT.maxy-LAYOUT.miny,H=Math.round(W*dy/dx);
+  return {W,H,rw:17.2/dx*W,rh:Math.max(4.34/dx*W,4.5),sx:x=>(x-LAYOUT.minx)/dx*W,sy:y=>(LAYOUT.maxy-y)/dy*H};}
+
+/* --- pan / zoom (viewBox) --- */
+const PZ={};
+function pzInit(key,host,W,H){const f={vx:-8,vy:-8,vw:W+16,vh:H+16};
+  if(!PZ[key])PZ[key]={host,W,H,full:f,vx:f.vx,vy:f.vy,vw:f.vw,vh:f.vh};
+  else{PZ[key].host=host;PZ[key].W=W;PZ[key].H=H;PZ[key].full=f;}}
+function pzSvg(key){const v=PZ[key];if(!v)return null;const h=document.getElementById(v.host);return h?h.querySelector('svg'):null;}
+function pzApply(key){const v=PZ[key];const svg=pzSvg(key);if(svg&&v)svg.setAttribute('viewBox',v.vx.toFixed(1)+' '+v.vy.toFixed(1)+' '+v.vw.toFixed(1)+' '+v.vh.toFixed(1));}
+function pzClamp(v){const f=v.full;
+  if(v.vw<=f.vw){if(v.vx<f.vx)v.vx=f.vx;if(v.vx+v.vw>f.vx+f.vw)v.vx=f.vx+f.vw-v.vw;}else{v.vx=f.vx+(f.vw-v.vw)/2;}
+  if(v.vh<=f.vh){if(v.vy<f.vy)v.vy=f.vy;if(v.vy+v.vh>f.vy+f.vh)v.vy=f.vy+f.vh-v.vh;}else{v.vy=f.vy+(f.vh-v.vh)/2;}}
+function pzZoom(key,f,fx,fy){const v=PZ[key];if(!v)return;const minw=v.full.vw/20;let nf=f;
+  if(v.vw*nf>v.full.vw)nf=v.full.vw/v.vw;if(v.vw*nf<minw)nf=minw/v.vw;
+  v.vx=fx-(fx-v.vx)*nf;v.vy=fy-(fy-v.vy)*nf;v.vw*=nf;v.vh*=nf;pzClamp(v);pzApply(key);}
+function pzBtn(key,f){const v=PZ[key];if(!v)return;pzZoom(key,f,v.vx+v.vw/2,v.vy+v.vh/2);}
+function pzReset(key){const v=PZ[key];if(!v)return;v.vx=v.full.vx;v.vy=v.full.vy;v.vw=v.full.vw;v.vh=v.full.vh;pzApply(key);}
+function pzFocus(key,x0,y0,x1,y1,pad){const v=PZ[key];if(!v)return;pad=pad==null?0.18:pad;
+  let w=(x1-x0)*(1+pad),h=(y1-y0)*(1+pad);const cx=(x0+x1)/2,cy=(y0+y1)/2,aspect=v.full.vw/v.full.vh;
+  if(w/h<aspect)w=h*aspect;else h=w/aspect;
+  w=Math.min(w,v.full.vw);h=Math.min(h,v.full.vh);v.vw=w;v.vh=h;v.vx=cx-w/2;v.vy=cy-h/2;pzClamp(v);pzApply(key);}
+function clientToView(key,e){const v=PZ[key];const svg=pzSvg(key);if(!svg)return[0,0];const r=svg.getBoundingClientRect();
+  return [v.vx+(e.clientX-r.left)/r.width*v.vw, v.vy+(e.clientY-r.top)/r.height*v.vh];}
+function pzAttach(key,el){if(!el||el._pz)return;el._pz=1;el.style.touchAction='none';
+  const ptrs=new Map();let last=null,pd=0,moved=0;
+  const D=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+  el.addEventListener('pointerdown',e=>{ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(ptrs.size===1){last={x:e.clientX,y:e.clientY};moved=0;}
+    if(ptrs.size===2){const a=[...ptrs.values()];pd=D(a[0],a[1]);}});
+  el.addEventListener('pointermove',e=>{if(!ptrs.has(e.pointerId))return;ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});const v=PZ[key];const svg=pzSvg(key);if(!svg)return;const r=svg.getBoundingClientRect();
+    if(ptrs.size>=2){const a=[...ptrs.values()];const nd=D(a[0],a[1]);if(pd>0&&nd>0){const mx=(a[0].x+a[1].x)/2,my=(a[0].y+a[1].y)/2;
+        const fv=[v.vx+(mx-r.left)/r.width*v.vw, v.vy+(my-r.top)/r.height*v.vh];pzZoom(key,pd/nd,fv[0],fv[1]);}pd=nd;moved=99;}
+    else if(last){const sx=v.vw/r.width,sy=v.vh/r.height;const ddx=e.clientX-last.x,ddy=e.clientY-last.y;moved+=Math.abs(ddx)+Math.abs(ddy);
+      v.vx-=ddx*sx;v.vy-=ddy*sy;pzClamp(v);pzApply(key);last={x:e.clientX,y:e.clientY};}});
+  const up=e=>{ptrs.delete(e.pointerId);if(ptrs.size<2)pd=0;if(ptrs.size===0)last=null;else{const a=[...ptrs.values()][0];last={x:a.x,y:a.y};}};
+  el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up);el.addEventListener('pointerleave',e=>{if(ptrs.size<=1){ptrs.clear();last=null;pd=0;}});
+  el.addEventListener('wheel',e=>{e.preventDefault();const fv=clientToView(key,e);pzZoom(key,e.deltaY>0?1.12:0.89,fv[0],fv[1]);},{passive:false});}
+
+function renderKonstPlan(){const el=document.getElementById('plan2');if(!el)return;
+  const S=konstScale();pzInit('k2','plan2',S.W,S.H);
+  let r='<svg viewBox="-8 -8 '+(S.W+16)+' '+(S.H+16)+'">';const cen={};
+  for(const t of LAYOUT.tables){const f=curFrac(PLAN[t.i]);const x=S.sx(t.x)-S.rw/2,y=S.sy(t.y)-S.rh/2;
+    const inv=invOf(t);(cen[inv]=cen[inv]||[]).push([S.sx(t.x),S.sy(t.y)]);
+    const selc=(SEL===t.i||KFIND===t.i);const dim=(ZONE&&inv!==ZONE)?' opacity="0.16"':'';
+    r+='<rect'+dim+' class="t'+(selc?' sel':'')+'" x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+S.rw.toFixed(1)+'" height="'+S.rh.toFixed(1)+'" rx="1.3" fill="'+konstFill(f)+'" stroke="'+(selc?'#16161A':invColor(inv))+'" stroke-width="'+(selc?2.2:1.1)+'" onclick="openEd('+t.i+')"></rect>';}
+  for(const inv in cen){if(ZONE&&+inv!==ZONE)continue;const pts=cen[inv];const mx=pts.reduce((a,p)=>a+p[0],0)/pts.length,my=pts.reduce((a,p)=>a+p[1],0)/pts.length;
+    r+='<text class="invlbl" x="'+mx.toFixed(1)+'" y="'+my.toFixed(1)+'" text-anchor="middle" dominant-baseline="middle" font-size="9" fill="'+invColor(+inv)+'">INV'+inv+'</text>';}
+  if(KFIND!=null){const t=tbl(KFIND);if(t){const cx=S.sx(t.x),cy=S.sy(t.y);
+    r+='<circle cx="'+cx.toFixed(1)+'" cy="'+cy.toFixed(1)+'" r="13" fill="none" stroke="var(--solar)" stroke-width="2.4"><animate attributeName="r" values="10;19;10" dur="1.4s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;.25;1" dur="1.4s" repeatCount="indefinite"/></circle>';}}
+  r+='</svg>';el.innerHTML=r;pzApply('k2');pzAttach('k2',el);}
+
+function maxInv(){if(!MAXINV)MAXINV=LAYOUT.tables.reduce((m,t)=>Math.max(m,invOf(t)),0);return MAXINV;}
+function renderZoneChips(){const w=document.getElementById('zonechips');if(!w)return;let h='<button class="zchip'+(ZONE===0?' on':'')+'" onclick="focusZone(0)">Tümü · TR-1</button>';
+  for(let i=1;i<=maxInv();i++)h+='<button class="zchip'+(ZONE===i?' on':'')+'" onclick="focusZone('+i+')">INV'+i+'</button>';
+  w.innerHTML=h;}
+function focusZone(inv){const S=konstScale();pzInit('k2','plan2',S.W,S.H);ZONE=inv||0;KFIND=null;
+  if(!ZONE){pzReset('k2');}
+  else{let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;for(const t of LAYOUT.tables){if(invOf(t)===ZONE){const x=S.sx(t.x),y=S.sy(t.y);if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y;}}
+    if(x1>x0)pzFocus('k2',x0-S.rw,y0-S.rh,x1+S.rw,y1+S.rh,0.35);}
+  renderKonstPlan();renderZoneChips();renderZoneMasa();}
+
+function strNo(t){const m=(t.adrf||t.adr||'').match(/STR(\d+)/);return m?+m[1]:0;}
+function renderZoneMasa(){const w=document.getElementById('zonemasa');if(!w)return;
+  if(!ZONE){w.innerHTML='<div class="zmhead">Kolay seçim</div><div class="hint">Yukarıdan bir <b>inverter bölgesi</b> seç → o bölgenin masaları aşağıda büyük butonlarla gelir (telefonda kolay dokunma).</div>';return;}
+  const list=LAYOUT.tables.filter(t=>invOf(t)===ZONE).sort((a,b)=>strNo(a)-strNo(b));
+  let h='<div class="zmhead">INV'+ZONE+' · '+list.length+' masa — dokun & işaretle</div><div class="mbtns">';
+  for(const t of list){const f=curFrac(PLAN[t.i]);const cls=f>=1?'done':(f>0?'part':'');const m=(t.adr||'').match(/STR\d+/);
+    h+='<button class="mbtn '+cls+'" style="background:'+konstFill(f)+'" onclick="openEd('+t.i+')"><span class="no">'+t.i+'</span><span class="st">'+(m?m[0]:'')+'</span><span class="pc" style="color:'+(f>=1?'var(--gnd)':f>0?'var(--solar)':'var(--faint)')+'">%'+Math.round(f*100)+'</span></button>';}
+  h+='</div>';w.innerHTML=h;}
+
+function renderMinimap(){const el=document.getElementById('minimap');if(!el)return;
+  const W=80,dx=PLANT.maxx-PLANT.minx,dy=PLANT.maxy-PLANT.miny,H=Math.round(W*dy/dx);
+  const sx=x=>(x-PLANT.minx)/dx*W,sy=y=>(PLANT.maxy-y)/dy*H;
+  let r='<svg viewBox="-2 -2 '+(W+4)+' '+(H+4)+'">';
+  for(const t of PLANT.trs){const x=sx(t.minx),y=sy(t.maxy),w=sx(t.maxx)-sx(t.minx),h=sy(t.miny)-sy(t.maxy);
+    const fill=t.scope?'var(--solar)':'#E3E7EE',stk=t.scope?'#fff':'#CDD2DB',tc=t.scope?'#FFFFFF':'#9A9AA5';
+    r+='<rect class="tr" x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+w.toFixed(1)+'" height="'+h.toFixed(1)+'" rx="2" fill="'+fill+'" stroke="'+stk+'" stroke-width="'+(t.scope?1.4:.7)+'" onclick="pickTR(\''+t.id+'\')"></rect>';
+    r+='<text x="'+(x+w/2).toFixed(1)+'" y="'+(y+h/2+3).toFixed(1)+'" text-anchor="middle" font-size="9" font-family="monospace" font-weight="700" fill="'+tc+'" style="pointer-events:none">'+t.id+'</text>';}
+  r+='</svg>';el.innerHTML=r;}
+function pickTR(id){if(id==='TR1'){focusZone(0);const b=document.getElementById('planbox2');if(b)b.scrollIntoView({behavior:'smooth',block:'nearest'});toast('TR-1 öne alındı');}
+  else toast(id+' — Aksaray kapsamı dışı (sadece TR-1)');}
+
+function konstStats(){const wrap=document.getElementById('kbars');if(!wrap)return;
+  const steps=[['k1','Ön kolon (P1)'],['k2','Arka kolon (P2/P6)'],['k3','Diyagonal makas (P5)'],['k4','Üst kuşak (P3)'],['k5','Alt kuşak (P4-1)'],['k6','Terazi + tork']];
+  let sd=0;for(const s of steps)sd+=cntK(s[0]);const pan=sumP('k7');sd+=pan/26;const ov=sd/(7*378)*100;
+  let html='<div class="pr"><div class="nm">Konstrüksiyon — genel<small>Mek · '+tr(Math.round(sd))+' / 2.646 adım</small></div>'+
+    '<div class="track"><div class="fill fMEK" style="width:'+ov+'%"></div></div>'+
+    '<div style="text-align:right"><div class="pct" style="color:'+(ov>=100?'var(--gnd)':'var(--solar)')+'">%'+ov.toFixed(0)+'</div></div></div>';
+  for(const [k,nm] of steps){const c=cntK(k),p=c/378*100;
+    html+='<div class="pr"><div class="nm">'+nm+'</div><div class="track"><div class="fill fMEK" style="width:'+p+'%"></div></div>'+
+      '<div style="text-align:right"><div class="pct">%'+p.toFixed(0)+'</div><div class="q"><b>'+tr(c)+'</b>/378 masa</div></div></div>';}
+  const pp=pan/9828*100;
+  html+='<div class="pr"><div class="nm">Panel montaj<small>26/masa</small></div><div class="track"><div class="fill fMEK" style="width:'+pp+'%"></div></div>'+
+    '<div style="text-align:right"><div class="pct">%'+pp.toFixed(0)+'</div><div class="q"><b>'+tr(pan)+'</b>/9.828</div></div></div>';
+  wrap.innerHTML=html;}
+
+function refreshKonst(){konstStats();renderZoneChips();renderMinimap();renderZoneMasa();const p1=document.getElementById('pane1'),m0=document.getElementById('mpane0');if(p1&&p1.classList.contains('on')&&m0&&m0.classList.contains('on'))renderKonstPlan();}
+
+function locate(q){q=(q||'').trim().toUpperCase();const fb=document.getElementById('k_found');KFIND=null;
+  if(!q){fb.textContent='';renderKonstPlan();return;}
+  let t=null;
+  if(/^\d+$/.test(q)){t=tbl(+q);}
+  if(!t){const nq=q.replace(/[·\s]+/g,'-');
+    t=LAYOUT.tables.find(x=>(x.adrf||'').toUpperCase().includes(nq))
+      ||LAYOUT.tables.find(x=>((x.adr||'').replace(/[·\s]+/g,'-').toUpperCase()).includes(nq));}
+  if(t){KFIND=t.i;fb.innerHTML='→ Masa #'+t.i+' · <span class="mono" style="color:var(--dc)">'+(t.adrf||t.adr)+'</span>';
+    const S=konstScale();pzInit('k2','plan2',S.W,S.H);const cx=S.sx(t.x),cy=S.sy(t.y);pzFocus('k2',cx-S.rw*4,cy-S.rh*8,cx+S.rw*4,cy+S.rh*8,0.2);}
+  else fb.textContent='bulunamadı';
+  renderKonstPlan();}
+
+
+/* ===== curFrac / KONSTRÜKSİYON FAZ ALT-ALT SEKMELERİ ===== */
+function curFrac(s){return CURPHASE==='all'?konstFrac(s):phaseFrac(s);}
+function phaseFrac(s){if(!s)return 0;
+  if(CURPHASE==='harita')return Math.min(1,(s.a1||0)/14);
+  if(CURPHASE==='rok')return Math.min(1,(s.a2||0)/14);
+  if(CURPHASE==='kolon'){const ay=((s.a3||0)+(s.a4||0)+(s.a5||0))/42;const kol=((s.k1?1:0)+(s.k2?1:0))/2;return ay*0.6+kol*0.4;}
+  if(CURPHASE==='celik')return ((s.k3?1:0)+(s.k4?1:0)+(s.k5?1:0)+(s.k6?1:0))/4;
+  if(CURPHASE==='panel')return Math.min(1,(s.k7||0)/26);
+  return konstFrac(s);}
+const PHASES=[['all','Tümü'],['harita','Harita'],['rok','Rok delme'],['kolon','Kolon'],['celik','Çelik montaj'],['panel','Panel']];
+function renderPhaseChips(){const w=document.getElementById('phasechips');if(!w)return;
+  w.innerHTML=PHASES.map(([k,n])=>'<button class="subtab'+(CURPHASE===k?' on':'')+'" onclick="setPhase(\''+k+'\')">'+n+'</button>').join('');}
+function setPhase(p){CURPHASE=p;const lbl=document.getElementById('phaselbl');
+  const nm={all:'Tüm konstrüksiyon',harita:'Faz: Harita aplikasyon',rok:'Faz: Rok delme (İşveren)',kolon:'Faz: Kolon montaj (P1/P2/P6)',celik:'Faz: Çelik montaj (makas+kuşak+tork)',panel:'Faz: Panel montaj'};
+  if(lbl)lbl.textContent=nm[p]||p;renderPhaseChips();renderKonstPlan();renderZoneMasa();}
+
+/* ===== ortak teknik-kart yardımcıları ===== */
+function tkSpec(rows){return '<dl class="spec">'+rows.map(r=>'<dt>'+r[0]+'</dt><dd>'+r[1]+'</dd>').join('')+'</dl>';}
+function tkStd(arr){return '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px">'+arr.map(s=>'<span class="std">'+s+'</span>').join('')+'</div>';}
+function tkCard(title,sub,inner){return '<div class="tk2"><h3>'+title+'</h3>'+(sub?'<div class="sub">'+sub+'</div>':'')+inner+'</div>';}
+function trackerHTML(id){const it=GEN.find(g=>g.id===id);if(!it)return '';const v=MPCT[id]||0;
+  return '<div class="tk2"><h3>İlerleme girişi — '+it.ad+'</h3><div class="sub">Manuel % · pursantaj %'+(it.pur*100).toFixed(0)+'<span class="money"> · kalem bedeli '+tr(bedel(it))+' $</span> · hedef '+(it.birim==='%'?'%100':tr(it.hedef)+' '+it.birim)+'</div>'+
+    '<div class="mtrack"><input type="range" min="0" max="100" value="'+v+'" oninput="document.getElementById(\'mp_'+id+'\').textContent=\'%\'+this.value" onchange="setMpct(\''+id+'\',this.value)">'+
+    '<div class="pct" id="mp_'+id+'">%'+v+'</div><div class="q money">≈ '+tr(bedel(it)*v/100)+' $ hakedişe</div></div></div>';}
+
+/* ===== SEKME 1 — PROJE AÇIKLAMASI ===== */
+function ghInp(f,ph,v,t){return '<input id="gh_'+f+'" type="'+(t||'text')+'" placeholder="'+ph+'" value="'+(v?String(v).replace(/"/g,'&quot;'):'')+'">';}
+function ghCard(){const g=GH||{};return '<div class="tk2 adminonly"><h3>📡 Veri Havuzu — GitHub (uzaktan giriş)</h3>'+
+  '<div class="sub">Tüm saha verisi tek bir GitHub dosyasında (havuz) tutulur; ekip uzaktan aynı havuza yazar. Durum: <b id="ghstat">'+(BACKEND==='gh'?'● GitHub havuz aktif':(BACKEND==='ws'?'window.storage (Claude içi)':'geçici'))+'</b></div>'+
+  '<div class="gh">'+ghInp('owner','Repo sahibi (owner)',g.owner)+ghInp('repo','Repo adı',g.repo)+ghInp('path','Dosya yolu',g.path||'shams1-pool.json')+ghInp('branch','Dal (branch)',g.branch||'main')+ghInp('token','GitHub token (PAT)',g.token,'password')+'</div>'+
+  '<label style="display:flex;gap:8px;align-items:center;margin-top:10px;font-size:13px"><input type="checkbox" id="gh_auto" '+(g.autosync!==false?'checked':'')+'> Otomatik senkron (her kayıtta gönder)</label>'+
+  '<div class="ghrow"><button class="btn sm" onclick="ghConnectUI()">Bağlan & Çek</button><button class="btn ghost sm" onclick="ghPushUI()">GitHub\'a gönder</button><button class="btn ghost sm" onclick="saveGhCfgUI()">Ayarı kaydet</button></div>'+
+  '<div class="hint" style="margin-top:8px">Kurulum: GitHub\'da <b>private repo</b> aç → Settings ▸ Developer settings ▸ <b>Fine-grained token</b> (Contents: Read & Write, sadece bu repo) → buraya gir → <b>Bağlan & Çek</b>. HTML\'i aynı repoda <b>Pages</b> ile yayınlarsan ekip telefondan o adresten girer (Claude dışı tam çalışır).</div></div>';}
+function renderProje(){const el=document.getElementById('proje');if(!el)return;
+  const k=(a,s,cls)=>'<div class="kpi'+(cls?' '+cls:'')+'"><div class="a">'+a+'</div><div class="s">'+s+'</div></div>';
+  el.innerHTML=
+  ghCard()+
+  '<div class="pcard">'+
+    '<h2 style="margin:0 0 2px">SHAMS-1 GES — 6,9 MWp Faz (TR-1)</h2>'+
+    '<div class="hint">Nahçıvan, Azerbaycan · güneş enerjisi santrali · mekanik + elektrik montaj işçiliği</div>'+
+    '<div style="margin:12px 0"><a class="maplink" href="https://maps.app.goo.gl/AND9QTghyF3HtezdA" target="_blank" rel="noopener">📍 Saha konumu — haritada aç</a>'+
+    '<span class="hint" style="margin-left:10px">39.226317, 45.288885</span></div>'+
+    '<div class="kpis">'+
+      k('35 MWp','Tüm santral')+k('6,9 MWp','Aksaray faz · TR-1')+k('378','Masa')+k('9.828','Panel')+
+      k('19','İnverter')+k('5.292','Kazık (ayak)')+k('258.624 $','Götürü bedel +KDV','money')+k('10.07.2026','Süre / bitiş')+
+    '</div>'+
+    '<div class="parties">'+
+      '<div class="party"><div class="r">İşveren (Yüklenici)</div><div class="n">MENSİS ENERJİ SAN. ve DIŞ TİC. A.Ş.</div></div>'+
+      '<div class="party"><div class="r">Proje Sahibi</div><div class="n">CEI Nakhcivan LLC</div></div>'+
+      '<div class="party"><div class="r">Alt Yüklenici</div><div class="n">AE-Arıcan Enerji</div></div>'+
+    '</div>'+
+  '</div>'+
+  tkCard('Yapılacak çalışma — kapsam','<span class="money">Götürü 258.624 USD + KDV · Mekanik 139.797 / Elektrik 118.827</span>',
+    '<div class="det"><ul>'+
+      '<li><b>Mekanik:</b> harita aplikasyon · çakma kolon (kazık + kolon) · üst montaj/aşık (makas + kuşak + terazi + tork) · panel montaj.</li>'+
+      '<li><b>Elektrik:</b> AG-OG kablo kanalı · solar DC kablo (1×6) · OG başlık · köşk OG hücre/pano · inverter + trafo · CCTV-aydınlatma · testler & devreye alma.</li>'+
+      '<li><b>İşveren\'de (kapsam dışı):</b> rok ile delme · All-Risk sigortası · çalışma izni / D1 vize.</li>'+
+      '<li><b>Süre:</b> saha tesliminden 10 gün içinde başlama · bitiş <b>10.07.2026</b>. Gecikme cezası gün başı bedelin %0,4-0,5\'i veya 30.000 TL.</li>'+
+      '<li class="money"><b>Teminat:</b> %5 kesin (İş Teminat Mektubu · 12.931 $) · %10 nakit (hakedişten · 25.862 $). Damga vergisi Alt Yüklenici\'de.</li>'+
+    '</ul></div>');}
+
+/* ===== KONSTRÜKSİYON TEKNİK KÜNYE (Montaj > Konstrüksiyon altında) ===== */
+function renderKonstTek(){const el=document.getElementById('konstTek');if(!el)return;
+  el.innerHTML=tkCard('Masa konstrüksiyon künyesi (referans)','Statik + saha montaj fotolarından · 1 masa',
+    schematic({a1:14,a2:14,a3:14,a4:14,a5:14,k1:1,k2:1,k3:1,k4:1,k5:1,k6:1,k7:26})+
+    tkSpec([
+      ['Eksen / boy','7 eksen · 6×2600 + 870/869 = <b>17.339 mm</b>'],
+      ['Eğim','<b>25°</b>'],
+      ['Ayak / kazık','14/masa (7 ön + 7 arka) · Ø200 çakma'],
+      ['Ön kazık','gömme 1100-1200 mm · üst kot 800'],
+      ['Arka kazık','gömme 1300-1400 mm · h≈2363'],
+      ['Profiller','P1 ön kolon · P2/P6 arka kolon · P3 üst / P4-1 alt kuşak · <b>P5 diyagonal makas 2410</b>'],
+      ['Panel','26/masa (2×13) · ara/uç klemp + tork'],
+    ])+
+    '<div class="det" style="margin-top:8px"><b>378 masa toplamı:</b> 5.292 kazık · 9.828 panel · 2.646 makas. Tork ve montaj kayıtları hakediş dayanağıdır.</div>');}
+
+/* ===== SEKME 2 — MONTAJ alt sekmeleri ===== */
+let KSUB=0;
+function kSub(n){KSUB=n;renderMontajScope(1);}
+function renderMontajScope(m){
+  if(m===1){const el=document.getElementById('m_kablo');if(!el)return;
+    const tb=['OG','AC','DC'];
+    let h='<div class="subtabs">'+tb.map((t,i)=>'<button class="subtab'+(KSUB===i?' on':'')+'" onclick="kSub('+i+')">'+t+'</button>').join('')+'</div>';
+    if(KSUB===0)h+=tkCard('OG — Orta Gerilim Kablo & Kanal','TS IEC 60502-2 · 6-30 kV · XLPE',
+        tkSpec([['Kablo','TS IEC 60502-2 · XLPE (>10kV)'],['Kanal','sıcak daldırma galvaniz · menhol · halojensiz dolgu'],['Bağ aralığı','≤ 50 cm'],['OG başlık','megger + hipot testli sonlandırma'],['Test','izolasyon · hipot · faz sırası']])+
+        tkStd(['TS IEC 60502-2','IEC 60840','hipot'])+trackerHTML('kanal')+trackerHTML('ogbas'));
+    else if(KSUB===1)h+=tkCard('AC — Alçak Gerilim Kablo','İnverter → AG combiner / trafo',
+        tkSpec([['Kablo','IEC 60502 · NYY/N2XH'],['Montaj','etiketleme (UV) · kablo pabucu tork'],['Topraklama','cıvatalı süreklilik'],['Bedel','İnverter+Trafo kalemine dahil']])+
+        tkStd(['IEC 60502','IEC 60228'])+'<div class="det">AC kablaj ayrı pursantaj taşımaz; ilerleme <b>İnverter</b> sekmesinden işlenir.</div>');
+    else h+=tkCard('DC — Solar String Kablosu (1×6)','IEC 50618 · 1500 V · UV dayanımlı · 25 yıl',
+        tkSpec([['Kesit','1×6 mm² solar'],['Standart','IEC 50618 / 60228 · HD 60364-7-712'],['Gerilim','1500 V DC · 1200 W/m²'],['Ek','<b>EK YAPILMAZ</b> (tek parça)'],['Konnektör','tork + çekme testi · MC4'],['Etiket','UV vinil / makaron'],['Test','izolasyon · polarite']])+
+        tkStd(['IEC 50618','HD 60364-7-712','MC4'])+trackerHTML('solar'));
+    el.innerHTML=h;return;}
+  if(m===2){const el=document.getElementById('m_bina');if(!el)return;
+    el.innerHTML=
+      tkCard('Trafo','Prefabrik monoblok · yağlı',
+        tkSpec([['Tip','prefabrik monoblok yağlı'],['Standart','IEC 60076 · IEEE 519'],['Kademe','5 (+2/-3) × 4,55%'],['Gürültü','< 69 dB'],['Saha','rakım 1080 m · deprem DD-2 / ZB · Ss 0,228 · PGA 0,102g · önem 1,5']])+tkStd(['IEC 60076','IEEE 519']))+
+      tkCard('OG Şalt & Köşk Hücre','28-36 kV',
+        tkSpec([['Hücre','IEC 62271-200'],['Kesici','SF6 · IEC 62271-100/102'],['Akım trafo','IEC 61869-2 cl 0,5'],['Gerilim trafo','IEC 61869-3'],['Röle','dijital · IEC 60255'],['SPD','EN 61643-11 · MCOV 36kV · BIL 170kV']])+tkStd(['IEC 62271-200','IEC 61869','IEC 60255']))+
+      tkCard('ADP / AG Pano','İç dağıtım',tkSpec([['Standart','IEC 61439 · 60947 · 60269 · 60898 · 60529'],['Ortam','+40°C · %70 nem · -5°C']])+tkStd(['IEC 61439','IEC 60947']))+
+      trackerHTML('kosk');return;}
+  if(m===3){const el=document.getElementById('m_toprak');if(!el)return;
+    el.innerHTML=
+      tkCard('Topraklama Ağı','Panel alanı · eşpotansiyel',
+        tkSpec([['Ağ','yatay + dikey paralel iletken'],['Çubuk','galvanizli · köşe + ara'],['Bağlantı','panel çerçeve kelepçe · <b>cıvatalı</b> (akıllı vida YOK)'],['Tel çit','topraklamaya bağlı'],['Test','süreklilik · toprak direnci']])+tkStd(['IEC 62305','süreklilik']))+
+      tkCard('Yıldırımdan Korunma','Risk değerlendirme',tkSpec([['Sistem','IEC 62305 risk + çubuklu (paratoner)'],['İniş','indirme iletkeni + topraklama']])+tkStd(['IEC 62305']))+
+      '<div class="tk2"><div class="det" style="color:var(--faint)"><b>Bedel notu:</b> Topraklama götürü kapsama dahildir — ayrı pursantaj/hakedişe girmez. İlerleme bilgi amaçlıdır.</div></div>';return;}
+  if(m===4){const el=document.getElementById('m_cctv');if(!el)return;
+    el.innerHTML=tkCard('CCTV & Aydınlatma','Çevre güvenlik + saha aydınlatma',
+      tkSpec([['Kablo','kanal kesitine uygun · <b>ek yok</b> · onaylı konnektör'],['Topraklama','cıvatalı'],['Temel','menhol boru ≥45 yukarı · direk taban süs betonu'],['Pano','Zone panoları']])+tkStd(['IP66','PoE']))+trackerHTML('cctv');return;}
+  if(m===5){const el=document.getElementById('m_inv');if(!el)return;
+    el.innerHTML=
+      tkCard('İnverter','3-faz string · 1500 VDC',
+        tkSpec([['Çıkış','3-faz ≥ 400 V AC'],['DC','1500 V DC'],['Verim','≥ %98,6 (Avrupa)'],['Sıcaklık','-25…+60°C (35°C tam güç)'],['PF / VAR','0…1 / ±0,8'],['THD','< %2,5'],['Koruma','PID · adacık önleme · RCD · DC izolatör'],['Haberleşme','RS485 · PLC · Ethernet · Fiber · Modbus'],['Ömür','5+5 = 10 yıl garanti · 25 yıl']])+tkStd(['IEC 62109-1/2','IEC 61727','IEC 62116','EN 50178']))+
+      tkCard('DC Toplama Kutusu','String birleştirme',
+        tkSpec([['Koruma','IP65 (fan IP54)'],['Gövde','cam elyaf polyester ≥1,5 mm'],['Anma','1500 VDC · 10 kA'],['İçerik','PV sigorta (gPV) + DC SPD + Modbus + fiber'],['Sıcaklık','-25…+70°C']])+tkStd(['DIN EN 60715','IP65']))+
+      tkCard('SCADA & İzleme','PPC + bölgesel veri',
+        tkSpec([['Ağ','PPC fiber halka + RF yedek'],['Sensörler','piranometre · ref hücre · ortam/panel sıcaklık · rüzgar hız/yön · nem · kirlilik'],['Protokol','Modbus / Ethernet'],['İç tüketim','10 kWp çatı GES']])+tkStd(['Modbus','SCADA']))+
+      trackerHTML('invtr');return;}
+  if(m===6){const el=document.getElementById('m_test');if(!el)return;
+    el.innerHTML=
+      tkCard('Test & Devreye Alma (Şartname 9.3)','Geçici Kabul şartı',
+        '<div class="det"><ul>'+
+        '<li><b>DC:</b> modül/soket · seri devre · sigorta · kablo izolasyon · toprak direnci · inverter bağlantı.</li>'+
+        '<li><b>AC:</b> AG/OG megger · sayaç · trafo (dönüşüm · tan delta · yağ/gaz).</li>'+
+        '<li><b>OG hücre:</b> açma süresi · kontak direnci · röle.</li>'+
+        '<li><b>Genel:</b> PV tork/termal · kablo faz · LV · topraklama · yıldırım · meteo · izleme · güvenlik · sayaç.</li>'+
+        '<li><b>Üretim:</b> 11:00-13:00 karşılaştırma · PR garanti · string uç test + etiket + izolasyon.</li>'+
+        '</ul></div>'+tkStd(['IEC 62446','PR garanti']))+
+      trackerHTML('test');return;}
+}
+
+/* ===== SEKME 3 — HAKEDİŞ HESABI ===== */
+function renderHakedisKesinti(){const el=document.getElementById('hkkesinti');if(!el)return;
+  const items=[...mechItems(),...GEN.map(g=>({...g,plan:0}))];
+  let cum=0;for(const it of items)cum+=bedel(it)*itemPct(it)/100;
+  const nakit=cum*0.10,damga=cum*0.00948,net=cum-nakit-damga;
+  el.innerHTML='<dl class="spec" style="grid-template-columns:1fr auto">'+
+    '<dt>Kümülatif gerçekleşme</dt><dd><b>'+tr(cum)+' $</b> · %'+(cum/SOZBEDEL*100).toFixed(1)+'</dd>'+
+    '<dt>Nakit teminat (−%10)</dt><dd>−'+tr(nakit)+' $</dd>'+
+    '<dt>Avans mahsubu</dt><dd>0 $ (avans alınmadıysa)</dd>'+
+    '<dt>Damga vergisi (binde 9,48)</dt><dd>−'+tr(damga)+' $</dd>'+
+    '<dt>Net ödenecek (bu duruma kadar)</dt><dd><b style="color:var(--gnd)">'+tr(net)+' $</b></dd>'+
+    '</dl>'+
+    '<div class="det" style="margin-top:12px;color:var(--faint)">KDV tevkifatı/stopaj ayrıca işlenir. Nakit teminat iadesi: %50 Geçici Kabul+30g · %50 GK+1yıl+30g. Kesin teminat %5 (İş Teminat Mektubu) iadesi GK+2 yıl. Rok delgi İşveren\'de — hakedişe girmez.</div>';}
+
+/* ===== SEKME 4 — BİLGİ BANKASI ===== */
+function acc(title,inner,open,cls){return '<details class="acc'+(cls?' '+cls:'')+'"'+(open?' open':'')+'><summary>'+title+'</summary><div class="body">'+inner+'</div></details>';}
+function renderBilgi(){const el=document.getElementById('bilgi');if(!el)return;
+  el.innerHTML=
+  '<h2 style="margin:0 0 10px">Bilgi Bankası — teknik şartname & sözleşme</h2>'+
+  acc('Panel (modül)',tkSpec([['Güç','STC ≥ 600 W'],['Sistem','1500 V'],['Yük','rüzgar 2400 Pa · kar 5400 Pa · 130 km/h'],['Sıcaklık','-40…+85°C'],['Tolerans','yalnız pozitif'],['Test','EL + flaş · çerçeve delmesiz montaj']])+tkStd(['IEC 61215','IEC 61730','IEC 63209']),true)+
+  acc('İnverter',tkSpec([['Çıkış','3-faz ≥400 VAC · 1500 VDC'],['Verim','≥ %98,6'],['THD','< %2,5'],['Koruma','PID · adacık · RCD'],['Haberleşme','RS485/Modbus/Ethernet/Fiber'],['Ömür','10 yıl garanti · 25 yıl']])+tkStd(['IEC 62109','IEC 61727','IEC 62116','EN 50178']))+
+  acc('DC Toplama Kutusu',tkSpec([['Koruma','IP65 (fan IP54)'],['Anma','1500 VDC · 10 kA'],['İçerik','gPV sigorta + DC SPD + Modbus + fiber'],['Gövde','cam elyaf polyester ≥1,5 mm']])+tkStd(['DIN EN 60715']))+
+  acc('Kablo (DC / AC / OG)',tkSpec([['DC solar','1×6 · IEC 50618 · 1500V · ek YOK · UV · 25 yıl'],['AC','IEC 60502 · etiket + tork'],['OG','TS IEC 60502-2 · 6-30kV · XLPE · hipot'],['Kanal','sıcak daldırma galvaniz · halojensiz · menhol']])+tkStd(['IEC 50618','TS IEC 60502-2','HD 60364-7-712']))+
+  acc('Trafo',tkSpec([['Tip','prefabrik monoblok yağlı'],['Kademe','5(+2/-3)×4,55%'],['Gürültü','<69 dB'],['Saha','rakım 1080m · deprem DD-2 · PGA 0,102g · önem 1,5']])+tkStd(['IEC 60076','IEEE 519']))+
+  acc('OG Şalt & Koruma',tkSpec([['Gerilim','28-36 kV'],['Hücre','IEC 62271-200'],['Kesici','SF6 · IEC 62271-100/102'],['Trafolar','akım IEC 61869-2 cl0,5 · gerilim IEC 61869-3'],['Röle','IEC 60255'],['SPD','EN 61643-11 · MCOV 36kV · BIL 170kV']]))+
+  acc('Topraklama & Yıldırım',tkSpec([['Ağ','yatay+dikey paralel iletken'],['Çubuk','galvanizli köşe+ara'],['Bağlantı','panel çerçeve kelepçe · cıvatalı (akıllı vida YOK)'],['Yıldırım','IEC 62305 risk + çubuklu']])+tkStd(['IEC 62305']))+
+  acc('Test & Devreye Alma (9.3)','<div class="det"><ul><li>DC: izolasyon · toprak direnci · seri devre · sigorta.</li><li>AC/OG: megger · trafo tan delta · OG hücre açma süresi/röle.</li><li>PV tork/termal · string uç test + etiket.</li><li>11:00-13:00 üretim karşılaştırma · PR garanti.</li></ul></div>'+tkStd(['IEC 62446']))+
+  acc('SCADA & İzleme',tkSpec([['Ağ','PPC fiber halka + RF yedek'],['Sensör','piranometre · ref hücre · sıcaklık · rüzgar · nem · kirlilik'],['Protokol','Modbus / Ethernet'],['İç tüketim','10 kWp çatı GES']]))+
+  acc('Konstrüksiyon künyesi',tkSpec([['Masa','7 eksen · 17.339 mm · 25°'],['Ayak','14/masa · Ø200 (ön 1100-1200 / arka 1300-1400)'],['Profiller','P1/P2/P6 kolon · P3/P4-1 kuşak · P5 makas 2410'],['Panel','26/masa · klemp + tork']]))+
+  acc('Sözleşme — kritik (yönetici)',tkSpec([['Bedel','258.624 USD + KDV (götürü)'],['Süre','10.07.2026 · başlama saha teslimi+10g'],['Gecikme','gün başı %0,4-0,5 veya 30.000 TL'],['Kesin teminat','%5 İş Teminat Mektubu (12.931 $) · iade GK+2yıl'],['Nakit teminat','%10 (25.862 $) · iade %50 GK+30g / %50 GK+1yıl+30g'],['Damga','Alt Yüklenici\'de'],['Sigorta','All-Risk İşveren\'de'],['Rok delgi','İşveren\'de']]),false,'adminonly');}
+
+/* ana ekran açık; proje seçilince openProject() yükler */
+</script>
