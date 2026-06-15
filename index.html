@@ -300,10 +300,14 @@
   .xdel{color:var(--dc);cursor:pointer;font-size:11px;margin-left:6px;text-decoration:none}
   .gantt{margin-top:6px}
   .grow{display:flex;align-items:center;gap:8px;margin:3px 0}
-  .glbl{flex:0 0 190px;font-size:11px;color:var(--ink2,#666);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .gtrack{position:relative;flex:1;height:16px;background:#f1f1f4;border-radius:5px}
-  .gbar{position:absolute;top:0;height:16px;border-radius:5px;opacity:.9}
+  .glbl{flex:0 0 230px;font-size:11px;color:var(--ink2,#555);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .gtrack{position:relative;flex:1;height:20px;background:#f1f1f4;border-radius:5px}
+  .gbar{position:absolute;top:0;height:20px;border-radius:5px;opacity:.92;display:flex;align-items:center;overflow:hidden}
+  .gbar i{font-style:normal;font-size:9px;color:#fff;padding:0 5px;white-space:nowrap}
   .gbar.gm{background:#3B82C4}.gbar.ge{background:#E8833A}
+  .gaxis{background:transparent;height:18px}
+  .gtick{position:absolute;top:0;font-size:9px;color:#9a9aa5;transform:translateX(-50%);white-space:nowrap}
+  .gtick:first-child{transform:none}.gtick:last-child{transform:translateX(-100%)}
 </style>
 
 <div id="home" class="home">
@@ -311,7 +315,7 @@
   <div class="homecard">
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 17 · İş Programı + sevk takvimi</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 18 · İş Programı (poz+tarih+topraklama)</div>
     <div class="hint">Giriş türünü seç, sonra projeyi aç. Yönetici tüm verileri (parasal dâhil) görür ve girer; Usta sadece proje bilgisi görür ve veri girişi yapar.</div>
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -333,7 +337,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 17 · Bulut · 15.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 18 · Bulut · 15.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -1589,16 +1593,16 @@ function ddiff(a,b){return Math.round((new Date(b+'T00:00:00')-new Date(a+'T00:0
 function dtr(iso){if(!iso)return '—';const a=iso.split('-');return a[2]+'.'+a[1]+'.'+a[0];}
 const POZ=[
  {p:'1', ad:'Harita / aplikasyon',                 dis:'MEK', pur:0,  s:0,  g:2,  mal:[], ek:'Aplikasyon ekipmanı (GPS/total station)'},
- {p:'2', ad:'Çakma kolon (kazık / ayak)',          dis:'MEK', pur:42, s:1,  g:9,  mal:['k_p1','k_p2'], ek:'Çakma makinesi'},
+ {p:'2', ad:'Ayak montajı — rok delinen yuvaya beton dökümü', dis:'MEK', pur:42, s:1, g:9, mal:['k_p1','k_p2'], ek:'Beton (rok yuvasına döküm) · rok delgi İşveren\'de'},
  {p:'3', ad:'Üst montaj / aşık (çelik konstrüksiyon)',dis:'MEK',pur:31,s:5, g:10, mal:['k_p3','k_p41','k_p42','k_p43','k_p5','k_p6','k_p7','k_m12']},
  {p:'4', ad:'Panel montajı',                       dis:'MEK', pur:27, s:10, g:10, mal:['k_panel','k_p11','k_orta']},
- {p:'5', ad:'AG-OG kablo kanalı (trench)',         dis:'ELK', pur:30, s:2,  g:10, mal:['t_kanal','m_koruge','t_ikaz']},
+ {p:'5', ad:'AG-OG kablo kanalı + topraklama (trench kazısı)', dis:'ELK', pur:30, s:2, g:10, mal:['t_kanal','m_koruge','t_ikaz','t_elektrot','t_nyaf','t_serit'], ek:'Topraklama elektrot/şerit kanal kazısıyla birlikte'},
  {p:'6', ad:'DC 1×6 solar kablo çekimi',           dis:'ELK', pur:16, s:11, g:10, mal:['m_dc','s_mc4']},
  {p:'7', ad:'OG başlık / sonlandırma',             dis:'ELK', pur:7,  s:15, g:4,  mal:['m_og','m_ogbas']},
  {p:'8', ad:'Köşk · AG pano · OG hücre',           dis:'ELK', pur:11, s:8,  g:9,  mal:['e_kosk','e_agpano','e_oghuc']},
  {p:'9', ad:'İnverter + Trafo montajı',            dis:'ELK', pur:17, s:14, g:7,  mal:['e_inv','e_trafo','m_ag','m_tragp'], ek:'Trafo uzun temin — erken sipariş!'},
  {p:'10',ad:'CCTV / aydınlatma',                   dis:'ELK', pur:14, s:17, g:5,  mal:[], ek:'CCTV kamera + NVR + aydınlatma'},
- {p:'11',ad:'Test / devreye alma',                 dis:'ELK', pur:5,  s:21, g:4,  mal:['t_elektrot','t_nyaf','t_serit'], ek:'Megger, hipot, test cihazları'}
+ {p:'11',ad:'Test / devreye alma',                 dis:'ELK', pur:5,  s:21, g:4,  mal:[], ek:'Megger, hipot, test cihazları · PR/üretim testi'}
 ];
 function malName(id){const it=(typeof matItem==='function')?matItem(id):null;return it?it.ad:id;}
 function malMik(id){const it=(typeof matItem==='function')?matItem(id):null;return it?(Number(it.mik).toLocaleString('tr-TR')+' '+(it.birim||'')):'';}
@@ -1625,11 +1629,15 @@ function renderIsProg(){const el=document.getElementById('isprog');if(!el)return
   POZ.forEach(z=>{const d=pozDates(z);const mals=(z.mal||[]).map(malName).concat(z.ek?[z.ek]:[]).join(' · ')||(z.ek||'—');
     h+='<tr><td class="m">'+z.p+'</td><td>'+esc(z.ad)+'</td><td class="m">'+z.dis+'</td><td class="m">'+(z.pur||'-')+'</td><td class="m">'+dtr(d.st)+'</td><td class="m">'+dtr(d.en)+'</td><td class="m">'+z.g+'</td><td><small>'+esc(mals)+'</small></td><td class="m'+(d.rd<today?'" style="color:var(--dc);font-weight:700':'')+'">'+dtr(d.rd)+'</td></tr>';});
   h+='</tbody></table></div></div>';
-  // gantt
-  h+='<div class="tk2"><h3>Zaman çizelgesi (Gantt)</h3><div class="gantt">';
-  POZ.forEach(z=>{const left=z.s/total*100,wid=Math.max(2,z.g/total*100);
-    h+='<div class="grow"><span class="glbl">'+z.p+' '+esc(z.ad.slice(0,22))+'</span><span class="gtrack"><span class="gbar '+(z.dis==='MEK'?'gm':'ge')+'" style="left:'+left+'%;width:'+wid+'%"></span></span></div>';});
-  h+='</div><div class="hint">Mavi = mekanik · turuncu = elektrik. İş başı '+dtr(ISB)+' → '+dtr(ISBITIS)+'.</div></div>';
+  // gantt + tarih ekseni
+  h+='<div class="tk2"><h3>Zaman çizelgesi (Gantt)</h3>';
+  let axis='<div class="grow"><span class="glbl"></span><span class="gtrack gaxis">';
+  for(let i=0;i<=5;i++){const off=Math.round((total-1)*i/5);axis+='<span class="gtick" style="left:'+(i/5*100)+'%">'+dtr(dadd(ISB,off))+'</span>';}
+  axis+='</span></div>';
+  h+='<div class="gantt">'+axis;
+  POZ.forEach(z=>{const d=pozDates(z);const left=z.s/total*100,wid=Math.max(3,z.g/total*100);
+    h+='<div class="grow"><span class="glbl" title="'+esc(z.ad)+'">'+z.p+' · '+esc(z.ad)+'</span><span class="gtrack"><span class="gbar '+(z.dis==='MEK'?'gm':'ge')+'" style="left:'+left+'%;width:'+wid+'%"><i>'+dtr(d.st).slice(0,5)+'–'+dtr(d.en).slice(0,5)+' · '+z.g+'g</i></span></span></div>';});
+  h+='</div><div class="hint">Mavi = mekanik · turuncu = elektrik. İş başı '+dtr(ISB)+' → bitiş '+dtr(ISBITIS)+'. Bar üzerindeki tarihler başla–bitir.</div></div>';
   el.innerHTML=h;}
 
 function renderPersonel(){const el=document.getElementById('personel');if(!el)return;
