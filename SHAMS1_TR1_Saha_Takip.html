@@ -297,6 +297,7 @@
   .mtab{width:100%;border-collapse:collapse;font-size:12px}.mtab th,.mtab td{border:1px solid var(--line);padding:6px 8px;text-align:left}.mtab th{background:var(--soft);font-weight:600}
   .mtab td.neg{color:var(--dc);font-weight:700}
   .mailta{width:100%;height:200px;font-family:var(--mono);font-size:11px;border:1px solid var(--line);border-radius:8px;padding:8px}
+  .xdel{color:var(--dc);cursor:pointer;font-size:11px;margin-left:6px;text-decoration:none}
 </style>
 
 <div id="home" class="home">
@@ -304,6 +305,7 @@
   <div class="homecard">
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 12 · Bulut AKTİF (shams1-saha)</div>
     <div class="hint">Giriş türünü seç, sonra projeyi aç. Yönetici tüm verileri (parasal dâhil) görür ve girer; Usta sadece proje bilgisi görür ve veri girişi yapar.</div>
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -325,7 +327,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 7 · Malzeme+Grid+DETAY · 14.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 12 · Bulut AKTİF · 14.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -498,6 +500,22 @@ async function setMpct(id,v){v=Math.max(0,Math.min(100,parseInt(v)||0));MPCT[id]
 /* ===== ROL & VERİ HAVUZU (window.storage / GitHub / geçici) ===== */
 let ROLE=null, BACKEND='mem', POOL={}, MEM={}, GH=null, poolSha=null, pushTimer=null, POLL=null;
 let UPCOUNT=0, UPLAST=0;
+/* ===== BULUT (Firebase Realtime DB) — her cihazdan ortak/kalıcı ===== */
+const FBCONFIG = {
+  apiKey: "AIzaSyBvM-noMGWqFh4KzG11zRpr8RSF-8ROqX8",
+  authDomain: "shams1-saha.firebaseapp.com",
+  databaseURL: "https://shams1-saha-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "shams1-saha",
+  storageBucket: "shams1-saha.firebasestorage.app",
+  messagingSenderId: "38125778484",
+  appId: "1:38125778484:web:0bbda1385d55913d77fc61"
+};
+let FBDB=null;
+function loadScript(src){return new Promise((res,rej)=>{const x=document.createElement('script');x.src=src;x.onload=res;x.onerror=rej;document.head.appendChild(x);});}
+async function fbInit(){if(!FBCONFIG||!FBCONFIG.databaseURL)return false;if(FBDB)return true;
+  try{if(!window.firebase){await loadScript('https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js');await loadScript('https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js');}
+    firebase.initializeApp(FBCONFIG);FBDB=firebase.database();return true;}catch(e){return false;}}
+function fbPath(k){return 'shams1tr1/'+String(k).replace(/[.#$\[\]]/g,'_').replace(/:/g,'/');}
 const ADMIN_PIN='1453'; // ← yönetici PIN (buradan değiştir)
 function nowt(){return new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});}
 function ghUrl(){return 'https://api.github.com/repos/'+GH.owner+'/'+GH.repo+'/contents/'+encodeURIComponent(GH.path).replace(/%2F/g,'/');}
@@ -523,27 +541,40 @@ async function ghPush(){if(!GH||!GH.token)return;let sha=poolSha;
   if(!pr.ok)throw 'PUT '+pr.status;const j=await pr.json();poolSha=j.content&&j.content.sha;ghStat('● GitHub havuz · '+nowt());}
 function schedulePush(){if(!GH||!GH.token||GH.autosync===false)return;clearTimeout(pushTimer);pushTimer=setTimeout(()=>ghPush().catch(()=>ghStat('GitHub yazma hatası')),1600);}
 
-async function sget(k){if(BACKEND==='gh')return (k in POOL)?POOL[k]:null;
+async function sget(k){if(BACKEND==='fb'){try{const sn=await FBDB.ref(fbPath(k)).once('value');return sn.exists()?sn.val():null;}catch(e){return null;}}
+  if(BACKEND==='gh')return (k in POOL)?POOL[k]:null;
   if(BACKEND==='ws'){try{const r=await window.storage.get(k,true);return r?JSON.parse(r.value):null;}catch(e){return null;}}
+  if(BACKEND==='ls'){try{const v=localStorage.getItem('shams1:'+k);return v?JSON.parse(v):null;}catch(e){return null;}}
   return (k in MEM)?MEM[k]:null;}
-async function _ssetRaw(k,v){if(BACKEND==='gh'){POOL[k]=v;schedulePush();return true;}
+async function _ssetRaw(k,v){if(BACKEND==='fb'){try{await FBDB.ref(fbPath(k)).set(v);}catch(e){return false;}return true;}
+  if(BACKEND==='gh'){POOL[k]=v;schedulePush();return true;}
   if(BACKEND==='ws'){try{await window.storage.set(k,JSON.stringify(v),true);}catch(e){return false;}if(GH&&GH.autosync!==false)schedulePush();return true;}
+  if(BACKEND==='ls'){try{localStorage.setItem('shams1:'+k,JSON.stringify(v));}catch(e){return false;}if(GH&&GH.autosync!==false)schedulePush();return true;}
   MEM[k]=v;return true;}
 async function sset(k,v){const r=await _ssetRaw(k,v);if(k!=='upc'&&k!=='uplast'){UPCOUNT=(UPCOUNT||0)+1;UPLAST=Date.now();await _ssetRaw('upc',UPCOUNT);await _ssetRaw('uplast',UPLAST);if(typeof renderUpBadge==='function')renderUpBadge();}return r;}
-async function sdel(k){if(BACKEND==='gh'){delete POOL[k];schedulePush();return;}
+async function sdel(k){if(BACKEND==='fb'){try{await FBDB.ref(fbPath(k)).remove();}catch(e){}return;}
+  if(BACKEND==='gh'){delete POOL[k];schedulePush();return;}
   if(BACKEND==='ws'){try{await window.storage.delete(k,true);}catch(e){}if(GH&&GH.autosync!==false)schedulePush();return;}
+  if(BACKEND==='ls'){try{localStorage.removeItem('shams1:'+k);}catch(e){}if(GH&&GH.autosync!==false)schedulePush();return;}
   delete MEM[k];}
-async function slist(p){if(BACKEND==='gh')return Object.keys(POOL).filter(k=>k.startsWith(p));
+async function slist(p){if(BACKEND==='fb'){try{const pp=fbPath(p.replace(/:$/,''));const sn=await FBDB.ref(pp).once('value');const o=[];sn.forEach(c=>{o.push(p+c.key);});return o;}catch(e){return [];}}
+  if(BACKEND==='gh')return Object.keys(POOL).filter(k=>k.startsWith(p));
   if(BACKEND==='ws'){try{const r=await window.storage.list(p,true);return (r&&r.keys)||[];}catch(e){return [];}}
+  if(BACKEND==='ls'){try{const o=[];for(let i=0;i<localStorage.length;i++){const kk=localStorage.key(i);if(kk&&kk.indexOf('shams1:'+p)===0)o.push(kk.slice(7));}return o;}catch(e){return [];}}
   return Object.keys(MEM).filter(k=>k.startsWith(p));}
 
 async function loadGhCfg(){try{if(window.storage){const r=await window.storage.get('ghcfg',true);if(r)GH=JSON.parse(r.value);}}catch(e){}
   if(!GH){try{const j=localStorage.getItem('ghcfg');if(j)GH=JSON.parse(j);}catch(e){}}}
 async function saveGhCfg(){try{if(window.storage)await window.storage.set('ghcfg',JSON.stringify(GH),true);}catch(e){}
   try{localStorage.setItem('ghcfg',JSON.stringify(GH));}catch(e){}}
+function persistLabel(){return BACKEND==='fb'?'● Kalıcı · Bulut (her cihaz ortak)':BACKEND==='gh'?'● Kalıcı · GitHub havuz (ekip ortak)':BACKEND==='ws'?'● Kalıcı · bu tarayıcı (Claude)':BACKEND==='ls'?'● Kalıcı · bu cihaz (yerel)':'⚠ GEÇİCİ — kayıt YOK';}
+function renderMemWarn(){let w=document.getElementById('memwarn');if(BACKEND==='mem'||BACKEND==='ls'){if(!w){w=document.createElement('div');w.id='memwarn';w.style.cssText='position:fixed;top:0;left:0;right:0;z-index:280;background:'+(BACKEND==='mem'?'#E5484D':'#5B6573')+';color:#fff;font:12px/1.4 var(--sans,sans-serif);padding:7px 12px;text-align:center';document.body.appendChild(w);}w.innerHTML=(BACKEND==='mem'?'⚠ Veriler KAYDEDİLMİYOR (geçici). ':'ℹ Kayıt yalnız bu cihazda. Ekip ortak/merkezi hakediş için ')+'<b style="cursor:pointer;text-decoration:underline" onclick="tabTo(3,document.querySelectorAll(\'.tabs .tab\')[3]);document.getElementById(\'memwarn\').style.display=\'none\'">GitHub havuzu bağla</b>'+(BACKEND==='ls'?' <span style="opacity:.7;cursor:pointer" onclick="document.getElementById(\'memwarn\').style.display=\'none\'">✕</span>':'');w.style.display='block';}else if(w){w.style.display='none';}}
 async function chooseBackend(){await loadGhCfg();
+  if(await fbInit()){BACKEND='fb';return;}
   if(GH&&GH.owner&&GH.repo&&GH.path&&GH.token){try{await ghPull();BACKEND='gh';return;}catch(e){}}
-  BACKEND=window.storage?'ws':'mem';}
+  if(window.storage){BACKEND='ws';return;}
+  let _ls=false;try{localStorage.setItem('shams1:_t','1');localStorage.removeItem('shams1:_t');_ls=true;}catch(e){}
+  BACKEND=_ls?'ls':'mem';}
 
 /* ----- GitHub ayar UI ----- */
 function readGhForm(){GH=GH||{};['owner','repo','path','branch','token'].forEach(f=>{const e=document.getElementById('gh_'+f);if(e)GH[f]=e.value.trim();});
@@ -572,7 +603,7 @@ function applyRole(){const app=document.getElementById('app');
   const b=document.getElementById('rolebadge');if(b){b.textContent=ROLE==='admin'?'Yönetici':'Usta';b.className='rolebadge '+(ROLE||'');}}
 function goHome(){document.getElementById('app').classList.add('hidden');document.getElementById('home').classList.remove('hidden');
   if(POLL){clearInterval(POLL);POLL=null;}}
-async function pollSync(){if(SEL!=null)return;if(BACKEND==='gh'){try{await ghPull();}catch(e){}renderAll();}else if(BACKEND==='ws')await reloadAll();}
+async function pollSync(){if(SEL!=null)return;if(BACKEND==='fb'){await reloadAll();return;}if(BACKEND==='gh'){try{await ghPull();}catch(e){}renderAll();}else if(BACKEND==='ws')await reloadAll();}
 function grpOf(i){return Math.floor((i-1)/20);}
 
 let MCUR=0;
@@ -595,7 +626,7 @@ function initForm(){const s=document.getElementById('f_item');if(!s)return;s.inn
 async function reloadAll(){
   const st=document.getElementById('status');
   if(BACKEND==='gh'){try{await ghPull();}catch(e){if(st)st.textContent='GitHub erişilemiyor — Pages\'te çalışır';}}
-  else if(BACKEND==='mem'){if(st)st.textContent='⚠ Geçici — kalıcı kayıt yok';renderAll();return;}
+  else if(BACKEND==='mem'){if(st)st.textContent='⚠ GEÇİCİ — kayıt YOK! (GitHub bağlayın)';renderMemWarn();renderAll();return;}
   if(st)st.textContent='senkron…';
   TARGETS=await sget('targets')||{};MPCT=await sget('mpct')||{};
   const lk=await slist('log:');const arr=[];for(const k of lk){const e=await sget(k);if(e){e._key=k;arr.push(e);}}
@@ -603,15 +634,16 @@ async function reloadAll(){
   PLAN={};const gk=await slist('tr1g:');for(const k of gk){const g=await sget(k);if(g)Object.assign(PLAN,g);}
   CAB={dc:await sget('cab:dc')||{},ac:await sget('cab:ac')||{},og:await sget('cab:og')||{}};
   DCDONE=new Set(await sget('dcstr')||[]); OGB=await sget('ogb')||0;
-  MATIN=await sget('matin')||[]; MATUSE=await sget('matuse')||{}; MATKOV=await sget('matkov')||{}; UPCOUNT=await sget('upc')||0; UPLAST=await sget('uplast')||0; if(typeof renderUpBadge==='function')renderUpBadge();
+  MATIN=await sget('matin')||[]; MATUSE=await sget('matuse')||{}; MATKOV=await sget('matkov')||{}; MATCUSTOM=await sget('matcustom')||[]; UPCOUNT=await sget('upc')||0; UPLAST=await sget('uplast')||0; if(typeof renderUpBadge==='function')renderUpBadge();
   CINS={dc:await sget('cins:dc')||{},ac:await sget('cins:ac')||{},og:await sget('cins:og')||{}};
   TEAM=await sget('team')||[];
+  {let ch=false;const seeded=await sget('team_seeded');for(const [ad,kn] of SEED_TEAM){if(!TEAM.some(t=>(t.kimlikno&&t.kimlikno===kn)||t.ad===ad)){if(!seeded){TEAM.push({id:uid(),ad,gorev:'Mekanik',tel:'',kimlikno:kn,giris:dToday(),cikis:'',aktif:true,foto:'',kimlik:''});ch=true;}}}if(ch){await sset('team',TEAM);}if(!seeded)await sset('team_seeded',1);}
   HC={};for(const k of await slist('hc:')){const v=await sget(k);if(v)HC[k.slice(3)]=v;}
   DREQ=[];for(const k of await slist('dr:')){const v=await sget(k);if(v)DREQ.push(v);}
   ALOG=[];for(const k of await slist('al:')){const v=await sget(k);if(v)ALOG.push(v);}ALOG.sort((a,b)=>b.ts-a.ts);
   renderHCbanner();
-  if(st)st.textContent=(BACKEND==='gh'?'● GitHub havuz · ':'● Canlı · ')+nowt();
-  renderAll();
+  if(st)st.textContent=persistLabel()+' · '+nowt();
+  renderMemWarn();renderAll();
 }
 async function addEntry(){const it=GEN.find(x=>x.id===document.getElementById('f_item').value);
   const qty=parseFloat(document.getElementById('f_qty').value);if(!(qty>0)){toast('Miktar girin');return;}
@@ -952,7 +984,7 @@ function trackerHTML(id){const it=GEN.find(g=>g.id===id);if(!it)return '';const 
 /* ===== SEKME 1 — PROJE AÇIKLAMASI ===== */
 function ghInp(f,ph,v,t){return '<input id="gh_'+f+'" type="'+(t||'text')+'" placeholder="'+ph+'" value="'+(v?String(v).replace(/"/g,'&quot;'):'')+'">';}
 function ghCard(){const g=GH||{};return '<div class="tk2 adminonly"><h3>📡 Veri Havuzu — GitHub (uzaktan giriş)</h3>'+
-  '<div class="sub">Tüm saha verisi tek bir GitHub dosyasında (havuz) tutulur; ekip uzaktan aynı havuza yazar. Durum: <b id="ghstat">'+(BACKEND==='gh'?'● GitHub havuz aktif':(BACKEND==='ws'?'window.storage (Claude içi)':'geçici'))+'</b></div>'+
+  '<div class="sub">Tüm saha verisi tek bir GitHub dosyasında (havuz) tutulur; ekip uzaktan aynı havuza yazar. Durum: <b id="ghstat">'+(BACKEND==='fb'?'● Bulut aktif (her cihaz ortak·kalıcı)':BACKEND==='gh'?'● GitHub havuz aktif (ekip ortak·kalıcı)':(BACKEND==='ws'?'bu tarayıcıda kalıcı (Claude)':BACKEND==='ls'?'bu cihazda kalıcı (yerel)':'⚠ geçici — kayıt yok'))+'</b></div>'+
   '<div class="gh">'+ghInp('owner','Repo sahibi (owner)',g.owner)+ghInp('repo','Repo adı',g.repo)+ghInp('path','Dosya yolu',g.path||'shams1-pool.json')+ghInp('branch','Dal (branch)',g.branch||'main')+ghInp('token','GitHub token (PAT)',g.token,'password')+'</div>'+
   '<label style="display:flex;gap:8px;align-items:center;margin-top:10px;font-size:13px"><input type="checkbox" id="gh_auto" '+(g.autosync!==false?'checked':'')+'> Otomatik senkron (her kayıtta gönder)</label>'+
   '<div class="ghrow"><button class="btn sm" onclick="ghConnectUI()">Bağlan & Çek</button><button class="btn ghost sm" onclick="ghPushUI()">GitHub\'a gönder</button><button class="btn ghost sm" onclick="saveGhCfgUI()">Ayarı kaydet</button></div>'+
@@ -960,6 +992,12 @@ function ghCard(){const g=GH||{};return '<div class="tk2 adminonly"><h3>📡 Ver
 /* ===================== EKİP · PUANTAJ · LOG · SİLME ONAYI · HARİTA ===================== */
 let TEAM=[], HC={}, DREQ=[], ALOG=[];
 const TROLES=['Formen','Mekanik','Elektrik','Ara eleman','Güvenlik'];
+const SEED_TEAM=[
+ ['Aydın Elgin','10651868522'],['Fatih Gürbüz','22600067306'],['Apo Ablak','13645768730'],
+ ['Hıvzullah Gevhan','18260583744'],['Salih Aba','35239647672'],['Faysal Özlük','50065508706'],
+ ['Mehmet Ağaç','30694436106'],['Emrah Tumsal','35911026658'],['Yusuf Yılmaz','33052122772'],
+ ['Mehmet Selim Polat','19141831480'],['Uğur Akgüneş','44972033574']
+];
 let TP_FOTO='', TP_KIMLIK='';
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function fval(id){const e=document.getElementById(id);return e?e.value.trim():'';}
@@ -1293,30 +1331,56 @@ function stringPlanCard(){const g=stringGrid(),m=Math.round(dcMeters());
   '<div class="zmhead" style="margin-top:16px">Kablo tipleri (trench plan)</div><dl class="spec">'+CABLES.map(c=>'<dt>'+c[0]+'</dt><dd>'+c[1]+'</dd>').join('')+'</dl></div>';}
 /* ===================== MALZEME YÖNETİMİ ===================== */
 const MATKESIF=[
- {id:'m_solar', kisim:'DC',          ad:'SOLAR KABLO 1×6 mm² (DC)',        birim:'m',   mik:45052, auto:'dc'},
- {id:'m_koruge',kisim:'DC',          ad:'KORUGE boru',                      birim:'m',   mik:22526, est:1},
- {id:'m_ag',    kisim:'AG',          ad:'3×300/150 mm² NA2XY (AG)',         birim:'m',   mik:1369,  est:1},
- {id:'m_og240', kisim:'OG',          ad:'1×240/25 mm² NA2XSY (OG)',         birim:'m',   mik:544,   est:1},
- {id:'m_og120', kisim:'OG',          ad:'1×120/16 mm² NA2XSY (OG)',         birim:'m',   mik:544,   est:1},
- {id:'m_ogbas', kisim:'OG',          ad:'OG başlık / sonlandırma',          birim:'adet',mik:6},
- {id:'m_kanal', kisim:'Kanal/Kazı',  ad:'AG-OG kablo kanalı',               birim:'m',   mik:2108},
- {id:'m_ikaz',  kisim:'Kanal/Kazı',  ad:'İkaz şeridi',                      birim:'m',   mik:2108},
- {id:'m_kum',   kisim:'Kanal/Kazı',  ad:'Kum (yatak)',                      birim:'m³',  mik:0,     est:1},
- {id:'m_inv',   kisim:'Ekipman',     ad:'İnverter',                         birim:'adet',mik:19},
- {id:'m_trafo', kisim:'Ekipman',     ad:'Trafo',                            birim:'adet',mik:1},
- {id:'m_masa',  kisim:'Konstrüksiyon',ad:'Masa (konstrüksiyon)',            birim:'adet',mik:378},
- {id:'s_kbag',  kisim:'Sarf',        ad:'Kablo bağı',                       birim:'adet',mik:0,sarf:1},
- {id:'s_pabuc', kisim:'Sarf',        ad:'Kablo pabucu',                     birim:'adet',mik:0,sarf:1},
- {id:'s_mc4',   kisim:'Sarf',        ad:'MC4 konnektör',                    birim:'adet',mik:0,sarf:1},
- {id:'s_makaron',kisim:'Sarf',       ad:'Makaron / etiket',                 birim:'adet',mik:0,sarf:1},
- {id:'s_civata',kisim:'Sarf',        ad:'Cıvata / somun',                   birim:'adet',mik:0,sarf:1},
+ {id:'m_dc',    kisim:'DC', ad:'DC 1×6 mm² solar kablo (string 43.039 + ext 2.013)', birim:'m', mik:45052, auto:'dc'},
+ {id:'m_koruge',kisim:'DC', ad:'KORUGE boru', birim:'m', mik:22526, est:1, mont:'dcm'},
+ {id:'m_ag',    kisim:'AG', ad:'3×(300/150) mm² NA2XSY (inverter→AC combiner)', birim:'m', mik:1614, mont:'ag'},
+ {id:'m_tragp', kisim:'AG', ad:'Cu 2×(1×240) mm² (TR→AG pano)', birim:'m', mik:14, mont:'mpct:invtr'},
+ {id:'m_og',    kisim:'OG', ad:'3×(1×240/25) mm² NA2XSY 33 kV (DM→TR1)', birim:'m', mik:170, mont:'og'},
+ {id:'m_ogbas', kisim:'OG', ad:'OG başlık (iç/dış · DM-TR uçları)', birim:'adet', mik:6, mont:'mpct:ogbas'},
+ {id:'k_panel', kisim:'Konstrüksiyon', ad:'Güneş paneli (26/masa)', birim:'adet', mik:9828, mont:'pp'},
+ {id:'k_p1',    kisim:'Konstrüksiyon', ad:'P1 Ön kolon/ayak (S355JR · 7/masa)', birim:'adet', mik:2646, mont:'k1', pt:7},
+ {id:'k_p2',    kisim:'Konstrüksiyon', ad:'P2 Arka kolon/ayak (S355JR · 7/masa)', birim:'adet', mik:2646, mont:'k2', pt:7},
+ {id:'k_p3',    kisim:'Konstrüksiyon', ad:'P3 Kiriş (S350GD · 7/masa)', birim:'adet', mik:2646, mont:'k4', pt:7},
+ {id:'k_p41',   kisim:'Konstrüksiyon', ad:'P4-1 Aşık-1 (S350GD · 4/masa)', birim:'adet', mik:1512, mont:'k5', pt:4},
+ {id:'k_p42',   kisim:'Konstrüksiyon', ad:'P4-2 Aşık-2 (S350GD · 4/masa)', birim:'adet', mik:1512, mont:'k5', pt:4},
+ {id:'k_p43',   kisim:'Konstrüksiyon', ad:'P4-3 Aşık-3 (S350GD · 4/masa)', birim:'adet', mik:1512, mont:'k5', pt:4},
+ {id:'k_p5',    kisim:'Konstrüksiyon', ad:'P5 Payanda (S350GD · 7/masa)', birim:'adet', mik:2646, mont:'k3', pt:7},
+ {id:'k_p6',    kisim:'Konstrüksiyon', ad:'P6 Çapraz (S350GD · 12/masa)', birim:'adet', mik:4536, mont:'k2', pt:12},
+ {id:'k_p7',    kisim:'Konstrüksiyon', ad:'P7 Aşık birleştirme (S350GD · 8/masa)', birim:'adet', mik:3024, mont:'k5', pt:8},
+ {id:'k_p11',   kisim:'Konstrüksiyon', ad:'P11 Kenar klemp (Alu 6063-T6 · 8/masa)', birim:'adet', mik:3024, mont:'pp'},
+ {id:'k_orta',  kisim:'Konstrüksiyon', ad:'Orta klemp (Alu · 24/masa)', birim:'adet', mik:9072, mont:'pp'},
+ {id:'k_m12',   kisim:'Konstrüksiyon', ad:'P13 M12 cıvata seti (Çelik HDG · 140/masa)', birim:'adet', mik:52920, mont:'k6', pt:140},
+ {id:'e_inv',   kisim:'Ekipman', ad:'İnverter (string ~350-368 kW)', birim:'adet', mik:19, mont:'mpct:invtr'},
+ {id:'e_trafo', kisim:'Ekipman', ad:'Trafo 5750 kVA · 33/0,8 kV · Dy11 yağlı', birim:'adet', mik:1, mont:'mpct:invtr'},
+ {id:'e_kosk',  kisim:'Ekipman', ad:'Köşk / bina (prefabrik OG-AG)', birim:'adet', mik:1, mont:'mpct:kosk'},
+ {id:'e_oghuc', kisim:'Ekipman', ad:'OG hücre (köşk içi · 36 kV)', birim:'adet', mik:3, est:1, mont:'mpct:kosk'},
+ {id:'e_agpano',kisim:'Ekipman', ad:'AG pano / AC combiner (19 giriş)', birim:'adet', mik:1, mont:'mpct:kosk'},
+ {id:'t_kanal', kisim:'Kanal/Topraklama', ad:'AG-OG kablo kanalı (trench 95 + DC ext 2.013)', birim:'m', mik:2108, mont:'mpct:kanal'},
+ {id:'t_ikaz',  kisim:'Kanal/Topraklama', ad:'İkaz şeridi', birim:'m', mik:2108, est:1, mont:'mpct:kanal'},
+ {id:'t_elektrot',kisim:'Kanal/Topraklama', ad:'Topraklama elektrotu (TR1 payı ~68)', birim:'adet', mik:68, est:1},
+ {id:'t_nyaf',  kisim:'Kanal/Topraklama', ad:'1×16 mm² NYAF (masa topraklama drop)', birim:'adet', mik:378, est:1},
+ {id:'t_serit', kisim:'Kanal/Topraklama', ad:'Galv. şerit 30×3,5 mm (ana ağ)', birim:'m', mik:0, est:1},
+ {id:'t_pabuc', kisim:'Kanal/Topraklama', ad:'AG kablo pabucu', birim:'adet', mik:0, est:1},
+ {id:'s_kbag',  kisim:'Sarf', ad:'Kablo bağı', birim:'adet', mik:0, sarf:1},
+ {id:'s_mc4',   kisim:'Sarf', ad:'MC4 konnektör', birim:'adet', mik:0, sarf:1},
+ {id:'s_makaron',kisim:'Sarf', ad:'Makaron / etiket', birim:'adet', mik:0, sarf:1},
 ];
-const MATKIS=['DC','AG','OG','Kanal/Kazı','Ekipman','Konstrüksiyon','Sarf'];
-let MATIN=[], MATUSE={}, MATKOV={}, MATSEL=new Set(), MSUB=0, CURPHOTO=null;
-function matItem(id){return MATKESIF.find(x=>x.id===id);}
+const MATKIS=['DC','AG','OG','Konstrüksiyon','Ekipman','Kanal/Topraklama','Sarf'];
+let MATIN=[], MATUSE={}, MATKOV={}, MATSEL=new Set(), MSUB=0, CURPHOTO=null, MATCUSTOM=[];
+function allItems(){return MATKESIF.concat(MATCUSTOM);}
+function matItem(id){return allItems().find(x=>x.id===id);}
 function mikOf(id){return (id in MATKOV)?MATKOV[id]:(matItem(id)||{}).mik||0;}
 function gelenOf(id){let s=0;for(const r of MATIN)s+=(+(r.items[id]||0));return s;}
-function kullanilanOf(id){const it=matItem(id);if(it&&it.auto==='dc')return Math.round(typeof dcMeters==='function'?dcMeters():0);return +(MATUSE[id]||0);}
+function kullanilanOf(id){const it=matItem(id);if(!it)return +(MATUSE[id]||0);
+  const dm=(typeof dcMeters==='function'?dcMeters():0), sp=(typeof sumP==='function'?sumP('k7'):0);
+  if(it.auto==='dc')return Math.round(dm);
+  if(it.mont==='pp')return Math.round(sp/9828*it.mik);
+  if(it.mont==='dcm')return Math.round(dm/45052*it.mik);
+  if(it.mont==='og')return Math.round((OGB||0)/6*it.mik);
+  if(it.mont==='ag'){if(typeof agSegs==='function'){const a=agSegs(),d=a.filter(x=>CAB.ac[segKey(x[0],x[1])]).length;return Math.round((a.length?d/a.length:0)*it.mik);}return 0;}
+  if(it.mont&&it.mont.slice(0,5)==='mpct:'){return Math.round((MPCT[it.mont.slice(5)]||0)/100*it.mik);}
+  if(it.mont)return (typeof cntK==='function'?cntK(it.mont):0)*(it.pt||1);
+  return +(MATUSE[id]||0);}
 function kalanOf(id){return gelenOf(id)-kullanilanOf(id);}
 function eksikOf(id){const e=mikOf(id)-gelenOf(id);return e>0?e:0;}
 const trn=n=>Number(n||0).toLocaleString('tr-TR',{maximumFractionDigits:1});
@@ -1330,20 +1394,21 @@ function mtSub(n){MSUB=n;renderMalzeme();}
 
 function matKesifView(){let h='<div class="tk2"><h3>Keşif — proje metrajları (kısım kısım)</h3>'+
   '<div class="sub">Projeden çıkarılan malzeme metrajları. Kutucuğu seç → irsaliye/raporda kullan. (e) = tahmini, yönetici düzeltebilir.</div>';
-  for(const k of MATKIS){if(k==='Sarf')continue;const items=MATKESIF.filter(m=>m.kisim===k);if(!items.length)continue;
+  const _kis=[...new Set(allItems().map(m=>m.kisim))];for(const k of _kis){if(k==='Sarf')continue;const items=allItems().filter(m=>m.kisim===k);if(!items.length)continue;
     h+='<div class="matgrp"><div class="matgh">'+k+'</div>';
     for(const m of items){const sel=MATSEL.has(m.id);
       h+='<div class="matrow"><label class="matck"><input type="checkbox" '+(sel?'checked':'')+' onchange="toggleMatSel(\''+m.id+'\')"> <span>'+m.ad+'</span></label>'+
-        '<span class="matq">'+(ROLE==='admin'?'<input class="mikin" type="number" value="'+mikOf(m.id)+'" onchange="setKesifMik(\''+m.id+'\',this.value)">':'<b>'+trn(mikOf(m.id))+'</b>')+' '+m.birim+(m.est?' <i class="estb">e</i>':'')+'</span></div>';}
+        '<span class="matq">'+(ROLE==='admin'?'<input class="mikin" type="number" value="'+mikOf(m.id)+'" onchange="setKesifMik(\''+m.id+'\',this.value)">':'<b>'+trn(mikOf(m.id))+'</b>')+' '+m.birim+(m.est?' <i class="estb">e</i>':'')+(m.custom?' <a class="xdel" onclick="delCustomMat(\''+m.id+'\')">✕</a>':'')+'</span></div>';}
     h+='</div>';}
-  h+='<div class="drow" style="margin-top:10px"><button class="btn sm" onclick="MATSEL=new Set(MATKESIF.filter(m=>m.kisim!==\'Sarf\').map(m=>m.id));renderMalzeme()">Tümünü seç</button><button class="btn ghost sm" onclick="MATSEL=new Set();renderMalzeme()">Temizle</button><button class="btn sm" onclick="MSUB=1;renderMalzeme()">Seçilenlerle irsaliye →</button></div></div>';
+  h+='<div class="matgrp"><div class="matgh">+ Malzeme ekle (listede yoksa · kod gerekmez)</div>'+'<div class="frow"><label>Kısım<select id="cm_kis">'+MATKIS.concat(['Diğer']).map(k=>'<option>'+k+'</option>').join('')+'</select></label>'+'<label>Malzeme adı<input id="cm_ad" placeholder="ad"></label>'+'<label>Birim<input id="cm_bir" placeholder="adet" style="width:64px"></label>'+'<label>Keşif<input id="cm_mik" type="number" placeholder="0" style="width:78px"></label>'+'<button class="btn sm" onclick="addCustomMat()">Ekle</button></div></div>';
+  h+='<div class="drow" style="margin-top:10px"><button class="btn sm" onclick="MATSEL=new Set(allItems().filter(m=>m.kisim!==\'Sarf\').map(m=>m.id));renderMalzeme()">Tümünü seç</button><button class="btn ghost sm" onclick="MATSEL=new Set();renderMalzeme()">Temizle</button><button class="btn sm" onclick="MSUB=1;renderMalzeme()">Seçilenlerle irsaliye →</button></div></div>';
   return h;}
 function toggleMatSel(id){if(MATSEL.has(id))MATSEL.delete(id);else MATSEL.add(id);}
 async function setKesifMik(id,v){MATKOV[id]=parseFloat(v)||0;await sset('matkov',MATKOV);}
 
 /* ----- GELEN / İRSALİYE ----- */
 function matGelenView(){
-  const sel=MATSEL.size?[...MATSEL]:MATKESIF.filter(m=>m.kisim!=='Sarf').map(m=>m.id);
+  const sel=MATSEL.size?[...MATSEL]:allItems().filter(m=>m.kisim!=='Sarf').map(m=>m.id);
   let form='<div class="tk2"><h3>Yeni irsaliye (gelen malzeme)</h3>'+
    '<div class="sub">İrsaliye fotoğrafını yükle (usta) → istersek otomatik tara. Gelen miktarları gir → keşifle eşleşir, hakedişe/rapora işler.</div>'+
    '<div class="frow"><label>İrsaliye No<input id="ir_no" placeholder="0001"></label>'+
@@ -1379,7 +1444,7 @@ async function ocrPhoto(){const o=document.getElementById('ocrout');if(!CURPHOTO
     o.innerHTML+='<br><b>'+matched+'</b> kalem otomatik dolduruldu — lütfen kontrol et.';
   }catch(e){o.textContent='Tarama yapılamadı (çevrimdışı/CDN engeli olabilir). Miktarları elle girin.';}}
 async function addIrsaliye(){const no=fval('ir_no'),date=fval('ir_date'),ted=fval('ir_ted');
-  const sel=MATSEL.size?[...MATSEL]:MATKESIF.filter(m=>m.kisim!=='Sarf').map(m=>m.id);
+  const sel=MATSEL.size?[...MATSEL]:allItems().filter(m=>m.kisim!=='Sarf').map(m=>m.id);
   const items={};let any=false;for(const id of sel){const e=document.getElementById('q_'+id);const v=e?parseFloat(e.value):0;if(v>0){items[id]=v;any=true;}}
   if(!any){toast('En az bir miktar girin');return;}
   const id='irs'+Date.now();const rec={id,no,tarih:date,ted,items,by:ROLE||'?',ts:Date.now()};
@@ -1391,14 +1456,14 @@ async function delIrsaliye(id){if(ROLE!=='admin')return;if(!confirm('İrsaliye s
 /* ----- SARF ----- */
 function matSarfView(){let h='<div class="tk2"><h3>Sarf malzeme</h3><div class="sub">Keşif dışı alınan sarflar. Gelen irsaliyeden, kullanım elle girilir.</div>'+
   '<table class="mtab"><thead><tr><th>Sarf</th><th>Gelen</th><th>Kullanılan</th><th>Kalan</th></tr></thead><tbody>';
-  for(const m of MATKESIF.filter(x=>x.sarf)){h+='<tr><td>'+m.ad+'</td><td>'+trn(gelenOf(m.id))+'</td>'+
+  for(const m of allItems().filter(x=>x.sarf)){h+='<tr><td>'+m.ad+'</td><td>'+trn(gelenOf(m.id))+'</td>'+
     '<td><input class="qin sm" type="number" value="'+(MATUSE[m.id]||0)+'" onchange="setUse(\''+m.id+'\',this.value)"></td>'+
     '<td><b>'+trn(kalanOf(m.id))+'</b></td></tr>';}
   h+='</tbody></table></div>';return h;}
 async function setUse(id,v){MATUSE[id]=parseFloat(v)||0;await sset('matuse',MATUSE);if(MSUB===3)renderMalzeme();}
 
 /* ----- RAPOR ----- */
-function matRows(){return MATKESIF.map(m=>({kisim:m.kisim,ad:m.ad,birim:m.birim,kesif:mikOf(m.id),gelen:gelenOf(m.id),kul:kullanilanOf(m.id),kalan:kalanOf(m.id),eksik:eksikOf(m.id)}));}
+function matRows(){return allItems().map(m=>({kisim:m.kisim,ad:m.ad,birim:m.birim,kesif:mikOf(m.id),gelen:gelenOf(m.id),kul:kullanilanOf(m.id),kalan:kalanOf(m.id),eksik:eksikOf(m.id)}));}
 function matRaporView(){const R=matRows();
   let h='<div class="tk2"><h3>Malzeme raporu — kullanılan / kalan / eksik</h3>'+
    '<div class="sub">Keşif vs gelen vs kullanılan. Kalan = gelen − kullanılan · Eksik = keşif − gelen. Solar kullanım DC ilerlemesinden otomatik.</div>'+
@@ -1419,6 +1484,10 @@ function exportMail(){const R=matRows();let body='SHAMS-1 TR-1 Malzeme Raporu ('
     '<div class="drow"><button class="btn sm" onclick="document.getElementById(\'mailta\').select();document.execCommand(\'copy\');toast(\'Kopyalandı\')">Kopyala</button>'+
     '<a class="btn ghost sm" href="mailto:?subject='+encodeURIComponent('SHAMS-1 TR-1 Malzeme Raporu')+'&body='+encodeURIComponent(body.slice(0,1500))+'">E-posta aç</a></div>'));}
 
+async function addCustomMat(){const ad=fval('cm_ad');if(!ad){toast('Malzeme adı girin');return;}
+  MATCUSTOM.push({id:'c_'+Date.now(),kisim:fval('cm_kis')||'Diğer',ad,birim:fval('cm_bir')||'adet',mik:parseFloat(fval('cm_mik'))||0,custom:1});
+  await sset('matcustom',MATCUSTOM);toast('Malzeme eklendi');renderMalzeme();}
+async function delCustomMat(id){if(!confirm('Bu malzeme silinsin mi?'))return;MATCUSTOM=MATCUSTOM.filter(x=>x.id!==id);await sset('matcustom',MATCUSTOM);renderMalzeme();}
 /* ----- yükleme sayacı ----- */
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
