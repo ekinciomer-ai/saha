@@ -298,6 +298,12 @@
   .mtab td.neg{color:var(--dc);font-weight:700}
   .mailta{width:100%;height:200px;font-family:var(--mono);font-size:11px;border:1px solid var(--line);border-radius:8px;padding:8px}
   .xdel{color:var(--dc);cursor:pointer;font-size:11px;margin-left:6px;text-decoration:none}
+  .gantt{margin-top:6px}
+  .grow{display:flex;align-items:center;gap:8px;margin:3px 0}
+  .glbl{flex:0 0 190px;font-size:11px;color:var(--ink2,#666);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .gtrack{position:relative;flex:1;height:16px;background:#f1f1f4;border-radius:5px}
+  .gbar{position:absolute;top:0;height:16px;border-radius:5px;opacity:.9}
+  .gbar.gm{background:#3B82C4}.gbar.ge{background:#E8833A}
 </style>
 
 <div id="home" class="home">
@@ -305,7 +311,7 @@
   <div class="homecard">
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 16 · İSEÇ cezaları + roller</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 17 · İş Programı + sevk takvimi</div>
     <div class="hint">Giriş türünü seç, sonra projeyi aç. Yönetici tüm verileri (parasal dâhil) görür ve girer; Usta sadece proje bilgisi görür ve veri girişi yapar.</div>
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -327,7 +333,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 16 · Bulut · 15.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 17 · Bulut · 15.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -355,6 +361,7 @@
     <button class="tab" onclick="tabTo(4,this)">▣ Malzeme</button>
     <button class="tab" onclick="tabTo(5,this)">👷 Personel</button>
     <button class="tab adminonly" onclick="tabTo(6,this)">📋 Sözleşme</button>
+    <button class="tab" onclick="tabTo(7,this)">📅 İş Programı</button>
   </div>
 
   <!-- ===== PROJE ===== -->
@@ -428,6 +435,7 @@
   <div class="pane" id="pane4"><div id="malzeme"></div></div>
   <div class="pane" id="pane5"><div id="personel"></div></div>
   <div class="pane" id="pane6"><div id="sozlesme"></div></div>
+  <div class="pane" id="pane7"><div id="isprog"></div></div>
 </div>
 
 <div class="backdrop" id="backdrop" onclick="closeEd()"></div>
@@ -612,14 +620,15 @@ function grpOf(i){return Math.floor((i-1)/20);}
 
 let MCUR=0;
 function tabTo(n,el){document.querySelectorAll('.tabs .tab').forEach(t=>t.classList.remove('on'));el.classList.add('on');
-  for(let i=0;i<7;i++)document.getElementById('pane'+i).classList.toggle('on',i===n);
+  for(let i=0;i<8;i++)document.getElementById('pane'+i).classList.toggle('on',i===n);
   if(n===0)renderProje();
   if(n===1)mShow();
   if(n===2){renderProgress();renderHakedisKesinti();}
   if(n===3)renderBilgi();
   if(n===4)renderMalzeme();
   if(n===5)renderPersonel();
-  if(n===6)renderSozlesme();}
+  if(n===6)renderSozlesme();
+  if(n===7)renderIsProg();}
 function mTo(n,el){MCUR=n;document.querySelectorAll('#msub .subtab').forEach(t=>t.classList.remove('on'));el.classList.add('on');
   for(let i=0;i<7;i++)document.getElementById('mpane'+i).classList.toggle('on',i===n);mShow();}
 function mShow(){if(MCUR===0){renderPhaseChips();renderZoneChips();renderMinimap();renderZoneMasa();renderKonstPlan();konstStats();renderKonstTek();}
@@ -640,7 +649,7 @@ async function reloadAll(){
   PLAN={};const gk=await slist('tr1g:');for(const k of gk){const g=await sget(k);if(g)Object.assign(PLAN,g);}
   CAB={dc:await sget('cab:dc')||{},ac:await sget('cab:ac')||{},og:await sget('cab:og')||{}};
   DCDONE=new Set(await sget('dcstr')||[]); OGB=await sget('ogb')||0;
-  MATIN=await sget('matin')||[]; MATUSE=await sget('matuse')||{}; MATKOV=await sget('matkov')||{}; MATCUSTOM=await sget('matcustom')||[]; UPCOUNT=await sget('upc')||0; UPLAST=await sget('uplast')||0; if(typeof renderUpBadge==='function')renderUpBadge();
+  MATIN=await sget('matin')||[]; MATUSE=await sget('matuse')||{}; MATKOV=await sget('matkov')||{}; MATCUSTOM=await sget('matcustom')||[]; ISB=await sget('isbasi')||'2026-06-16'; UPCOUNT=await sget('upc')||0; UPLAST=await sget('uplast')||0; if(typeof renderUpBadge==='function')renderUpBadge();
   CINS={dc:await sget('cins:dc')||{},ac:await sget('cins:ac')||{},og:await sget('cins:og')||{}};
   TEAM=await sget('team')||[];
   TEAM.forEach(p=>{if(p.gorev==='Ara eleman')p.gorev='Yardımcı';});
@@ -1574,6 +1583,55 @@ function renderHakedisKesinti(){const el=document.getElementById('hkkesinti');if
 
 /* ===== SEKME 4 — BİLGİ BANKASI ===== */
 function acc(title,inner,open,cls){return '<details class="acc'+(cls?' '+cls:'')+'"'+(open?' open':'')+'><summary>'+title+'</summary><div class="body">'+inner+'</div></details>';}
+let ISB='2026-06-16';const ISBITIS='2026-07-10';
+function dadd(iso,n){const d=new Date(iso+'T00:00:00');d.setDate(d.getDate()+n);return d.toISOString().slice(0,10);}
+function ddiff(a,b){return Math.round((new Date(b+'T00:00:00')-new Date(a+'T00:00:00'))/86400000);}
+function dtr(iso){if(!iso)return '—';const a=iso.split('-');return a[2]+'.'+a[1]+'.'+a[0];}
+const POZ=[
+ {p:'1', ad:'Harita / aplikasyon',                 dis:'MEK', pur:0,  s:0,  g:2,  mal:[], ek:'Aplikasyon ekipmanı (GPS/total station)'},
+ {p:'2', ad:'Çakma kolon (kazık / ayak)',          dis:'MEK', pur:42, s:1,  g:9,  mal:['k_p1','k_p2'], ek:'Çakma makinesi'},
+ {p:'3', ad:'Üst montaj / aşık (çelik konstrüksiyon)',dis:'MEK',pur:31,s:5, g:10, mal:['k_p3','k_p41','k_p42','k_p43','k_p5','k_p6','k_p7','k_m12']},
+ {p:'4', ad:'Panel montajı',                       dis:'MEK', pur:27, s:10, g:10, mal:['k_panel','k_p11','k_orta']},
+ {p:'5', ad:'AG-OG kablo kanalı (trench)',         dis:'ELK', pur:30, s:2,  g:10, mal:['t_kanal','m_koruge','t_ikaz']},
+ {p:'6', ad:'DC 1×6 solar kablo çekimi',           dis:'ELK', pur:16, s:11, g:10, mal:['m_dc','s_mc4']},
+ {p:'7', ad:'OG başlık / sonlandırma',             dis:'ELK', pur:7,  s:15, g:4,  mal:['m_og','m_ogbas']},
+ {p:'8', ad:'Köşk · AG pano · OG hücre',           dis:'ELK', pur:11, s:8,  g:9,  mal:['e_kosk','e_agpano','e_oghuc']},
+ {p:'9', ad:'İnverter + Trafo montajı',            dis:'ELK', pur:17, s:14, g:7,  mal:['e_inv','e_trafo','m_ag','m_tragp'], ek:'Trafo uzun temin — erken sipariş!'},
+ {p:'10',ad:'CCTV / aydınlatma',                   dis:'ELK', pur:14, s:17, g:5,  mal:[], ek:'CCTV kamera + NVR + aydınlatma'},
+ {p:'11',ad:'Test / devreye alma',                 dis:'ELK', pur:5,  s:21, g:4,  mal:['t_elektrot','t_nyaf','t_serit'], ek:'Megger, hipot, test cihazları'}
+];
+function malName(id){const it=(typeof matItem==='function')?matItem(id):null;return it?it.ad:id;}
+function malMik(id){const it=(typeof matItem==='function')?matItem(id):null;return it?(Number(it.mik).toLocaleString('tr-TR')+' '+(it.birim||'')):'';}
+async function setIsbasi(v){if(!v)return;ISB=v;await sset('isbasi',v);renderIsProg();}
+function pozDates(z){const st=dadd(ISB,z.s),en=dadd(ISB,z.s+Math.max(1,z.g)-1),rd=dadd(st,-5);return {st,en,rd};}
+function renderIsProg(){const el=document.getElementById('isprog');if(!el)return;
+  const today=new Date().toISOString().slice(0,10);
+  const total=Math.max(1,ddiff(ISB,ISBITIS)+1);
+  const endPlan=POZ.reduce((m,z)=>Math.max(m,z.s+z.g),0);
+  // kritik sevk listesi
+  const ship=[];POZ.forEach(z=>{const d=pozDates(z);(z.mal||[]).forEach(id=>ship.push({id,ad:malName(id),mik:malMik(id),rd:d.rd,poz:z.p,is:z.ad}));});
+  const byId={};ship.forEach(x=>{if(!byId[x.id]||x.rd<byId[x.id].rd)byId[x.id]=x;});
+  const slist=Object.values(byId).sort((a,b)=>a.rd<b.rd?-1:1);
+  let h='<div class="tk2"><h3>İş Programı — SHAMS-1 TR-1 (6,9 MWp)</h3>'+
+    '<div class="frow" style="align-items:center;gap:10px"><label>İş başı<input type="date" id="isb_in" value="'+ISB+'" onchange="setIsbasi(this.value)"></label>'+
+    '<span class="hint">Sözleşme bitişi: <b>'+dtr(ISBITIS)+'</b> · süre '+total+' gün · planlanan '+endPlan+' gün</span></div>'+
+    (endPlan>total?'<div class="hint" style="color:var(--dc)">⚠ Planlanan iş ('+endPlan+' gün) sözleşme süresini ('+total+' gün) aşıyor — paralel ekip / vardiya şart.</div>':'')+'</div>';
+  // sevk takvimi
+  h+='<div class="tk2 ceza"><h3>📦 Malzeme sevk takvimi (sahaya ≥5 gün önce hazır)</h3><div style="overflow:auto"><table class="mtab"><thead><tr><th>Sevke hazır (en geç)</th><th>Malzeme</th><th>Miktar</th><th>İş (poz)</th><th>Durum</th></tr></thead><tbody>'+
+    slist.map(x=>{const ac=x.rd<today;return '<tr><td class="m'+(ac?'" style="color:var(--dc);font-weight:700':'')+'">'+dtr(x.rd)+'</td><td>'+esc(x.ad)+'</td><td class="m">'+x.mik+'</td><td class="m">'+x.poz+'</td><td>'+(ac?'<b style="color:var(--dc)">ACİL — derhal sevk</b>':'planla')+'</td></tr>';}).join('')+
+    '</tbody></table></div><div class="hint">Lojistik + gümrük süresi için malzeme, ilgili işin başlamasından <b>en az 5 gün önce</b> sevke hazır olmalı. "ACİL" satırlar bugünü geçmiş → hemen sevk edilmeli.</div></div>';
+  // poz tablosu
+  h+='<div class="tk2"><h3>İş kalemleri (poz) ve tarihler</h3><div style="overflow:auto"><table class="mtab"><thead><tr><th>Poz</th><th>İş kalemi</th><th>Disp.</th><th>%</th><th>Başla</th><th>Bitir</th><th>Gün</th><th>Gerekli malzeme</th><th>Malzeme sevke hazır</th></tr></thead><tbody>';
+  POZ.forEach(z=>{const d=pozDates(z);const mals=(z.mal||[]).map(malName).concat(z.ek?[z.ek]:[]).join(' · ')||(z.ek||'—');
+    h+='<tr><td class="m">'+z.p+'</td><td>'+esc(z.ad)+'</td><td class="m">'+z.dis+'</td><td class="m">'+(z.pur||'-')+'</td><td class="m">'+dtr(d.st)+'</td><td class="m">'+dtr(d.en)+'</td><td class="m">'+z.g+'</td><td><small>'+esc(mals)+'</small></td><td class="m'+(d.rd<today?'" style="color:var(--dc);font-weight:700':'')+'">'+dtr(d.rd)+'</td></tr>';});
+  h+='</tbody></table></div></div>';
+  // gantt
+  h+='<div class="tk2"><h3>Zaman çizelgesi (Gantt)</h3><div class="gantt">';
+  POZ.forEach(z=>{const left=z.s/total*100,wid=Math.max(2,z.g/total*100);
+    h+='<div class="grow"><span class="glbl">'+z.p+' '+esc(z.ad.slice(0,22))+'</span><span class="gtrack"><span class="gbar '+(z.dis==='MEK'?'gm':'ge')+'" style="left:'+left+'%;width:'+wid+'%"></span></span></div>';});
+  h+='</div><div class="hint">Mavi = mekanik · turuncu = elektrik. İş başı '+dtr(ISB)+' → '+dtr(ISBITIS)+'.</div></div>';
+  el.innerHTML=h;}
+
 function renderPersonel(){const el=document.getElementById('personel');if(!el)return;
   el.innerHTML=
    '<div class="tk2"><h3>Günlük puantaj — sahadaki çalışan sayısı</h3><div class="sub">Her gün güncellenmesi zorunludur. Geçmiş 14 gün:</div>'+hcHistory()+'</div>'+
