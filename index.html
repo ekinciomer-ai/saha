@@ -305,7 +305,7 @@
   <div class="homecard">
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 12 · Bulut AKTİF (shams1-saha)</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 15 · Personel + Sözleşme sekmeleri</div>
     <div class="hint">Giriş türünü seç, sonra projeyi aç. Yönetici tüm verileri (parasal dâhil) görür ve girer; Usta sadece proje bilgisi görür ve veri girişi yapar.</div>
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -327,7 +327,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 12 · Bulut AKTİF · 14.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 15 · Bulut · 15.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -353,6 +353,8 @@
     <button class="tab adminonly" onclick="tabTo(2,this)">▤ Hakediş</button>
     <button class="tab" onclick="tabTo(3,this)">▦ Bilgi Bankası</button>
     <button class="tab" onclick="tabTo(4,this)">▣ Malzeme</button>
+    <button class="tab" onclick="tabTo(5,this)">👷 Personel</button>
+    <button class="tab adminonly" onclick="tabTo(6,this)">📋 Sözleşme</button>
   </div>
 
   <!-- ===== PROJE ===== -->
@@ -424,6 +426,8 @@
   <!-- ===== BİLGİ BANKASI ===== -->
   <div class="pane" id="pane3"><div id="bilgi"></div></div>
   <div class="pane" id="pane4"><div id="malzeme"></div></div>
+  <div class="pane" id="pane5"><div id="personel"></div></div>
+  <div class="pane" id="pane6"><div id="sozlesme"></div></div>
 </div>
 
 <div class="backdrop" id="backdrop" onclick="closeEd()"></div>
@@ -513,7 +517,7 @@ const FBCONFIG = {
 let FBDB=null;
 function loadScript(src){return new Promise((res,rej)=>{const x=document.createElement('script');x.src=src;x.onload=res;x.onerror=rej;document.head.appendChild(x);});}
 async function fbInit(){if(!FBCONFIG||!FBCONFIG.databaseURL)return false;if(FBDB)return true;
-  try{if(!window.firebase){await loadScript('https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js');await loadScript('https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js');}
+  try{if(!window.firebase){await Promise.race([(async()=>{await loadScript('https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js');await loadScript('https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js');})(),new Promise((_,rej)=>setTimeout(()=>rej(new Error('fb-timeout')),7000))]);}
     firebase.initializeApp(FBCONFIG);FBDB=firebase.database();return true;}catch(e){return false;}}
 function fbPath(k){return 'shams1tr1/'+String(k).replace(/[.#$\[\]]/g,'_').replace(/:/g,'/');}
 const ADMIN_PIN='1453'; // ← yönetici PIN (buradan değiştir)
@@ -608,12 +612,14 @@ function grpOf(i){return Math.floor((i-1)/20);}
 
 let MCUR=0;
 function tabTo(n,el){document.querySelectorAll('.tabs .tab').forEach(t=>t.classList.remove('on'));el.classList.add('on');
-  for(let i=0;i<5;i++)document.getElementById('pane'+i).classList.toggle('on',i===n);
+  for(let i=0;i<7;i++)document.getElementById('pane'+i).classList.toggle('on',i===n);
   if(n===0)renderProje();
   if(n===1)mShow();
   if(n===2){renderProgress();renderHakedisKesinti();}
   if(n===3)renderBilgi();
-  if(n===4)renderMalzeme();}
+  if(n===4)renderMalzeme();
+  if(n===5)renderPersonel();
+  if(n===6)renderSozlesme();}
 function mTo(n,el){MCUR=n;document.querySelectorAll('#msub .subtab').forEach(t=>t.classList.remove('on'));el.classList.add('on');
   for(let i=0;i<7;i++)document.getElementById('mpane'+i).classList.toggle('on',i===n);mShow();}
 function mShow(){if(MCUR===0){renderPhaseChips();renderZoneChips();renderMinimap();renderZoneMasa();renderKonstPlan();konstStats();renderKonstTek();}
@@ -637,7 +643,7 @@ async function reloadAll(){
   MATIN=await sget('matin')||[]; MATUSE=await sget('matuse')||{}; MATKOV=await sget('matkov')||{}; MATCUSTOM=await sget('matcustom')||[]; UPCOUNT=await sget('upc')||0; UPLAST=await sget('uplast')||0; if(typeof renderUpBadge==='function')renderUpBadge();
   CINS={dc:await sget('cins:dc')||{},ac:await sget('cins:ac')||{},og:await sget('cins:og')||{}};
   TEAM=await sget('team')||[];
-  {let ch=false;const seeded=await sget('team_seeded');for(const [ad,kn] of SEED_TEAM){if(!TEAM.some(t=>(t.kimlikno&&t.kimlikno===kn)||t.ad===ad)){if(!seeded){TEAM.push({id:uid(),ad,gorev:'Mekanik',tel:'',kimlikno:kn,giris:dToday(),cikis:'',aktif:true,foto:'',kimlik:''});ch=true;}}}if(ch){await sset('team',TEAM);}if(!seeded)await sset('team_seeded',1);}
+  {const _del=await sget('team_del')||[];let ch=false;for(const [ad,kn] of SEED_TEAM){if(_del.indexOf(kn)>=0)continue;if(!TEAM.some(t=>(t.kimlikno&&t.kimlikno===kn)||t.ad===ad)){TEAM.push({id:uid(),ad,gorev:'Mekanik',tel:'',kimlikno:kn,giris:dToday(),cikis:'',aktif:true,foto:'',kimlik:''});ch=true;}}if(ch)await sset('team',TEAM);}
   HC={};for(const k of await slist('hc:')){const v=await sget(k);if(v)HC[k.slice(3)]=v;}
   DREQ=[];for(const k of await slist('dr:')){const v=await sget(k);if(v)DREQ.push(v);}
   ALOG=[];for(const k of await slist('al:')){const v=await sget(k);if(v)ALOG.push(v);}ALOG.sort((a,b)=>b.ts-a.ts);
@@ -1020,12 +1026,12 @@ function teamGet(id){return TEAM.find(p=>p.id===id);}
 async function addPerson(){const ad=fval('tp_ad');if(!ad){toast('Ad-soyad girin');return;}
   const p={id:uid(),ad,gorev:fval('tp_gorev')||'Ara eleman',tel:fval('tp_tel'),kimlikno:fval('tp_kno'),
     giris:fval('tp_giris')||dToday(),cikis:'',aktif:true,foto:TP_FOTO,kimlik:TP_KIMLIK};
-  TEAM.push(p);TP_FOTO='';TP_KIMLIK='';await saveTeam();await logAct('personel-ekle',ad+' ('+p.gorev+')');renderBilgi();}
+  TEAM.push(p);TP_FOTO='';TP_KIMLIK='';await saveTeam();await logAct('personel-ekle',ad+' ('+p.gorev+')');renderPersonel();}
 async function setActive(id,act){const p=teamGet(id);if(!p)return;p.aktif=act;p.cikis=act?'':(p.cikis||dToday());
-  await saveTeam();await logAct(act?'personel-aktif':'personel-pasif',p.ad);renderBilgi();}
+  await saveTeam();await logAct(act?'personel-aktif':'personel-pasif',p.ad);renderPersonel();}
 async function delPerson(id){const p=teamGet(id);if(!p)return;
   if(ROLE!=='admin'){await reqDelete('team:'+id,'Personel: '+p.ad);toast('Silme yönetici onayına gönderildi');return;}
-  if(!confirm(p.ad+' kalıcı silinsin mi?'))return;TEAM=TEAM.filter(x=>x.id!==id);await saveTeam();await logAct('personel-sil',p.ad);renderBilgi();}
+  if(!confirm(p.ad+' kalıcı silinsin mi?'))return;const _sd=SEED_TEAM.some(x=>x[1]===p.kimlikno);TEAM=TEAM.filter(x=>x.id!==id);if(_sd&&p.kimlikno){const d=await sget('team_del')||[];if(d.indexOf(p.kimlikno)<0){d.push(p.kimlikno);await sset('team_del',d);}}await saveTeam();await logAct('personel-sil',p.ad);renderPersonel();}
 
 function teamForm(){return '<div class="tk2"><h3>Personel ekle</h3>'+
   '<div class="tform">'+
@@ -1051,8 +1057,8 @@ function teamCards(){if(!TEAM.length)return '<div class="empty">Henüz personel 
      '<small>giriş '+esc(p.giris||'—')+(p.cikis?' · çıkış '+esc(p.cikis):'')+(p.aktif?'':' · PASİF')+'</small>'+
      (p.kimlik?'<a class="adminonly idlink" href="'+p.kimlik+'" target="_blank">🪪 kimlik</a>':'')+
    '</div>'+
-   '<div class="tact adminonly">'+(p.aktif?'<button class="btn ghost sm" onclick="setActive(\''+p.id+'\',false)">Pasife al</button>':'<button class="btn ghost sm" onclick="setActive(\''+p.id+'\',true)">Aktif et</button>')+
-     '<button class="del" onclick="delPerson(\''+p.id+'\')">sil</button></div>'+
+   '<div class="tact"><button class="btn ghost sm" onclick="editPerson(\''+p.id+'\')">✎ Düzenle</button><span class="adminonly">'+(p.aktif?'<button class="btn ghost sm" onclick="setActive(\''+p.id+'\',false)">Pasife al</button>':'<button class="btn ghost sm" onclick="setActive(\''+p.id+'\',true)">Aktif et</button>')+
+     '<button class="del" onclick="delPerson(\''+p.id+'\')">sil</button></span></div>'+
   '</div>').join('')+'</div>';}
 
 function orgNode(p,pas){return '<div class="orgnode'+(pas?' pasif':'')+'">'+
@@ -1070,7 +1076,7 @@ function orgTree(){const act=TEAM.filter(p=>p.aktif),pas=TEAM.filter(p=>!p.aktif
 
 /* ---- GÜNLÜK PUANTAJ ---- */
 async function setHC(id){const n=parseInt(fval(id));if(!(n>=0)){toast('Kişi sayısı girin');return;}
-  const d=dToday();HC[d]={n,by:ROLE||'?',ts:Date.now()};await sset('hc:'+d,HC[d]);await logAct('puantaj',d+': '+n+' kişi');renderHCbanner();renderBilgi();}
+  const d=dToday();HC[d]={n,by:ROLE||'?',ts:Date.now()};await sset('hc:'+d,HC[d]);await logAct('puantaj',d+': '+n+' kişi');renderHCbanner();renderPersonel();}
 function hcToday(){return HC[dToday()];}
 function renderHCbanner(){const b=document.getElementById('hcbanner');if(!b)return;
   const t=hcToday();
@@ -1087,7 +1093,7 @@ async function approveDel(ts){const r=DREQ.find(x=>x.ts===ts);if(!r)return;
   if(r.key.indexOf('team:')===0){const id=r.key.slice(5);TEAM=TEAM.filter(x=>x.id!==id);await saveTeam();}
   else await sdel(r.key);
   DREQ=DREQ.filter(x=>x.ts!==ts);await sdel('dr:'+ts);await logAct('silme-onay',r.label);await reloadAll();}
-async function rejectDel(ts){const r=DREQ.find(x=>x.ts===ts);DREQ=DREQ.filter(x=>x.ts!==ts);await sdel('dr:'+ts);await logAct('silme-red',r?r.label:'');renderBilgi();}
+async function rejectDel(ts){const r=DREQ.find(x=>x.ts===ts);DREQ=DREQ.filter(x=>x.ts!==ts);await sdel('dr:'+ts);await logAct('silme-red',r?r.label:'');renderPersonel();}
 function delReqPanel(){if(!DREQ.length)return '';
   return '<div class="tk2 adminonly" style="border-color:var(--solar)"><h3>⏳ Silme onayı bekleyen ('+DREQ.length+')</h3>'+
     DREQ.map(r=>'<div class="drrow"><span>'+esc(r.label)+' <small>· '+esc(r.by)+'</small></span><span><button class="btn sm" onclick="approveDel('+r.ts+')">Onayla & sil</button> <button class="btn ghost sm" onclick="rejectDel('+r.ts+')">Reddet</button></span></div>').join('')+'</div>';}
@@ -1564,13 +1570,72 @@ function renderHakedisKesinti(){const el=document.getElementById('hkkesinti');if
 
 /* ===== SEKME 4 — BİLGİ BANKASI ===== */
 function acc(title,inner,open,cls){return '<details class="acc'+(cls?' '+cls:'')+'"'+(open?' open':'')+'><summary>'+title+'</summary><div class="body">'+inner+'</div></details>';}
+function renderPersonel(){const el=document.getElementById('personel');if(!el)return;
+  el.innerHTML=
+   '<div class="tk2"><h3>Günlük puantaj — sahadaki çalışan sayısı</h3><div class="sub">Her gün güncellenmesi zorunludur. Geçmiş 14 gün:</div>'+hcHistory()+'</div>'+
+   delReqPanel()+
+   '<h2 style="margin:14px 0 10px">Ekip / Personel</h2>'+teamForm()+teamCards()+
+   '<h2 style="margin:16px 0 10px">Organizasyon şeması</h2><div class="hint" style="margin-bottom:6px">Sözleşme: imzadan 3 gün içinde onaylı org. şeması sunulmalı.</div><div class="tk2">'+orgTree()+'</div>';}
+
+function editPerson(id){const p=teamGet(id);if(!p)return;
+  modalShow('Personel düzenle — '+esc(p.ad),'<div class="tform">'+
+   '<label>Ad-soyad<input id="ep_ad" value="'+esc(p.ad||'')+'"></label>'+
+   '<label>Görev<select id="ep_gorev">'+TROLES.map(r=>'<option'+(r===p.gorev?' selected':'')+'>'+r+'</option>').join('')+'</select></label>'+
+   '<label>Telefon<input id="ep_tel" value="'+esc(p.tel||'')+'"></label>'+
+   '<label>Kimlik no<input id="ep_kno" value="'+esc(p.kimlikno||'')+'"></label>'+
+   '<label>İşe giriş<input id="ep_giris" type="date" value="'+esc(p.giris||'')+'"></label>'+
+   '<label>Çıkış<input id="ep_cikis" type="date" value="'+esc(p.cikis||'')+'"></label>'+
+   '</div><div class="drow" style="margin-top:10px"><button class="btn sm" onclick="savePersonEdit(\''+id+'\')">Kaydet</button> <button class="btn ghost sm" onclick="closeDetay()">İptal</button></div>');}
+async function savePersonEdit(id){const p=teamGet(id);if(!p)return;
+  const ad=fval('ep_ad');if(!ad){toast('Ad-soyad boş olamaz');return;}
+  p.ad=ad;p.gorev=fval('ep_gorev')||p.gorev;p.tel=fval('ep_tel');p.kimlikno=fval('ep_kno');p.giris=fval('ep_giris')||p.giris;p.cikis=fval('ep_cikis')||'';if(p.cikis)p.aktif=false;
+  await saveTeam();await logAct('personel-düzenle',p.ad);closeDetay();renderPersonel();}
+
+function cezaRow(d,c){return '<tr><td>'+d+'</td><td>'+c+'</td></tr>';}
+function renderSozlesme(){const el=document.getElementById('sozlesme');if(!el)return;
+  el.innerHTML=
+   '<div class="tk2"><h3>Sözleşme — CEI SHAMS-1 GES · TR-1 fazı</h3>'+tkSpec([
+     ['Sözleşme tarihi','09.06.2026'],
+     ['Yüklenici','MENSİS ENERJİ SAN. VE DIŞ TİC. A.Ş.'],
+     ['Alt Yüklenici','AKSARAY ENERJİ (Azerbaycan Filiali)'],
+     ['Konu','SHAMS-1 GES elektrik işleri + rok delgi hariç mekanik işleri'],
+     ['Proje sahası','Nahçıvan ili · Başbaşı köyü'],
+     ['Götürü bedel','258.624 USD + KDV · (Mek 20 + Elk 17 = 37 USD/kWp)'],
+     ['İş bitimi','10.07.2026 — sözleşme tarihinden itibaren · SABİT son tarih'],
+     ['Garanti','24 ay'],
+     ['Damga vergisi','Alt Yüklenici\'de (Yüklenici öder, hakedişten keser)'],
+     ['Stopaj / KDV tevkifatı','Alt Yüklenici\'den · tevkifat 4/10'],
+     ['İhzarat','verilmeyecek']
+   ])+'</div>'+
+   '<div class="tk2"><h3>İşe başlama</h3><div class="det"><ul>'+
+     '<li>Fiilen başlama: <b>sözleşme imzası + Yer Teslim Tutanağı imzası</b> ile. Yer teslimi imzalanınca saha mobilizasyonu ve İŞ başlamış sayılır.</li>'+
+     '<li><b>İş bitimi sabit: 10.07.2026</b> — yer teslimi gecikse de sözleşmedeki son tarih değişmez. ⚠ Süre çok dar; gecikme riski yüksek.</li>'+
+     '<li>Organizasyon Şeması: imzadan <b>3 gün</b> içinde sun/onaylat (Personel sekmesi).</li>'+
+     '<li>Detaylı İş Programı: imzadan <b>7 gün</b> içinde sun/onaylat — geç teslim cezalı.</li>'+
+     '<li>Günlük rapor (her iş günü) + haftalık + aylık ilk 3 gün ilerleme raporu zorunlu.</li>'+
+   '</ul></div></div>'+
+   '<div class="tk2"><h3>⚠ Gecikme cezaları & cezai şartlar</h3>'+
+   '<div style="overflow:auto"><table class="mtab"><thead><tr><th>Durum</th><th>Ceza</th></tr></thead><tbody>'+
+   cezaRow('İşi süresinde bitirmeme','3 gün yazılı ihtar sonrası, gecikilen <b>her gün</b> için KDV hariç bedelin <b>%0,4\'ü VEYA 30.000 TL/gün</b> (Yüklenici seçer)')+
+   cezaRow('Detaylı İş Programı geç teslimi','her gün için bedelin <b>%0,5\'i VEYA 30.000 TL/gün</b>')+
+   cezaRow('Başka ceza öngörülmeyen her gecikme','her gün için bedelin <b>%0,5\'i VEYA 30.000 TL/gün</b>')+
+   cezaRow('Süreli/kısmi yükümlülüğü zamanında yapmama','gecikilen her gün bedelin <b>%0,3\'ü</b>')+
+   cezaRow('Her bir edim/taahhüt ihlali','bedelin <b>%1\'i</b> cezai şart')+
+   cezaRow('GECİKME CEZASI SINIRI','bedelin <b>%10\'u VEYA toplam 20 gün</b> aşılırsa → Yüklenici <b>fesih</b> hakkı kazanır')+
+   cezaRow('Cezalı süre 30 günü aşarsa','Yüklenici: işe devam ettirme / kısmen-tamamen fesih / 3. kişiye yaptırma (masraf Alt Yüklenici\'de)')+
+   '</tbody></table></div>'+
+   '<div class="hint">Cezalar protestoya gerek olmadan bir sonraki hakedişten veya teminattan kesilir; kesilen gecikme cezaları iade edilmez. Cezai şartlar götürü tazminat değildir — Yüklenici ayrıca doğrudan/dolaylı zarar tazmini de isteyebilir.</div></div>'+
+   '<div class="tk2"><h3>Teminatlar</h3>'+tkSpec([
+     ['Kesin teminat mektubu','KDV hariç bedelin %5\'i · 2 yıl · iade: Geçici Kabul + 2 yıl + yazılı talep + 30 gün'],
+     ['Nakit teminat','KDV hariç bedelin %10\'u · iade: %50 GK+30 gün · %50 GK+1 yıl+30 gün'],
+     ['Avans teminat mektubu','avans tutarında · 6 ay süreli · avans + %10 hakedişten mahsup'],
+     ['Teminata başvuru','cezai şart olarak gelir kaydedilir; borca mahsup edilmez']
+   ])+'</div>';}
+
 function renderBilgi(){const el=document.getElementById('bilgi');if(!el)return;
   el.innerHTML=
-  '<div class="tk2"><h3>Günlük puantaj — sahadaki çalışan sayısı</h3><div class="sub">Her gün güncellenmesi zorunludur. Geçmiş 14 gün:</div>'+hcHistory()+'</div>'+
-  delReqPanel()+
-  '<h2 style="margin:14px 0 10px">Ekip / Personel</h2>'+teamForm()+teamCards()+
-  '<h2 style="margin:16px 0 10px">Organizasyon şeması</h2><div class="tk2">'+orgTree()+'</div>'+
-  '<h2 style="margin:18px 0 10px">Bilgi Bankası — teknik şartname & sözleşme</h2>'+
+  '<div class="hint" style="margin-bottom:10px">👷 Personel & organizasyon şeması → <b>Personel</b> sekmesi · 📋 sözleşme & cezalar → <b>Sözleşme</b> sekmesi (yönetici).</div>'+
+  '<h2 style="margin:4px 0 10px">Bilgi Bankası — teknik şartname</h2>'+
   acc('Montaj detayları · güç · adet',tkSpec([['Santral gücü','35 MWp (DC) · TR-1 fazı 6,9 MWp (6.989,84 kWp)'],['Panel','≥600 Wp · 9.828 adet (378 masa × 26)'],['Masa','378 adet · 7 eksen · 25° · 17.339 mm'],['Kazık (ayak)','5.292 adet (378 × 14) · Ø200'],['İnverter','19 adet (3-faz · 1500 VDC)'],['DC string','413 adet (TR-1 string planı)'],['DC string kablo','1×6 mm² · ~45.052 m'],['AG kablo','3×300/150 mm² NA2XY'],['OG/MV kablo','1×240/25 & 1×120/16 mm² NA2XSY'],['OG başlık','6 adet'],['Çizim','Montaj > Konstrüksiyon sekmesindeki masa şeması (ön/yan görünüş + kesit)']])+tkStd(['EK-3 Fiyat Cetveli','Teknik Şartname']))+
   acc('Panel (modül)',tkSpec([['Güç','STC ≥ 600 W'],['Sistem','1500 V'],['Yük','rüzgar 2400 Pa · kar 5400 Pa · 130 km/h'],['Sıcaklık','-40…+85°C'],['Tolerans','yalnız pozitif'],['Test','EL + flaş · çerçeve delmesiz montaj']])+tkStd(['IEC 61215','IEC 61730','IEC 63209']),true)+
   acc('İnverter',tkSpec([['Çıkış','3-faz ≥400 VAC · 1500 VDC'],['Verim','≥ %98,6'],['THD','< %2,5'],['Koruma','PID · adacık · RCD'],['Haberleşme','RS485/Modbus/Ethernet/Fiber'],['Ömür','10 yıl garanti · 25 yıl']])+tkStd(['IEC 62109','IEC 61727','IEC 62116','EN 50178']))+
@@ -1582,7 +1647,7 @@ function renderBilgi(){const el=document.getElementById('bilgi');if(!el)return;
   acc('Test & Devreye Alma (9.3)','<div class="det"><ul><li>DC: izolasyon · toprak direnci · seri devre · sigorta.</li><li>AC/OG: megger · trafo tan delta · OG hücre açma süresi/röle.</li><li>PV tork/termal · string uç test + etiket.</li><li>11:00-13:00 üretim karşılaştırma · PR garanti.</li></ul></div>'+tkStd(['IEC 62446']))+
   acc('SCADA & İzleme',tkSpec([['Ağ','PPC fiber halka + RF yedek'],['Sensör','piranometre · ref hücre · sıcaklık · rüzgar · nem · kirlilik'],['Protokol','Modbus / Ethernet'],['İç tüketim','10 kWp çatı GES']]))+
   acc('Konstrüksiyon künyesi',tkSpec([['Masa','7 eksen · 17.339 mm · 25°'],['Ayak','14/masa · Ø200 (ön 1100-1200 / arka 1300-1400)'],['Profiller','P1/P2/P6 kolon · P3/P4-1 kuşak · P5 makas 2410'],['Panel','26/masa · klemp + tork']]))+
-  acc('Sözleşme — kritik (yönetici)',tkSpec([['Bedel','258.624 USD + KDV (götürü)'],['Süre','10.07.2026 · başlama saha teslimi+10g'],['Gecikme','gün başı %0,4-0,5 veya 30.000 TL'],['Kesin teminat','%5 İş Teminat Mektubu (12.931 $) · iade GK+2yıl'],['Nakit teminat','%10 (25.862 $) · iade %50 GK+30g / %50 GK+1yıl+30g'],['Damga','Alt Yüklenici\'de'],['Sigorta','All-Risk İşveren\'de'],['Rok delgi','İşveren\'de']]),false,'adminonly')+logPanel();}
+  logPanel();}
 
 /* ana ekran açık; proje seçilince openProject() yükler */
 </script>
