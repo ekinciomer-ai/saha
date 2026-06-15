@@ -305,7 +305,7 @@
   <div class="homecard">
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 15 · Personel + Sözleşme sekmeleri</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 16 · İSEÇ cezaları + roller</div>
     <div class="hint">Giriş türünü seç, sonra projeyi aç. Yönetici tüm verileri (parasal dâhil) görür ve girer; Usta sadece proje bilgisi görür ve veri girişi yapar.</div>
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -327,7 +327,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 15 · Bulut · 15.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 16 · Bulut · 15.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -643,6 +643,7 @@ async function reloadAll(){
   MATIN=await sget('matin')||[]; MATUSE=await sget('matuse')||{}; MATKOV=await sget('matkov')||{}; MATCUSTOM=await sget('matcustom')||[]; UPCOUNT=await sget('upc')||0; UPLAST=await sget('uplast')||0; if(typeof renderUpBadge==='function')renderUpBadge();
   CINS={dc:await sget('cins:dc')||{},ac:await sget('cins:ac')||{},og:await sget('cins:og')||{}};
   TEAM=await sget('team')||[];
+  TEAM.forEach(p=>{if(p.gorev==='Ara eleman')p.gorev='Yardımcı';});
   {const _del=await sget('team_del')||[];let ch=false;for(const [ad,kn] of SEED_TEAM){if(_del.indexOf(kn)>=0)continue;if(!TEAM.some(t=>(t.kimlikno&&t.kimlikno===kn)||t.ad===ad)){TEAM.push({id:uid(),ad,gorev:'Mekanik',tel:'',kimlikno:kn,giris:dToday(),cikis:'',aktif:true,foto:'',kimlik:''});ch=true;}}if(ch)await sset('team',TEAM);}
   HC={};for(const k of await slist('hc:')){const v=await sget(k);if(v)HC[k.slice(3)]=v;}
   DREQ=[];for(const k of await slist('dr:')){const v=await sget(k);if(v)DREQ.push(v);}
@@ -997,7 +998,7 @@ function ghCard(){const g=GH||{};return '<div class="tk2 adminonly"><h3>📡 Ver
   '<div class="hint" style="margin-top:8px">Kurulum: GitHub\'da <b>private repo</b> aç → Settings ▸ Developer settings ▸ <b>Fine-grained token</b> (Contents: Read & Write, sadece bu repo) → buraya gir → <b>Bağlan & Çek</b>. HTML\'i aynı repoda <b>Pages</b> ile yayınlarsan ekip telefondan o adresten girer (Claude dışı tam çalışır).</div></div>';}
 /* ===================== EKİP · PUANTAJ · LOG · SİLME ONAYI · HARİTA ===================== */
 let TEAM=[], HC={}, DREQ=[], ALOG=[];
-const TROLES=['Formen','Mekanik','Elektrik','Ara eleman','Güvenlik'];
+const TROLES=['Şantiye Şefi','Mühendis','Formen','Mekanik','Elektrik','Yardımcı','Güvenlik'];
 const SEED_TEAM=[
  ['Aydın Elgin','10651868522'],['Fatih Gürbüz','22600067306'],['Apo Ablak','13645768730'],
  ['Hıvzullah Gevhan','18260583744'],['Salih Aba','35239647672'],['Faysal Özlük','50065508706'],
@@ -1065,10 +1066,13 @@ function orgNode(p,pas){return '<div class="orgnode'+(pas?' pasif':'')+'">'+
   (p.foto?'<img src="'+p.foto+'">':'<span class="ph">'+esc(p.ad[0]||'?')+'</span>')+
   '<div><b>'+esc(p.ad)+'</b><small>'+esc(p.gorev)+(p.tel?' · '+esc(p.tel):'')+'</small></div></div>';}
 function orgTree(){const act=TEAM.filter(p=>p.aktif),pas=TEAM.filter(p=>!p.aktif);
-  const formen=act.filter(p=>p.gorev==='Formen');
-  let h='<div class="org"><div class="orgtop">'+(formen.length?formen.map(p=>orgNode(p)).join(''):'<div class="orgnode empty">Formen atanmadı</div>')+'</div>'+
-    '<div class="orgline"></div><div class="orgcols">';
-  for(const r of ['Mekanik','Elektrik','Ara eleman','Güvenlik']){const g=act.filter(p=>p.gorev===r);
+  const by=r=>act.filter(p=>p.gorev===r);
+  const sef=by('Şantiye Şefi'),mf=[].concat(by('Mühendis'),by('Formen'));
+  let h='<div class="org">';
+  h+='<div class="orgtop">'+(sef.length?sef.map(p=>orgNode(p)).join(''):'<div class="orgnode empty">Şantiye şefi atanmadı</div>')+'</div><div class="orgline"></div>';
+  h+='<div class="orgtop">'+(mf.length?mf.map(p=>orgNode(p)).join(''):'<div class="orgnode empty">Mühendis / Formen atanmadı</div>')+'</div><div class="orgline"></div>';
+  h+='<div class="orgcols">';
+  for(const r of ['Mekanik','Elektrik','Yardımcı','Güvenlik']){const g=by(r);
     h+='<div class="orgcol"><div class="orgrole">'+r+' <span>'+g.length+'</span></div>'+(g.map(p=>orgNode(p)).join('')||'<div class="orgnode empty">—</div>')+'</div>';}
   h+='</div>';
   if(pas.length)h+='<div class="orgrole" style="margin:14px 0 6px">Pasif / ayrılan ('+pas.length+')</div><div class="tcards">'+pas.map(p=>orgNode(p,true)).join('')+'</div>';
@@ -1592,6 +1596,38 @@ async function savePersonEdit(id){const p=teamGet(id);if(!p)return;
   await saveTeam();await logAct('personel-düzenle',p.ad);closeDetay();renderPersonel();}
 
 function cezaRow(d,c){return '<tr><td>'+d+'</td><td>'+c+'</td></tr>';}
+function isecRows(){const d=[
+ ['1','Yönetimsel uygunsuzluklar (şartname, evrak, İşveren Vekili/Şantiye şefi/İSEÇ atamaları)','3.000','4.500'],
+ ['2','İşe giriş döngüsüne uymamak (SGK\'sız · 18 yaş altı · İSG eğitimsiz · MYB\'siz personel)','5.000','8.000'],
+ ['3','Yasal gereklilikleri yapmamak (İSG Katip · tespit-öneri defteri · İSG Kurulu)','3.000','4.500'],
+ ['4','Kişisel davranış uygunsuzlukları (KKD kullanmamak · uyarı dikkate almamak)','1.250','2.000'],
+ ['5','İşin gerektirdiği önlemleri almamak (iş izni · alan sınırlama · yapım metodu)','3.500','5.000'],
+ ['6','İş makinesi/ekipman uygunsuzlukları (CE\'siz · muayenesiz · koruyucusuz)','4.000','7.000'],
+ ['7','Yüksekte uygunsuz çalışmak (yaşam hattı / emniyet kemeri yok)','4.500','6.000'],
+ ['8','İskelelerdeki uygunsuzluklar','3.500','5.000'],
+ ['9','Kaldırma operasyonları (belgesiz operatör / sapancı · muayenesiz vinç)','7.000','10.000'],
+ ['10','Kazı ve hafriyat uygunsuzlukları','3.000','5.000'],
+ ['11','Elektrik güvenliği uygunsuzlukları','4.000','6.000'],
+ ['12','İş hijyeni uygunsuzlukları','3.000','4.000'],
+ ['13','Sosyal alanlar uygunsuzlukları','1.000','1.500'],
+ ['14','Sıcak işler (yangın tüpü · tüp güvenliği · kaynak topraklama)','2.000','3.000'],
+ ['15','Genel iş güvenliği (düzen-tertip · hız limiti · toplantıya katılmama)','1.500','2.500'],
+ ['16','A/B Sınıfı İGU bulundurmamak','60.000 ₺/ay',''],
+ ['17','İşyeri Hekimi bulundurmamak','60.000 ₺/ay',''],
+ ['18','Diğer Sağlık Personeli bulundurmamak (10+ çalışan)','30.000 ₺/ay',''],
+ ['19','İş kazası / ramak kala kayıt-rapor tutmamak','25.000',''],
+ ['20','İş kazasını 3 iş günü içinde SGK\'ya bildirmemek','22.000',''],
+ ['21','İSG tedbir / organizasyon yapmamak, uygunsuzlukları gidermemek','25.000',''],
+ ['22','Günlük Saha Kontrol Formu düzenlememek','350 ₺/gün',''],
+ ['23','Yazılı bildirilen tedbirleri yerine getirmemek','15.000',''],
+ ['24','İGU / İşyeri Hekimi hak-yetkilerini kısıtlamak','20.000',''],
+ ['25','Risk Değerlendirmesi yapmamak / yaptırmamak','50.000',''],
+ ['26','Acil durum plan-tedbir-personel görevlendirmemek (her biri ayrı)','15.000','']
+ ];
+ return '<div style="overflow:auto"><table class="mtab"><thead><tr><th>#</th><th>Uygunsuzluk</th><th>Ceza (₺)</th><th>Tekrarında</th></tr></thead><tbody>'+
+   d.map(r=>'<tr><td class="m">'+r[0]+'</td><td>'+r[1]+'</td><td class="m">'+r[2]+'</td><td class="m">'+(r[3]||'—')+'</td></tr>').join('')+'</tbody></table></div>'+
+   '<div class="hint">Cezalar ilk hakedişten fatura karşılığı tahsil edilir, iade edilmez. Ayrıca yazılı talimattaki her husus için, giderilene kadar geçen her güne <b>cari asgari ücretin yarısı kadar TL/gün</b> ek ceza. Tutarlar her yıl <b>(TEFE+ÜFE)/2</b> oranında artar. Bir uygunsuzluk birden çok maddeyi kapsarsa her madde ayrı cezalandırılır. (Kaynak: İSEÇ Yüklenici Taahhütnamesi · s.50-52)</div>';}
+
 function renderSozlesme(){const el=document.getElementById('sozlesme');if(!el)return;
   el.innerHTML=
    '<div class="tk2"><h3>Sözleşme — CEI SHAMS-1 GES · TR-1 fazı</h3>'+tkSpec([
@@ -1625,6 +1661,7 @@ function renderSozlesme(){const el=document.getElementById('sozlesme');if(!el)re
    cezaRow('Cezalı süre 30 günü aşarsa','Yüklenici: işe devam ettirme / kısmen-tamamen fesih / 3. kişiye yaptırma (masraf Alt Yüklenici\'de)')+
    '</tbody></table></div>'+
    '<div class="hint">Cezalar protestoya gerek olmadan bir sonraki hakedişten veya teminattan kesilir; kesilen gecikme cezaları iade edilmez. Cezai şartlar götürü tazminat değildir — Yüklenici ayrıca doğrudan/dolaylı zarar tazmini de isteyebilir.</div></div>'+
+   '<div class="tk2 ceza"><h3>⚠ İSEÇ / İSG-Çevre ihlal cezaları (₺)</h3>'+isecRows()+'</div>'+
    '<div class="tk2"><h3>Teminatlar</h3>'+tkSpec([
      ['Kesin teminat mektubu','KDV hariç bedelin %5\'i · 2 yıl · iade: Geçici Kabul + 2 yıl + yazılı talep + 30 gün'],
      ['Nakit teminat','KDV hariç bedelin %10\'u · iade: %50 GK+30 gün · %50 GK+1 yıl+30 gün'],
