@@ -296,6 +296,18 @@
   .irthumb{max-width:180px;border-radius:8px;margin:6px 0;border:1px solid var(--line)}
   .mtab{width:100%;border-collapse:collapse;font-size:12px}.mtab th,.mtab td{border:1px solid var(--line);padding:6px 8px;text-align:left}.mtab th{background:var(--soft);font-weight:600}
   .mtab td.neg{color:var(--dc);font-weight:700}
+  .epwrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;max-width:100%}
+  .epmat{font-size:11px;border:0;min-width:max-content}.epmat th,.epmat td{padding:5px 7px;white-space:nowrap;text-align:center}
+  .epmat td.epname,.epmat th.epname{text-align:left;position:sticky;left:0;background:var(--card,#fff);z-index:1;min-width:140px;font-weight:600}
+  .epmat th.epname{background:var(--soft)}
+  .epmat th.epd{font-weight:600;color:#5B6573}
+  .epmat .epcum{background:rgba(232,131,58,.10);font-weight:700}
+  .epmat th.epcum{background:rgba(232,131,58,.18)}
+  .epmat .epsel{background:rgba(47,111,176,.12)}
+  .epmat th.epsel{background:rgba(47,111,176,.22);color:#15314e}
+  .epmat .epz{color:#c9ced8}
+  .epmat tr.eptot td{background:var(--soft);font-weight:700;border-top:2px solid var(--line)}
+  .epmat tr.eptot td.epname{background:var(--soft)}
   .mailta{width:100%;height:200px;font-family:var(--mono);font-size:11px;border:1px solid var(--line);border-radius:8px;padding:8px}
   .xdel{color:var(--dc);cursor:pointer;font-size:11px;margin-left:6px;text-decoration:none}
   .gantt{margin-top:6px}
@@ -349,7 +361,7 @@
   <div class="homecard">
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 29 · günlük ayak hareketi net (undo-duyarlı) + montaj fazları</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 30 · rapor EPİAŞ tarzı günlük×kümülatif iş tablosu + itemized detay</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -373,7 +385,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 29 · Bulut · 16.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 30 · Bulut · 16.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -903,9 +915,13 @@ function closeEd(){SEL=null;document.getElementById('editor').classList.remove('
 function drawSchem(){document.getElementById('ed_schem').innerHTML=schematic(PLAN[SEL]||{});}
 function bump(f,d,mx){const s=PLAN[SEL]||{};setv(f,Math.max(0,Math.min(mx,(+s[f]||0)+d)),mx);}
 async function setv(f,val,mx){if(SEL==null)return;val=Math.max(0,Math.min(mx,parseFloat(val)||0));
-  const s=PLAN[SEL]||{};s[f]=val;await saveTbl(s);const el=document.getElementById('i_'+f);if(el)el.value=val;drawSchem();}
-async function toggle(f){if(SEL==null)return;const s=PLAN[SEL]||{};s[f]=s[f]?0:1;await saveTbl(s);
-  const b=document.getElementById('t_'+f);b.classList.toggle('act',!!s[f]);b.textContent=s[f]?'Yapıldı ✓':'Yapılmadı';drawSchem();}
+  const s=PLAN[SEL]||{};const _o=+s[f]||0;s[f]=val;await saveTbl(s);const el=document.getElementById('i_'+f);if(el)el.value=val;
+  if((f==='a1'||f==='k7')&&val!==_o)await logAct('Üretim','Masa #'+SEL+' · ['+f+'] '+(val-_o>=0?'+':'')+(val-_o));
+  drawSchem();}
+async function toggle(f){if(SEL==null)return;const s=PLAN[SEL]||{};const _o=s[f]?1:0;s[f]=s[f]?0:1;await saveTbl(s);
+  const b=document.getElementById('t_'+f);b.classList.toggle('act',!!s[f]);b.textContent=s[f]?'Yapıldı ✓':'Yapılmadı';
+  if(/^k[1-6]$/.test(f)){const _d=(s[f]?1:0)-_o;if(_d)await logAct('Üretim','Masa #'+SEL+' · ['+f+'] '+(_d>=0?'+':'')+_d);}
+  drawSchem();}
 /*FEET*/
 let SHOWFEET=true,LASTFOOT="";
 function footOf(i){const s=PLAN[i]||{};
@@ -1649,7 +1665,7 @@ async function delCustomMat(id){if(!confirm('Bu malzeme silinsin mi?'))return;MA
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s29</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s30</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -1778,44 +1794,114 @@ function rapMap(masas){const W=620,dx=LAYOUT.maxx-LAYOUT.minx,dy=LAYOUT.maxy-LAY
   return r+'</svg>';}
 function bar(lbl,pct,cls){return `<div class="rpbar"><span class="rl">${lbl}</span><span class="rt"><span class="rf ${cls}" style="width:${Math.max(0,Math.min(100,pct)).toFixed(0)}%"></span></span><span class="rv">${pct.toFixed(0)}%</span></div>`;}
 function barN(lbl,val,max,cls){const w=max?Math.max(0,Math.min(100,val/max*100)):0;return `<div class="rpbar"><span class="rl">${lbl}</span><span class="rt"><span class="rf ${cls}" style="width:${w.toFixed(0)}%"></span></span><span class="rv">${tr(val)}</span></div>`;}
+/* ---- EPİAŞ tarzı günlük & kümülatif iş tablosu ---- */
+let RAP_SHOWPERS=false;
+function toggleRapPers(){RAP_SHOWPERS=!RAP_SHOWPERS;renderRapor();}
+function repItems(){return [
+  {id:'harita',   ad:'Harita aplikasyon', birim:'ayak',  cum:sumP('a1'), hedef:5292, dis:'MEK'},
+  {id:'ayakdelme',ad:'Ayak delme (rok)',  birim:'ayak',  cum:sumP('a2'), hedef:5292, dis:'MEK'},
+  {id:'ayakmont', ad:'Ayak montajı',       birim:'ayak',  cum:sumMon(),   hedef:5292, dis:'MEK'},
+  {id:'ustm',     ad:'Üst montaj / aşık',  birim:'adım',  cum:cntK('k1')+cntK('k2')+cntK('k3')+cntK('k4')+cntK('k5')+cntK('k6'), hedef:6*378, dis:'MEK'},
+  {id:'panel',    ad:'Panel montajı',      birim:'panel', cum:sumP('k7'), hedef:9828, dis:'MEK'},
+  ...GEN.map(g=>({id:g.id,ad:g.ad,birim:g.birim,cum:doneGen(g.id),hedef:g.hedef,dis:'ELK'}))
+];}
+/* o güne ait, her iş kalemi için yapılan ADET (net):
+   - rok/montaj: dailyFeet (undo-duyarlı net)
+   - harita/üst montaj/panel: ALOG 'Üretim' delta logları (undo-duyarlı net)
+   - elektrik (GEN): ENTRIES üretim kayıtları (o günün tarihi) */
+function dayItemQty(day){
+  const q={};const DF=dailyFeet(day);
+  q.ayakdelme=DF.del; q.ayakmont=DF.mon;
+  const fmap={a1:'harita',k1:'ustm',k2:'ustm',k3:'ustm',k4:'ustm',k5:'ustm',k6:'ustm',k7:'panel'};
+  dayLogs(day).forEach(r=>{const m=(r.detail||'').match(/\[(\w+)\]\s*([+-]?\d+)/);
+    if(m&&fmap[m[1]]){const it=fmap[m[1]];q[it]=(q[it]||0)+(+m[2]);}});
+  ENTRIES.forEach(e=>{const ed=e.date||dstr(e.ts);if(ed===day)q[e.id]=(q[e.id]||0)+(+e.qty||0);});
+  return q;
+}
+function repDays(){const set={};
+  ENTRIES.forEach(e=>{const ed=e.date||dstr(e.ts);if(ed)set[ed]=1;});
+  ALOG.forEach(r=>{set[dstr(r.ts)]=1;});
+  set[RAPDAY]=1;set[dToday()]=1;
+  return Object.keys(set).sort();
+}
+function renderItemMatrix(forPrint){
+  const items=repItems();let days=repDays();
+  const MAXD=forPrint?days.length:12;
+  if(days.length>MAXD)days=days.slice(days.length-MAXD);
+  const qmap={};days.forEach(d=>qmap[d]=dayItemQty(d));
+  const fmt=d=>d.slice(8,10)+'.'+d.slice(5,7);
+  let h='<div class="epwrap"><table class="mtab epmat"><thead><tr><th class="epname">İş kalemi</th><th>Birim</th>';
+  days.forEach(d=>{h+='<th class="epd'+(d===RAPDAY?' epsel':'')+'">'+fmt(d)+'</th>';});
+  h+='<th class="epcum">Bugüne kadar</th><th>Hedef</th><th>%</th></tr></thead><tbody>';
+  const dayTot={};days.forEach(d=>dayTot[d]=0);let cumTot=0;
+  items.forEach(it=>{
+    h+='<tr><td class="epname">'+esc(it.ad)+'</td><td class="m"><small>'+esc(it.birim)+'</small></td>';
+    days.forEach(d=>{const v=qmap[d][it.id]||0;dayTot[d]+=v;h+='<td class="epd'+(d===RAPDAY?' epsel':'')+'">'+(v?tr(v):'<span class="epz">·</span>')+'</td>';});
+    const pct=it.hedef>0?Math.min(100,it.cum/it.hedef*100):0;cumTot+=it.cum;
+    h+='<td class="epcum"><b>'+tr(it.cum)+'</b></td><td class="m"><small>'+tr(it.hedef)+'</small></td><td class="m">%'+pct.toFixed(0)+'</td></tr>';
+  });
+  h+='<tr class="eptot"><td class="epname">TOPLAM iş (adet)</td><td></td>';
+  days.forEach(d=>{h+='<td class="epd'+(d===RAPDAY?' epsel':'')+'"><b>'+(dayTot[d]?tr(dayTot[d]):'·')+'</b></td>';});
+  h+='<td class="epcum"><b>'+tr(cumTot)+'</b></td><td></td><td></td></tr>';
+  h+='</tbody></table></div>';
+  h+='<div class="hint" style="margin-top:4px">Her satır bir iş kalemi · her sütun bir gün (sağda en güncel). Hücre = o gün yapılan adet · «Bugüne kadar» = toplam. Yeni gün çalışıldıkça otomatik sütun eklenir.</div>';
+  return h;
+}
+function renderDayDetail(day){
+  const q=dayItemQty(day),items=repItems(),fmtDay=day.split('-').reverse().join('.');
+  const rows=items.map(it=>[it.ad,it.birim,q[it.id]||0]).filter(r=>r[2]>0);
+  if(!rows.length)return '<h3 class="raph">Seçili günün iş dökümü ('+fmtDay+')</h3><div class="hint">Bu güne ait iş kaydı yok.</div>';
+  let tot=0;rows.forEach(r=>tot+=r[2]);
+  let h='<h3 class="raph">Seçili günün iş dökümü ('+fmtDay+')</h3><table class="mtab"><thead><tr><th>İş kalemi</th><th>Birim</th><th class="m">Adet (o gün)</th></tr></thead><tbody>';
+  rows.forEach(r=>{h+='<tr><td>'+esc(r[0])+'</td><td class="m"><small>'+esc(r[1])+'</small></td><td class="m"><b>'+tr(r[2])+'</b></td></tr>';});
+  h+='<tr class="eptot"><td>TOPLAM iş</td><td></td><td class="m"><b>'+tr(tot)+' adet</b></td></tr></tbody></table>';
+  return h;
+}
 function rapBody(day,forPrint){const A=rapAgg(day),G=genProgress();
   const pers=Object.entries(A.persons).sort((a,b)=>b[1]-a[1]);
   const masaList=Object.keys(A.masas).map(Number).sort((a,b)=>a-b);
   const fmtDay=day.split('-').reverse().join('.');
+  const dayTotToday=(function(){const q=dayItemQty(day);let t=0;for(const k in q)t+=q[k];return t;})();
   let h='';
   h+=`<div class="rapcards">
-    <div class="rapcard"><div class="rc-n">${A.logs.length}</div><div class="rc-l">işlem kaydı</div></div>
-    <div class="rapcard"><div class="rc-n">${pers.length}</div><div class="rc-l">çalışan kişi</div></div>
+    <div class="rapcard"><div class="rc-n" style="color:#15314e">${tr(dayTotToday)}</div><div class="rc-l">bugün toplam iş (adet)</div></div>
     <div class="rapcard"><div class="rc-n">${masaList.length}</div><div class="rc-l">dokunulan masa</div></div>
     <div class="rapcard"><div class="rc-n" style="color:#E8833A">${tr(sumP('a2'))}</div><div class="rc-l">ayak delme (onaylı)</div></div>
     <div class="rapcard"><div class="rc-n" style="color:#2e9e5b">${tr(sumMon())}</div><div class="rc-l">ayak montaj (onaylı)</div></div>
+    <div class="rapcard"><div class="rc-n">${A.logs.length}</div><div class="rc-l">işlem kaydı</div></div>
   </div>`;
   if(!A.logs.length)h+='<div class="hint" style="margin:10px 0">Bu güne ait saha kaydı bulunamadı.</div>';
-  // kişi tablosu
-  if(pers.length){h+='<h3 class="raph">Çalışan ekip ('+fmtDay+')</h3><table class="mtab"><thead><tr><th>Kişi</th><th>İşlem sayısı</th><th>Pay</th></tr></thead><tbody>';
-    const tot=A.logs.length||1;pers.forEach(([k,v])=>{h+=`<tr><td>${esc(k)}</td><td class="m">${v}</td><td><span class="rt mini"><span class="rf gm" style="width:${(v/tot*100).toFixed(0)}%"></span></span></td></tr>`;});
-    h+='</tbody></table>';}
   // genel ilerleme
   h+='<h3 class="raph">Genel ilerleme (anlık)</h3>';
   h+=bar('Mekanik',G.mek,'gm')+bar('Elektrik',G.elk,'ge');
   {const half=Math.ceil(G.rows.length/2);
    const col=arr=>'<div class="rpcol">'+arr.map(r=>bar(r.ad,r.pct,r.dis==='MEK'?'gm':'ge')).join('')+'</div>';
    h+='<div class="rpcols rpsub">'+col(G.rows.slice(0,half))+col(G.rows.slice(half))+'</div>';}
-  // bugünkü saha hareketleri (adet · log)
-  {const DF=dailyFeet(day);const dc=[['Rok delme (net)',DF.del],['Ayak montaj (net)',DF.mon],['Konst / Panel',A.konst],['Toplam işlem',A.logs.length]];
-   const dmax=Math.max(1,...dc.map(x=>x[1]));
-   h+='<h3 class="raph">Bugünkü saha hareketleri (adet · net)</h3>';
-   h+='<div class="rpcols rpsub"><div class="rpcol">'+barN(dc[0][0],dc[0][1],dmax,'ge')+barN(dc[1][0],dc[1][1],dmax,'gm')+'</div><div class="rpcol">'+barN(dc[2][0],dc[2][1],dmax,'gm')+barN(dc[3][0],dc[3][1],dmax,'ge')+'</div></div>';}
+  // EPİAŞ tarzı günlük & kümülatif iş tablosu
+  h+='<h3 class="raph">İş kalemleri — günlük &amp; kümülatif (gün × kalem)</h3>';
+  h+=renderItemMatrix(forPrint);
+  // seçili günün iş dökümü (kalem kalem + toplam)
+  h+=renderDayDetail(day);
   // harita
   h+='<h3 class="raph">Saha haritası — gün içinde dokunulan masalar</h3>'+rapMap(A.masas);
   h+='<div class="hint" style="margin-top:4px"><span class="fdot" style="background:#E8833A"></span> dokunulan masa · '+masaList.length+' masa</div>';
-  // işlem listesi
-  if(A.logs.length){h+='<h3 class="raph">İşlem dökümü ('+A.logs.length+')</h3><div style="overflow:auto;max-height:'+(forPrint?'none':'320px')+'"><table class="mtab"><thead><tr><th>Saat</th><th>Kişi</th><th>İşlem</th><th>Detay</th></tr></thead><tbody>';
+  // işlem listesi (ham log)
+  if(A.logs.length){h+='<h3 class="raph">İşlem dökümü — ham log ('+A.logs.length+')</h3><div style="overflow:auto;max-height:'+(forPrint?'none':'320px')+'"><table class="mtab"><thead><tr><th>Saat</th><th>Kişi</th><th>İşlem</th><th>Detay</th></tr></thead><tbody>';
     A.logs.forEach(r=>{const t=new Date(r.ts).toLocaleTimeString("tr-TR",{hour:"2-digit",minute:"2-digit"});h+=`<tr><td class="m">${t}</td><td>${esc(r.by||r.role||"—")}</td><td>${esc(r.act)}</td><td><small>${esc(r.detail||"")}</small></td></tr>`;});
     h+='</tbody></table></div>';}
+  // veri girişi yapan kişiler — EN ALTTA, gösterimi tercihli
+  h+='<h3 class="raph" style="margin-top:18px">Veri girişi yapan kişiler ('+fmtDay+') '
+    +'<button class="btn ghost sm" onclick="toggleRapPers()" style="font-weight:600">'+(RAP_SHOWPERS?'gizle ▲':'göster ▼')+'</button></h3>';
+  if(RAP_SHOWPERS){
+    if(pers.length){h+='<table class="mtab"><thead><tr><th>Kişi</th><th>İşlem sayısı</th><th>Pay</th></tr></thead><tbody>';
+      const tot=A.logs.length||1;pers.forEach(([k,v])=>{h+=`<tr><td>${esc(k)}</td><td class="m">${v}</td><td><span class="rt mini"><span class="rf gm" style="width:${(v/tot*100).toFixed(0)}%"></span></span></td></tr>`;});
+      h+='</tbody></table>';}
+    else h+='<div class="hint">Bu güne ait veri girişi kaydı yok.</div>';
+    h+='<div class="hint" style="margin-top:4px">Not: Bu liste uygulamaya <b>veri girişi yapan</b> kişileri gösterir — saha puantajı <u>değildir</u>. Puantaj <b>Personel</b> ekranından ayrıca yapılacaktır.</div>';
+  }
   return h;}
 async function backupAll(){try{
-  const dump={_app:'SHAMS1-TR1',_ver:'s29',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1-TR1',_ver:'s30',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:'];
   for(const pre of pref)for(const k of await slist(pre)){const v=await sget(k);if(v!=null)dump.data[k]=v;}
   const single=['targets','mpct','cab:dc','cab:ac','cab:og','dcstr','ogb','matin','matuse','matkov','matcustom','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
@@ -1856,7 +1942,7 @@ function renderRapor(){const el=document.getElementById('rapor');if(!el)return;
     <div id="rapout">`+rapBody(RAPDAY,false)+`</div>`;}
 function printRapor(){const day=RAPDAY,fmtDay=day.split('-').reverse().join('.');
   const w=window.open('','_blank');if(!w){if(typeof toast==='function')toast('Açılır pencere engellendi');return;}
-  const cssText='body{font-family:Arial,sans-serif;color:#1c1c22;font-size:11px;margin:24px}h1{font-size:15px;color:#15314e;border-bottom:3px solid #E8833A;padding-bottom:6px}h3.raph{font-size:12px;color:#15314e;border-left:4px solid #E8833A;padding-left:8px;margin:14px 0 6px}table{width:100%;border-collapse:collapse;font-size:9.5px;margin:6px 0}th{background:#15314e;color:#fff;text-align:left;padding:4px 6px}td{border:1px solid #e0e0e6;padding:3px 6px}.m{text-align:center}.rapcards{display:flex;gap:8px;margin:8px 0}.rapcard{flex:1;border:1px solid #e3e3e8;border-radius:7px;padding:8px;text-align:center}.rc-n{font-size:18px;font-weight:800;color:#15314e}.rc-l{font-size:9px;color:#777}.rpbar{display:flex;align-items:center;gap:6px;margin:2px 0;font-size:9px}.rl{flex:0 0 150px}.rt{flex:1;height:9px;background:#eee;border-radius:4px;position:relative}.rt.mini{height:7px}.rf{position:absolute;left:0;top:0;height:100%;border-radius:4px}.rf.gm{background:#2f6fb0}.rf.ge{background:#E8833A}.rv{flex:0 0 34px;text-align:right}.rpcols{display:flex;gap:16px}.rpcol{flex:1}.fdot{display:inline-block;width:10px;height:10px;border-radius:3px}.hint{font-size:9px;color:#777}svg{max-width:100%}';
+  const cssText='body{font-family:Arial,sans-serif;color:#1c1c22;font-size:11px;margin:24px}h1{font-size:15px;color:#15314e;border-bottom:3px solid #E8833A;padding-bottom:6px}h3.raph{font-size:12px;color:#15314e;border-left:4px solid #E8833A;padding-left:8px;margin:14px 0 6px}table{width:100%;border-collapse:collapse;font-size:9.5px;margin:6px 0}th{background:#15314e;color:#fff;text-align:left;padding:4px 6px}td{border:1px solid #e0e0e6;padding:3px 6px}.m{text-align:center}.rapcards{display:flex;gap:8px;margin:8px 0}.rapcard{flex:1;border:1px solid #e3e3e8;border-radius:7px;padding:8px;text-align:center}.rc-n{font-size:18px;font-weight:800;color:#15314e}.rc-l{font-size:9px;color:#777}.rpbar{display:flex;align-items:center;gap:6px;margin:2px 0;font-size:9px}.rl{flex:0 0 150px}.rt{flex:1;height:9px;background:#eee;border-radius:4px;position:relative}.rt.mini{height:7px}.rf{position:absolute;left:0;top:0;height:100%;border-radius:4px}.rf.gm{background:#2f6fb0}.rf.ge{background:#E8833A}.rv{flex:0 0 34px;text-align:right}.rpcols{display:flex;gap:16px}.rpcol{flex:1}.fdot{display:inline-block;width:10px;height:10px;border-radius:3px}.hint{font-size:9px;color:#777}svg{max-width:100%}.epwrap{overflow-x:visible}.epmat{font-size:8px}.epmat td,.epmat th{padding:2px 4px;text-align:center;white-space:nowrap}.epmat td.epname,.epmat th.epname{text-align:left;font-weight:700}.epmat .epcum{background:#fbeee3;font-weight:700}.epmat th.epcum{background:#f3d9c2;color:#15314e}.epmat .epsel{background:#dce8f5}.epmat .epz{color:#bbb}.epmat tr.eptot td{background:#eef0f3;font-weight:700}';
   const d=w.document;
   try{d.title='Günlük Rapor '+fmtDay;}catch(e){}
   const st=d.createElement('style');st.textContent=cssText;(d.head||d.documentElement).appendChild(st);
