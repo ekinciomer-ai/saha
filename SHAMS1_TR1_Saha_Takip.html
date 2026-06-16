@@ -342,8 +342,8 @@
   <div class="homecard">
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 23 · Rapor sekmesi (gün · ekip · % · harita · PDF)</div>
-    <div class="hint">Giriş türünü seç, sonra projeyi aç. Yönetici tüm verileri (parasal dâhil) görür ve girer; Usta sadece proje bilgisi görür ve veri girişi yapar.</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 26 · Rapor ustaya açık (gün · ekip · % · harita · PDF)</div>
+    
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
       <button class="rolebtn" id="rb_admin" onclick="pickRole('admin')">🔑 Yönetici<small>Tüm yetki · hakediş & parasal · veri girişi</small></button>
@@ -366,7 +366,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 23 · Bulut · 16.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 26 · Bulut · 16.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -395,7 +395,7 @@
     <button class="tab" onclick="tabTo(5,this)">👷 Personel</button>
     <button class="tab adminonly" onclick="tabTo(6,this)">📋 Sözleşme</button>
     <button class="tab" onclick="tabTo(7,this)">📅 İş Programı</button>
-    <button class="tab adminonly" onclick="tabTo(8,this)">📊 Rapor</button>
+    <button class="tab" onclick="tabTo(8,this)">📊 Rapor</button>
   </div>
 
   <!-- ===== PROJE ===== -->
@@ -561,8 +561,10 @@ const FBCONFIG = {
 let FBDB=null;
 function loadScript(src){return new Promise((res,rej)=>{const x=document.createElement('script');x.src=src;x.onload=res;x.onerror=rej;document.head.appendChild(x);});}
 async function fbInit(){if(!FBCONFIG||!FBCONFIG.databaseURL)return false;if(FBDB)return true;
-  try{if(!window.firebase){await Promise.race([(async()=>{await loadScript('https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js');await loadScript('https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js');})(),new Promise((_,rej)=>setTimeout(()=>rej(new Error('fb-timeout')),7000))]);}
-    firebase.initializeApp(FBCONFIG);FBDB=firebase.database();return true;}catch(e){return false;}}
+  try{if(!window.firebase){await Promise.race([(async()=>{await loadScript('https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js');await loadScript('https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js');await loadScript('https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js');})(),new Promise((_,rej)=>setTimeout(()=>rej(new Error('fb-timeout')),7000))]);}
+    firebase.initializeApp(FBCONFIG);
+    try{if(firebase.auth&&!firebase.auth().currentUser){await firebase.auth().signInAnonymously();}}catch(e){console.warn('Firebase anonim oturum açılamadı (Authentication > Anonymous kapalı olabilir) — açık kuralla devam:',e&&(e.code||e.message));}
+    FBDB=firebase.database();return true;}catch(e){return false;}}
 function fbPath(k){return 'shams1tr1/'+String(k).replace(/[.#$\[\]]/g,'_').replace(/:/g,'/');}
 const ADMIN_PIN='1453'; // ← (eski) yönetici PIN
 const USERS={
@@ -1613,7 +1615,7 @@ async function delCustomMat(id){if(!confirm('Bu malzeme silinsin mi?'))return;MA
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s23</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s26</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -1760,6 +1762,30 @@ function rapBody(day,forPrint){const A=rapAgg(day),G=genProgress();
     A.logs.forEach(r=>{const t=new Date(r.ts).toLocaleTimeString("tr-TR",{hour:"2-digit",minute:"2-digit"});h+=`<tr><td class="m">${t}</td><td>${esc(r.by||r.role||"—")}</td><td>${esc(r.act)}</td><td><small>${esc(r.detail||"")}</small></td></tr>`;});
     h+='</tbody></table></div>';}
   return h;}
+async function backupAll(){try{
+  const dump={_app:'SHAMS1-TR1',_ver:'s24',_ts:Date.now(),data:{}};
+  const pref=['tr1g:','log:','al:','dr:','tr1m:'];
+  for(const pre of pref)for(const k of await slist(pre)){const v=await sget(k);if(v!=null)dump.data[k]=v;}
+  const single=['targets','mpct','cab:dc','cab:ac','cab:og','dcstr','ogb','matin','matuse','matkov','matcustom','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
+  for(const k of single){const v=await sget(k);if(v!=null)dump.data[k]=v;}
+  const blob=new Blob([JSON.stringify(dump)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='SHAMS1_yedek_'+RAPDAY+'.json';document.body.appendChild(a);a.click();a.remove();
+  try{localStorage.setItem('lastbackup',Date.now());}catch(e){}
+  if(typeof toast==='function')toast('Yedek indirildi · '+Object.keys(dump.data).length+' kayıt');
+}catch(e){alert('Yedek hatası: '+e.message);}}
+async function restoreBackup(file){if(!file)return;
+  if(!confirm('DİKKAT: Yedekten geri yükleme mevcut bulut verisinin ÜZERİNE yazar. Devam edilsin mi?'))return;
+  try{const txt=await file.text();const dump=JSON.parse(txt);
+    if(!dump||!dump.data){alert('Geçersiz yedek dosyası.');return;}
+    let n=0;for(const k in dump.data){await sset(k,dump.data[k]);n++;}
+    await reloadAll();renderRapor();
+    if(typeof toast==='function')toast(n+' kayıt geri yüklendi');else alert(n+' kayıt geri yüklendi');
+  }catch(e){alert('Geri yükleme hatası: '+e.message);}}
+function lastBackupTxt(){try{const t=+localStorage.getItem('lastbackup');if(!t)return 'Henüz yedek alınmadı';
+  const g=Math.floor((Date.now()-t)/86400000);const d=new Date(t).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+  return 'Son yedek: '+d+(g>=1?(' · '+g+' gün önce'):'');}catch(e){return '';}}
+
 function renderRapor(){const el=document.getElementById('rapor');if(!el)return;
   el.innerHTML=`<div class="tk2"><h3>Günlük Saha Raporu — SHAMS-1 TR-1 (6,9 MWp)</h3>
     <div class="frow" style="align-items:center;gap:10px;flex-wrap:wrap">
@@ -1767,6 +1793,14 @@ function renderRapor(){const el=document.getElementById('rapor');if(!el)return;
       <button class="tg" onclick="setRapDay(new Date().toISOString().slice(0,10))">Bugün</button>
       <button class="btn" onclick="printRapor()">📄 PDF / Yazdır</button>
     </div></div>
+    <div class="tk2 ceza adminonly"><h3>🛡 Veri Yedekleme & Güvenlik</h3>
+      <div class="frow" style="gap:8px;flex-wrap:wrap;align-items:center">
+        <button class="btn" onclick="backupAll()">⬇ Yedek al (tüm veri · JSON)</button>
+        <label class="tg" style="cursor:pointer;display:inline-flex;align-items:center">⬆ Yedekten geri yükle<input type="file" accept="application/json,.json" style="display:none" onchange="restoreBackup(this.files[0])"></label>
+        <span class="hint" id="lastbk">${lastBackupTxt()}</span>
+      </div>
+      <div class="hint">Veriler bulutta (Firebase) kalıcı ve her cihazda ortaktır. Yine de <b>her mesai sonu yedek almanız</b> önerilir — bir hata veya yanlış silmede yedekten dönebilirsiniz.</div>
+    </div>
     <div id="rapout">`+rapBody(RAPDAY,false)+`</div>`;}
 function printRapor(){const day=RAPDAY,fmtDay=day.split('-').reverse().join('.');
   const w=window.open('','_blank');if(!w){toast&&toast('Açılır pencere engellendi');return;}
