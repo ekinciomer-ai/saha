@@ -361,7 +361,7 @@
   <div class="homecard">
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 31 · rapor günlük=kümülatif fark (onaylıyla tutarlı) + harita işaretleme</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 32 · Personel'de kişi bazlı aylık puantaj cetveli</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -385,7 +385,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 31 · Bulut · 16.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 32 · Bulut · 16.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -730,6 +730,7 @@ async function reloadAll(){
   TEAM.forEach(p=>{if(p.gorev==='Ara eleman')p.gorev='Yardımcı';});
   {const _del=await sget('team_del')||[];let ch=false;for(const [ad,kn] of SEED_TEAM){if(_del.indexOf(kn)>=0)continue;if(!TEAM.some(t=>(t.kimlikno&&t.kimlikno===kn)||t.ad===ad)){TEAM.push({id:uid(),ad,gorev:'Mekanik',tel:'',kimlikno:kn,giris:dToday(),cikis:'',aktif:true,foto:'',kimlik:''});ch=true;}}if(ch)await sset('team',TEAM);}
   HC={};for(const k of await slist('hc:')){const v=await sget(k);if(v)HC[k.slice(3)]=v;}
+  PJ={};for(const k of await slist('pj:')){const v=await sget(k);if(v)PJ[k.slice(3)]=v;}
   DREQ=[];for(const k of await slist('dr:')){const v=await sget(k);if(v)DREQ.push(v);}
   ALOG=[];for(const k of await slist('al:')){const v=await sget(k);if(v)ALOG.push(v);}ALOG.sort((a,b)=>b.ts-a.ts);
   renderHCbanner();
@@ -1161,6 +1162,18 @@ function ghCard(){const g=GH||{};return '<div class="tk2 adminonly"><h3>📡 Ver
   '<div class="hint" style="margin-top:8px">Kurulum: GitHub\'da <b>private repo</b> aç → Settings ▸ Developer settings ▸ <b>Fine-grained token</b> (Contents: Read & Write, sadece bu repo) → buraya gir → <b>Bağlan & Çek</b>. HTML\'i aynı repoda <b>Pages</b> ile yayınlarsan ekip telefondan o adresten girer (Claude dışı tam çalışır).</div></div>';}
 /* ===================== EKİP · PUANTAJ · LOG · SİLME ONAYI · HARİTA ===================== */
 let TEAM=[], HC={}, DREQ=[], ALOG=[];
+let PJ={}, PJ_YM='';
+const PJST=[
+ {c:'',  l:'—', v:0,   bg:'transparent', fg:'var(--muted,#888)'},
+ {c:'V', l:'●', v:1,   bg:'#16a34a',     fg:'#fff'},
+ {c:'Y', l:'½', v:0.5, bg:'#d97706',     fg:'#fff'},
+ {c:'X', l:'–', v:0,   bg:'#e5e7eb',     fg:'#6b7280'},
+ {c:'İ', l:'İ', v:0,   bg:'#2563eb',     fg:'#fff'},
+ {c:'R', l:'R', v:0,   bg:'#7c3aed',     fg:'#fff'}
+];
+const PJORDER=['','V','Y','X','İ','R'];
+function pjMeta(c){return PJST.find(s=>s.c===(c||''))||PJST[0];}
+function pjFmt(n){return n%1?String(n).replace('.',','):String(n);}
 const TROLES=['Şantiye Şefi','Mühendis','Formen','Mekanik','Elektrik','Yardımcı','Güvenlik'];
 const SEED_TEAM=[
  ['Aydın Elgin','10651868522'],['Fatih Gürbüz','22600067306'],['Apo Ablak','13645768730'],
@@ -1253,6 +1266,65 @@ function hcHistory(){const ks=Object.keys(HC).sort().reverse().slice(0,14);
   if(!ks.length)return '<div class="empty">Kayıt yok.</div>';
   return '<table><thead><tr><th>Tarih</th><th>Kişi</th><th>Giren</th></tr></thead><tbody>'+
     ks.map(d=>'<tr><td>'+d+'</td><td class="m">'+HC[d].n+'</td><td>'+esc(HC[d].by||'')+'</td></tr>').join('')+'</tbody></table>';}
+
+/* ---- KİŞİ BAZLI AYLIK PUANTAJ CETVELİ ---- */
+function pjPanel(){return '<style>'+
+ '.pjnav{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:2px 0 8px}'+
+ '.pjnav b{font-variant-numeric:tabular-nums;min-width:74px;text-align:center}'+
+ '.pjlegend{display:inline-flex;align-items:center;gap:2px;font-size:11px;color:var(--muted,#888);flex-wrap:wrap}'+
+ '.pjlegend i{width:12px;height:12px;border-radius:3px;display:inline-block;margin:0 3px 0 8px;vertical-align:-1px}'+
+ '.pjscroll{overflow:auto;border:1px solid var(--line,#e6e9ef);border-radius:8px;max-height:62vh}'+
+ '.pjtab{border-collapse:separate;border-spacing:0;font-size:12px;white-space:nowrap}'+
+ '.pjtab th,.pjtab td{border-right:1px solid var(--line,#eceef2);border-bottom:1px solid var(--line,#eceef2);padding:2px 5px;text-align:center}'+
+ '.pjtab thead th{position:sticky;top:0;background:#f6f7f9;z-index:3}'+
+ '.pjtab th small{display:block;font-size:9px;color:var(--muted,#888);font-weight:400}'+
+ '.pjtab .pjname{position:sticky;left:0;background:#fff;text-align:left;min-width:118px;font-weight:600;z-index:2}'+
+ '.pjtab thead th.pjname{z-index:4}'+
+ '.pjtab .pjname small{display:block;font-size:10px;color:var(--muted,#888);font-weight:400}'+
+ '.pjtab thead th.we,.pjtab td.we{background:#eef1f5}'+
+ '.pjc{cursor:pointer;min-width:22px;height:26px;font-weight:700;user-select:none}'+
+ '.pjc:hover{outline:2px solid var(--solar,#E8833A);outline-offset:-2px}'+
+ '.pjtot{font-weight:700;background:#fafbfc;min-width:34px}'+
+ '.pjfoot td{background:#f6f7f9;font-weight:600}.pjfoot .pjname{background:#f6f7f9}'+
+ '</style>'+
+ '<div class="tk2"><h3>Puantaj cetveli — kişi bazlı (aylık)</h3>'+
+ '<div class="sub">Hücreye dokun → durum değişir (● tam · ½ yarım · – yok · İ izin · R rapor). "Gün" = kişinin aylık çalışılan gün toplamı.</div>'+
+ '<div id="pjgrid"></div></div>';}
+
+async function pjCycle(pid,day){const ym=PJ_YM;if(!PJ[ym])PJ[ym]={};if(!PJ[ym][pid])PJ[ym][pid]={};
+  const cur=PJ[ym][pid][day]||'';const ni=(PJORDER.indexOf(cur)+1)%PJORDER.length;const nx=PJORDER[ni];
+  if(nx)PJ[ym][pid][day]=nx;else delete PJ[ym][pid][day];
+  if(Object.keys(PJ[ym][pid]).length===0)delete PJ[ym][pid];
+  await sset('pj:'+ym,PJ[ym]);renderPJ();}
+
+function pjNav(d){const[y,m]=PJ_YM.split('-').map(Number);const dt=new Date(y,m-1+d,1);
+  PJ_YM=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0');renderPJ();}
+
+function renderPJ(){const host=document.getElementById('pjgrid');if(!host)return;
+  if(!PJ_YM)PJ_YM=dToday().slice(0,7);
+  const ym=PJ_YM,[Y,M]=ym.split('-').map(Number),nd=new Date(Y,M,0).getDate();
+  const data=PJ[ym]||{};const WK=['Pz','Pt','Sa','Ça','Pe','Cu','Ct'];
+  const wd=d=>new Date(Y,M-1,d).getDay(),we=d=>{const w=wd(d);return w===0||w===6;};
+  const act=TEAM.filter(p=>p.aktif);const persons=(act.length?act:TEAM).slice()
+    .sort((a,b)=>(TROLES.indexOf(a.gorev)-TROLES.indexOf(b.gorev))||a.ad.localeCompare(b.ad,'tr'));
+  const MN=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+  if(!persons.length){host.innerHTML='<div class="empty">Önce personel ekleyin.</div>';return;}
+  let head='<tr><th class="pjname">Personel</th>';
+  for(let d=1;d<=nd;d++)head+='<th class="'+(we(d)?'we':'')+'">'+d+'<small>'+WK[wd(d)]+'</small></th>';
+  head+='<th class="pjtot">Gün</th></tr>';
+  const dayTot=new Array(nd+1).fill(0);let grand=0,body='';
+  for(const p of persons){const pd=data[p.id]||{};let tot=0;
+    let row='<td class="pjname">'+esc(p.ad)+'<small>'+esc(p.gorev)+'</small></td>';
+    for(let d=1;d<=nd;d++){const mt=pjMeta(pd[d]);tot+=mt.v;dayTot[d]+=mt.v;
+      row+='<td class="pjc'+(we(d)?' we':'')+'" onclick="pjCycle(\''+p.id+'\','+d+')" style="background:'+mt.bg+';color:'+mt.fg+'">'+(mt.c?mt.l:'')+'</td>';}
+    grand+=tot;body+='<tr>'+row+'<td class="pjtot">'+(tot?pjFmt(tot):'')+'</td></tr>';}
+  let foot='<tr class="pjfoot"><td class="pjname">Günlük toplam</td>';
+  for(let d=1;d<=nd;d++)foot+='<td class="'+(we(d)?'we':'')+'">'+(dayTot[d]?pjFmt(dayTot[d]):'')+'</td>';
+  foot+='<td class="pjtot">'+(grand?pjFmt(grand):'')+'</td></tr>';
+  host.innerHTML='<div class="pjnav"><button class="btn ghost sm" onclick="pjNav(-1)">‹</button>'+
+    '<b>'+MN[M-1]+' '+Y+'</b><button class="btn ghost sm" onclick="pjNav(1)">›</button>'+
+    '<span class="pjlegend"><i style="background:#16a34a"></i>tam<i style="background:#d97706"></i>yarım<i style="background:#e5e7eb"></i>yok<i style="background:#2563eb"></i>izin<i style="background:#7c3aed"></i>rapor</span></div>'+
+    '<div class="pjscroll"><table class="pjtab"><thead>'+head+'</thead><tbody>'+body+foot+'</tbody></table></div>';}
 
 /* ---- SİLME ONAYI / LOG ---- */
 async function reqDelete(key,label){const ts=Date.now();const r={ts,key,label,by:ROLE||'?'};DREQ.push(r);await sset('dr:'+ts,r);await logAct('silme-talep',label);}
@@ -1665,7 +1737,7 @@ async function delCustomMat(id){if(!confirm('Bu malzeme silinsin mi?'))return;MA
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s31</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s32</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -1914,8 +1986,8 @@ function rapBody(day,forPrint){const A=rapAgg(day),G=genProgress();
   }
   return h;}
 async function backupAll(){try{
-  const dump={_app:'SHAMS1-TR1',_ver:'s31',_ts:Date.now(),data:{}};
-  const pref=['tr1g:','log:','al:','dr:','tr1m:'];
+  const dump={_app:'SHAMS1-TR1',_ver:'s32',_ts:Date.now(),data:{}};
+  const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:'];
   for(const pre of pref)for(const k of await slist(pre)){const v=await sget(k);if(v!=null)dump.data[k]=v;}
   const single=['targets','mpct','cab:dc','cab:ac','cab:og','dcstr','ogb','matin','matuse','matkov','matcustom','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
   for(const k of single){const v=await sget(k);if(v!=null)dump.data[k]=v;}
@@ -2001,9 +2073,11 @@ function renderIsProg(){const el=document.getElementById('isprog');if(!el)return
 function renderPersonel(){const el=document.getElementById('personel');if(!el)return;
   el.innerHTML=
    '<div class="tk2"><h3>Günlük puantaj — sahadaki çalışan sayısı</h3><div class="sub">Her gün güncellenmesi zorunludur. Geçmiş 14 gün:</div>'+hcHistory()+'</div>'+
+   pjPanel()+
    delReqPanel()+
    '<h2 style="margin:14px 0 10px">Ekip / Personel</h2>'+teamForm()+teamCards()+
-   '<h2 style="margin:16px 0 10px">Organizasyon şeması</h2><div class="hint" style="margin-bottom:6px">Sözleşme: imzadan 3 gün içinde onaylı org. şeması sunulmalı.</div><div class="tk2">'+orgTree()+'</div>';}
+   '<h2 style="margin:16px 0 10px">Organizasyon şeması</h2><div class="hint" style="margin-bottom:6px">Sözleşme: imzadan 3 gün içinde onaylı org. şeması sunulmalı.</div><div class="tk2">'+orgTree()+'</div>';
+  renderPJ();}
 
 function editPerson(id){const p=teamGet(id);if(!p)return;
   modalShow('Personel düzenle — '+esc(p.ad),'<div class="tform">'+
