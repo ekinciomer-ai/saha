@@ -361,7 +361,7 @@
   <div class="homecard">
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 30 · rapor EPİAŞ tarzı günlük×kümülatif iş tablosu + itemized detay</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 31 · rapor günlük=kümülatif fark (onaylıyla tutarlı) + harita işaretleme</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -385,7 +385,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 30 · Bulut · 16.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 31 · Bulut · 16.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -1665,7 +1665,7 @@ async function delCustomMat(id){if(!confirm('Bu malzeme silinsin mi?'))return;MA
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s30</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s31</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -1778,6 +1778,17 @@ function dailyFeet(day){const logs=dayLogs(day);const st={};
     if(fm){const pos=(fm[1]==='Ön'?0:7)+(+fm[2]-1);st[masa+'_'+pos]=(fm[3]==='monte'?2:fm[3]==='delindi'?1:0);}}
   let del=0,mon=0;for(const k in st){if(st[k]>=1)del++;if(st[k]>=2)mon++;}
   return {del,mon};}
+/* gün SONUNA kadar (dahil) kümülatif net ayak durumu: tüm ayak loglarını kronolojik oynat,
+   her ayağın son durumunu al → o güne kadar toplam delinmiş(≥1)/monte(≥2) ayak. PLAN toplamıyla tutarlı. */
+function footCumUpto(day){const st={};
+  ALOG.filter(r=>dstr(r.ts)<=day).slice().sort((a,b)=>a.ts-b.ts).forEach(r=>{
+    const d=r.detail||'';const mm=d.match(/Masa #(\d+)/);if(!mm)return;const masa=+mm[1];
+    if(/sıfırlandı/.test(d)){for(let p=0;p<14;p++)st[masa+'_'+p]=0;return;}
+    if(/tümü delindi/.test(d)){for(let p=0;p<14;p++)st[masa+'_'+p]=1;return;}
+    if(/tümü monte/.test(d)){for(let p=0;p<14;p++)st[masa+'_'+p]=2;return;}
+    const fm=d.match(/(Ön|Arka)\s+(\d+)\s*→\s*(boş|delindi|monte)/);
+    if(fm){const pos=(fm[1]==='Ön'?0:7)+(+fm[2]-1);st[masa+'_'+pos]=(fm[3]==='monte'?2:fm[3]==='delindi'?1:0);}});
+  let del=0,mon=0;for(const k in st){if(st[k]>=1)del++;if(st[k]>=2)mon++;}return {del,mon};}
 function rapAgg(day){const logs=dayLogs(day);const persons={},masas={};let del=0,mon=0,konst=0;
   logs.forEach(r=>{const by=r.by||r.role||'—';persons[by]=(persons[by]||0)+1;
     const m=(r.detail||'').match(/Masa #(\d+)/);if(m)masas[+m[1]]=(masas[+m[1]]||0)+1;
@@ -1798,20 +1809,22 @@ function barN(lbl,val,max,cls){const w=max?Math.max(0,Math.min(100,val/max*100))
 let RAP_SHOWPERS=false;
 function toggleRapPers(){RAP_SHOWPERS=!RAP_SHOWPERS;renderRapor();}
 function repItems(){return [
-  {id:'harita',   ad:'Harita aplikasyon', birim:'ayak',  cum:sumP('a1'), hedef:5292, dis:'MEK'},
+  {id:'harita',   ad:'Harita işaretleme', birim:'ayak',  cum:sumP('a1'), hedef:5292, dis:'MEK'},
   {id:'ayakdelme',ad:'Ayak delme (rok)',  birim:'ayak',  cum:sumP('a2'), hedef:5292, dis:'MEK'},
   {id:'ayakmont', ad:'Ayak montajı',       birim:'ayak',  cum:sumMon(),   hedef:5292, dis:'MEK'},
   {id:'ustm',     ad:'Üst montaj / aşık',  birim:'adım',  cum:cntK('k1')+cntK('k2')+cntK('k3')+cntK('k4')+cntK('k5')+cntK('k6'), hedef:6*378, dis:'MEK'},
   {id:'panel',    ad:'Panel montajı',      birim:'panel', cum:sumP('k7'), hedef:9828, dis:'MEK'},
   ...GEN.map(g=>({id:g.id,ad:g.ad,birim:g.birim,cum:doneGen(g.id),hedef:g.hedef,dis:'ELK'}))
 ];}
-/* o güne ait, her iş kalemi için yapılan ADET (net):
-   - rok/montaj: dailyFeet (undo-duyarlı net)
+/* o güne ait, her iş kalemi için yapılan ADET:
+   - rok/montaj: KÜMÜLATİF FARK (footCumUpto(gün)−footCumUpto(öncekiGün)) → günlük asla onaylı toplamı aşmaz, sütun toplamları onaylıyla tutar; önceki gün delinip bugün montajlanan ayak rok'ta tekrar sayılmaz
    - harita/üst montaj/panel: ALOG 'Üretim' delta logları (undo-duyarlı net)
    - elektrik (GEN): ENTRIES üretim kayıtları (o günün tarihi) */
 function dayItemQty(day){
-  const q={};const DF=dailyFeet(day);
-  q.ayakdelme=DF.del; q.ayakmont=DF.mon;
+  const q={};
+  const days=repDays();const idx=days.indexOf(day);const prev=idx>0?days[idx-1]:null;
+  const cur=footCumUpto(day),pre=prev?footCumUpto(prev):{del:0,mon:0};
+  q.ayakdelme=Math.max(0,cur.del-pre.del); q.ayakmont=Math.max(0,cur.mon-pre.mon);
   const fmap={a1:'harita',k1:'ustm',k2:'ustm',k3:'ustm',k4:'ustm',k5:'ustm',k6:'ustm',k7:'panel'};
   dayLogs(day).forEach(r=>{const m=(r.detail||'').match(/\[(\w+)\]\s*([+-]?\d+)/);
     if(m&&fmap[m[1]]){const it=fmap[m[1]];q[it]=(q[it]||0)+(+m[2]);}});
@@ -1901,7 +1914,7 @@ function rapBody(day,forPrint){const A=rapAgg(day),G=genProgress();
   }
   return h;}
 async function backupAll(){try{
-  const dump={_app:'SHAMS1-TR1',_ver:'s30',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1-TR1',_ver:'s31',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:'];
   for(const pre of pref)for(const k of await slist(pre)){const v=await sget(k);if(v!=null)dump.data[k]=v;}
   const single=['targets','mpct','cab:dc','cab:ac','cab:og','dcstr','ogb','matin','matuse','matkov','matcustom','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
