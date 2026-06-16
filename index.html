@@ -322,6 +322,19 @@
   .feettog{display:flex;align-items:center;gap:5px;font-size:12px;color:#555;margin:0 0 6px;cursor:pointer}
   .feettog input{margin:0}
   .footpos{margin-top:5px;font-size:12px;color:#15314e;background:#eef3f8;border:1px solid #d6e2ee;border-radius:5px;padding:4px 8px}
+  .rapcards{display:flex;gap:8px;margin:10px 0;flex-wrap:wrap}
+  .rapcard{flex:1;min-width:90px;border:1px solid #e7e7ec;border-radius:9px;padding:10px;text-align:center;background:#fff}
+  .rc-n{font-size:22px;font-weight:800;color:#15314e}
+  .rc-l{font-size:11px;color:#888;margin-top:2px}
+  h3.raph{font-size:13px;color:#15314e;border-left:4px solid #E8833A;padding-left:8px;margin:16px 0 6px}
+  .rpbar{display:flex;align-items:center;gap:8px;margin:3px 0;font-size:11.5px}
+  .rpbar .rl{flex:0 0 160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#444}
+  .rpbar .rt{flex:1;height:11px;background:#eef0f3;border-radius:5px;position:relative}
+  .rpbar .rt.mini{height:8px}
+  .rpbar .rf{position:absolute;left:0;top:0;height:100%;border-radius:5px}
+  .rpbar .rf.gm{background:#2f6fb0}.rpbar .rf.ge{background:#E8833A}
+  .rpbar .rv{flex:0 0 38px;text-align:right;color:#555;font-variant-numeric:tabular-nums}
+  .rpsub{margin:6px 0 4px;padding-left:6px;border-left:2px solid #eee}
 </style>
 
 <div id="home" class="home">
@@ -329,7 +342,7 @@
   <div class="homecard">
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 22 · kullanıcı girişi + ayak/log takibi</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 23 · Rapor sekmesi (gün · ekip · % · harita · PDF)</div>
     <div class="hint">Giriş türünü seç, sonra projeyi aç. Yönetici tüm verileri (parasal dâhil) görür ve girer; Usta sadece proje bilgisi görür ve veri girişi yapar.</div>
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -353,7 +366,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 22 · Bulut · 15.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 23 · Bulut · 16.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -382,6 +395,7 @@
     <button class="tab" onclick="tabTo(5,this)">👷 Personel</button>
     <button class="tab adminonly" onclick="tabTo(6,this)">📋 Sözleşme</button>
     <button class="tab" onclick="tabTo(7,this)">📅 İş Programı</button>
+    <button class="tab adminonly" onclick="tabTo(8,this)">📊 Rapor</button>
   </div>
 
   <!-- ===== PROJE ===== -->
@@ -457,6 +471,7 @@
   <div class="pane" id="pane5"><div id="personel"></div></div>
   <div class="pane" id="pane6"><div id="sozlesme"></div></div>
   <div class="pane" id="pane7"><div id="isprog"></div></div>
+  <div class="pane" id="pane8"><div id="rapor"></div></div>
 </div>
 
 <div class="backdrop" id="backdrop" onclick="closeEd()"></div>
@@ -657,7 +672,7 @@ function grpOf(i){return Math.floor((i-1)/20);}
 
 let MCUR=0;
 function tabTo(n,el){document.querySelectorAll('.tabs .tab').forEach(t=>t.classList.remove('on'));el.classList.add('on');
-  for(let i=0;i<8;i++)document.getElementById('pane'+i).classList.toggle('on',i===n);
+  for(let i=0;i<9;i++){const pn=document.getElementById('pane'+i);if(pn)pn.classList.toggle('on',i===n);}
   if(n===0)renderProje();
   if(n===1)mShow();
   if(n===2){renderProgress();renderHakedisKesinti();}
@@ -665,7 +680,8 @@ function tabTo(n,el){document.querySelectorAll('.tabs .tab').forEach(t=>t.classL
   if(n===4)renderMalzeme();
   if(n===5)renderPersonel();
   if(n===6)renderSozlesme();
-  if(n===7)renderIsProg();}
+  if(n===7)renderIsProg();
+  if(n===8)renderRapor();}
 function mTo(n,el){MCUR=n;document.querySelectorAll('#msub .subtab').forEach(t=>t.classList.remove('on'));el.classList.add('on');
   for(let i=0;i<7;i++)document.getElementById('mpane'+i).classList.toggle('on',i===n);mShow();}
 function mShow(){if(MCUR===0){renderPhaseChips();renderZoneChips();renderMinimap();renderZoneMasa();renderKonstPlan();konstStats();renderKonstTek();}
@@ -1597,7 +1613,7 @@ async function delCustomMat(id){if(!confirm('Bu malzeme silinsin mi?'))return;MA
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s22</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s23</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -1690,6 +1706,76 @@ function malName(id){const it=(typeof matItem==='function')?matItem(id):null;ret
 function malMik(id){const it=(typeof matItem==='function')?matItem(id):null;return it?(Number(it.mik).toLocaleString('tr-TR')+' '+(it.birim||'')):'';}
 async function setIsbasi(v){if(!v)return;ISB=v;await sset('isbasi',v);renderIsProg();}
 function pozDates(z){const st=dadd(ISB,z.s),en=dadd(ISB,z.s+Math.max(1,z.g)-1);let rd=dadd(st,-5);if(rd<ISB)rd=ISB;return {st,en,rd};}
+
+let RAPDAY=(function(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})();
+function dstr(ts){const d=new Date(ts);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function setRapDay(v){if(v)RAPDAY=v;renderRapor();}
+function dayLogs(day){return ALOG.filter(r=>dstr(r.ts)===day).slice().sort((a,b)=>a.ts-b.ts);}
+function genProgress(){const items=[...mechItems(),...GEN.map(g=>({...g,plan:0}))];
+  let mek=0,mekW=0,elk=0,elkW=0,rows=[];
+  for(const it of items){const pct=itemPct(it);if(it.dis==='MEK'){mek+=it.pur*pct;mekW+=it.pur;}else{elk+=it.pur*pct;elkW+=it.pur;}
+    rows.push({ad:it.ad,dis:it.dis,pur:it.pur,pct});}
+  return {mek:mekW?mek/mekW:0,elk:elkW?elk/elkW:0,rows};}
+function rapAgg(day){const logs=dayLogs(day);const persons={},masas={};let del=0,mon=0,konst=0;
+  logs.forEach(r=>{const by=r.by||r.role||'—';persons[by]=(persons[by]||0)+1;
+    const m=(r.detail||'').match(/Masa #(\d+)/);if(m)masas[+m[1]]=(masas[+m[1]]||0)+1;
+    const d=r.detail||'';
+    if(/tümü delindi/.test(d))del+=14;else if(/→ delindi/.test(d))del++;
+    if(/tümü monte/.test(d))mon+=14;else if(/→ monte/.test(d))mon++;
+    if(/Konst|Panel|Yapıldı/.test(r.act||''))konst++;});
+  return {logs,persons,masas,del,mon,konst};}
+function rapMap(masas){const W=620,dx=LAYOUT.maxx-LAYOUT.minx,dy=LAYOUT.maxy-LAYOUT.miny,H=Math.round(W*dy/dx);
+  const rw=17.2/dx*W,rh=Math.max(4.34/dx*W,2.4),sx=x=>(x-LAYOUT.minx)/dx*W,sy=y=>(LAYOUT.maxy-y)/dy*H;
+  let r=`<svg viewBox="-6 -6 ${W+12} ${H+12}" style="width:100%;height:auto;background:#fafbfc;border-radius:8px">`;
+  for(const t of LAYOUT.tables){const hit=masas[t.i];const x=sx(t.x)-rw/2,y=sy(t.y)-rh/2;
+    r+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${rw.toFixed(1)}" height="${rh.toFixed(1)}" rx="1" fill="${hit?'#E8833A':'#e6e9ef'}" stroke="${hit?'#c0562a':'#d3d7df'}" stroke-width="${hit?1.1:.4}"></rect>`;}
+  return r+'</svg>';}
+function bar(lbl,pct,cls){return `<div class="rpbar"><span class="rl">${lbl}</span><span class="rt"><span class="rf ${cls}" style="width:${Math.max(0,Math.min(100,pct)).toFixed(0)}%"></span></span><span class="rv">${pct.toFixed(0)}%</span></div>`;}
+function rapBody(day,forPrint){const A=rapAgg(day),G=genProgress();
+  const pers=Object.entries(A.persons).sort((a,b)=>b[1]-a[1]);
+  const masaList=Object.keys(A.masas).map(Number).sort((a,b)=>a-b);
+  const fmtDay=day.split('-').reverse().join('.');
+  let h='';
+  h+=`<div class="rapcards">
+    <div class="rapcard"><div class="rc-n">${A.logs.length}</div><div class="rc-l">işlem kaydı</div></div>
+    <div class="rapcard"><div class="rc-n">${pers.length}</div><div class="rc-l">çalışan kişi</div></div>
+    <div class="rapcard"><div class="rc-n">${masaList.length}</div><div class="rc-l">dokunulan masa</div></div>
+    <div class="rapcard"><div class="rc-n" style="color:#E8833A">${A.del}</div><div class="rc-l">ayak delme</div></div>
+    <div class="rapcard"><div class="rc-n" style="color:#2e9e5b">${A.mon}</div><div class="rc-l">ayak montaj</div></div>
+  </div>`;
+  if(!A.logs.length)h+='<div class="hint" style="margin:10px 0">Bu güne ait saha kaydı bulunamadı.</div>';
+  // kişi tablosu
+  if(pers.length){h+='<h3 class="raph">Çalışan ekip ('+fmtDay+')</h3><table class="mtab"><thead><tr><th>Kişi</th><th>İşlem sayısı</th><th>Pay</th></tr></thead><tbody>';
+    const tot=A.logs.length||1;pers.forEach(([k,v])=>{h+=`<tr><td>${esc(k)}</td><td class="m">${v}</td><td><span class="rt mini"><span class="rf gm" style="width:${(v/tot*100).toFixed(0)}%"></span></span></td></tr>`;});
+    h+='</tbody></table>';}
+  // genel ilerleme
+  h+='<h3 class="raph">Genel ilerleme (anlık)</h3>';
+  h+=bar('Mekanik',G.mek,'gm')+bar('Elektrik',G.elk,'ge');
+  h+='<div class="rpsub">'+G.rows.map(r=>bar(r.ad,r.pct,r.dis==='MEK'?'gm':'ge')).join('')+'</div>';
+  // harita
+  h+='<h3 class="raph">Saha haritası — gün içinde dokunulan masalar</h3>'+rapMap(A.masas);
+  h+='<div class="hint" style="margin-top:4px"><span class="fdot" style="background:#E8833A"></span> dokunulan masa · '+masaList.length+' masa</div>';
+  // işlem listesi
+  if(A.logs.length){h+='<h3 class="raph">İşlem dökümü ('+A.logs.length+')</h3><div style="overflow:auto;max-height:'+(forPrint?'none':'320px')+'"><table class="mtab"><thead><tr><th>Saat</th><th>Kişi</th><th>İşlem</th><th>Detay</th></tr></thead><tbody>';
+    A.logs.forEach(r=>{const t=new Date(r.ts).toLocaleTimeString("tr-TR",{hour:"2-digit",minute:"2-digit"});h+=`<tr><td class="m">${t}</td><td>${esc(r.by||r.role||"—")}</td><td>${esc(r.act)}</td><td><small>${esc(r.detail||"")}</small></td></tr>`;});
+    h+='</tbody></table></div>';}
+  return h;}
+function renderRapor(){const el=document.getElementById('rapor');if(!el)return;
+  el.innerHTML=`<div class="tk2"><h3>Günlük Saha Raporu — SHAMS-1 TR-1 (6,9 MWp)</h3>
+    <div class="frow" style="align-items:center;gap:10px;flex-wrap:wrap">
+      <label>Gün<input type="date" id="rapday_in" value="${RAPDAY}" onchange="setRapDay(this.value)"></label>
+      <button class="tg" onclick="setRapDay(new Date().toISOString().slice(0,10))">Bugün</button>
+      <button class="btn" onclick="printRapor()">📄 PDF / Yazdır</button>
+    </div></div>
+    <div id="rapout">`+rapBody(RAPDAY,false)+`</div>`;}
+function printRapor(){const day=RAPDAY,fmtDay=day.split('-').reverse().join('.');
+  const w=window.open('','_blank');if(!w){toast&&toast('Açılır pencere engellendi');return;}
+  const css=`<style>body{font-family:Arial,sans-serif;color:#1c1c22;font-size:11px;margin:24px}h1{font-size:15px;color:#15314e;border-bottom:3px solid #E8833A;padding-bottom:6px}h3.raph{font-size:12px;color:#15314e;border-left:4px solid #E8833A;padding-left:8px;margin:14px 0 6px}table{width:100%;border-collapse:collapse;font-size:9.5px;margin:6px 0}th{background:#15314e;color:#fff;text-align:left;padding:4px 6px}td{border:1px solid #e0e0e6;padding:3px 6px}.m{text-align:center}.rapcards{display:flex;gap:8px;margin:8px 0}.rapcard{flex:1;border:1px solid #e3e3e8;border-radius:7px;padding:8px;text-align:center}.rc-n{font-size:18px;font-weight:800;color:#15314e}.rc-l{font-size:9px;color:#777}.rpbar{display:flex;align-items:center;gap:6px;margin:2px 0;font-size:9px}.rl{flex:0 0 150px}.rt{flex:1;height:9px;background:#eee;border-radius:4px;position:relative}.rt.mini{height:7px}.rf{position:absolute;left:0;top:0;height:100%;border-radius:4px}.rf.gm{background:#2f6fb0}.rf.ge{background:#E8833A}.rv{flex:0 0 34px;text-align:right}.fdot{display:inline-block;width:10px;height:10px;border-radius:3px}.hint{font-size:9px;color:#777}svg{max-width:100%}</style>`;
+  w.document.write('<html><head><meta charset="utf-8"><title>Günlük Rapor '+fmtDay+'</title>'+css+'</head><body>'+
+    '<h1>AKSARAY ENERJİ — Günlük Saha Raporu</h1><div style="font-size:10px;color:#555;margin:4px 0 10px">SHAMS-1 GES · TR-1 6,9 MWp · Tarih: <b>'+fmtDay+'</b></div>'+
+    rapBody(day,true)+'</body></html>');
+  w.document.close();setTimeout(()=>{try{w.print();}catch(e){}},400);}
+
 function renderIsProg(){const el=document.getElementById('isprog');if(!el)return;
   const today=new Date().toISOString().slice(0,10);
   const total=Math.max(1,ddiff(ISB,ISBITIS)+1);
