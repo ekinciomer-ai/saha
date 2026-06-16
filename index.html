@@ -308,6 +308,20 @@
   .gaxis{background:transparent;height:18px}
   .gtick{position:absolute;top:0;font-size:9px;color:#9a9aa5;transform:translateX(-50%);white-space:nowrap}
   .gtick:first-child{transform:none}.gtick:last-child{transform:translateX(-100%)}
+  .ayakgrp{font-size:11px;font-weight:700;color:#15314e;margin:9px 0 3px;padding:3px 9px;background:#eef1f5;border-left:3px solid #E8833A;border-radius:3px}
+  .footgrid{margin:4px 0}
+  .footrow{display:flex;align-items:center;gap:5px;margin:4px 0}
+  .fhdr{flex:0 0 40px;font-size:12px;color:#999}
+  .foot{width:36px;height:32px;border-radius:7px;border:1px solid #d8d8de;font-size:13px;font-weight:700;cursor:pointer;color:#999;background:#ececed;transition:.1s}
+  .foot.f1{background:#E8833A;color:#fff;border-color:#d9712a}
+  .foot.f2{background:#2e9e5b;color:#fff;border-color:#268a4f}
+  .footsum{margin-top:7px;font-size:12.5px;color:#444}
+  .fdot{display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:-1px;margin-right:3px}
+  .fdot.f1{background:#E8833A}.fdot.f2{background:#2e9e5b}
+  .footbtns{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+  .feettog{display:flex;align-items:center;gap:5px;font-size:12px;color:#555;margin:0 0 6px;cursor:pointer}
+  .feettog input{margin:0}
+  .footpos{margin-top:5px;font-size:12px;color:#15314e;background:#eef3f8;border:1px solid #d6e2ee;border-radius:5px;padding:4px 8px}
 </style>
 
 <div id="home" class="home">
@@ -337,7 +351,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 18 · Bulut · 15.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 21 · Bulut · 15.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -404,7 +418,8 @@
           <span class="lg"><span class="dotc" style="background:var(--slate)"></span>0%</span>
           <span class="lg"><span class="dotc" style="background:var(--solar)"></span>kısmi</span>
           <span class="lg"><span class="dotc" style="background:var(--gnd)"></span>tam</span>
-          <span class="lg" style="margin-left:auto;color:var(--faint)" id="phaselbl">Tüm konstrüksiyon</span>
+          <label class="feettog" style="margin-left:auto"><input type="checkbox" id="feetTog" checked onchange="SHOWFEET=this.checked;renderKonstPlan()"> Ayakları göster <span class="fdot f1"></span>delindi <span class="fdot f2"></span>monte</label>
+          <span class="lg" style="color:var(--faint)" id="phaselbl">Tüm konstrüksiyon</span>
         </div>
         <div class="planwrap">
           <div class="zoomctl">
@@ -490,11 +505,11 @@ const GEN=[
 ];
 // ayak adımları (her biri 0-14)
 const AYAK=[
- {k:'a1',ad:'Harita işaretleme'},
- {k:'a2',ad:'Rok ile delme',isv:true},
- {k:'a3',ad:'Ayak sabitleme'},
- {k:'a4',ad:'Beton atılması'},
- {k:'a5',ad:'Teraziye alma'},
+ {k:'a1',ad:'Harita işaretleme',grp:'Hazırlık'},
+ {k:'a2',ad:'Rok ile delme',isv:true,grp:'Ayak Delme'},
+ {k:'a3',ad:'Ayak sabitleme',grp:'Ayak Montajı'},
+ {k:'a4',ad:'Beton atılması',grp:'Ayak Montajı'},
+ {k:'a5',ad:'Teraziye alma',grp:'Ayak Montajı'},
 ];
 // konstrüksiyon (k1-k6 ikili, k7 panel 0-26)
 const KONST=[
@@ -685,7 +700,8 @@ function mechItems(){
   const T1=378;
   return [
    {id:'harita',ad:'Harita Aplikasyon',dis:'MEK',pur:0.00,birim:'ayak',done:sumP('a1'),hedef:5292,plan:1},
-   {id:'cakma',ad:'Çakma Kolon',dis:'MEK',pur:0.42,birim:'ayak',done:sumP('a3')+sumP('a4')+sumP('a5'),hedef:3*5292,plan:1},
+   {id:'ayakdelme',ad:'Ayak Delme (rok)',dis:'MEK',pur:0.00,birim:'ayak',done:sumP('a2'),hedef:5292,plan:1,isv:true},
+   {id:'ayakmont',ad:'Ayak Montajı',dis:'MEK',pur:0.42,birim:'ayak',done:sumP('a3')+sumP('a4')+sumP('a5'),hedef:3*5292,plan:1},
    {id:'ustm',ad:'Üst Montaj / Aşık',dis:'MEK',pur:0.31,birim:'adım',done:cntK('k1')+cntK('k2')+cntK('k3')+cntK('k4')+cntK('k5')+cntK('k6'),hedef:6*T1,plan:1},
    {id:'panel',ad:'Panel Montajı',dis:'MEK',pur:0.27,birim:'panel',done:sumP('k7'),hedef:9828,plan:1},
   ];
@@ -729,8 +745,16 @@ function renderPlan(){
   const rw=17.2/dx*W,rh=Math.max(4.34/dx*W,3),sx=x=>(x-LAYOUT.minx)/dx*W,sy=y=>(LAYOUT.maxy-y)/dy*H;
   let r=`<svg viewBox="-6 -6 ${W+12} ${H+12}">`;
   for(const t of LAYOUT.tables){const st=tStatus(PLAN[t.i]);const x=sx(t.x)-rw/2,y=sy(t.y)-rh/2;
-    r+=`<rect class="t${SEL===t.i?' sel':''}" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${rw.toFixed(1)}" height="${rh.toFixed(1)}" rx="1.4" fill="${STC[st]}" onclick="openEd(${t.i})"></rect>`;}
-  r+='</svg>';document.getElementById('plan').innerHTML=r;renderPlanSummary();
+    const baseFill=SHOWFEET?'#e6e9ef':STC[st];
+    r+=`<rect class="t${SEL===t.i?' sel':''}" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${rw.toFixed(1)}" height="${rh.toFixed(1)}" rx="1.4" fill="${baseFill}" onclick="openEd(${t.i})"></rect>`;
+    if(SHOWFEET){const ft=footOf(t.i),fw=Math.max(1,rw*0.045),fh=Math.max(1.4,rh*0.26);
+      for(let c=0;c<7;c++)for(let row=0;row<2;row++){const v=ft[row*7+c];
+        const fx=x+(c+0.5)*(rw/7)-fw/2, fy=y+(row?rh*0.56:rh*0.18);
+        r+=`<rect x="${fx.toFixed(1)}" y="${fy.toFixed(1)}" width="${fw.toFixed(1)}" height="${fh.toFixed(1)}" rx=".5" fill="${footColor(v)}" pointer-events="none"/>`;}}
+  }
+  r+='</svg>';
+  const ctrl=`<label class="feettog"><input type="checkbox" ${SHOWFEET?'checked':''} onchange="SHOWFEET=this.checked;renderPlan()"> Ayakları göster · <span class="fdot f1"></span>delindi <span class="fdot f2"></span>monte</label>`;
+  document.getElementById('plan').innerHTML=ctrl+r;renderPlanSummary();
 }
 function renderPlanSummary(){
   if(!document.getElementById('m_rok'))return;
@@ -805,13 +829,19 @@ async function openEd(i){SEL=i;const t=tbl(i),s=PLAN[i]||{};
   document.getElementById('ed_t').textContent='Masa #'+i;
   document.getElementById('ed_adr').textContent='DC string: '+(t.adrf||t.adr||'—');
   // ayak adımları
-  document.getElementById('ed_ayak').innerHTML=AYAK.map(a=>{
-    const v=s[a.k]||0;
-    return `<div class="stp"><div class="nm">${a.ad}${a.isv?'<i>İşveren (rok delgi hariç)</i>':''}</div>
-      <div class="stepper"><button onclick="bump('${a.k}',-1,14)">−</button>
-      <input class="num" id="i_${a.k}" type="number" min="0" max="14" value="${v}" onchange="setv('${a.k}',this.value,14)">
-      <button onclick="bump('${a.k}',1,14)">+</button><button class="tg" style="min-width:70px" onclick="setv('${a.k}',14,14)">Tümü 14</button></div></div>`;
-  }).join('');
+  document.getElementById('ed_ayak').innerHTML=(()=>{
+    const v1=s.a1||0;let h='';
+    h+=`<div class="ayakgrp">Hazırlık</div>
+     <div class="stp"><div class="nm">Harita işaretleme</div>
+      <div class="stepper"><button onclick="bump('a1',-1,14)">−</button>
+      <input class="num" id="i_a1" type="number" min="0" max="14" value="${v1}" onchange="setv('a1',this.value,14)">
+      <button onclick="bump('a1',1,14)">+</button><button class="tg" style="min-width:70px" onclick="setv('a1',14,14)">Tümü 14</button></div></div>`;
+    h+=`<div class="ayakgrp">Ayaklar — Delme &amp; Montaj <i style="font-weight:400">(14 ayak · tıkla: boş → delindi → monte · rok delgi İşveren)</i></div>
+     <div id="ed_footgrid" class="footgrid"></div>
+     <div class="footbtns"><button class="tg" onclick="footAll(1)">Tümü delindi</button>
+      <button class="tg" onclick="footAll(2)">Tümü monte</button>
+      <button class="tg" onclick="footAll(0)">Sıfırla</button></div>`;
+    return h;})();
   // konstrüksiyon
   let kh=KONST.map(c=>`<div class="stp"><div class="nm">${c.ad}</div>
     <button class="tg ${s[c.k]?'act':''}" id="t_${c.k}" onclick="toggle('${c.k}')">${s[c.k]?'Yapıldı ✓':'Yapılmadı'}</button></div>`).join('');
@@ -819,7 +849,7 @@ async function openEd(i){SEL=i;const t=tbl(i),s=PLAN[i]||{};
     <input class="num" id="i_k7" type="number" min="0" max="26" value="${s.k7||0}" onchange="setv('k7',this.value,26)">
     <button onclick="bump('k7',1,26)">+</button><button class="tg" style="min-width:70px" onclick="setv('k7',26,26)">Tümü 26</button></div></div>`;
   document.getElementById('ed_konst').innerHTML=kh;
-  drawSchem();
+  drawSchem();drawFootGrid();
   // media yükle
   MEDIA[i]=await sget('tr1m:'+i)||[];renderMedia();
   document.getElementById('editor').classList.add('on');document.getElementById('backdrop').classList.add('on');renderPlan();refreshKonst();
@@ -831,9 +861,37 @@ async function setv(f,val,mx){if(SEL==null)return;val=Math.max(0,Math.min(mx,par
   const s=PLAN[SEL]||{};s[f]=val;await saveTbl(s);const el=document.getElementById('i_'+f);if(el)el.value=val;drawSchem();}
 async function toggle(f){if(SEL==null)return;const s=PLAN[SEL]||{};s[f]=s[f]?0:1;await saveTbl(s);
   const b=document.getElementById('t_'+f);b.classList.toggle('act',!!s[f]);b.textContent=s[f]?'Yapıldı ✓':'Yapılmadı';drawSchem();}
+/*FEET*/
+let SHOWFEET=true,LASTFOOT="";
+function footOf(i){const s=PLAN[i]||{};
+  if(Array.isArray(s.foot)&&s.foot.length===14)return s.foot;
+  const del=+s.a2||0,mon=Math.min(+s.a3||0,+s.a4||0,+s.a5||0);
+  const a=[];for(let j=0;j<14;j++)a.push(j<mon?2:(j<del?1:0));return a;}
+function footColor(v){return v>=2?'#2e9e5b':(v>=1?'#E8833A':'#cdd2da');}
+function footArr(){return footOf(SEL).slice();}
+function syncFoot(a){const s=PLAN[SEL]||(PLAN[SEL]={});s.foot=a.slice();
+  s.a2=a.filter(x=>x>=1).length;const m=a.filter(x=>x>=2).length;s.a3=m;s.a4=m;s.a5=m;}
+async function cycleFoot(j){if(SEL==null)return;const a=footArr();a[j]=(a[j]+1)%3;syncFoot(a);await saveTbl(PLAN[SEL]);
+  const lbl=['boş','delindi','monte'],pos=(j<7?'Ön ':'Arka ')+((j%7)+1);
+  LASTFOOT='Seçili ayak: <b>'+pos+'</b> → '+lbl[a[j]];
+  await logAct('Ayak işaretleme','Masa #'+SEL+' · '+pos+' → '+lbl[a[j]]);
+  drawFootGrid();renderProgress();drawSchem();renderKonstPlan();}
+async function footAll(v){if(SEL==null)return;syncFoot(Array(14).fill(v));await saveTbl(PLAN[SEL]);
+  await logAct('Ayak (toplu)','Masa #'+SEL+' · '+['sıfırlandı','tümü delindi','tümü monte'][v]);
+  LASTFOOT='';drawFootGrid();renderProgress();drawSchem();renderKonstPlan();}
+function drawFootGrid(){const el=document.getElementById('ed_footgrid');if(!el)return;const a=footArr();const lbl=['boş','delindi','monte'];
+  let h='<div class="footrow"><span class="fhdr">Ön</span>';
+  for(let j=0;j<7;j++)h+=`<button class="foot f${a[j]}" onclick="cycleFoot(${j})" title="Ön ${j+1} · ${lbl[a[j]]}">${j+1}</button>`;
+  h+='</div><div class="footrow"><span class="fhdr">Arka</span>';
+  for(let j=7;j<14;j++)h+=`<button class="foot f${a[j]}" onclick="cycleFoot(${j})" title="Arka ${j-6} · ${lbl[a[j]]}">${j-6}</button>`;
+  h+='</div>';
+  const del=a.filter(x=>x>=1).length,mon=a.filter(x=>x>=2).length;
+  h+=`<div class="footsum"><span class="fdot f1"></span>Delinen <b>${del}/14</b> &nbsp; <span class="fdot f2"></span>Monte <b>${mon}/14</b></div>`;
+  if(LASTFOOT)h+=`<div class="footpos">${LASTFOOT}</div>`;
+  el.innerHTML=h;}
 async function saveTbl(s){s.by=document.getElementById('usta').value.trim()||'—';s.at=Date.now();PLAN[SEL]=s;
   const g=grpOf(SEL),obj={};for(const t of LAYOUT.tables){if(grpOf(t.i)===g&&PLAN[t.i])obj[t.i]=PLAN[t.i];}
-  await sset('tr1g:'+g,obj);renderProgress();renderPlan();}
+  await sset('tr1g:'+g,obj);renderProgress();renderPlan();renderKonstPlan();}
 
 /* ---- media ---- */
 function renderMedia(){const arr=MEDIA[SEL]||[];
@@ -909,7 +967,13 @@ function renderKonstPlan(){const el=document.getElementById('plan2');if(!el)retu
   for(const t of LAYOUT.tables){const f=curFrac(PLAN[t.i]);const x=S.sx(t.x)-S.rw/2,y=S.sy(t.y)-S.rh/2;
     const inv=invOf(t);(cen[inv]=cen[inv]||[]).push([S.sx(t.x),S.sy(t.y)]);
     const selc=(SEL===t.i||KFIND===t.i);const dim=(ZONE&&inv!==ZONE)?' opacity="0.16"':'';
-    r+='<rect'+dim+' class="t'+(selc?' sel':'')+'" x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+S.rw.toFixed(1)+'" height="'+S.rh.toFixed(1)+'" rx="1.3" fill="'+konstFill(f)+'" stroke="'+(selc?'#16161A':invColor(inv))+'" stroke-width="'+(selc?2.2:1.1)+'" onclick="openEd('+t.i+')"></rect>';}
+    const fill=SHOWFEET?'#e6e9ef':konstFill(f);
+    r+='<rect'+dim+' class="t'+(selc?' sel':'')+'" x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+S.rw.toFixed(1)+'" height="'+S.rh.toFixed(1)+'" rx="1.3" fill="'+fill+'" stroke="'+(selc?'#16161A':invColor(inv))+'" stroke-width="'+(selc?2.2:1.1)+'" onclick="openEd('+t.i+')"></rect>';
+    if(SHOWFEET){const ft=footOf(t.i),fw=Math.max(0.8,S.rw*0.05),fh=Math.max(1.2,S.rh*0.30);
+      for(let c=0;c<7;c++)for(let row=0;row<2;row++){const v=ft[row*7+c];
+        const fx=x+(c+0.5)*(S.rw/7)-fw/2, fy=y+(row?S.rh*0.55:S.rh*0.16);
+        r+='<rect'+dim+' x="'+fx.toFixed(1)+'" y="'+fy.toFixed(1)+'" width="'+fw.toFixed(1)+'" height="'+fh.toFixed(1)+'" rx=".4" fill="'+footColor(v)+'" pointer-events="none"></rect>';}}
+  }
   for(const inv in cen){if(ZONE&&+inv!==ZONE)continue;const pts=cen[inv];const mx=pts.reduce((a,p)=>a+p[0],0)/pts.length,my=pts.reduce((a,p)=>a+p[1],0)/pts.length;
     r+='<text class="invlbl" x="'+mx.toFixed(1)+'" y="'+my.toFixed(1)+'" text-anchor="middle" dominant-baseline="middle" font-size="9" fill="'+invColor(+inv)+'">INV'+inv+'</text>';}
   if(KFIND!=null){const t=tbl(KFIND);if(t){const cx=S.sx(t.x),cy=S.sy(t.y);
@@ -1023,7 +1087,7 @@ function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','
 function fval(id){const e=document.getElementById(id);return e?e.value.trim():'';}
 function dToday(){return new Date().toISOString().slice(0,10);}
 function uid(){return 'p'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
-async function logAct(act,detail){const ts=Date.now();const r={act,detail:detail||'',role:ROLE||'?',ts};ALOG.unshift(r);await sset('al:'+ts,r);}
+async function logAct(act,detail){const ts=Date.now();const by=(document.getElementById('usta')&&document.getElementById('usta').value.trim())||'';const r={act,detail:detail||'',role:ROLE||'?',by:by,ts};ALOG.unshift(r);await sset('al:'+ts,r);}
 
 /* ---- görsel küçültme ---- */
 function resizeImg(file,max,cb){const r=new FileReader();r.onload=e=>{const img=new Image();img.onload=()=>{
@@ -1116,7 +1180,7 @@ function delReqPanel(){if(!DREQ.length)return '';
     DREQ.map(r=>'<div class="drrow"><span>'+esc(r.label)+' <small>· '+esc(r.by)+'</small></span><span><button class="btn sm" onclick="approveDel('+r.ts+')">Onayla & sil</button> <button class="btn ghost sm" onclick="rejectDel('+r.ts+')">Reddet</button></span></div>').join('')+'</div>';}
 function logPanel(){if(!ALOG.length)return '';
   return acc('İşlem kaydı (log) — son 30',('<table><thead><tr><th>Zaman</th><th>İşlem</th><th>Detay</th><th>Kim</th></tr></thead><tbody>'+
-    ALOG.slice(0,30).map(r=>'<tr><td>'+new Date(r.ts).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</td><td>'+esc(r.act)+'</td><td>'+esc(r.detail)+'</td><td>'+esc(r.role)+'</td></tr>').join('')+'</tbody></table>'),false,'adminonly');}
+    ALOG.slice(0,30).map(r=>'<tr><td>'+new Date(r.ts).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</td><td>'+esc(r.act)+'</td><td>'+esc(r.detail)+'</td><td>'+esc(r.by||r.role)+'</td></tr>').join('')+'</tbody></table>'),false,'adminonly');}
 
 /* ---- HARİTA (OpenStreetMap) + YAKIN TESİSLER ---- */
 function osmMap(){const lat=39.226317,lon=45.288885,dd=0.03;
@@ -1607,7 +1671,7 @@ const POZ=[
 function malName(id){const it=(typeof matItem==='function')?matItem(id):null;return it?it.ad:id;}
 function malMik(id){const it=(typeof matItem==='function')?matItem(id):null;return it?(Number(it.mik).toLocaleString('tr-TR')+' '+(it.birim||'')):'';}
 async function setIsbasi(v){if(!v)return;ISB=v;await sset('isbasi',v);renderIsProg();}
-function pozDates(z){const st=dadd(ISB,z.s),en=dadd(ISB,z.s+Math.max(1,z.g)-1),rd=dadd(st,-5);return {st,en,rd};}
+function pozDates(z){const st=dadd(ISB,z.s),en=dadd(ISB,z.s+Math.max(1,z.g)-1);let rd=dadd(st,-5);if(rd<ISB)rd=ISB;return {st,en,rd};}
 function renderIsProg(){const el=document.getElementById('isprog');if(!el)return;
   const today=new Date().toISOString().slice(0,10);
   const total=Math.max(1,ddiff(ISB,ISBITIS)+1);
