@@ -329,16 +329,18 @@
   <div class="homecard">
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 18 · İş Programı (poz+tarih+topraklama)</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 22 · kullanıcı girişi + ayak/log takibi</div>
     <div class="hint">Giriş türünü seç, sonra projeyi aç. Yönetici tüm verileri (parasal dâhil) görür ve girer; Usta sadece proje bilgisi görür ve veri girişi yapar.</div>
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
       <button class="rolebtn" id="rb_admin" onclick="pickRole('admin')">🔑 Yönetici<small>Tüm yetki · hakediş & parasal · veri girişi</small></button>
       <button class="rolebtn" id="rb_usta" onclick="pickRole('usta')">🦺 Usta<small>Sadece proje bilgisi + saha veri girişi</small></button>
     </div>
-    <div class="pinbox" id="pinbox" style="display:none">
-      <input id="pin" type="password" inputmode="numeric" placeholder="Yönetici PIN" onkeydown="if(event.key==='Enter')adminLogin()">
-      <button class="btn" onclick="adminLogin()">Gir</button>
+    <div class="pinbox" id="pinbox" style="display:none;flex-wrap:wrap">
+      <div class="rlabel" id="logintitle" style="width:100%">Giriş</div>
+      <input id="loginuser" type="text" placeholder="Kullanıcı adı" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()">
+      <input id="pin" type="password" placeholder="Şifre" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="btn" onclick="doLogin()">Gir</button>
       <span class="hint" id="pinerr" style="color:var(--mv)"></span>
     </div>
     <div class="projbox" id="projbox" style="display:none">
@@ -351,7 +353,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 21 · Bulut · 15.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 22 · Bulut · 15.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -547,7 +549,12 @@ async function fbInit(){if(!FBCONFIG||!FBCONFIG.databaseURL)return false;if(FBDB
   try{if(!window.firebase){await Promise.race([(async()=>{await loadScript('https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js');await loadScript('https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js');})(),new Promise((_,rej)=>setTimeout(()=>rej(new Error('fb-timeout')),7000))]);}
     firebase.initializeApp(FBCONFIG);FBDB=firebase.database();return true;}catch(e){return false;}}
 function fbPath(k){return 'shams1tr1/'+String(k).replace(/[.#$\[\]]/g,'_').replace(/:/g,'/');}
-const ADMIN_PIN='1453'; // ← yönetici PIN (buradan değiştir)
+const ADMIN_PIN='1453'; // ← (eski) yönetici PIN
+const USERS={
+  admin:[{u:'Ömer',p:'1453'},{u:'Adem',p:'Adem'}],
+  usta:[{u:'Adem',p:'Adem'},{u:'Halit',p:'Halit'}]
+};
+let CURUSER='',PENDING_ROLE=null;
 function nowt(){return new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});}
 function ghUrl(){return 'https://api.github.com/repos/'+GH.owner+'/'+GH.repo+'/contents/'+encodeURIComponent(GH.path).replace(/%2F/g,'/');}
 function ghHeaders(){return {'Authorization':'token '+GH.token,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};}
@@ -619,11 +626,21 @@ function saveGhCfgUI(){readGhForm();saveGhCfg();ghStat('ayar kaydedildi');}
 /* ----- ROL & ANA EKRAN ----- */
 function pickRole(r){document.querySelectorAll('.rolebtn').forEach(b=>b.classList.remove('on'));
   const rb=document.getElementById('rb_'+r);if(rb)rb.classList.add('on');
-  if(r==='admin'){document.getElementById('pinbox').style.display='flex';document.getElementById('projbox').style.display='none';ROLE=null;document.getElementById('pin').focus();}
-  else{ROLE='usta';document.getElementById('pinbox').style.display='none';showProjects();const pa=document.getElementById('projadd');if(pa)pa.style.display='none';}}
-function adminLogin(){const v=(document.getElementById('pin').value||'').trim();
-  if(v===ADMIN_PIN){ROLE='admin';document.getElementById('pinerr').textContent='';const pa=document.getElementById('projadd');if(pa)pa.style.display='';showProjects();}
-  else document.getElementById('pinerr').textContent='PIN hatalı';}
+  PENDING_ROLE=r;ROLE=null;
+  document.getElementById('pinbox').style.display='flex';
+  document.getElementById('projbox').style.display='none';
+  const lt=document.getElementById('logintitle');if(lt)lt.textContent=(r==='admin'?'Yönetici':'Usta')+' girişi';
+  document.getElementById('loginuser').value='';document.getElementById('pin').value='';
+  document.getElementById('pinerr').textContent='';document.getElementById('loginuser').focus();}
+function doLogin(){const u=(document.getElementById('loginuser').value||'').trim();
+  const p=(document.getElementById('pin').value||'');
+  const list=USERS[PENDING_ROLE]||[];
+  const m=list.find(x=>x.u.toLocaleLowerCase('tr')===u.toLocaleLowerCase('tr')&&x.p===p);
+  if(m){ROLE=PENDING_ROLE;CURUSER=m.u;document.getElementById('pinerr').textContent='';
+    const pa=document.getElementById('projadd');if(pa)pa.style.display=(ROLE==='admin')?'':'none';
+    showProjects();}
+  else document.getElementById('pinerr').textContent='Kullanıcı adı veya şifre hatalı';}
+function adminLogin(){doLogin();}
 function showProjects(){document.getElementById('projbox').style.display='block';}
 async function openProject(id){document.getElementById('home').classList.add('hidden');
   document.getElementById('app').classList.remove('hidden');applyRole();loadFont();
@@ -631,7 +648,8 @@ async function openProject(id){document.getElementById('home').classList.add('hi
   if(!POLL)POLL=setInterval(pollSync,25000);}
 function applyRole(){const app=document.getElementById('app');
   app.classList.toggle('usta',ROLE==='usta');app.classList.toggle('admin',ROLE==='admin');
-  const b=document.getElementById('rolebadge');if(b){b.textContent=ROLE==='admin'?'Yönetici':'Usta';b.className='rolebadge '+(ROLE||'');}}
+  const b=document.getElementById('rolebadge');if(b){b.textContent=(ROLE==='admin'?'Yönetici':'Usta')+(CURUSER?' · '+CURUSER:'');b.className='rolebadge '+(ROLE||'');}
+  const u2=document.getElementById('usta2');if(u2&&CURUSER)u2.value=CURUSER;const uh=document.getElementById('usta');if(uh&&CURUSER)uh.value=CURUSER;}
 function goHome(){document.getElementById('app').classList.add('hidden');document.getElementById('home').classList.remove('hidden');
   if(POLL){clearInterval(POLL);POLL=null;}}
 async function pollSync(){if(SEL!=null)return;if(BACKEND==='fb'){await reloadAll();return;}if(BACKEND==='gh'){try{await ghPull();}catch(e){}renderAll();}else if(BACKEND==='ws')await reloadAll();}
@@ -889,7 +907,7 @@ function drawFootGrid(){const el=document.getElementById('ed_footgrid');if(!el)r
   h+=`<div class="footsum"><span class="fdot f1"></span>Delinen <b>${del}/14</b> &nbsp; <span class="fdot f2"></span>Monte <b>${mon}/14</b></div>`;
   if(LASTFOOT)h+=`<div class="footpos">${LASTFOOT}</div>`;
   el.innerHTML=h;}
-async function saveTbl(s){s.by=document.getElementById('usta').value.trim()||'—';s.at=Date.now();PLAN[SEL]=s;
+async function saveTbl(s){s.by=CURUSER||document.getElementById('usta').value.trim()||'—';s.at=Date.now();PLAN[SEL]=s;
   const g=grpOf(SEL),obj={};for(const t of LAYOUT.tables){if(grpOf(t.i)===g&&PLAN[t.i])obj[t.i]=PLAN[t.i];}
   await sset('tr1g:'+g,obj);renderProgress();renderPlan();renderKonstPlan();}
 
@@ -1087,7 +1105,7 @@ function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','
 function fval(id){const e=document.getElementById(id);return e?e.value.trim():'';}
 function dToday(){return new Date().toISOString().slice(0,10);}
 function uid(){return 'p'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
-async function logAct(act,detail){const ts=Date.now();const by=(document.getElementById('usta')&&document.getElementById('usta').value.trim())||'';const r={act,detail:detail||'',role:ROLE||'?',by:by,ts};ALOG.unshift(r);await sset('al:'+ts,r);}
+async function logAct(act,detail){const ts=Date.now();const by=CURUSER||(document.getElementById('usta')&&document.getElementById('usta').value.trim())||'';const r={act,detail:detail||'',role:ROLE||'?',by:by,ts};ALOG.unshift(r);await sset('al:'+ts,r);}
 
 /* ---- görsel küçültme ---- */
 function resizeImg(file,max,cb){const r=new FileReader();r.onload=e=>{const img=new Image();img.onload=()=>{
