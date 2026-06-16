@@ -335,6 +335,13 @@
   .rpbar .rf.gm{background:#2f6fb0}.rpbar .rf.ge{background:#E8833A}
   .rpbar .rv{flex:0 0 38px;text-align:right;color:#555;font-variant-numeric:tabular-nums}
   .rpsub{margin:6px 0 4px;padding-left:6px;border-left:2px solid #eee}
+  .rpcols{display:flex;gap:18px;flex-wrap:wrap}
+  .rpcol{flex:1 1 240px;min-width:200px}
+  .phasecount{margin:2px 0 10px;font-size:12px;color:#444;display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;line-height:1.7}
+  .phasecount b{color:#15314e}
+  .phstg-h{font-weight:600;color:#777}
+  .phstg{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+  .phdot{display:inline-block;width:11px;height:11px;border-radius:3px}
 </style>
 
 <div id="home" class="home">
@@ -342,7 +349,7 @@
   <div class="homecard">
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 26 · Rapor ustaya açık (gün · ekip · % · harita · PDF)</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 28 · montaj fazları (beton·aşama renk·INV sayım) + rapor net</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -366,7 +373,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 26 · Bulut · 16.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 28 · Bulut · 16.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -437,6 +444,7 @@
           <label class="feettog" style="margin-left:auto"><input type="checkbox" id="feetTog" checked onchange="SHOWFEET=this.checked;renderKonstPlan()"> Ayakları göster <span class="fdot f1"></span>delindi <span class="fdot f2"></span>monte</label>
           <span class="lg" style="color:var(--faint)" id="phaselbl">Tüm konstrüksiyon</span>
         </div>
+        <div id="phasecount" class="phasecount"></div>
         <div class="planwrap">
           <div class="zoomctl">
             <button class="zbtn" onclick="pzBtn('k2',0.7)">＋</button>
@@ -729,6 +737,7 @@ async function setTarget(id,v){v=parseFloat(v);if(!(v>0))return;TARGETS[id]=v;aw
 
 function doneGen(id){return ENTRIES.filter(e=>e.id===id).reduce((s,e)=>s+(+e.qty||0),0);}
 function sumP(f){let s=0;for(const k in PLAN)s+=(+PLAN[k][f]||0);return s;}
+function sumMon(){let s=0;for(const k in PLAN){const p=PLAN[k];s+=Math.min(+p.a3||0,+p.a4||0,+p.a5||0);}return s;}
 function cntK(f){let c=0;for(const k in PLAN)if(PLAN[k][f])c++;return c;}
 
 // mekanik kalemler (plandan)
@@ -1003,9 +1012,9 @@ function renderKonstPlan(){const el=document.getElementById('plan2');if(!el)retu
   for(const t of LAYOUT.tables){const f=curFrac(PLAN[t.i]);const x=S.sx(t.x)-S.rw/2,y=S.sy(t.y)-S.rh/2;
     const inv=invOf(t);(cen[inv]=cen[inv]||[]).push([S.sx(t.x),S.sy(t.y)]);
     const selc=(SEL===t.i||KFIND===t.i);const dim=(ZONE&&inv!==ZONE)?' opacity="0.16"':'';
-    const fill=SHOWFEET?'#e6e9ef':konstFill(f);
+    const fill=(CURPHASE==='all')?stageFill(t.i):konstFill(phaseFracOf(CURPHASE,PLAN[t.i]||{}));
     r+='<rect'+dim+' class="t'+(selc?' sel':'')+'" x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+S.rw.toFixed(1)+'" height="'+S.rh.toFixed(1)+'" rx="1.3" fill="'+fill+'" stroke="'+(selc?'#16161A':invColor(inv))+'" stroke-width="'+(selc?2.2:1.1)+'" onclick="openEd('+t.i+')"></rect>';
-    if(SHOWFEET){const ft=footOf(t.i),fw=Math.max(0.8,S.rw*0.05),fh=Math.max(1.2,S.rh*0.30);
+    if(SHOWFEET&&CURPHASE==='all'){const ft=footOf(t.i),fw=Math.max(0.8,S.rw*0.05),fh=Math.max(1.2,S.rh*0.30);
       for(let c=0;c<7;c++)for(let row=0;row<2;row++){const v=ft[row*7+c];
         const fx=x+(c+0.5)*(S.rw/7)-fw/2, fy=y+(row?S.rh*0.55:S.rh*0.16);
         r+='<rect'+dim+' x="'+fx.toFixed(1)+'" y="'+fy.toFixed(1)+'" width="'+fw.toFixed(1)+'" height="'+fh.toFixed(1)+'" rx=".4" fill="'+footColor(v)+'" pointer-events="none"></rect>';}}
@@ -1024,7 +1033,7 @@ function focusZone(inv){const S=konstScale();pzInit('k2','plan2',S.W,S.H);ZONE=i
   if(!ZONE){pzReset('k2');}
   else{let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;for(const t of LAYOUT.tables){if(invOf(t)===ZONE){const x=S.sx(t.x),y=S.sy(t.y);if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y;}}
     if(x1>x0)pzFocus('k2',x0-S.rw,y0-S.rh,x1+S.rw,y1+S.rh,0.35);}
-  renderKonstPlan();renderZoneChips();renderZoneMasa();}
+  renderKonstPlan();renderZoneChips();renderZoneMasa();renderPhaseInfo();}
 
 function strNo(t){const m=(t.adrf||t.adr||'').match(/STR(\d+)/);return m?+m[1]:0;}
 function renderZoneMasa(){const w=document.getElementById('zonemasa');if(!w)return;
@@ -1078,18 +1087,43 @@ function locate(q){q=(q||'').trim().toUpperCase();const fb=document.getElementBy
 
 /* ===== curFrac / KONSTRÜKSİYON FAZ ALT-ALT SEKMELERİ ===== */
 function curFrac(s){return CURPHASE==='all'?konstFrac(s):phaseFrac(s);}
-function phaseFrac(s){if(!s)return 0;
-  if(CURPHASE==='harita')return Math.min(1,(s.a1||0)/14);
-  if(CURPHASE==='rok')return Math.min(1,(s.a2||0)/14);
-  if(CURPHASE==='kolon'){const ay=((s.a3||0)+(s.a4||0)+(s.a5||0))/42;const kol=((s.k1?1:0)+(s.k2?1:0))/2;return ay*0.6+kol*0.4;}
-  if(CURPHASE==='celik')return ((s.k3?1:0)+(s.k4?1:0)+(s.k5?1:0)+(s.k6?1:0))/4;
-  if(CURPHASE==='panel')return Math.min(1,(s.k7||0)/26);
-  return konstFrac(s);}
-const PHASES=[['all','Tümü'],['harita','Harita'],['rok','Rok delme'],['kolon','Kolon'],['celik','Çelik montaj'],['panel','Panel']];
+/* İş sırası: 1 Harita → 2 Rok → 3 Beton → 4 Kolon → 5 Çelik → 6 Panel */
+function phaseUnits(p,s){s=s||{};
+  if(p==='harita')return {d:Math.min(14,+s.a1||0),t:14};
+  if(p==='rok')return {d:Math.min(14,+s.a2||0),t:14};
+  if(p==='beton')return {d:Math.min(14,+s.a3||0)+Math.min(14,+s.a4||0)+Math.min(14,+s.a5||0),t:42};
+  if(p==='kolon')return {d:(s.k1?1:0)+(s.k2?1:0),t:2};
+  if(p==='celik')return {d:(s.k3?1:0)+(s.k4?1:0)+(s.k5?1:0)+(s.k6?1:0),t:4};
+  if(p==='panel')return {d:Math.min(26,+s.k7||0),t:26};
+  return {d:0,t:1};}
+function phaseFracOf(p,s){const u=phaseUnits(p,s);return u.t?Math.min(1,u.d/u.t):0;}
+function phaseFrac(s){if(!s)return 0;if(CURPHASE==='all')return konstFrac(s);return phaseFracOf(CURPHASE,s);}
+const PHASE_ORDER=['harita','rok','beton','kolon','celik','panel'];
+const STAGE_COL={harita:'#a78bfa',rok:'#E8833A',beton:'#8a93a3',kolon:'#3f7cc0',celik:'#1f9d8f',panel:'#2e9e5b'};
+const STAGE_NM={harita:'Harita',rok:'Rok',beton:'Beton',kolon:'Kolon',celik:'Çelik',panel:'Panel'};
+const PHASE_UNIT={harita:'ayak işaretlendi',rok:'ayak delindi',beton:'montaj adımı',kolon:'kolon (P1/P2)',celik:'çelik adım',panel:'panel'};
+/* sıra zorunlu: bir masanın ilk tamamlanmamış fazı = bulunduğu aşama */
+function masaStage(s){if(!s)return {phase:'none',frac:0,started:false};
+  for(const p of PHASE_ORDER){const f=phaseFracOf(p,s);if(f<1)return {phase:p,frac:f,started:f>0};}
+  return {phase:'done',frac:1,started:true};}
+function stageFill(i){const st=masaStage(PLAN[i]);
+  if(st.phase==='done')return 'var(--gnd)';
+  if(st.phase==='none'||(st.phase==='harita'&&!st.started))return 'var(--slate)';
+  return STAGE_COL[st.phase];}
+function phaseStats(p,zone){let d=0,t=0;for(const tb of LAYOUT.tables){if(zone&&invOf(tb)!==zone)continue;const u=phaseUnits(p,PLAN[tb.i]||{});d+=u.d;t+=u.t;}return {d,t};}
+const PHASES=[['all','Tümü'],['harita','Harita'],['rok','Rok'],['beton','Beton'],['kolon','Kolon'],['celik','Çelik'],['panel','Panel']];
 function renderPhaseChips(){const w=document.getElementById('phasechips');if(!w)return;
-  w.innerHTML=PHASES.map(([k,n])=>'<button class="subtab'+(CURPHASE===k?' on':'')+'" onclick="setPhase(\''+k+'\')">'+n+'</button>').join('');}
+  w.innerHTML=PHASES.map(([k,n])=>'<button class="subtab'+(CURPHASE===k?' on':'')+'" onclick="setPhase(\''+k+'\')">'+n+'</button>').join('');
+  renderPhaseInfo();}
+function renderPhaseInfo(){const c=document.getElementById('phasecount');if(!c)return;
+  const z=ZONE||0,zlbl=z?('INV'+z):'TR-1';
+  if(CURPHASE==='all'){
+    c.innerHTML='<span class="phstg-h">Aşama ('+zlbl+'):</span> '+PHASE_ORDER.map((p,i)=>'<span class="phstg"><span class="phdot" style="background:'+STAGE_COL[p]+'"></span>'+(i+1)+' '+STAGE_NM[p]+'</span>').join('')+' <span class="phstg"><span class="phdot" style="background:var(--gnd)"></span>bitti</span>';
+    return;}
+  const s=phaseStats(CURPHASE,z);const pct=s.t?Math.round(s.d/s.t*100):0;
+  c.innerHTML='<b>'+zlbl+'</b> · '+tr(s.d)+' / '+tr(s.t)+' '+(PHASE_UNIT[CURPHASE]||'')+' · <b style="color:var(--solar)">%'+pct+'</b>';}
 function setPhase(p){CURPHASE=p;const lbl=document.getElementById('phaselbl');
-  const nm={all:'Tüm konstrüksiyon',harita:'Faz: Harita aplikasyon',rok:'Faz: Rok delme (İşveren)',kolon:'Faz: Kolon montaj (P1/P2/P6)',celik:'Faz: Çelik montaj (makas+kuşak+tork)',panel:'Faz: Panel montaj'};
+  const nm={all:'Tüm konstrüksiyon · aşama renkleri',harita:'1. Harita işaretleme',rok:'2. Rok delme (İşveren)',beton:'3. Beton / ayak montajı',kolon:'4. Kolon (P1/P2)',celik:'5. Çelik montaj',panel:'6. Panel montaj'};
   if(lbl)lbl.textContent=nm[p]||p;renderPhaseChips();renderKonstPlan();renderZoneMasa();}
 
 /* ===== ortak teknik-kart yardımcıları ===== */
@@ -1615,7 +1649,7 @@ async function delCustomMat(id){if(!confirm('Bu malzeme silinsin mi?'))return;MA
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s26</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s28</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -1733,6 +1767,7 @@ function rapMap(masas){const W=620,dx=LAYOUT.maxx-LAYOUT.minx,dy=LAYOUT.maxy-LAY
     r+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${rw.toFixed(1)}" height="${rh.toFixed(1)}" rx="1" fill="${hit?'#E8833A':'#e6e9ef'}" stroke="${hit?'#c0562a':'#d3d7df'}" stroke-width="${hit?1.1:.4}"></rect>`;}
   return r+'</svg>';}
 function bar(lbl,pct,cls){return `<div class="rpbar"><span class="rl">${lbl}</span><span class="rt"><span class="rf ${cls}" style="width:${Math.max(0,Math.min(100,pct)).toFixed(0)}%"></span></span><span class="rv">${pct.toFixed(0)}%</span></div>`;}
+function barN(lbl,val,max,cls){const w=max?Math.max(0,Math.min(100,val/max*100)):0;return `<div class="rpbar"><span class="rl">${lbl}</span><span class="rt"><span class="rf ${cls}" style="width:${w.toFixed(0)}%"></span></span><span class="rv">${tr(val)}</span></div>`;}
 function rapBody(day,forPrint){const A=rapAgg(day),G=genProgress();
   const pers=Object.entries(A.persons).sort((a,b)=>b[1]-a[1]);
   const masaList=Object.keys(A.masas).map(Number).sort((a,b)=>a-b);
@@ -1742,8 +1777,8 @@ function rapBody(day,forPrint){const A=rapAgg(day),G=genProgress();
     <div class="rapcard"><div class="rc-n">${A.logs.length}</div><div class="rc-l">işlem kaydı</div></div>
     <div class="rapcard"><div class="rc-n">${pers.length}</div><div class="rc-l">çalışan kişi</div></div>
     <div class="rapcard"><div class="rc-n">${masaList.length}</div><div class="rc-l">dokunulan masa</div></div>
-    <div class="rapcard"><div class="rc-n" style="color:#E8833A">${A.del}</div><div class="rc-l">ayak delme</div></div>
-    <div class="rapcard"><div class="rc-n" style="color:#2e9e5b">${A.mon}</div><div class="rc-l">ayak montaj</div></div>
+    <div class="rapcard"><div class="rc-n" style="color:#E8833A">${tr(sumP('a2'))}</div><div class="rc-l">ayak delme (onaylı)</div></div>
+    <div class="rapcard"><div class="rc-n" style="color:#2e9e5b">${tr(sumMon())}</div><div class="rc-l">ayak montaj (onaylı)</div></div>
   </div>`;
   if(!A.logs.length)h+='<div class="hint" style="margin:10px 0">Bu güne ait saha kaydı bulunamadı.</div>';
   // kişi tablosu
@@ -1753,7 +1788,14 @@ function rapBody(day,forPrint){const A=rapAgg(day),G=genProgress();
   // genel ilerleme
   h+='<h3 class="raph">Genel ilerleme (anlık)</h3>';
   h+=bar('Mekanik',G.mek,'gm')+bar('Elektrik',G.elk,'ge');
-  h+='<div class="rpsub">'+G.rows.map(r=>bar(r.ad,r.pct,r.dis==='MEK'?'gm':'ge')).join('')+'</div>';
+  {const half=Math.ceil(G.rows.length/2);
+   const col=arr=>'<div class="rpcol">'+arr.map(r=>bar(r.ad,r.pct,r.dis==='MEK'?'gm':'ge')).join('')+'</div>';
+   h+='<div class="rpcols rpsub">'+col(G.rows.slice(0,half))+col(G.rows.slice(half))+'</div>';}
+  // bugünkü saha hareketleri (adet · log)
+  {const dc=[['Harita / Rok delme',A.del],['Ayak montaj',A.mon],['Konst / Panel',A.konst],['Toplam işlem',A.logs.length]];
+   const dmax=Math.max(1,...dc.map(x=>x[1]));
+   h+='<h3 class="raph">Bugünkü saha hareketleri (adet · log)</h3>';
+   h+='<div class="rpcols rpsub"><div class="rpcol">'+barN(dc[0][0],dc[0][1],dmax,'ge')+barN(dc[1][0],dc[1][1],dmax,'gm')+'</div><div class="rpcol">'+barN(dc[2][0],dc[2][1],dmax,'gm')+barN(dc[3][0],dc[3][1],dmax,'ge')+'</div></div>';}
   // harita
   h+='<h3 class="raph">Saha haritası — gün içinde dokunulan masalar</h3>'+rapMap(A.masas);
   h+='<div class="hint" style="margin-top:4px"><span class="fdot" style="background:#E8833A"></span> dokunulan masa · '+masaList.length+' masa</div>';
@@ -1763,7 +1805,7 @@ function rapBody(day,forPrint){const A=rapAgg(day),G=genProgress();
     h+='</tbody></table></div>';}
   return h;}
 async function backupAll(){try{
-  const dump={_app:'SHAMS1-TR1',_ver:'s24',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1-TR1',_ver:'s28',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:'];
   for(const pre of pref)for(const k of await slist(pre)){const v=await sget(k);if(v!=null)dump.data[k]=v;}
   const single=['targets','mpct','cab:dc','cab:ac','cab:og','dcstr','ogb','matin','matuse','matkov','matcustom','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
@@ -1803,12 +1845,17 @@ function renderRapor(){const el=document.getElementById('rapor');if(!el)return;
     </div>
     <div id="rapout">`+rapBody(RAPDAY,false)+`</div>`;}
 function printRapor(){const day=RAPDAY,fmtDay=day.split('-').reverse().join('.');
-  const w=window.open('','_blank');if(!w){toast&&toast('Açılır pencere engellendi');return;}
-  const css=`<style>body{font-family:Arial,sans-serif;color:#1c1c22;font-size:11px;margin:24px}h1{font-size:15px;color:#15314e;border-bottom:3px solid #E8833A;padding-bottom:6px}h3.raph{font-size:12px;color:#15314e;border-left:4px solid #E8833A;padding-left:8px;margin:14px 0 6px}table{width:100%;border-collapse:collapse;font-size:9.5px;margin:6px 0}th{background:#15314e;color:#fff;text-align:left;padding:4px 6px}td{border:1px solid #e0e0e6;padding:3px 6px}.m{text-align:center}.rapcards{display:flex;gap:8px;margin:8px 0}.rapcard{flex:1;border:1px solid #e3e3e8;border-radius:7px;padding:8px;text-align:center}.rc-n{font-size:18px;font-weight:800;color:#15314e}.rc-l{font-size:9px;color:#777}.rpbar{display:flex;align-items:center;gap:6px;margin:2px 0;font-size:9px}.rl{flex:0 0 150px}.rt{flex:1;height:9px;background:#eee;border-radius:4px;position:relative}.rt.mini{height:7px}.rf{position:absolute;left:0;top:0;height:100%;border-radius:4px}.rf.gm{background:#2f6fb0}.rf.ge{background:#E8833A}.rv{flex:0 0 34px;text-align:right}.fdot{display:inline-block;width:10px;height:10px;border-radius:3px}.hint{font-size:9px;color:#777}svg{max-width:100%}</style>`;
-  w.document.write('<html><head><meta charset="utf-8"><title>Günlük Rapor '+fmtDay+'</title>'+css+'</head><body>'+
-    '<h1>AKSARAY ENERJİ — Günlük Saha Raporu</h1><div style="font-size:10px;color:#555;margin:4px 0 10px">SHAMS-1 GES · TR-1 6,9 MWp · Tarih: <b>'+fmtDay+'</b></div>'+
-    rapBody(day,true)+'</body></html>');
-  w.document.close();setTimeout(()=>{try{w.print();}catch(e){}},400);}
+  const w=window.open('','_blank');if(!w){if(typeof toast==='function')toast('Açılır pencere engellendi');return;}
+  const cssText='body{font-family:Arial,sans-serif;color:#1c1c22;font-size:11px;margin:24px}h1{font-size:15px;color:#15314e;border-bottom:3px solid #E8833A;padding-bottom:6px}h3.raph{font-size:12px;color:#15314e;border-left:4px solid #E8833A;padding-left:8px;margin:14px 0 6px}table{width:100%;border-collapse:collapse;font-size:9.5px;margin:6px 0}th{background:#15314e;color:#fff;text-align:left;padding:4px 6px}td{border:1px solid #e0e0e6;padding:3px 6px}.m{text-align:center}.rapcards{display:flex;gap:8px;margin:8px 0}.rapcard{flex:1;border:1px solid #e3e3e8;border-radius:7px;padding:8px;text-align:center}.rc-n{font-size:18px;font-weight:800;color:#15314e}.rc-l{font-size:9px;color:#777}.rpbar{display:flex;align-items:center;gap:6px;margin:2px 0;font-size:9px}.rl{flex:0 0 150px}.rt{flex:1;height:9px;background:#eee;border-radius:4px;position:relative}.rt.mini{height:7px}.rf{position:absolute;left:0;top:0;height:100%;border-radius:4px}.rf.gm{background:#2f6fb0}.rf.ge{background:#E8833A}.rv{flex:0 0 34px;text-align:right}.rpcols{display:flex;gap:16px}.rpcol{flex:1}.fdot{display:inline-block;width:10px;height:10px;border-radius:3px}.hint{font-size:9px;color:#777}svg{max-width:100%}';
+  const d=w.document;
+  try{d.title='Günlük Rapor '+fmtDay;}catch(e){}
+  const st=d.createElement('style');st.textContent=cssText;(d.head||d.documentElement).appendChild(st);
+  const wrap=d.createElement('div');
+  wrap.innerHTML='<h1>AKSARAY ENERJİ — Günlük Saha Raporu</h1>'+
+    '<div style="font-size:10px;color:#555;margin:4px 0 10px">SHAMS-1 GES · TR-1 6,9 MWp · Tarih: <b>'+fmtDay+'</b></div>'+
+    rapBody(day,true);
+  (d.body||d.documentElement).appendChild(wrap);
+  setTimeout(()=>{try{w.print();}catch(e){}},400);}
 
 function renderIsProg(){const el=document.getElementById('isprog');if(!el)return;
   const today=new Date().toISOString().slice(0,10);
