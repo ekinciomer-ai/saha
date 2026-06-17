@@ -404,7 +404,7 @@
   <div class="homecard">
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 33 · işveren-sunum raporu · harita ayağı · veriler loglardan</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 34 · rapor seçili güne sabit (günlük=kümülatif tutarlı)</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -428,7 +428,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 33 · Bulut · 16.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 34 · Bulut · 17.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -1781,7 +1781,7 @@ async function delCustomMat(id){if(!confirm('Bu malzeme silinsin mi?'))return;MA
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s33</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s34</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -1926,15 +1926,16 @@ function barN(lbl,val,max,cls){const w=max?Math.max(0,Math.min(100,val/max*100))
 /* ---- EPİAŞ tarzı günlük & kümülatif iş tablosu ---- */
 let RAP_SHOWPERS=false;
 function toggleRapPers(){RAP_SHOWPERS=!RAP_SHOWPERS;renderRapor();}
-function klogSum(f){let s=0;ALOG.forEach(r=>{const m=(r.detail||'').match(/\[(\w+)\]\s*([+-]?\d+)/);if(m&&m[1]===f)s+=(+m[2]||0);});return Math.max(0,s);}
-function repItems(){const fc=footCumUpto(dToday());
-  const ust=klogSum('k1')+klogSum('k2')+klogSum('k3')+klogSum('k4')+klogSum('k5')+klogSum('k6');
+function klogSum(f,upto){let s=0;ALOG.forEach(r=>{if(upto&&dstr(r.ts)>upto)return;const m=(r.detail||'').match(/\[(\w+)\]\s*([+-]?\d+)/);if(m&&m[1]===f)s+=(+m[2]||0);});return Math.max(0,s);}
+function doneGenUpto(id,upto){return ENTRIES.filter(e=>e.id===id&&(!upto||(e.date||dstr(e.ts))<=upto)).reduce((s,e)=>s+(+e.qty||0),0);}
+function repItems(day){
+  const ust=cntK('k1')+cntK('k2')+cntK('k3')+cntK('k4')+cntK('k5')+cntK('k6');
   return [
-  {id:'harita',   ad:'Harita işaretleme', birim:'ayak',  cum:fc.har,        hedef:5292, dis:'MEK', pur:0.00},
-  {id:'ayakdelme',ad:'Ayak delme (rok)',  birim:'ayak',  cum:fc.del,        hedef:5292, dis:'MEK', pur:0.00, isv:true},
-  {id:'ayakmont', ad:'Ayak montajı',       birim:'ayak',  cum:fc.mon,        hedef:5292, dis:'MEK', pur:0.42},
-  {id:'ustm',     ad:'Üst montaj / aşık',  birim:'adım',  cum:ust,           hedef:6*378, dis:'MEK', pur:0.31},
-  {id:'panel',    ad:'Panel montajı',      birim:'panel', cum:klogSum('k7'), hedef:9828, dis:'MEK', pur:0.27},
+  {id:'harita',   ad:'Harita işaretleme', birim:'ayak',  cum:sumP('a1'), hedef:5292, dis:'MEK', pur:0.00},
+  {id:'ayakdelme',ad:'Ayak delme (rok)',  birim:'ayak',  cum:sumP('a2'), hedef:5292, dis:'MEK', pur:0.00, isv:true},
+  {id:'ayakmont', ad:'Ayak montajı',       birim:'ayak',  cum:sumMon(),   hedef:5292, dis:'MEK', pur:0.42},
+  {id:'ustm',     ad:'Üst montaj / aşık',  birim:'adım',  cum:ust,        hedef:6*378, dis:'MEK', pur:0.31},
+  {id:'panel',    ad:'Panel montajı',      birim:'panel', cum:sumP('k7'),  hedef:9828, dis:'MEK', pur:0.27},
   ...GEN.map(g=>({id:g.id,ad:g.ad,birim:g.birim,cum:doneGen(g.id),hedef:g.hedef,dis:'ELK',pur:g.pur||0}))
 ];}
 /* o güne ait, her iş kalemi için yapılan ADET:
@@ -1947,7 +1948,7 @@ function dayItemQty(day){
   const cur=footCumUpto(day),pre=prev?footCumUpto(prev):{har:0,del:0,mon:0};
   q.harita=Math.max(0,cur.har-pre.har);
   q.ayakdelme=Math.max(0,cur.del-pre.del); q.ayakmont=Math.max(0,cur.mon-pre.mon);
-  const fmap={k1:'ustm',k2:'ustm',k3:'ustm',k4:'ustm',k5:'ustm',k6:'ustm',k7:'panel'};
+  const fmap={a1:'harita',k1:'ustm',k2:'ustm',k3:'ustm',k4:'ustm',k5:'ustm',k6:'ustm',k7:'panel'};
   dayLogs(day).forEach(r=>{const m=(r.detail||'').match(/\[(\w+)\]\s*([+-]?\d+)/);
     if(m&&fmap[m[1]]){const it=fmap[m[1]];q[it]=(q[it]||0)+(+m[2]);}});
   ENTRIES.forEach(e=>{const ed=e.date||dstr(e.ts);if(ed===day)q[e.id]=(q[e.id]||0)+(+e.qty||0);});
@@ -1960,14 +1961,14 @@ function repDays(){const set={};
   return Object.keys(set).sort();
 }
 function renderItemMatrix(forPrint){
-  const items=repItems();let days=repDays();
+  const items=repItems(RAPDAY);let days=repDays();
   const MAXD=forPrint?days.length:12;
   if(days.length>MAXD)days=days.slice(days.length-MAXD);
   const qmap={};days.forEach(d=>qmap[d]=dayItemQty(d));
   const fmt=d=>d.slice(8,10)+'.'+d.slice(5,7);
   let h='<div class="epwrap"><table class="mtab epmat"><thead><tr><th class="epname">İş kalemi</th><th>Birim</th>';
   days.forEach(d=>{h+='<th class="epd'+(d===RAPDAY?' epsel':'')+'">'+fmt(d)+'</th>';});
-  h+='<th class="epcum">Bugüne kadar</th><th>Hedef</th><th>%</th></tr></thead><tbody>';
+  h+='<th class="epcum">Toplam (onaylı)</th><th>Hedef</th><th>%</th></tr></thead><tbody>';
   const dayTot={};days.forEach(d=>dayTot[d]=0);let cumTot=0;
   items.forEach(it=>{
     h+='<tr><td class="epname">'+esc(it.ad)+'</td><td class="m"><small>'+esc(it.birim)+'</small></td>';
@@ -1979,7 +1980,7 @@ function renderItemMatrix(forPrint){
   days.forEach(d=>{h+='<td class="epd'+(d===RAPDAY?' epsel':'')+'"><b>'+(dayTot[d]?tr(dayTot[d]):'·')+'</b></td>';});
   h+='<td class="epcum"><b>'+tr(cumTot)+'</b></td><td></td><td></td></tr>';
   h+='</tbody></table></div>';
-  h+='<div class="hint" style="margin-top:4px">Her satır bir iş kalemi · her sütun bir gün (sağda en güncel). Hücre = o gün yapılan adet · «Bugüne kadar» = toplam. Yeni gün çalışıldıkça otomatik sütun eklenir.</div>';
+  h+='<div class="hint" style="margin-top:4px">Her satır bir iş kalemi · her sütun bir gün (sağda seçili gün). Hücre = o gün saha kayıtlarına (log) girilen adet · «Toplam (onaylı)» = sahada işaretlenmiş güncel toplam (Konstrüksiyon ile aynı).</div>';
   return h;
 }
 function renderDayDetail(day){
@@ -1996,7 +1997,7 @@ function renderDayDetail(day){
 const RAP_MN=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 function humanDay(day){const p=day.split('-');return (+p[2])+' '+RAP_MN[(+p[1])-1]+' '+p[0];}
 function itemColor(id,dis){const c={harita:'#7c5cff',ayakdelme:'#E8833A',ayakmont:'#2e9e5b',ustm:'#3f7cc0',panel:'#1f9d8f'};return c[id]||(dis==='ELK'?'#d98324':'#2f6fb0');}
-function rapProgress(){const items=repItems();let mek=0,mekW=0,elk=0,elkW=0;
+function rapProgress(day){const items=repItems(day);let mek=0,mekW=0,elk=0,elkW=0;
   items.forEach(it=>{const pct=it.hedef>0?Math.min(100,it.cum/it.hedef*100):0;
     if(it.dis==='MEK'){mek+=it.pur*pct;mekW+=it.pur;}else{elk+=it.pur*pct;elkW+=it.pur;}});
   return {mek:mekW?mek/mekW:0, elk:elkW?elk/elkW:0, items};}
@@ -2013,7 +2014,7 @@ function sparkBars(vals,color){const n=vals.length;if(!n)return '';const mx=Math
     s+=`<rect x="${x.toFixed(1)}" y="${(H-h).toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="1.5" fill="${v>0?color:'#e9ecf1'}"/>`;});
   return s+'</svg>';}
 function lastNqty(itemId,upto,n){const days=repDays().filter(d=>d<=upto).slice(-n);return days.map(d=>dayItemQty(d)[itemId]||0);}
-function itemReportCards(day){const items=repItems(),q=dayItemQty(day);
+function itemReportCards(day){const items=repItems(day),q=dayItemQty(day);
   let h='<div class="ircards">';
   for(const it of items){const pct=it.hedef>0?Math.min(100,it.cum/it.hedef*100):0,col=itemColor(it.id,it.dis);
     const today=q[it.id]||0,hist=lastNqty(it.id,day,12),kalan=Math.max(0,it.hedef-it.cum);
@@ -2040,7 +2041,7 @@ function daySelector(){const days=repDays(),fmt=d=>d.slice(8,10)+'.'+d.slice(5,7
   days.forEach(d=>{const q=dayItemQty(d);let has=false;for(const k in q)if(q[k]){has=true;break;}
     h+=`<button class="dchip${d===RAPDAY?' on':''}${has?' has':''}" onclick="setRapDay('${d}')">${fmt(d)}${has?'<i></i>':''}</button>`;});
   h+='</div>';return h;}
-function rapHeaderBand(day){const P=rapProgress();
+function rapHeaderBand(day){const P=rapProgress(day);
   return `<div class="raphero">
     <div class="rh-l">
       <div class="rh-badge">SHAMS-1 GES · TR-1</div>
@@ -2067,8 +2068,8 @@ function rapBody(day,forPrint){const A=rapAgg(day);
   h+=`<div class="kcards">
     <div class="kcard"><div class="k-n" style="color:#15314e">${tr(dayTotToday)}</div><div class="k-l">bu gün toplam iş</div></div>
     <div class="kcard"><div class="k-n" style="color:#E8833A">${masaList.length}</div><div class="k-l">dokunulan masa</div></div>
-    <div class="kcard"><div class="k-n" style="color:#7c5cff">${tr(fc.har)}</div><div class="k-l">harita · toplam ayak</div></div>
-    <div class="kcard"><div class="k-n" style="color:#2e9e5b">${tr(fc.mon)}</div><div class="k-l">ayak montaj · toplam</div></div>
+    <div class="kcard"><div class="k-n" style="color:#7c5cff">${tr(sumP('a1'))}</div><div class="k-l">harita · toplam ayak</div></div>
+    <div class="kcard"><div class="k-n" style="color:#2e9e5b">${tr(sumMon())}</div><div class="k-l">ayak montaj · toplam</div></div>
     <div class="kcard"><div class="k-n">${A.logs.length}</div><div class="k-l">işlem kaydı</div></div>
   </div>`;
   if(!A.logs.length)h+='<div class="hint" style="margin:6px 0 0">Seçili güne ait saha kaydı bulunamadı.</div>';
@@ -2094,7 +2095,7 @@ function rapBody(day,forPrint){const A=rapAgg(day);
   }
   return h;}
 async function backupAll(){try{
-  const dump={_app:'SHAMS1-TR1',_ver:'s33',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1-TR1',_ver:'s34',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:'];
   for(const pre of pref)for(const k of await slist(pre)){const v=await sget(k);if(v!=null)dump.data[k]=v;}
   const single=['targets','mpct','cab:dc','cab:ac','cab:og','dcstr','ogb','matin','matuse','matkov','matcustom','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
