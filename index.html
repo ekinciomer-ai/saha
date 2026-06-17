@@ -301,6 +301,8 @@
   .epmat td.epname,.epmat th.epname{text-align:left;position:sticky;left:0;background:var(--card,#fff);z-index:1;min-width:140px;font-weight:600}
   .epmat th.epname{background:var(--soft)}
   .epmat th.epd{font-weight:600;color:#5B6573}
+  .epmat .epbas{background:rgba(124,92,255,.09);font-weight:700;color:#4a3f7a}
+  .epmat th.epbas{background:rgba(124,92,255,.18);color:#15314e}
   .epmat .epcum{background:rgba(232,131,58,.10);font-weight:700}
   .epmat th.epcum{background:rgba(232,131,58,.18)}
   .epmat .epsel{background:rgba(47,111,176,.12)}
@@ -422,7 +424,7 @@
   <div class="homecard">
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 36 · yarış-koşulu giderildi · günlük değerler deterministik</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 37 · Başlangıç sütunu — günlük + başlangıç = toplam (tutarlı)</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -446,7 +448,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 36 · Bulut · 17.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 37 · Bulut · 17.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -1832,7 +1834,7 @@ async function delCustomMat(id){if(!confirm('Bu malzeme silinsin mi?'))return;MA
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s36</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s37</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -1995,21 +1997,19 @@ function repItems(day){
    - elektrik (GEN): ENTRIES üretim kayıtları (o günün tarihi) */
 function dayItemQty(day){
   const q={harita:0,ayakdelme:0,ayakmont:0,ustm:0,panel:0};
-  const st={}; /* o gün her ayağın ULAŞTIĞI en yüksek durum: 1=harita 2=rok 3=montaj (gün-içi net) */
-  dayLogs(day).forEach(r=>{
-    const d=r.detail||'';const mm=d.match(/Masa #(\d+)/);
-    if(mm){const masa=+mm[1];const bump=(p,v)=>{const k=masa+'_'+p;if(v>(st[k]||0))st[k]=v;};
-      if(/tümü işaretli/.test(d)){for(let p=0;p<14;p++)bump(p,1);}
-      else if(/tümü delindi/.test(d)){for(let p=0;p<14;p++)bump(p,2);}
-      else if(/tümü monte/.test(d)){for(let p=0;p<14;p++)bump(p,3);}
-      else{const fm=d.match(/(Ön|Arka)\s+(\d+)\s*→\s*(işaretlendi|delindi|monte)/);
-        if(fm){const pos=(fm[1]==='Ön'?0:7)+(+fm[2]-1);bump(pos,{'işaretlendi':1,'delindi':2,'monte':3}[fm[3]]);}}
-    }
+  /* rok & montaj: o güne kadar net durum farkı (telescoping) → günlük toplamı kümülatifi asla aşmaz */
+  const days=repDays();const idx=days.indexOf(day);const prev=idx>0?days[idx-1]:null;
+  const cur=footCumUpto(day),pre=prev?footCumUpto(prev):{har:0,del:0,mon:0};
+  q.ayakdelme=Math.max(0,cur.del-pre.del);
+  q.ayakmont=Math.max(0,cur.mon-pre.mon);
+  /* harita: o gün yapılan işaretleme kayıtları ([a1] sayaç + foot 'işaretlendi') */
+  dayLogs(day).forEach(r=>{const d=r.detail||'';
+    if(/tümü işaretli/.test(d))q.harita+=14;
+    else if(/→\s*işaretlendi/.test(d))q.harita+=1;
     const m=d.match(/\[(\w+)\]\s*([+-]?\d+)/);
     if(m){const f=m[1],v=+m[2]||0;
       if(f==='a1')q.harita+=v; else if(f==='k7')q.panel+=v; else if(/^k[1-6]$/.test(f))q.ustm+=v;}
   });
-  for(const k in st){const v=st[k];if(v>=3)q.ayakmont++;else if(v===2)q.ayakdelme++;else if(v===1)q.harita++;}
   if(q.harita<0)q.harita=0;if(q.panel<0)q.panel=0;if(q.ustm<0)q.ustm=0;
   ENTRIES.forEach(e=>{const ed=e.date||dstr(e.ts);if(ed===day)q[e.id]=(q[e.id]||0)+(+e.qty||0);});
   return q;
@@ -2026,21 +2026,24 @@ function renderItemMatrix(forPrint){
   if(days.length>MAXD)days=days.slice(days.length-MAXD);
   const qmap={};days.forEach(d=>qmap[d]=dayItemQty(d));
   const fmt=d=>d.slice(8,10)+'.'+d.slice(5,7);
-  let h='<div class="epwrap"><table class="mtab epmat"><thead><tr><th class="epname">İş kalemi</th><th>Birim</th>';
+  let h='<div class="epwrap"><table class="mtab epmat"><thead><tr><th class="epname">İş kalemi</th><th>Birim</th><th class="epbas" title="Log öncesi / Konstrüksiyon\'dan gelen başlangıç">Başlangıç</th>';
   days.forEach(d=>{h+='<th class="epd'+(d===RAPDAY?' epsel':'')+'">'+fmt(d)+'</th>';});
   h+='<th class="epcum">Toplam (onaylı)</th><th>Hedef</th><th>%</th></tr></thead><tbody>';
-  const dayTot={};days.forEach(d=>dayTot[d]=0);let cumTot=0;
+  const dayTot={};days.forEach(d=>dayTot[d]=0);let cumTot=0,basTot=0;
   items.forEach(it=>{
+    let sumVis=0;days.forEach(d=>sumVis+=(qmap[d][it.id]||0));
+    const bas=Math.max(0,it.cum-sumVis);basTot+=bas;
     h+='<tr><td class="epname">'+esc(it.ad)+'</td><td class="m"><small>'+esc(it.birim)+'</small></td>';
+    h+='<td class="epbas">'+(bas?tr(bas):'<span class="epz">·</span>')+'</td>';
     days.forEach(d=>{const v=qmap[d][it.id]||0;dayTot[d]+=v;h+='<td class="epd'+(d===RAPDAY?' epsel':'')+'">'+(v?tr(v):'<span class="epz">·</span>')+'</td>';});
     const pct=it.hedef>0?Math.min(100,it.cum/it.hedef*100):0;cumTot+=it.cum;
     h+='<td class="epcum"><b>'+tr(it.cum)+'</b></td><td class="m"><small>'+tr(it.hedef)+'</small></td><td class="m">%'+pct.toFixed(0)+'</td></tr>';
   });
-  h+='<tr class="eptot"><td class="epname">TOPLAM iş (adet)</td><td></td>';
+  h+='<tr class="eptot"><td class="epname">TOPLAM iş (adet)</td><td></td><td class="epbas"><b>'+(basTot?tr(basTot):'·')+'</b></td>';
   days.forEach(d=>{h+='<td class="epd'+(d===RAPDAY?' epsel':'')+'"><b>'+(dayTot[d]?tr(dayTot[d]):'·')+'</b></td>';});
   h+='<td class="epcum"><b>'+tr(cumTot)+'</b></td><td></td><td></td></tr>';
   h+='</tbody></table></div>';
-  h+='<div class="hint" style="margin-top:4px">Her satır bir iş kalemi · her sütun bir gün (sağda seçili gün). Hücre = o gün sahada yapılan işlem (saha logundan). «Toplam (onaylı)» = sahadaki güncel işaretli toplam (Konstrüksiyon ile birebir). Boş günde değer çıkmaz.</div>';
+  h+='<div class="hint" style="margin-top:4px"><b>Başlangıç + günlükler = Toplam (onaylı).</b> Başlangıç = bu rapor günlük takibe başlamadan önce sahada yapılmış / Konstrüksiyon\'a girilmiş kısım. Günlük hücreler = o gün saha loguna işlenen iş. «Toplam (onaylı)» = Konstrüksiyon\'daki güncel toplam. Böylece her satır toplamı tutar.</div>';
   return h;
 }
 function renderDayDetail(day){
@@ -2155,7 +2158,7 @@ function rapBody(day,forPrint){const A=rapAgg(day);
   }
   return h;}
 async function backupAll(){try{
-  const dump={_app:'SHAMS1-TR1',_ver:'s36',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1-TR1',_ver:'s37',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:'];
   for(const pre of pref)for(const k of await slist(pre)){const v=await sget(k);if(v!=null)dump.data[k]=v;}
   const single=['targets','mpct','cab:dc','cab:ac','cab:og','dcstr','ogb','matin','matuse','matkov','matcustom','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
@@ -2196,7 +2199,7 @@ function renderRapor(){const el=document.getElementById('rapor');if(!el)return;
     <div id="rapout">`+rapBody(RAPDAY,false)+`</div>`;}
 function printRapor(){const day=RAPDAY,fmtDay=day.split('-').reverse().join('.');
   const w=window.open('','_blank');if(!w){if(typeof toast==='function')toast('Açılır pencere engellendi');return;}
-  const cssText='body{font-family:Arial,sans-serif;color:#1c1c22;font-size:11px;margin:24px}h1{font-size:15px;color:#15314e;border-bottom:3px solid #E8833A;padding-bottom:6px}h3.raph{font-size:12px;color:#15314e;border-left:4px solid #E8833A;padding-left:8px;margin:14px 0 6px}table{width:100%;border-collapse:collapse;font-size:9.5px;margin:6px 0}th{background:#15314e;color:#fff;text-align:left;padding:4px 6px}td{border:1px solid #e0e0e6;padding:3px 6px}.m{text-align:center}.rapcards{display:flex;gap:8px;margin:8px 0}.rapcard{flex:1;border:1px solid #e3e3e8;border-radius:7px;padding:8px;text-align:center}.rc-n{font-size:18px;font-weight:800;color:#15314e}.rc-l{font-size:9px;color:#777}.rpbar{display:flex;align-items:center;gap:6px;margin:2px 0;font-size:9px}.rl{flex:0 0 150px}.rt{flex:1;height:9px;background:#eee;border-radius:4px;position:relative}.rt.mini{height:7px}.rf{position:absolute;left:0;top:0;height:100%;border-radius:4px}.rf.gm{background:#2f6fb0}.rf.ge{background:#E8833A}.rv{flex:0 0 34px;text-align:right}.rpcols{display:flex;gap:16px}.rpcol{flex:1}.fdot{display:inline-block;width:10px;height:10px;border-radius:3px}.hint{font-size:9px;color:#777}svg{max-width:100%}.epwrap{overflow-x:visible}.epmat{font-size:8px}.epmat td,.epmat th{padding:2px 4px;text-align:center;white-space:nowrap}.epmat td.epname,.epmat th.epname{text-align:left;font-weight:700}.epmat .epcum{background:#fbeee3;font-weight:700}.epmat th.epcum{background:#f3d9c2;color:#15314e}.epmat .epsel{background:#dce8f5}.epmat .epz{color:#bbb}.epmat tr.eptot td{background:#eef0f3;font-weight:700}.raphero{background:#15314e;color:#fff;padding:12px 16px;border-radius:8px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.rh-badge{background:#E8833A;color:#fff;padding:2px 7px;border-radius:10px;font-size:9px;font-weight:700}.rh-title{font-size:15px;font-weight:800}.rh-sub{font-size:10px;color:#cfe0f0}.rh-parties{font-size:9px;color:#aecbe6;display:flex;gap:14px;margin-top:4px}.rh-parties b{color:#fff}.rh-r{display:flex;gap:12px}.rh-pl{font-size:9px;color:#dce8f5;text-align:center}.rh-ring svg text{fill:#fff}.dselbox{display:none}.kcards{display:flex;gap:6px;margin:6px 0}.kcard{flex:1;border:1px solid #e3e3e8;border-radius:7px;padding:7px;text-align:center}.k-n{font-size:16px;font-weight:800;color:#15314e}.k-l{font-size:8px;color:#777}.ircards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0}.ircard{border:1px solid #e3e3e8;border-radius:9px;padding:8px;position:relative;break-inside:avoid}.ir-top{display:flex;gap:8px;align-items:center}.ir-nm{font-size:11px;font-weight:800;color:#15314e}.ir-isv{font-size:7px;background:#f7ecd2;color:#9a7b2f;border-radius:4px;padding:1px 4px;margin-left:4px}.ir-tag{font-size:8px;font-weight:700;border-radius:4px;padding:1px 5px;display:inline-block;margin:2px 0}.ir-today{font-size:9px;color:#555}.ir-nums{display:flex;gap:4px;margin-top:6px}.ir-nums>div{flex:1;text-align:center;background:#f6f8fb;border-radius:6px;padding:4px 2px}.ir-nums b{display:block;font-size:11px;font-weight:800;color:#15314e}.ir-nums small{font-size:7.5px;color:#888}.ir-spark{margin-top:4px}.ir-sparkl{font-size:7.5px;color:#999;text-align:right}.ir-bar{display:none}';
+  const cssText='body{font-family:Arial,sans-serif;color:#1c1c22;font-size:11px;margin:24px}h1{font-size:15px;color:#15314e;border-bottom:3px solid #E8833A;padding-bottom:6px}h3.raph{font-size:12px;color:#15314e;border-left:4px solid #E8833A;padding-left:8px;margin:14px 0 6px}table{width:100%;border-collapse:collapse;font-size:9.5px;margin:6px 0}th{background:#15314e;color:#fff;text-align:left;padding:4px 6px}td{border:1px solid #e0e0e6;padding:3px 6px}.m{text-align:center}.rapcards{display:flex;gap:8px;margin:8px 0}.rapcard{flex:1;border:1px solid #e3e3e8;border-radius:7px;padding:8px;text-align:center}.rc-n{font-size:18px;font-weight:800;color:#15314e}.rc-l{font-size:9px;color:#777}.rpbar{display:flex;align-items:center;gap:6px;margin:2px 0;font-size:9px}.rl{flex:0 0 150px}.rt{flex:1;height:9px;background:#eee;border-radius:4px;position:relative}.rt.mini{height:7px}.rf{position:absolute;left:0;top:0;height:100%;border-radius:4px}.rf.gm{background:#2f6fb0}.rf.ge{background:#E8833A}.rv{flex:0 0 34px;text-align:right}.rpcols{display:flex;gap:16px}.rpcol{flex:1}.fdot{display:inline-block;width:10px;height:10px;border-radius:3px}.hint{font-size:9px;color:#777}svg{max-width:100%}.epwrap{overflow-x:visible}.epmat{font-size:8px}.epmat td,.epmat th{padding:2px 4px;text-align:center;white-space:nowrap}.epmat td.epname,.epmat th.epname{text-align:left;font-weight:700}.epmat .epcum{background:#fbeee3;font-weight:700}.epmat th.epcum{background:#f3d9c2;color:#15314e}.epmat .epbas{background:#efeafd;font-weight:700;color:#4a3f7a}.epmat th.epbas{background:#e3dbfb;color:#15314e}.epmat .epsel{background:#dce8f5}.epmat .epz{color:#bbb}.epmat tr.eptot td{background:#eef0f3;font-weight:700}.raphero{background:#15314e;color:#fff;padding:12px 16px;border-radius:8px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.rh-badge{background:#E8833A;color:#fff;padding:2px 7px;border-radius:10px;font-size:9px;font-weight:700}.rh-title{font-size:15px;font-weight:800}.rh-sub{font-size:10px;color:#cfe0f0}.rh-parties{font-size:9px;color:#aecbe6;display:flex;gap:14px;margin-top:4px}.rh-parties b{color:#fff}.rh-r{display:flex;gap:12px}.rh-pl{font-size:9px;color:#dce8f5;text-align:center}.rh-ring svg text{fill:#fff}.dselbox{display:none}.kcards{display:flex;gap:6px;margin:6px 0}.kcard{flex:1;border:1px solid #e3e3e8;border-radius:7px;padding:7px;text-align:center}.k-n{font-size:16px;font-weight:800;color:#15314e}.k-l{font-size:8px;color:#777}.ircards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0}.ircard{border:1px solid #e3e3e8;border-radius:9px;padding:8px;position:relative;break-inside:avoid}.ir-top{display:flex;gap:8px;align-items:center}.ir-nm{font-size:11px;font-weight:800;color:#15314e}.ir-isv{font-size:7px;background:#f7ecd2;color:#9a7b2f;border-radius:4px;padding:1px 4px;margin-left:4px}.ir-tag{font-size:8px;font-weight:700;border-radius:4px;padding:1px 5px;display:inline-block;margin:2px 0}.ir-today{font-size:9px;color:#555}.ir-nums{display:flex;gap:4px;margin-top:6px}.ir-nums>div{flex:1;text-align:center;background:#f6f8fb;border-radius:6px;padding:4px 2px}.ir-nums b{display:block;font-size:11px;font-weight:800;color:#15314e}.ir-nums small{font-size:7.5px;color:#888}.ir-spark{margin-top:4px}.ir-sparkl{font-size:7.5px;color:#999;text-align:right}.ir-bar{display:none}';
   const d=w.document;
   try{d.title='Günlük Rapor '+fmtDay;}catch(e){}
   const st=d.createElement('style');st.textContent=cssText;(d.head||d.documentElement).appendChild(st);
