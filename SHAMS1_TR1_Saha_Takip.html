@@ -1,5 +1,13 @@
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5">
 <title>SHAMS-1 · TR-1 Saha Takip</title>
+<meta name="theme-color" content="#15314e">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SHAMS-1 Saha">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20180%20180'%3E%3Crect%20width='180'%20height='180'%20rx='40'%20fill='%2315314e'/%3E%3Ccircle%20cx='90'%20cy='92'%20r='34'%20fill='%23FF7A45'/%3E%3Cg%20stroke='%23FF7A45'%20stroke-width='8'%20stroke-linecap='round'%3E%3Cline%20x1='90'%20y1='30'%20x2='90'%20y2='46'/%3E%3Cline%20x1='90'%20y1='138'%20x2='90'%20y2='154'/%3E%3Cline%20x1='28'%20y1='92'%20x2='44'%20y2='92'/%3E%3Cline%20x1='136'%20y1='92'%20x2='152'%20y2='92'/%3E%3Cline%20x1='46'%20y1='48'%20x2='57'%20y2='59'/%3E%3Cline%20x1='123'%20y1='125'%20x2='134'%20y2='136'/%3E%3Cline%20x1='134'%20y1='48'%20x2='123'%20y2='59'/%3E%3Cline%20x1='57'%20y1='125'%20x2='46'%20y2='136'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -417,6 +425,65 @@
   .phstg-h{font-weight:600;color:#777}
   .phstg{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
   .phdot{display:inline-block;width:11px;height:11px;border-radius:3px}
+
+  /* ===== MOBİL / DOKUNMATİK (saha kullanımı) ===== */
+  .pwabar{position:fixed;left:0;right:0;bottom:0;z-index:80;display:none;gap:10px;align-items:center;
+    padding:10px 14px calc(10px + env(safe-area-inset-bottom));background:#15314e;color:#fff;box-shadow:0 -8px 24px -10px rgba(0,0,0,.4)}
+  .pwabar.on{display:flex}
+  .pwabar .pwt{flex:1;font-size:13px;line-height:1.3}.pwabar .pwt b{color:#FFB088}
+  .pwabar button{flex:0 0 auto;background:var(--grad);color:#fff;border:none;border-radius:11px;padding:11px 16px;font-weight:800;font-size:14px;font-family:var(--sans)}
+  .pwabar .pwx{background:transparent;color:#9fb6cf;padding:8px;font-size:18px;box-shadow:none}
+  .iosmodal{position:fixed;inset:0;z-index:90;display:none;align-items:flex-end;justify-content:center;background:rgba(8,16,28,.55)}
+  .iosmodal.on{display:flex}
+  .iosbox{background:#fff;border-radius:20px 20px 0 0;padding:20px 20px calc(24px + env(safe-area-inset-bottom));max-width:460px;width:100%;box-shadow:var(--shadow)}
+  .iosbox h3{margin:0 0 6px;font-family:var(--head);font-size:16px;color:var(--ink)}
+  .iosbox p{margin:8px 0;font-size:14px;color:var(--ink-soft);line-height:1.5}
+  .iosbox .stp{display:flex;gap:10px;align-items:center;margin:10px 0;font-size:14px}
+  .iosbox .stp .ico{flex:0 0 34px;height:34px;border-radius:9px;background:var(--soft);display:flex;align-items:center;justify-content:center;font-size:18px}
+  .iosbox .okb{width:100%;margin-top:12px;background:var(--grad);color:#fff;border:none;border-radius:13px;padding:13px;font-weight:800;font-size:15px;font-family:var(--sans)}
+
+  @media(max-width:760px){
+    body{padding:10px 10px calc(10px + env(safe-area-inset-bottom))}
+    html,body{overflow-x:hidden;max-width:100%}
+    .wrap{max-width:100%}
+    .card{padding:15px;border-radius:16px;margin-bottom:12px}
+    .summary{grid-template-columns:repeat(2,1fr);gap:9px}
+    .sb{padding:12px;border-radius:15px}.sb .a{font-size:19px}
+    .top{flex-direction:column;align-items:stretch;gap:10px}
+    /* sekmeler: yatay kaydırılır şerit */
+    .tabs{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:7px;padding-bottom:2px;margin-bottom:12px}
+    .tabs::-webkit-scrollbar{display:none}
+    .tab{flex:0 0 auto;padding:11px 15px;font-size:14px}
+    /* formlar tek/çift sütun, dokunmaya uygun */
+    .form{grid-template-columns:1fr 1fr;gap:10px}.form .full{grid-column:1/-1}
+    input,select,textarea{font-size:16px!important;min-height:46px}
+    .btn{padding:13px 18px;font-size:15px;border-radius:13px;min-height:48px}
+    .btn.sm{padding:9px 13px;font-size:13px;min-height:auto}
+    /* geniş tabloları yatay kaydır */
+    .epwrap,.tablewrap,.tbl-scroll{overflow-x:auto!important;-webkit-overflow-scrolling:touch}
+    table.mtab{min-width:560px}
+    .epmat{font-size:11px}.epmat td,.epmat th{padding:7px 8px}
+    /* ayak grid: parmakla basılır boyut */
+    .foot{width:40px;height:38px;font-size:15px;border-radius:9px}
+    .navrow{flex-direction:column;flex-wrap:nowrap}
+    .navrow>*{min-width:0;max-width:100%}
+    .navright{width:100%!important;min-width:0!important;flex:1 1 auto}
+    .kfind,.zonechips{min-width:0;max-width:100%}
+    .kfind input{width:100%;max-width:100%}
+    .minimap{width:100%;display:flex;gap:10px;align-items:center}.minimap svg{width:120px}
+    .ircards{grid-template-columns:1fr;gap:9px}
+    .kcards{flex-wrap:wrap}.kcard{flex:1 1 30%}
+    .rpcols{flex-direction:column;gap:10px}
+    .raphero{flex-direction:column;align-items:flex-start;gap:10px}
+    .tgrid{grid-template-columns:1fr}.tgrid input{width:100%}
+    .mediabtns .fbtn{flex:1 1 auto;justify-content:center;min-height:46px}
+  }
+  @media(max-width:430px){
+    .summary{grid-template-columns:1fr 1fr}
+    .form{grid-template-columns:1fr}
+    h1{font-size:20px}
+    .kcard{flex:1 1 45%}
+  }
 </style>
 
 <div id="home" class="home">
@@ -424,7 +491,7 @@
   <div class="homecard">
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 37 · Başlangıç sütunu — günlük + başlangıç = toplam (tutarlı)</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 38 · Mobil arayüz + telefona kurulabilir (PWA)</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -448,7 +515,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 37 · Bulut · 17.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 38 · Mobil + Kurulabilir · 17.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -1834,7 +1901,7 @@ async function delCustomMat(id){if(!confirm('Bu malzeme silinsin mi?'))return;MA
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s37</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s38</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -2158,7 +2225,7 @@ function rapBody(day,forPrint){const A=rapAgg(day);
   }
   return h;}
 async function backupAll(){try{
-  const dump={_app:'SHAMS1-TR1',_ver:'s37',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1-TR1',_ver:'s38',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:'];
   for(const pre of pref)for(const k of await slist(pre)){const v=await sget(k);if(v!=null)dump.data[k]=v;}
   const single=['targets','mpct','cab:dc','cab:ac','cab:og','dcstr','ogb','matin','matuse','matkov','matcustom','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
@@ -2359,3 +2426,49 @@ function renderBilgi(){const el=document.getElementById('bilgi');if(!el)return;
 /* ana ekran açık; proje seçilince openProject() yükler */
 </script>
 <div id="dmodal" class="dmodal" style="display:none" onclick="if(event.target===this)closeDetay()"><div class="dbox"><div class="dhead"><b id="dtitle"></b><button class="dx" onclick="closeDetay()">✕</button></div><div id="dbody"></div></div></div>
+
+<div id="pwabar" class="pwabar">
+  <div class="pwt"><b>Telefona kur</b> · uygulamayı ana ekrana ekle, sahada tek dokunuşla aç</div>
+  <button id="pwainstall">İndir</button>
+  <button class="pwx" id="pwadismiss" aria-label="kapat">✕</button>
+</div>
+<div id="iosmodal" class="iosmodal" onclick="if(event.target===this)this.classList.remove('on')">
+  <div class="iosbox">
+    <h3>Ana ekrana ekle</h3>
+    <p>iPhone/iPad'de uygulamayı kurmak için Safari'de:</p>
+    <div class="stp"><div class="ico">⬆️</div><div>Alttaki <b>Paylaş</b> simgesine dokun</div></div>
+    <div class="stp"><div class="ico">➕</div><div><b>Ana Ekrana Ekle</b> seçeneğini seç</div></div>
+    <div class="stp"><div class="ico">✓</div><div>Sağ üstte <b>Ekle</b>'ye dokun — bitti</div></div>
+    <button class="okb" onclick="document.getElementById('iosmodal').classList.remove('on')">Anladım</button>
+  </div>
+</div>
+<script>
+(function(){
+  /* service worker (offline + kurulabilirlik) */
+  if('serviceWorker' in navigator){
+    window.addEventListener('load',function(){
+      navigator.serviceWorker.register('sw.js').catch(function(){});
+    });
+  }
+  var standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone===true;
+  var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  var bar=document.getElementById('pwabar');
+  var dismissed = false; try{dismissed = localStorage.getItem('shams1:pwadismiss')==='1';}catch(e){}
+  var deferred=null;
+  function showBar(){ if(!standalone && !dismissed) bar.classList.add('on'); }
+  window.addEventListener('beforeinstallprompt',function(e){
+    e.preventDefault(); deferred=e; showBar();
+  });
+  document.getElementById('pwainstall').addEventListener('click',function(){
+    if(deferred){ deferred.prompt(); deferred.userChoice.then(function(c){ if(c&&c.outcome==='accepted'){bar.classList.remove('on');} deferred=null; }); }
+    else if(isIOS){ document.getElementById('iosmodal').classList.add('on'); }
+    else { document.getElementById('iosmodal').classList.add('on'); }
+  });
+  document.getElementById('pwadismiss').addEventListener('click',function(){
+    bar.classList.remove('on'); try{localStorage.setItem('shams1:pwadismiss','1');}catch(e){}
+  });
+  /* iOS'ta beforeinstallprompt yok → barı yine göster (talimatla kurulum) */
+  if(isIOS && !standalone){ setTimeout(showBar, 1200); }
+  window.addEventListener('appinstalled',function(){ bar.classList.remove('on'); });
+})();
+</script>
