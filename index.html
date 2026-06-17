@@ -425,6 +425,9 @@
   .phstg-h{font-weight:600;color:#777}
   .phstg{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
   .phdot{display:inline-block;width:11px;height:11px;border-radius:3px}
+  .reqtag{display:inline-block;font-size:10px;font-weight:800;border-radius:6px;padding:1px 7px;margin-right:5px;vertical-align:1px}
+  .reqtag.rqd{background:#e3dbfb;color:#5a3fae}.reqtag.rqs{background:#fde0e0;color:#c0392b}
+  .drrow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
 
   /* ===== MOBİL / DOKUNMATİK (saha kullanımı) ===== */
   .pwabar{position:fixed;left:0;right:0;bottom:0;z-index:80;display:none;gap:10px;align-items:center;
@@ -491,7 +494,7 @@
   <div class="homecard">
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 38 · Mobil arayüz + telefona kurulabilir (PWA)</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 40 · Bugün serbest / geçmiş veri yönetici onayına</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -515,7 +518,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 38 · Mobil + Kurulabilir · 17.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 40 · Onay mekanizması · 17.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -907,7 +910,8 @@ async function addEntry(){const it=GEN.find(x=>x.id===document.getElementById('f
   if(BACKEND==='mem'){e._key=key;ENTRIES.unshift(e);renderAll();toast('Kaydedildi (geçici)');return;}
   if(await sset(key,e)){toast('✓ Kaydedildi');document.getElementById('f_qty').value='';await reloadAll();}else toast('Hata');}
 async function delEntry(k){const e=ENTRIES.find(x=>x._key===k);const lbl='Üretim kaydı'+(e?' ('+e.id+' · '+e.qty+')':'');
-  if(ROLE!=='admin'){await reqDelete(k,lbl);toast('Silme yönetici onayına gönderildi');return;}
+  const day=e?(e.date||dstr(e.ts)):null;
+  if(editGate(day)==='req'){await reqDelete(k,lbl+' · '+(day||''));toast('Geçmiş kayıt — yönetici onayına gönderildi');return;}
   if(!confirm('Sil?'))return;await sdel(k);await logAct('sil',lbl);await reloadAll();}
 async function setTarget(id,v){v=parseFloat(v);if(!(v>0))return;TARGETS[id]=v;await sset('targets',TARGETS);renderAll();syncUnit();}
 
@@ -1097,12 +1101,21 @@ function syncFoot(a){const s=PLAN[SEL]||(PLAN[SEL]={});s.foot=a.slice();s.footv=
   s.a1=a.filter(x=>x>=1).length;
   s.a2=a.filter(x=>x>=2).length;
   const m=a.filter(x=>x>=3).length;s.a3=m;s.a4=m;s.a5=m;}
-async function cycleFoot(j){if(SEL==null)return;const a=footArr();a[j]=(a[j]+1)%4;syncFoot(a);await saveTbl(PLAN[SEL]);
+async function cycleFoot(j){if(SEL==null)return;
+  if(ROLE!=='admin'){const ld=footLastDay(SEL,j);
+    if(ld&&ld!==dToday()){const a0=footArr();const to=(a0[j]+1)%4;const pz=(j<7?'Ön ':'Arka ')+((j%7)+1);
+      await reqChange({tip:'foot',masa:SEL,j,to},'Masa #'+SEL+' · '+pz+' ('+ld+' verisi)');
+      toast('Geçmiş veri — yönetici onayına gönderildi');return;}}
+  const a=footArr();a[j]=(a[j]+1)%4;syncFoot(a);await saveTbl(PLAN[SEL]);
   const lbl=['boş','işaretlendi','delindi','monte'],pos=(j<7?'Ön ':'Arka ')+((j%7)+1);
   LASTFOOT='Seçili ayak: <b>'+pos+'</b> → '+lbl[a[j]];
   await logAct('Ayak işaretleme','Masa #'+SEL+' · '+pos+' → '+lbl[a[j]]);
   drawFootGrid();renderProgress();drawSchem();renderKonstPlan();}
-async function footAll(v){if(SEL==null)return;syncFoot(Array(14).fill(v));await saveTbl(PLAN[SEL]);
+async function footAll(v){if(SEL==null)return;
+  if(ROLE!=='admin'){const ld=masaLastDay(SEL);
+    if(ld&&ld!==dToday()){await reqChange({tip:'footAll',masa:SEL,v},'Masa #'+SEL+' · toplu '+['sıfırla','işaretle','delme','montaj'][v]+' ('+ld+' verisi)');
+      toast('Geçmiş veri — yönetici onayına gönderildi');return;}}
+  syncFoot(Array(14).fill(v));await saveTbl(PLAN[SEL]);
   await logAct('Ayak (toplu)','Masa #'+SEL+' · '+['sıfırlandı','tümü işaretli','tümü delindi','tümü monte'][v]);
   LASTFOOT='';drawFootGrid();renderProgress();drawSchem();renderKonstPlan();}
 function drawFootGrid(){const el=document.getElementById('ed_footgrid');if(!el)return;const a=footArr();const lbl=['boş','işaretlendi','delindi','monte'];
@@ -1491,15 +1504,33 @@ function renderPJ(){const host=document.getElementById('pjgrid');if(!host)return
     '<div class="pjscroll"><table class="pjtab"><thead>'+head+'</thead><tbody>'+body+foot+'</tbody></table></div>';}
 
 /* ---- SİLME ONAYI / LOG ---- */
-async function reqDelete(key,label){const ts=Date.now();const r={ts,key,label,by:ROLE||'?'};DREQ.push(r);await sset('dr:'+ts,r);await logAct('silme-talep',label);}
+async function reqDelete(key,label){const ts=Date.now();const r={ts,tip:'sil',key,label,by:CURUSER||ROLE||'?'};DREQ.push(r);await sset('dr:'+ts,r);await logAct('silme-talep',label);}
+/* === Zaman + rol bazlı yetki kapısı ===
+   Bugünün verisi → herkes serbest. Geçmiş veri → usta ise yönetici onayına düşer, admin serbest. */
+function editGate(day){if(ROLE==='admin')return 'ok';if(!day||day===dToday())return 'ok';return 'req';}
+function footLastDay(masa,j){const side=j<7?'Ön':'Arka',num=(j%7)+1;const re=new RegExp(side+'\\s+'+num+'\\s*→');let last=null;
+  ALOG.forEach(r=>{const d=r.detail||'';const mm=d.match(/Masa #(\d+)/);if(!mm||+mm[1]!==masa)return;
+    if(/tümü (işaretli|delindi|monte)|sıfırlandı/.test(d)||re.test(d)){const dd=dstr(r.ts);if(!last||dd>last)last=dd;}});
+  return last;}
+function masaLastDay(masa){let last=null;ALOG.forEach(r=>{const d=r.detail||'';const mm=d.match(/Masa #(\d+)/);if(!mm||+mm[1]!==masa)return;const dd=dstr(r.ts);if(!last||dd>last)last=dd;});return last;}
+async function reqChange(payload,label){const ts=Date.now();const r={ts,tip:'degis',payload,label,by:CURUSER||ROLE||'?'};DREQ.push(r);await sset('dr:'+ts,r);await logAct('değişiklik-talep',label);try{renderPersonel();}catch(e){}}
+async function applyChange(p){
+  if(p.tip==='foot'||p.tip==='footAll'){const oldSEL=SEL;SEL=p.masa;
+    if(p.tip==='foot'){const a=footArr();a[p.j]=p.to;syncFoot(a);}else{syncFoot(Array(14).fill(p.v));}
+    await saveTbl(PLAN[p.masa]);SEL=oldSEL;
+    await logAct('Ayak (onaylı)','Masa #'+p.masa+(p.tip==='foot'?(' · ayak '+(p.j+1)):' · toplu'));}
+  else if(p.tip==='entry-del'){await sdel(p.key);}
+}
 async function approveDel(ts){const r=DREQ.find(x=>x.ts===ts);if(!r)return;
-  if(r.key.indexOf('team:')===0){const id=r.key.slice(5);TEAM=TEAM.filter(x=>x.id!==id);await saveTeam();}
-  else await sdel(r.key);
-  DREQ=DREQ.filter(x=>x.ts!==ts);await sdel('dr:'+ts);await logAct('silme-onay',r.label);await reloadAll();}
-async function rejectDel(ts){const r=DREQ.find(x=>x.ts===ts);DREQ=DREQ.filter(x=>x.ts!==ts);await sdel('dr:'+ts);await logAct('silme-red',r?r.label:'');renderPersonel();}
+  if(r.tip==='degis'){await applyChange(r.payload);}
+  else{if(r.key&&r.key.indexOf('team:')===0){const id=r.key.slice(5);TEAM=TEAM.filter(x=>x.id!==id);await saveTeam();}else if(r.key)await sdel(r.key);}
+  DREQ=DREQ.filter(x=>x.ts!==ts);await sdel('dr:'+ts);await logAct('onay',r.label);await reloadAll();}
+async function rejectDel(ts){const r=DREQ.find(x=>x.ts===ts);DREQ=DREQ.filter(x=>x.ts!==ts);await sdel('dr:'+ts);await logAct('talep-red',r?r.label:'');try{renderPersonel();}catch(e){}}
 function delReqPanel(){if(!DREQ.length)return '';
-  return '<div class="tk2 adminonly" style="border-color:var(--solar)"><h3>⏳ Silme onayı bekleyen ('+DREQ.length+')</h3>'+
-    DREQ.map(r=>'<div class="drrow"><span>'+esc(r.label)+' <small>· '+esc(r.by)+'</small></span><span><button class="btn sm" onclick="approveDel('+r.ts+')">Onayla & sil</button> <button class="btn ghost sm" onclick="rejectDel('+r.ts+')">Reddet</button></span></div>').join('')+'</div>';}
+  return '<div class="tk2 adminonly" style="border-color:var(--solar)"><h3>⏳ Onay bekleyen ('+DREQ.length+')</h3>'+
+    '<div class="hint" style="margin:-4px 0 8px">Usta\'nın geçmiş güne ait silme/değişiklik talepleri. Onaylarsan sistemde kalıcı uygulanır.</div>'+
+    DREQ.slice().sort((a,b)=>b.ts-a.ts).map(r=>{const tg=r.tip==='degis'?'<span class="reqtag rqd">değişiklik</span>':'<span class="reqtag rqs">silme</span>';
+      return '<div class="drrow"><span>'+tg+' '+esc(r.label)+' <small>· '+esc(r.by)+'</small></span><span><button class="btn sm" onclick="approveDel('+r.ts+')">Onayla</button> <button class="btn ghost sm" onclick="rejectDel('+r.ts+')">Reddet</button></span></div>';}).join('')+'</div>';}
 function logPanel(){if(!ALOG.length)return '';
   return acc('İşlem kaydı (log) — son 30',('<table><thead><tr><th>Zaman</th><th>İşlem</th><th>Detay</th><th>Kim</th></tr></thead><tbody>'+
     ALOG.slice(0,30).map(r=>'<tr><td>'+new Date(r.ts).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</td><td>'+esc(r.act)+'</td><td>'+esc(r.detail)+'</td><td>'+esc(r.by||r.role)+'</td></tr>').join('')+'</tbody></table>'),false,'adminonly');}
@@ -1901,7 +1932,7 @@ async function delCustomMat(id){if(!confirm('Bu malzeme silinsin mi?'))return;MA
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s38</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s40</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -2081,6 +2112,24 @@ function dayItemQty(day){
   ENTRIES.forEach(e=>{const ed=e.date||dstr(e.ts);if(ed===day)q[e.id]=(q[e.id]||0)+(+e.qty||0);});
   return q;
 }
+/* o günün NET değişimi (clamp YOK → silme/iptal eksi görünür). Matris ve kart "bugün" değeri buradan.
+   rok/montaj = footCumUpto farkı (mutlak 'gürültülü' sayı DEĞİL, sadece gün farkı). harita = yalnız işaretleme aksiyonları. */
+function dayNet(day){
+  const q={harita:0,ayakdelme:0,ayakmont:0,ustm:0,panel:0};
+  const days=repDays();const idx=days.indexOf(day);const prev=idx>0?days[idx-1]:null;
+  const cur=footCumUpto(day),pre=prev?footCumUpto(prev):{har:0,del:0,mon:0};
+  q.ayakdelme=cur.del-pre.del;
+  q.ayakmont=cur.mon-pre.mon;
+  dayLogs(day).forEach(r=>{const d=r.detail||'';
+    if(/tümü işaretli/.test(d))q.harita+=14;
+    else if(/→\s*işaretlendi/.test(d))q.harita+=1;
+    const m=d.match(/\[(\w+)\]\s*([+-]?\d+)/);
+    if(m){const f=m[1],v=+m[2]||0;
+      if(f==='a1')q.harita+=v; else if(f==='k7')q.panel+=v; else if(/^k[1-6]$/.test(f))q.ustm+=v;}
+  });
+  ENTRIES.forEach(e=>{const ed=e.date||dstr(e.ts);if(ed===day)q[e.id]=(q[e.id]||0)+(+e.qty||0);});
+  return q;
+}
 function repDays(){const set={};
   ENTRIES.forEach(e=>{const ed=e.date||dstr(e.ts);if(ed)set[ed]=1;});
   ALOG.forEach(r=>{set[dstr(r.ts)]=1;});
@@ -2088,29 +2137,32 @@ function repDays(){const set={};
   return Object.keys(set).sort();
 }
 function renderItemMatrix(forPrint){
-  const items=repItems(RAPDAY);let days=repDays();
-  const MAXD=forPrint?days.length:12;
-  if(days.length>MAXD)days=days.slice(days.length-MAXD);
-  const qmap={};days.forEach(d=>qmap[d]=dayItemQty(d));
+  const items=repItems(RAPDAY);
+  const day=RAPDAY;const net=dayNet(day);
+  const isToday=(day===dToday());
   const fmt=d=>d.slice(8,10)+'.'+d.slice(5,7);
-  let h='<div class="epwrap"><table class="mtab epmat"><thead><tr><th class="epname">İş kalemi</th><th>Birim</th><th class="epbas" title="Log öncesi / Konstrüksiyon\'dan gelen başlangıç">Başlangıç</th>';
-  days.forEach(d=>{h+='<th class="epd'+(d===RAPDAY?' epsel':'')+'">'+fmt(d)+'</th>';});
-  h+='<th class="epcum">Toplam (onaylı)</th><th>Hedef</th><th>%</th></tr></thead><tbody>';
-  const dayTot={};days.forEach(d=>dayTot[d]=0);let cumTot=0,basTot=0;
+  const dlbl=isToday?'Bugün':(fmt(day)+' günü');
+  let h='<div class="epwrap"><table class="mtab epmat"><thead><tr><th class="epname">İş kalemi</th><th>Birim</th>'
+    +'<th class="epbas" title="O güne kadarki birikim">Başlangıç</th>'
+    +'<th class="epsel" title="O gün yapılan net değişim (eksi = iptal/düzeltme)">'+dlbl+'</th>'
+    +'<th class="epcum" title="Konstrüksiyon\'daki güncel gerçek sayı">Toplam (onaylı)</th><th>Hedef</th><th>%</th></tr></thead><tbody>';
+  let basTot=0,bugTot=0,cumTot=0;
   items.forEach(it=>{
-    let sumVis=0;days.forEach(d=>sumVis+=(qmap[d][it.id]||0));
-    const bas=Math.max(0,it.cum-sumVis);basTot+=bas;
-    h+='<tr><td class="epname">'+esc(it.ad)+'</td><td class="m"><small>'+esc(it.birim)+'</small></td>';
-    h+='<td class="epbas">'+(bas?tr(bas):'<span class="epz">·</span>')+'</td>';
-    days.forEach(d=>{const v=qmap[d][it.id]||0;dayTot[d]+=v;h+='<td class="epd'+(d===RAPDAY?' epsel':'')+'">'+(v?tr(v):'<span class="epz">·</span>')+'</td>';});
-    const pct=it.hedef>0?Math.min(100,it.cum/it.hedef*100):0;cumTot+=it.cum;
-    h+='<td class="epcum"><b>'+tr(it.cum)+'</b></td><td class="m"><small>'+tr(it.hedef)+'</small></td><td class="m">%'+pct.toFixed(0)+'</td></tr>';
+    const bug=net[it.id]||0;const bas=it.cum-bug;basTot+=bas;bugTot+=bug;cumTot+=it.cum;
+    const bugCell = bug>0 ? '<b style="color:#2e9e5b">+'+tr(bug)+'</b>' : (bug<0 ? '<b style="color:#E5484D">−'+tr(-bug)+'</b>' : '<span class="epz">·</span>');
+    const pct=it.hedef>0?Math.min(100,it.cum/it.hedef*100):0;
+    h+='<tr><td class="epname">'+esc(it.ad)+'</td><td class="m"><small>'+esc(it.birim)+'</small></td>'
+      +'<td class="epbas">'+(bas?tr(bas):'<span class="epz">·</span>')+'</td>'
+      +'<td class="epsel">'+bugCell+'</td>'
+      +'<td class="epcum"><b>'+tr(it.cum)+'</b></td><td class="m"><small>'+tr(it.hedef)+'</small></td><td class="m">%'+pct.toFixed(0)+'</td></tr>';
   });
-  h+='<tr class="eptot"><td class="epname">TOPLAM iş (adet)</td><td></td><td class="epbas"><b>'+(basTot?tr(basTot):'·')+'</b></td>';
-  days.forEach(d=>{h+='<td class="epd'+(d===RAPDAY?' epsel':'')+'"><b>'+(dayTot[d]?tr(dayTot[d]):'·')+'</b></td>';});
-  h+='<td class="epcum"><b>'+tr(cumTot)+'</b></td><td></td><td></td></tr>';
+  const bugTotCell = bugTot>0?'+'+tr(bugTot):(bugTot<0?'−'+tr(-bugTot):'·');
+  h+='<tr class="eptot"><td class="epname">TOPLAM</td><td></td>'
+    +'<td class="epbas"><b>'+(basTot?tr(basTot):'·')+'</b></td>'
+    +'<td class="epsel"><b>'+bugTotCell+'</b></td>'
+    +'<td class="epcum"><b>'+tr(cumTot)+'</b></td><td></td><td></td></tr>';
   h+='</tbody></table></div>';
-  h+='<div class="hint" style="margin-top:4px"><b>Başlangıç + günlükler = Toplam (onaylı).</b> Başlangıç = bu rapor günlük takibe başlamadan önce sahada yapılmış / Konstrüksiyon\'a girilmiş kısım. Günlük hücreler = o gün saha loguna işlenen iş. «Toplam (onaylı)» = Konstrüksiyon\'daki güncel toplam. Böylece her satır toplamı tutar.</div>';
+  h+='<div class="hint" style="margin-top:4px"><b>Başlangıç + '+dlbl+' = Toplam (onaylı)</b> — her satır birebir tutar. «Toplam (onaylı)» = Konstrüksiyon\'daki güncel gerçek sayı. «'+dlbl+'» = o gün yapılan net değişim (<span style="color:#E5484D">eksi</span> = iptal/düzeltme). «Başlangıç» = o güne kadarki birikim.</div>';
   return h;
 }
 function renderDayDetail(day){
@@ -2144,7 +2196,7 @@ function sparkBars(vals,color){const n=vals.length;if(!n)return '';const mx=Math
     s+=`<rect x="${x.toFixed(1)}" y="${(H-h).toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="1.5" fill="${v>0?color:'#e9ecf1'}"/>`;});
   return s+'</svg>';}
 function lastNqty(itemId,upto,n){const days=repDays().filter(d=>d<=upto).slice(-n);return days.map(d=>dayItemQty(d)[itemId]||0);}
-function itemReportCards(day){const items=repItems(day),q=dayItemQty(day);
+function itemReportCards(day){const items=repItems(day),q=dayNet(day);
   let h='<div class="ircards">';
   for(const it of items){const pct=it.hedef>0?Math.min(100,it.cum/it.hedef*100):0,col=itemColor(it.id,it.dis);
     const today=q[it.id]||0,hist=lastNqty(it.id,day,12),kalan=Math.max(0,it.hedef-it.cum);
@@ -2155,7 +2207,7 @@ function itemReportCards(day){const items=repItems(day),q=dayItemQty(day);
         <div class="ir-meta">
           <div class="ir-nm">${esc(it.ad)}${it.isv?'<span class="ir-isv">İşveren</span>':''}</div>
           <div class="ir-tag" style="background:${col}1f;color:${col}">${it.dis==='MEK'?'Mekanik':'Elektrik'} · ${esc(it.birim)}</div>
-          <div class="ir-today">${today>0?'<b style="color:'+col+'">+'+tr(today)+'</b> bu gün':'<span class="ir-mut">bu gün hareket yok</span>'}</div>
+          <div class="ir-today">${today>0?'<b style="color:'+col+'">+'+tr(today)+'</b> bu gün':today<0?'<b style="color:#E5484D">−'+tr(-today)+'</b> bu gün (düzeltme)':'<span class="ir-mut">bu gün hareket yok</span>'}</div>
         </div>
       </div>
       <div class="ir-nums">
@@ -2225,7 +2277,7 @@ function rapBody(day,forPrint){const A=rapAgg(day);
   }
   return h;}
 async function backupAll(){try{
-  const dump={_app:'SHAMS1-TR1',_ver:'s38',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1-TR1',_ver:'s40',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:'];
   for(const pre of pref)for(const k of await slist(pre)){const v=await sget(k);if(v!=null)dump.data[k]=v;}
   const single=['targets','mpct','cab:dc','cab:ac','cab:og','dcstr','ogb','matin','matuse','matkov','matcustom','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
