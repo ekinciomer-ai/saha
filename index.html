@@ -202,8 +202,12 @@
   .projcard.disabled:hover{transform:none;box-shadow:none;border-color:var(--line)}
   .rolebadge{font-family:var(--mono);font-size:11px;padding:5px 11px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:#fff}
   .rolebadge.admin{color:var(--solar);border-color:var(--solar)}.rolebadge.usta{color:var(--dc);border-color:var(--dc)}
+  .rolebadge.demo{color:#2f6fb0;border-color:#2f6fb0;background:#eef4fb}
+  .demoban{display:none;background:#eef4fb;border:1px solid #2f6fb0;color:#1e4e7a;border-radius:11px;padding:9px 13px;margin:0 0 10px;font-size:13px;line-height:1.45}
+  #app.demo .demoban{display:block}
   .hidden{display:none!important}
   #app.usta .money,#app.usta .adminonly{display:none!important}
+  #app.demo .money,#app.demo .adminonly,#app.demo .ceza{display:none!important}
   .gh{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
   .gh input{font-family:var(--mono);font-size:12px;width:100%}
   .ghrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
@@ -523,12 +527,13 @@
   <div class="homecard">
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 45 · İnverter bazlı rapor (görsel)</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 46 · Demo (salt-okunur) giriş modu</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
       <button class="rolebtn" id="rb_admin" onclick="pickRole('admin')">🔑 Yönetici<small>Tüm yetki · hakediş & parasal · veri girişi</small></button>
       <button class="rolebtn" id="rb_usta" onclick="pickRole('usta')">🦺 Usta<small>Sadece proje bilgisi + saha veri girişi</small></button>
+      <button class="rolebtn" id="rb_demo" onclick="pickRole('demo')">👁 Demo (Misafir)<small>Sadece görüntüleme · veriler salt-okunur · parasal bilgiler gizli</small></button>
     </div>
     <div class="pinbox" id="pinbox" style="display:none;flex-wrap:wrap">
       <div class="rlabel" id="logintitle" style="width:100%">Giriş</div>
@@ -547,7 +552,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 45 · İnverter raporu · 18.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 46 · Demo modu · 18.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -557,6 +562,7 @@
       <div class="live"><span class="pulse"></span><span id="status">yükleniyor…</span></div>
       <button class="btn ghost sm" style="margin-top:8px" onclick="reloadAll()">↻ Yenile</button></div>
   </div>
+  <div id="demoban" class="demoban">👁 <b>DEMO — salt-okunur.</b> Verileri inceleyebilir, değiştiremezsiniz · parasal &amp; sözleşme bilgileri gizlidir.</div>
   <div class="summary">
     <div class="sb tot"><div class="s">Toplam İlerleme</div><div class="a" id="s_tot">%0</div></div>
     <div class="sb cash money"><div class="s">Hakediş Kümülatif</div><div class="a" id="s_usd">0</div></div>
@@ -734,7 +740,7 @@ const PLANT={minx:524678,maxx:525047,miny:4342655,maxy:4343640,
 const bedel=it=>(it.dis==='MEK'?MEK:ELK)*it.pur;
 const tr=n=>Number(n).toLocaleString('tr-TR',{maximumFractionDigits:0});
 let ENTRIES=[],TARGETS={},PLAN={},MEDIA={},SEL=null,MPCT={},CURPHASE='all';
-async function setMpct(id,v){v=Math.max(0,Math.min(100,parseInt(v)||0));MPCT[id]=v;await sset('mpct',MPCT);const e=document.getElementById('mp_'+id);if(e)e.textContent='%'+v;renderProgress();}
+async function setMpct(id,v){if(roBlock())return;v=Math.max(0,Math.min(100,parseInt(v)||0));MPCT[id]=v;await sset('mpct',MPCT);const e=document.getElementById('mp_'+id);if(e)e.textContent='%'+v;renderProgress();}
 
 /* ===== ROL & VERİ HAVUZU (window.storage / GitHub / geçici) ===== */
 let ROLE=null, BACKEND='mem', POOL={}, MEM={}, GH=null, poolSha=null, pushTimer=null, POLL=null;
@@ -797,7 +803,7 @@ async function _ssetRaw(k,v){if(BACKEND==='fb'){try{await FBDB.ref(fbPath(k)).se
   if(BACKEND==='ws'){try{await window.storage.set(k,JSON.stringify(v),true);}catch(e){return false;}if(GH&&GH.autosync!==false)schedulePush();return true;}
   if(BACKEND==='ls'){try{localStorage.setItem('shams1:'+k,JSON.stringify(v));}catch(e){return false;}if(GH&&GH.autosync!==false)schedulePush();return true;}
   MEM[k]=v;return true;}
-async function sset(k,v){const r=await _ssetRaw(k,v);if(k!=='upc'&&k!=='uplast'){UPCOUNT=(UPCOUNT||0)+1;UPLAST=Date.now();await _ssetRaw('upc',UPCOUNT);await _ssetRaw('uplast',UPLAST);if(typeof renderUpBadge==='function')renderUpBadge();}return r;}
+async function sset(k,v){if(window.RO)return null;const r=await _ssetRaw(k,v);if(k!=='upc'&&k!=='uplast'){UPCOUNT=(UPCOUNT||0)+1;UPLAST=Date.now();await _ssetRaw('upc',UPCOUNT);await _ssetRaw('uplast',UPLAST);if(typeof renderUpBadge==='function')renderUpBadge();}return r;}
 async function sdel(k){if(BACKEND==='fb'){try{await FBDB.ref(fbPath(k)).remove();}catch(e){}return;}
   if(BACKEND==='gh'){delete POOL[k];schedulePush();return;}
   if(BACKEND==='ws'){try{await window.storage.delete(k,true);}catch(e){}if(GH&&GH.autosync!==false)schedulePush();return;}
@@ -821,7 +827,7 @@ async function loadGhCfg(){try{if(window.storage){const r=await window.storage.g
 async function saveGhCfg(){try{if(window.storage)await window.storage.set('ghcfg',JSON.stringify(GH),true);}catch(e){}
   try{localStorage.setItem('ghcfg',JSON.stringify(GH));}catch(e){}}
 function persistLabel(){return BACKEND==='fb'?'● Kalıcı · Bulut (her cihaz ortak)':BACKEND==='gh'?'● Kalıcı · GitHub havuz (ekip ortak)':BACKEND==='ws'?'● Kalıcı · bu tarayıcı (Claude)':BACKEND==='ls'?'● Kalıcı · bu cihaz (yerel)':'⚠ GEÇİCİ — kayıt YOK';}
-function renderMemWarn(){let w=document.getElementById('memwarn');if(BACKEND==='mem'||BACKEND==='ls'){if(!w){w=document.createElement('div');w.id='memwarn';w.style.cssText='position:fixed;top:0;left:0;right:0;z-index:280;background:'+(BACKEND==='mem'?'#E5484D':'#5B6573')+';color:#fff;font:12px/1.4 var(--sans,sans-serif);padding:7px 12px;text-align:center';document.body.appendChild(w);}w.innerHTML=(BACKEND==='mem'?'⚠ Veriler KAYDEDİLMİYOR (geçici). ':'ℹ Kayıt yalnız bu cihazda. Ekip ortak/merkezi hakediş için ')+'<b style="cursor:pointer;text-decoration:underline" onclick="tabTo(3,document.querySelectorAll(\'.tabs .tab\')[3]);document.getElementById(\'memwarn\').style.display=\'none\'">GitHub havuzu bağla</b>'+(BACKEND==='ls'?' <span style="opacity:.7;cursor:pointer" onclick="document.getElementById(\'memwarn\').style.display=\'none\'">✕</span>':'');w.style.display='block';}else if(w){w.style.display='none';}}
+function renderMemWarn(){let w=document.getElementById('memwarn');if(window.RO){if(w)w.style.display='none';return;}if(BACKEND==='mem'||BACKEND==='ls'){if(!w){w=document.createElement('div');w.id='memwarn';w.style.cssText='position:fixed;top:0;left:0;right:0;z-index:280;background:'+(BACKEND==='mem'?'#E5484D':'#5B6573')+';color:#fff;font:12px/1.4 var(--sans,sans-serif);padding:7px 12px;text-align:center';document.body.appendChild(w);}w.innerHTML=(BACKEND==='mem'?'⚠ Veriler KAYDEDİLMİYOR (geçici). ':'ℹ Kayıt yalnız bu cihazda. Ekip ortak/merkezi hakediş için ')+'<b style="cursor:pointer;text-decoration:underline" onclick="tabTo(3,document.querySelectorAll(\'.tabs .tab\')[3]);document.getElementById(\'memwarn\').style.display=\'none\'">GitHub havuzu bağla</b>'+(BACKEND==='ls'?' <span style="opacity:.7;cursor:pointer" onclick="document.getElementById(\'memwarn\').style.display=\'none\'">✕</span>':'');w.style.display='block';}else if(w){w.style.display='none';}}
 async function chooseBackend(){await loadGhCfg();
   if(await fbInit()){BACKEND='fb';return;}
   if(GH&&GH.owner&&GH.repo&&GH.path&&GH.token){try{await ghPull();BACKEND='gh';return;}catch(e){}}
@@ -842,6 +848,8 @@ function saveGhCfgUI(){readGhForm();saveGhCfg();ghStat('ayar kaydedildi');}
 function pickRole(r){document.querySelectorAll('.rolebtn').forEach(b=>b.classList.remove('on'));
   const rb=document.getElementById('rb_'+r);if(rb)rb.classList.add('on');
   PENDING_ROLE=r;ROLE=null;
+  if(r==='demo'){ROLE='demo';CURUSER='Misafir';document.getElementById('pinbox').style.display='none';
+    const pa=document.getElementById('projadd');if(pa)pa.style.display='none';showProjects();return;}
   document.getElementById('pinbox').style.display='flex';
   document.getElementById('projbox').style.display='none';
   const lt=document.getElementById('logintitle');if(lt)lt.textContent=(r==='admin'?'Yönetici':'Usta')+' girişi';
@@ -869,8 +877,9 @@ async function openProject(id){document.getElementById('home').classList.add('hi
   finally{clearTimeout(_safety);hideBoot();}
   if(!POLL)POLL=setInterval(pollSync,25000);}
 function applyRole(){const app=document.getElementById('app');
-  app.classList.toggle('usta',ROLE==='usta');app.classList.toggle('admin',ROLE==='admin');
-  const b=document.getElementById('rolebadge');if(b){b.textContent=(ROLE==='admin'?'Yönetici':'Usta')+(CURUSER?' · '+CURUSER:'');b.className='rolebadge '+(ROLE||'');}
+  app.classList.toggle('usta',ROLE==='usta');app.classList.toggle('admin',ROLE==='admin');app.classList.toggle('demo',ROLE==='demo');
+  window.RO=(ROLE==='demo');
+  const b=document.getElementById('rolebadge');if(b){b.textContent=(ROLE==='admin'?'Yönetici':ROLE==='demo'?'Demo (Misafir)':'Usta')+(CURUSER&&ROLE!=='demo'?' · '+CURUSER:'');b.className='rolebadge '+(ROLE||'');}
   const u2=document.getElementById('usta2');if(u2&&CURUSER)u2.value=CURUSER;const uh=document.getElementById('usta');if(uh&&CURUSER)uh.value=CURUSER;}
 function goHome(){document.getElementById('app').classList.add('hidden');document.getElementById('home').classList.remove('hidden');
   if(POLL){clearInterval(POLL);POLL=null;}}
@@ -939,7 +948,7 @@ async function addEntry(){const it=GEN.find(x=>x.id===document.getElementById('f
   const key='log:'+e.ts+'-'+Math.random().toString(36).slice(2,6);
   if(BACKEND==='mem'){e._key=key;ENTRIES.unshift(e);renderAll();toast('Kaydedildi (geçici)');return;}
   if(await sset(key,e)){toast('✓ Kaydedildi');document.getElementById('f_qty').value='';await reloadAll();}else toast('Hata');}
-async function delEntry(k){const e=ENTRIES.find(x=>x._key===k);const lbl='Üretim kaydı'+(e?' ('+e.id+' · '+e.qty+')':'');
+async function delEntry(k){if(roBlock())return;const e=ENTRIES.find(x=>x._key===k);const lbl='Üretim kaydı'+(e?' ('+e.id+' · '+e.qty+')':'');
   const day=e?(e.date||dstr(e.ts)):null;
   if(editGate(day)==='req'){await reqDelete(k,lbl+' · '+(day||''));toast('Geçmiş kayıt — yönetici onayına gönderildi');return;}
   if(!confirm('Sil?'))return;await sdel(k);await logAct('sil',lbl);await reloadAll();}
@@ -1112,17 +1121,17 @@ function closeEd(){const wasOpen=document.getElementById('editor').classList.con
   if(wasOpen&&history.state&&history.state.sh_ed){try{history.back();}catch(e){}}}
 window.addEventListener('popstate',function(){const ed=document.getElementById('editor');if(ed&&ed.classList.contains('on')){SEL=null;ed.classList.remove('on');document.getElementById('backdrop').classList.remove('on');document.body.classList.remove('edopen');renderPlan();refreshKonst();}});
 function drawSchem(){document.getElementById('ed_schem').innerHTML=schematic(PLAN[SEL]||{});}
-function bump(f,d,mx){const s=PLAN[SEL]||{};setv(f,Math.max(0,Math.min(mx,(+s[f]||0)+d)),mx);}
-async function setv(f,val,mx){if(SEL==null)return;val=Math.max(0,Math.min(mx,parseFloat(val)||0));
+function bump(f,d,mx){if(roBlock())return;const s=PLAN[SEL]||{};setv(f,Math.max(0,Math.min(mx,(+s[f]||0)+d)),mx);}
+async function setv(f,val,mx){if(SEL==null)return;if(roBlock())return;val=Math.max(0,Math.min(mx,parseFloat(val)||0));
   const s=PLAN[SEL]||{};const _o=+s[f]||0;s[f]=val;await saveTbl(s);const el=document.getElementById('i_'+f);if(el)el.value=val;
   if((f==='a1'||f==='k7')&&val!==_o)await logAct('Üretim','Masa #'+SEL+' · ['+f+'] '+(val-_o>=0?'+':'')+(val-_o));
   drawSchem();}
-async function toggle(f){if(SEL==null)return;const s=PLAN[SEL]||(PLAN[SEL]={});const _o=s[f]||0;const nv=(_o+1)%3;s[f]=nv;await saveTbl(s);
+async function toggle(f){if(SEL==null)return;if(roBlock())return;const s=PLAN[SEL]||(PLAN[SEL]={});const _o=s[f]||0;const nv=(_o+1)%3;s[f]=nv;await saveTbl(s);
   const b=document.getElementById('t_'+f);if(b){b.classList.toggle('act',nv===1);b.classList.toggle('ktrl',nv===2);b.textContent=nv===2?'⚠ Kontrol':nv===1?'Yapıldı ✓':'Yapılmadı';}
   if(/^k[1-6]$/.test(f)){const _d=(nv?1:0)-(_o?1:0);if(_d)await logAct('Üretim','Masa #'+SEL+' · ['+f+'] '+(_d>=0?'+':'')+_d);
     if(nv===2)await logAct('Kontrol','Masa #'+SEL+' · ['+f+'] uygunsuzluk işaretlendi');else if(_o===2)await logAct('Kontrol','Masa #'+SEL+' · ['+f+'] uygunsuzluk giderildi');}
   drawSchem();}
-async function toggleKtrl(f){if(SEL==null)return;const s=PLAN[SEL]||(PLAN[SEL]={});s[f]=s[f]?0:1;await saveTbl(s);
+async function toggleKtrl(f){if(SEL==null)return;if(roBlock())return;const s=PLAN[SEL]||(PLAN[SEL]={});s[f]=s[f]?0:1;await saveTbl(s);
   const b=document.getElementById('t_'+f);if(b){b.classList.toggle('ktrl',!!s[f]);b.textContent=s[f]?'⚠ Kontrol':'Kontrol?';}
   await logAct('Kontrol','Masa #'+SEL+' · [panel] uygunsuzluk '+(s[f]?'işaretlendi':'giderildi'));}
 /*FEET*/
@@ -1141,7 +1150,7 @@ function syncFoot(a){const s=PLAN[SEL]||(PLAN[SEL]={});s.foot=a.slice();s.footv=
   s.a2=a.filter(x=>x>=2).length;
   const m=a.filter(x=>x>=3).length;s.a3=m;s.a4=m;s.a5=m;
   s.ktrl=a.filter(x=>x>=4).length;}
-async function cycleFoot(j){if(SEL==null)return;
+async function cycleFoot(j){if(SEL==null)return;if(roBlock())return;
   if(ROLE!=='admin'){const ld=footLastDay(SEL,j);
     if(ld&&ld!==dToday()){const a0=footArr();const to=(a0[j]+1)%5;const pz=(j<7?'Ön ':'Arka ')+((j%7)+1);
       await reqChange({tip:'foot',masa:SEL,j,to},'Masa #'+SEL+' · '+pz+' ('+ld+' verisi)');
@@ -1151,7 +1160,7 @@ async function cycleFoot(j){if(SEL==null)return;
   LASTFOOT='Seçili ayak: <b>'+pos+'</b> → '+lbl[a[j]];
   await logAct('Ayak işaretleme','Masa #'+SEL+' · '+pos+' → '+lbl[a[j]]);
   drawFootGrid();renderProgress();drawSchem();renderKonstPlan();}
-async function footAll(v){if(SEL==null)return;
+async function footAll(v){if(SEL==null)return;if(roBlock())return;
   if(ROLE!=='admin'){const ld=masaLastDay(SEL);
     if(ld&&ld!==dToday()){await reqChange({tip:'footAll',masa:SEL,v},'Masa #'+SEL+' · toplu '+['sıfırla','işaretle','delme','montaj','KONTROL'][v]+' ('+ld+' verisi)');
       toast('Geçmiş veri — yönetici onayına gönderildi');return;}}
@@ -1180,9 +1189,9 @@ function renderMedia(){const arr=MEDIA[SEL]||[];
     return `<div class="mvid">📝 ${m.val} <button class="del" onclick="delMedia(${idx})">sil</button></div>`;
   }).join('')||'<span class="hint">Henüz medya yok.</span>';}
 async function saveMedia(){await sset('tr1m:'+SEL,MEDIA[SEL]||[]);}
-async function addMediaItem(o){MEDIA[SEL]=MEDIA[SEL]||[];o.by=document.getElementById('usta').value.trim()||'—';o.at=Date.now();
+async function addMediaItem(o){if(roBlock())return;MEDIA[SEL]=MEDIA[SEL]||[];o.by=document.getElementById('usta').value.trim()||'—';o.at=Date.now();
   MEDIA[SEL].push(o);await saveMedia();renderMedia();toast('✓ eklendi');}
-async function delMedia(idx){MEDIA[SEL].splice(idx,1);await saveMedia();renderMedia();}
+async function delMedia(idx){if(roBlock())return;MEDIA[SEL].splice(idx,1);await saveMedia();renderMedia();}
 function addPhoto(input){const f=input.files[0];if(!f)return;const rd=new FileReader();
   rd.onload=e=>{const img=new Image();img.onload=async()=>{const cv=document.createElement('canvas');let w=img.width,h=img.height;const mx=640;
     if(w>h&&w>mx){h=Math.round(h*mx/w);w=mx;}else if(h>mx){w=Math.round(w*mx/h);h=mx;}
@@ -1193,6 +1202,7 @@ async function addVideo(){const u=prompt('Video bağlantısı (Drive/WhatsApp/Yo
 async function addNote(){const n=prompt('Açıklama:');if(n)await addMediaItem({type:'not',val:n.trim()});}
 
 let tT;function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('on'),1400);}
+function roBlock(){if(window.RO){toast('👁 Demo modu — sadece görüntüleme, değiştirilemez');return true;}return false;}
 /* ---- KONSTRÜKSİYON SEKMESİ ---- */
 let KFIND=null, ZONE=0, MAXINV=0;
 function syncUsta(el){const u=document.getElementById('usta');if(u)u.value=el.value;}
@@ -1426,13 +1436,13 @@ function pickPhoto(which,inp){const f=inp.files&&inp.files[0];if(!f)return;resiz
 /* ---- PERSONEL ---- */
 async function saveTeam(){await sset('team',TEAM);}
 function teamGet(id){return TEAM.find(p=>p.id===id);}
-async function addPerson(){const ad=fval('tp_ad');if(!ad){toast('Ad-soyad girin');return;}
+async function addPerson(){if(roBlock())return;const ad=fval('tp_ad');if(!ad){toast('Ad-soyad girin');return;}
   const p={id:uid(),ad,gorev:fval('tp_gorev')||'Ara eleman',tel:fval('tp_tel'),kimlikno:fval('tp_kno'),
     giris:fval('tp_giris')||dToday(),cikis:'',aktif:true,foto:TP_FOTO,kimlik:TP_KIMLIK};
   TEAM.push(p);TP_FOTO='';TP_KIMLIK='';await saveTeam();await logAct('personel-ekle',ad+' ('+p.gorev+')');renderPersonel();}
-async function setActive(id,act){const p=teamGet(id);if(!p)return;p.aktif=act;p.cikis=act?'':(p.cikis||dToday());
+async function setActive(id,act){if(roBlock())return;const p=teamGet(id);if(!p)return;p.aktif=act;p.cikis=act?'':(p.cikis||dToday());
   await saveTeam();await logAct(act?'personel-aktif':'personel-pasif',p.ad);renderPersonel();}
-async function delPerson(id){const p=teamGet(id);if(!p)return;
+async function delPerson(id){if(roBlock())return;const p=teamGet(id);if(!p)return;
   if(ROLE!=='admin'){await reqDelete('team:'+id,'Personel: '+p.ad);toast('Silme yönetici onayına gönderildi');return;}
   if(!confirm(p.ad+' kalıcı silinsin mi?'))return;const _sd=SEED_TEAM.some(x=>x[1]===p.kimlikno);TEAM=TEAM.filter(x=>x.id!==id);if(_sd&&p.kimlikno){const d=await sget('team_del')||[];if(d.indexOf(p.kimlikno)<0){d.push(p.kimlikno);await sset('team_del',d);}}await saveTeam();await logAct('personel-sil',p.ad);renderPersonel();}
 
@@ -1481,7 +1491,7 @@ function orgTree(){const act=TEAM.filter(p=>p.aktif),pas=TEAM.filter(p=>!p.aktif
   return h+'</div>';}
 
 /* ---- GÜNLÜK PUANTAJ ---- */
-async function setHC(id){const n=parseInt(fval(id));if(!(n>=0)){toast('Kişi sayısı girin');return;}
+async function setHC(id){if(roBlock())return;const n=parseInt(fval(id));if(!(n>=0)){toast('Kişi sayısı girin');return;}
   const d=dToday();HC[d]={n,by:ROLE||'?',ts:Date.now()};await sset('hc:'+d,HC[d]);await logAct('puantaj',d+': '+n+' kişi');renderHCbanner();renderPersonel();}
 function hcToday(){return HC[dToday()];}
 function renderHCbanner(){const b=document.getElementById('hcbanner');if(!b)return;
@@ -1517,7 +1527,7 @@ function pjPanel(){return '<style>'+
  '<div class="sub">Hücreye dokun → durum değişir (● tam · ½ yarım · – yok · İ izin · R rapor). "Gün" = kişinin aylık çalışılan gün toplamı.</div>'+
  '<div id="pjgrid"></div></div>';}
 
-async function pjCycle(pid,day){const ym=PJ_YM;if(!PJ[ym])PJ[ym]={};if(!PJ[ym][pid])PJ[ym][pid]={};
+async function pjCycle(pid,day){if(roBlock())return;const ym=PJ_YM;if(!PJ[ym])PJ[ym]={};if(!PJ[ym][pid])PJ[ym][pid]={};
   const cur=PJ[ym][pid][day]||'';const ni=(PJORDER.indexOf(cur)+1)%PJORDER.length;const nx=PJORDER[ni];
   if(nx)PJ[ym][pid][day]=nx;else delete PJ[ym][pid][day];
   if(Object.keys(PJ[ym][pid]).length===0)delete PJ[ym][pid];
@@ -1570,11 +1580,11 @@ async function applyChange(p){
     await logAct('Ayak (onaylı)','Masa #'+p.masa+(p.tip==='foot'?(' · ayak '+(p.j+1)):' · toplu'));}
   else if(p.tip==='entry-del'){await sdel(p.key);}
 }
-async function approveDel(ts){const r=DREQ.find(x=>x.ts===ts);if(!r)return;
+async function approveDel(ts){if(roBlock())return;const r=DREQ.find(x=>x.ts===ts);if(!r)return;
   if(r.tip==='degis'){await applyChange(r.payload);}
   else{if(r.key&&r.key.indexOf('team:')===0){const id=r.key.slice(5);TEAM=TEAM.filter(x=>x.id!==id);await saveTeam();}else if(r.key)await sdel(r.key);}
   DREQ=DREQ.filter(x=>x.ts!==ts);await sdel('dr:'+ts);await logAct('onay',r.label);await reloadAll();}
-async function rejectDel(ts){const r=DREQ.find(x=>x.ts===ts);DREQ=DREQ.filter(x=>x.ts!==ts);await sdel('dr:'+ts);await logAct('talep-red',r?r.label:'');try{renderPersonel();}catch(e){}}
+async function rejectDel(ts){if(roBlock())return;const r=DREQ.find(x=>x.ts===ts);DREQ=DREQ.filter(x=>x.ts!==ts);await sdel('dr:'+ts);await logAct('talep-red',r?r.label:'');try{renderPersonel();}catch(e){}}
 function delReqPanel(){if(!DREQ.length)return '';
   return '<div class="tk2 adminonly" style="border-color:var(--solar)"><h3>⏳ Onay bekleyen ('+DREQ.length+')</h3>'+
     '<div class="hint" style="margin:-4px 0 8px">Usta\'nın geçmiş güne ait silme/değişiklik talepleri. Onaylarsan sistemde kalıcı uygulanır.</div>'+
@@ -1628,7 +1638,7 @@ function renderProje(){const el=document.getElementById('proje');if(!el)return;
       '<li><b>Mekanik:</b> harita aplikasyon · çakma kolon (kazık + kolon) · üst montaj/aşık (makas + kuşak + terazi + tork) · panel montaj.</li>'+
       '<li><b>Elektrik:</b> AG-OG kablo kanalı · solar DC kablo (1×6) · OG başlık · köşk OG hücre/pano · inverter + trafo · CCTV-aydınlatma · testler & devreye alma.</li>'+
       '<li><b>İşveren\'de (kapsam dışı):</b> rok ile delme · All-Risk sigortası · çalışma izni / D1 vize.</li>'+
-      '<li><b>Süre:</b> saha tesliminden 10 gün içinde başlama · bitiş <b>10.07.2026</b>. Gecikme cezası gün başı bedelin %0,4-0,5\'i veya 30.000 TL.</li>'+
+      '<li><b>Süre:</b> saha tesliminden 10 gün içinde başlama · bitiş <b>10.07.2026</b>.<span class="ceza"> Gecikme cezası gün başı bedelin %0,4-0,5\'i veya 30.000 TL.</span></li>'+
       '<li class="money"><b>Teminat:</b> %5 kesin (İş Teminat Mektubu · 12.931 $) · %10 nakit (hakedişten · 25.862 $). Damga vergisi Alt Yüklenici\'de.</li>'+
     '</ul></div>');}
 
@@ -1672,11 +1682,11 @@ const CABLES=[
  ['Kanal kesiti (detay)','kum yatağı + dolgu + ikaz şeridi · derinlik 80-120 cm'],
 ];
 function cabDone(t){const o=CAB[t]||{};return Object.keys(o).filter(k=>o[k]).length;}
-async function toggleCab(type,seg){CAB[type]=CAB[type]||{};CAB[type][seg]=!CAB[type][seg];
+async function toggleCab(type,seg){if(roBlock())return;CAB[type]=CAB[type]||{};CAB[type][seg]=!CAB[type][seg];
   await sset('cab:'+type,CAB[type]);
   await setMpct(CABMAP[type],Math.round(cabDone(type)/CABTOT[type]*100));
   renderMontajScope(1);}
-async function toggleCins(type,c){CINS[type]=CINS[type]||{};CINS[type][c]=!CINS[type][c];
+async function toggleCins(type,c){if(roBlock())return;CINS[type]=CINS[type]||{};CINS[type][c]=!CINS[type][c];
   await sset('cins:'+type,CINS[type]);renderMontajScope(1);}
 function rxR(y){return ROADR[0]*y+ROADR[1];}
 function rxL(y){return ROADL[0]*y+ROADL[1];}
@@ -1893,7 +1903,7 @@ function matKesifView(){let h='<div class="tk2"><h3>Keşif — proje metrajları
   h+='<div class="drow" style="margin-top:10px"><button class="btn sm" onclick="MATSEL=new Set(allItems().filter(m=>m.kisim!==\'Sarf\').map(m=>m.id));renderMalzeme()">Tümünü seç</button><button class="btn ghost sm" onclick="MATSEL=new Set();renderMalzeme()">Temizle</button><button class="btn sm" onclick="MSUB=1;renderMalzeme()">Seçilenlerle irsaliye →</button></div></div>';
   return h;}
 function toggleMatSel(id){if(MATSEL.has(id))MATSEL.delete(id);else MATSEL.add(id);}
-async function setKesifMik(id,v){MATKOV[id]=parseFloat(v)||0;await sset('matkov',MATKOV);}
+async function setKesifMik(id,v){if(roBlock())return;MATKOV[id]=parseFloat(v)||0;await sset('matkov',MATKOV);}
 
 /* ----- GELEN / İRSALİYE ----- */
 function matGelenView(){
@@ -1932,7 +1942,7 @@ async function ocrPhoto(){const o=document.getElementById('ocrout');if(!CURPHOTO
       for(const ln of lines){const L=ln.toLowerCase().replace('×','x');if(L.includes(key)){const num=(ln.match(/(\d[\d.\s]*\d|\d)/g)||[]).map(s=>parseFloat(s.replace(/[.\s]/g,'')));if(num.length){const q=document.getElementById('q_'+m.id);if(q){q.value=Math.max(...num);matched++;}break;}}}}
     o.innerHTML+='<br><b>'+matched+'</b> kalem otomatik dolduruldu — lütfen kontrol et.';
   }catch(e){o.textContent='Tarama yapılamadı (çevrimdışı/CDN engeli olabilir). Miktarları elle girin.';}}
-async function addIrsaliye(){const no=fval('ir_no'),date=fval('ir_date'),ted=fval('ir_ted');
+async function addIrsaliye(){if(roBlock())return;const no=fval('ir_no'),date=fval('ir_date'),ted=fval('ir_ted');
   const sel=MATSEL.size?[...MATSEL]:allItems().filter(m=>m.kisim!=='Sarf').map(m=>m.id);
   const items={};let any=false;for(const id of sel){const e=document.getElementById('q_'+id);const v=e?parseFloat(e.value):0;if(v>0){items[id]=v;any=true;}}
   if(!any){toast('En az bir miktar girin');return;}
@@ -1940,7 +1950,7 @@ async function addIrsaliye(){const no=fval('ir_no'),date=fval('ir_date'),ted=fva
   MATIN.unshift(rec);await sset('matin',MATIN);if(CURPHOTO){await sset('matph:'+id,CURPHOTO);}CURPHOTO=null;
   await logAct('irsaliye',no+' · '+Object.keys(items).length+' kalem');toast('İrsaliye kaydedildi');renderMalzeme();}
 async function viewIrPhoto(id){const ph=await sget('matph:'+id);modalShow('İrsaliye fotoğrafı',ph?'<div class="dscroll"><img id="dimg" src="'+ph+'" onclick="this.classList.toggle(\'zoom\')"></div>':'<div class="empty">Bu irsaliyeye foto eklenmemiş.</div>');}
-async function delIrsaliye(id){if(ROLE!=='admin')return;if(!confirm('İrsaliye silinsin mi?'))return;MATIN=MATIN.filter(r=>r.id!==id);await sset('matin',MATIN);await sdel('matph:'+id);renderMalzeme();}
+async function delIrsaliye(id){if(roBlock())return;if(ROLE!=='admin')return;if(!confirm('İrsaliye silinsin mi?'))return;MATIN=MATIN.filter(r=>r.id!==id);await sset('matin',MATIN);await sdel('matph:'+id);renderMalzeme();}
 
 /* ----- SARF ----- */
 function matSarfView(){let h='<div class="tk2"><h3>Sarf malzeme</h3><div class="sub">Keşif dışı alınan sarflar. Gelen irsaliyeden, kullanım elle girilir.</div>'+
@@ -1973,15 +1983,15 @@ function exportMail(){const R=matRows();let body='SHAMS-1 TR-1 Malzeme Raporu ('
     '<div class="drow"><button class="btn sm" onclick="document.getElementById(\'mailta\').select();document.execCommand(\'copy\');toast(\'Kopyalandı\')">Kopyala</button>'+
     '<a class="btn ghost sm" href="mailto:?subject='+encodeURIComponent('SHAMS-1 TR-1 Malzeme Raporu')+'&body='+encodeURIComponent(body.slice(0,1500))+'">E-posta aç</a></div>'));}
 
-async function addCustomMat(){const ad=fval('cm_ad');if(!ad){toast('Malzeme adı girin');return;}
+async function addCustomMat(){if(roBlock())return;const ad=fval('cm_ad');if(!ad){toast('Malzeme adı girin');return;}
   MATCUSTOM.push({id:'c_'+Date.now(),kisim:fval('cm_kis')||'Diğer',ad,birim:fval('cm_bir')||'adet',mik:parseFloat(fval('cm_mik'))||0,custom:1});
   await sset('matcustom',MATCUSTOM);toast('Malzeme eklendi');renderMalzeme();}
-async function delCustomMat(id){if(!confirm('Bu malzeme silinsin mi?'))return;MATCUSTOM=MATCUSTOM.filter(x=>x.id!==id);await sset('matcustom',MATCUSTOM);renderMalzeme();}
+async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme silinsin mi?'))return;MATCUSTOM=MATCUSTOM.filter(x=>x.id!==id);await sset('matcustom',MATCUSTOM);renderMalzeme();}
 /* ----- yükleme sayacı ----- */
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s45</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s46</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -2363,7 +2373,7 @@ function rapBody(day,forPrint){const A=rapAgg(day);
   }
   return h;}
 async function backupAll(){try{
-  const dump={_app:'SHAMS1-TR1',_ver:'s45',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1-TR1',_ver:'s46',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:'];
   for(const pre of pref)for(const k of await slist(pre)){const v=await sget(k);if(v!=null)dump.data[k]=v;}
   const single=['targets','mpct','cab:dc','cab:ac','cab:og','dcstr','ogb','matin','matuse','matkov','matcustom','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
@@ -2525,7 +2535,7 @@ function renderSozlesme(){const el=document.getElementById('sozlesme');if(!el)re
      '<li>Detaylı İş Programı: imzadan <b>7 gün</b> içinde sun/onaylat — geç teslim cezalı.</li>'+
      '<li>Günlük rapor (her iş günü) + haftalık + aylık ilk 3 gün ilerleme raporu zorunlu.</li>'+
    '</ul></div></div>'+
-   '<div class="tk2"><h3>⚠ Gecikme cezaları & cezai şartlar</h3>'+
+   '<div class="tk2 ceza"><h3>⚠ Gecikme cezaları & cezai şartlar</h3>'+
    '<div style="overflow:auto"><table class="mtab"><thead><tr><th>Durum</th><th>Ceza</th></tr></thead><tbody>'+
    cezaRow('İşi süresinde bitirmeme','3 gün yazılı ihtar sonrası, gecikilen <b>her gün</b> için KDV hariç bedelin <b>%0,4\'ü VEYA 30.000 TL/gün</b> (Yüklenici seçer)')+
    cezaRow('Detaylı İş Programı geç teslimi','her gün için bedelin <b>%0,5\'i VEYA 30.000 TL/gün</b>')+
