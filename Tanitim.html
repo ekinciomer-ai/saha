@@ -90,8 +90,44 @@
   .trylabel b{font-family:var(--head);font-size:17px;display:block;color:#fff}
   .tryhint{font-size:12.5px;color:#8ea4ba;margin-top:3px}
 
-  /* ---------- ROLLER ---------- */
+  /* ---------- SAHA HARİTASI + İLERLEME (canlı vitrin) ---------- */
+  .showcase{display:grid;grid-template-columns:1.15fr .85fr;gap:26px;align-items:stretch;margin-top:10px}
+  .mapcard{background:var(--navy2);border-radius:20px;padding:22px;position:relative;overflow:hidden}
+  .mapcard .ph{font-family:var(--head);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:#9fb6cd;margin-bottom:3px}
+  .mapcard .pt2{font-family:var(--head);font-weight:600;font-size:15px;color:#fff;margin-bottom:14px}
+  .sahasvg{width:100%;height:auto;display:block;background:#0e2740;border-radius:12px;padding:10px}
+  .tgm{fill:#cdd2da;animation:fillwave 7s ease-in-out infinite}
+  .tg-mon{--ef:#2e9e5b}.tg-har{--ef:#7c5cff}.tg-rok{--ef:#E8833A}.tg-ktrl{--ef:#E5484D}
+  .tg-empty{--ef:#2b4a66}
+  @keyframes fillwave{0%,12%{fill:#2b4a66}55%,100%{fill:var(--ef)}}
+  .maplegend{display:flex;flex-wrap:wrap;gap:6px 13px;margin-top:13px;font-size:11.5px;color:#bcccdd}
+  .maplegend span{display:inline-flex;align-items:center;gap:5px}
+  .maplegend i{width:11px;height:11px;border-radius:3px}
+  .mapnote{margin-top:12px;font-size:12.5px;color:#90a6bd;line-height:1.45}
+
+  .progcard{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:24px 22px;display:flex;flex-direction:column}
+  .progcard .ph{font-family:var(--head);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--solar);margin-bottom:14px}
+  .ring-row{display:flex;align-items:center;gap:18px;margin-bottom:18px}
+  .ring{width:96px;height:96px;flex:0 0 auto;position:relative}
+  .ring svg{transform:rotate(-90deg)}
+  .ring .rc-bg{fill:none;stroke:#eef0f4;stroke-width:11}
+  .ring .rc-fg{fill:none;stroke:var(--solar);stroke-width:11;stroke-linecap:round;stroke-dasharray:251;stroke-dashoffset:251;transition:stroke-dashoffset 1.4s cubic-bezier(.2,.8,.2,1)}
+  .progcard.in .ring .rc-fg{stroke-dashoffset:var(--off)}
+  .ring .rl{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .ring .rl b{font-family:var(--head);font-size:24px;color:var(--navy2);line-height:1}
+  .ring .rl small{font-size:10px;color:var(--muted)}
+  .ring-row .rt{font-size:13.5px;color:var(--muted)}
+  .ring-row .rt b{display:block;font-family:var(--head);font-size:16px;color:var(--navy2);margin-bottom:2px}
+  .phb{display:flex;align-items:center;gap:9px;font-size:12.5px;margin:7px 0}
+  .phb .pl2{flex:0 0 70px;font-weight:600;color:var(--ink)}
+  .phb .pt3{flex:1;height:9px;background:#eef0f4;border-radius:5px;overflow:hidden}
+  .phb .pf{height:100%;border-radius:5px;width:0;transition:width 1.2s cubic-bezier(.2,.8,.2,1)}
+  .progcard.in .phb .pf{width:var(--w)}
+  .phb .pv{flex:0 0 36px;text-align:right;font-variant-numeric:tabular-nums;color:var(--muted)}
+
+
   .roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:8px}
+  .roles2{grid-template-columns:repeat(2,1fr);max-width:680px}
   .role{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;position:relative;overflow:hidden}
   .role .ic{font-size:26px;margin-bottom:10px}
   .role h3{font-size:19px;color:var(--navy2);margin-bottom:6px}
@@ -238,15 +274,55 @@
   </div>
 </section>
 
+<!-- ============ SAHA HARİTASI + İLERLEME ============ -->
+<section style="padding-top:8px">
+  <div class="wrap reveal">
+    <div class="eyebrow">Canlı saha</div>
+    <p class="lead">Sahada işaretle — <span class="em">plan anında renklensin.</span></p>
+    <p class="ptext" style="margin-bottom:22px">Usta bir ayağı işaretler işaretlemez, sahanın dijital planındaki o masa o işin rengini alır. Yöneticinin gördüğü tablo birebir budur: nerede ne kadar ilerlendiği, hangi inverterin önde olduğu, nerede kontrol gerektiği — tek bakışta.</p>
+
+    <div class="showcase">
+      <div class="mapcard">
+        <div class="ph">Genel yerleşimden kesit</div>
+        <div class="pt2">İşaretleme sonrası renk değişimi</div>
+        <svg class="sahasvg" id="sahagrid" viewBox="0 0 560 232" aria-hidden="true"></svg>
+        <div class="maplegend">
+          <span><i style="background:#7c5cff"></i>Harita</span>
+          <span><i style="background:#E8833A"></i>Rok</span>
+          <span><i style="background:#2e9e5b"></i>Monte</span>
+          <span><i style="background:#E5484D"></i>Kontrol</span>
+          <span><i style="background:#2b4a66"></i>Bekliyor</span>
+        </div>
+        <div class="mapnote">Her kare bir masa. Renkler sahadan gelen işaretlemeyle gerçek zamanlı dolar.</div>
+      </div>
+
+      <div class="progcard" id="progcard">
+        <div class="ph">İlerleme durumu</div>
+        <div class="ring-row">
+          <div class="ring">
+            <svg viewBox="0 0 96 96" width="96" height="96"><circle class="rc-bg" cx="48" cy="48" r="40"></circle><circle class="rc-fg" cx="48" cy="48" r="40" style="--off:138"></circle></svg>
+            <div class="rl"><b>45%</b><small>genel</small></div>
+          </div>
+          <div class="rt"><b>378 masa</b>TR-1 · 6,9 MWp<br>5.292 ayak · 9.828 panel</div>
+        </div>
+        <div class="phb"><span class="pl2">Harita</span><span class="pt3"><span class="pf" style="--w:88%;background:#7c5cff"></span></span><span class="pv">%88</span></div>
+        <div class="phb"><span class="pl2">Rok</span><span class="pt3"><span class="pf" style="--w:71%;background:#E8833A"></span></span><span class="pv">%71</span></div>
+        <div class="phb"><span class="pl2">Montaj</span><span class="pt3"><span class="pf" style="--w:46%;background:#2e9e5b"></span></span><span class="pv">%46</span></div>
+        <div class="phb"><span class="pl2">Çelik</span><span class="pt3"><span class="pf" style="--w:23%;background:#1f9d8f"></span></span><span class="pv">%23</span></div>
+        <div class="phb"><span class="pl2">Panel</span><span class="pt3"><span class="pf" style="--w:12%;background:#2f6fb0"></span></span><span class="pv">%12</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ============ ROLLER ============ -->
 <section style="padding-top:8px">
   <div class="wrap reveal">
-    <div class="shead"><span class="snum">02</span><h2>Üç farklı giriş, üç farklı yetki</h2></div>
+    <div class="shead"><span class="snum">02</span><h2>İki farklı giriş, iki farklı yetki</h2></div>
     <p class="ptext" style="margin-bottom:8px">Aynı veriyi herkes görmez. Sistem, kişinin rolüne göre ne görüp ne yapabileceğini belirler.</p>
-    <div class="roles">
+    <div class="roles roles2">
       <div class="role r1"><span class="strip"></span><div class="ic">🔑</div><h3>Yönetici</h3><p>Tüm yetki. Veri girişi, hakediş ve parasal veriler, sözleşme, onay mekanizması. Geçmiş kayıtlardaki değişiklikleri onaylar.</p></div>
       <div class="role r2"><span class="strip"></span><div class="ic">🦺</div><h3>Usta (Saha)</h3><p>Sahadan veri girişi: ayak işaretleme, montaj, puantaj, malzeme. Geçmiş güne dokunursa değişiklik yöneticinin onayına düşer.</p></div>
-      <div class="role r3"><span class="strip"></span><div class="ic">👁</div><h3>Demo (Misafir)</h3><p>Salt-okunur. Her şeyi inceler, hiçbir şeyi değiştiremez. Parasal ve sözleşme bilgileri gizlidir — tanıtım/sunum için idealdir.</p></div>
     </div>
   </div>
 </section>
@@ -357,7 +433,7 @@
 <footer>
   <div class="wrap">
     <div class="fb"><span class="sun"></span> Aksaray Enerji</div>
-    <div>SHAMS-1 GES · TR-1 · Saha Yönetim Platformu</div>
+    <div>Saha Yönetim Platformu</div>
     <small>Tanıtım & kullanım kılavuzu · içerik projeye özeldir ve geliştirilebilir</small>
   </div>
 </footer>
@@ -374,8 +450,24 @@
   paintTry();
 
   // scroll reveal + bar doldurma
+  // ---- saha planı kesiti: masaları çiz, dalga halinde renklendir ----
+  function buildSahaGrid(){
+    var svg=document.getElementById('sahagrid');if(!svg)return;
+    var cols=16,rows=7,gap=3,W=560,H=232;
+    var cw=(W-gap*(cols-1))/cols, ch=(H-gap*(rows-1))/rows, out='';
+    for(var y=0;y<rows;y++)for(var x=0;x<cols;x++){
+      var i=y*cols+x, px=(x*(cw+gap)).toFixed(1), py=(y*(ch+gap)).toFixed(1);
+      var delay=(x*0.13+y*0.22).toFixed(2);
+      var rnd=(i*53)%100, cls='tg-mon';            // çoğu monte (yeşil)
+      if(rnd<9)cls='tg-empty'; else if(rnd<24)cls='tg-har'; else if(rnd<44)cls='tg-rok'; else if(rnd>=94)cls='tg-ktrl';
+      out+='<rect class="tgm '+cls+'" x="'+px+'" y="'+py+'" width="'+cw.toFixed(1)+'" height="'+ch.toFixed(1)+'" rx="1.6" style="animation-delay:'+delay+'s"></rect>';
+    }
+    svg.innerHTML=out;
+  }
+  buildSahaGrid();
+
   var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.16});
-  document.querySelectorAll('.reveal,.minibars').forEach(function(el){io.observe(el);});
+  document.querySelectorAll('.reveal,.minibars,.progcard').forEach(function(el){io.observe(el);});
 </script>
 </body>
 </html>
