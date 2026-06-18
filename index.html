@@ -205,6 +205,10 @@
   .rolebadge.demo{color:#2f6fb0;border-color:#2f6fb0;background:#eef4fb}
   .demoban{display:none;background:#eef4fb;border:1px solid #2f6fb0;color:#1e4e7a;border-radius:11px;padding:9px 13px;margin:0 0 10px;font-size:13px;line-height:1.45}
   #app.demo .demoban{display:block}
+  .dreqban{align-items:center;gap:10px;justify-content:space-between;background:#fff5ec;border:1.5px solid var(--solar);color:#9a4d12;border-radius:11px;padding:9px 13px;margin:0 0 10px;font-size:13.5px;flex-wrap:wrap}
+  .dreqban b{color:#15314e}
+  .dreqban .btn{flex:0 0 auto}
+  #app.usta .dreqban,#app.demo .dreqban{display:none!important}
   .hidden{display:none!important}
   #app.usta .money,#app.usta .adminonly{display:none!important}
   #app.demo .money,#app.demo .adminonly,#app.demo .ceza{display:none!important}
@@ -380,6 +384,23 @@
   .tg[data-lp]{touch-action:manipulation;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
   .footbtns{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
   .feettog{display:flex;align-items:center;gap:5px;font-size:12px;color:#555;margin:0 0 6px;cursor:pointer}
+  .auditok{margin:10px 0;background:#eafaf0;border:1px solid #bfe6cf;color:#1f7a44;border-radius:9px;padding:10px 13px;font-size:13px}
+  .auditcard{margin:10px 0 4px;border:1.5px solid #E5484D;border-radius:12px;overflow:hidden;background:#fff}
+  .auditcard .aud-h{background:#fdecec;color:#a32a2e;font-weight:700;font-size:13.5px;padding:9px 13px;display:flex;align-items:center;gap:8px}
+  .auditcard .aud-cnt{margin-left:auto;background:#E5484D;color:#fff;font-size:11px;border-radius:999px;padding:2px 9px}
+  .auditcard .aud-sum{padding:9px 13px 3px;font-size:13px;color:#444;display:flex;flex-wrap:wrap;gap:6px 14px}
+  .aud-ph{background:#f5f6f8;border-radius:6px;padding:2px 9px}
+  .auditcard .aud-note{padding:2px 13px 10px;font-size:11.5px;color:#6b7686;line-height:1.5}
+  .aud-tbl{border-top:1px solid #f0e0e0}
+  .aud-tr{display:grid;grid-template-columns:54px 1fr 1fr 1fr;align-items:center;gap:6px;padding:8px 13px;border-bottom:1px solid #f3f4f6;font-size:12.5px}
+  .aud-tr.aud-th{background:#fafbfc;color:#8a96a5;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.03em;cursor:default}
+  .aud-tr:not(.aud-th){cursor:pointer}
+  .aud-tr:not(.aud-th):active{background:#fdf3f3}
+  .aud-m{font-weight:700;color:#15314e}
+  .aud-c{color:#9aa3af}
+  .aud-c.diff{color:#444}
+  .aud-c.diff i{font-style:normal;font-weight:700;margin-left:2px}
+  .aud-leg{padding:7px 13px;font-size:11px;color:#9aa3af;background:#fafbfc}
   .feettog input{margin:0}
   .footpos{margin-top:5px;font-size:12px;color:#15314e;background:#eef3f8;border:1px solid #d6e2ee;border-radius:5px;padding:4px 8px}
   .rapcards{display:flex;gap:8px;margin:10px 0;flex-wrap:wrap}
@@ -531,7 +552,7 @@
   <div class="homecard">
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 48 · Kontrol = ayrı bayrak (uzun bas)</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 50 · Onay şeridi (her sekmede)</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -556,7 +577,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 48 · Kontrol uzun-bas · 18.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 50 · Onay şeridi · 18.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -576,6 +597,7 @@
   </div>
 
   <div class="hcbar" id="hcbanner" style="display:none"></div>
+  <div id="dreqban" class="dreqban adminonly" style="display:none"></div>
 
   <div class="tabs">
     <button class="tab on" onclick="tabTo(0,this)">▣ Proje</button>
@@ -876,13 +898,13 @@ async function openProject(id){document.getElementById('home').classList.add('hi
   document.getElementById('app').classList.remove('hidden');applyRole();loadFont();
   showBoot('Bağlanıyor…');
   const _safety=setTimeout(hideBoot,25000);
-  try{await chooseBackend();bootStatus('Veriler buluttan yükleniyor…');initForm();await reloadAll();renderHCbanner();}
+  try{await chooseBackend();bootStatus('Veriler buluttan yükleniyor…');initForm();await reloadAll();renderHCbanner();renderDReqBanner();}
   catch(e){bootStatus('Bağlantı sorunu — tekrar denenecek');}
   finally{clearTimeout(_safety);hideBoot();}
   if(!POLL)POLL=setInterval(pollSync,25000);}
 function applyRole(){const app=document.getElementById('app');
   app.classList.toggle('usta',ROLE==='usta');app.classList.toggle('admin',ROLE==='admin');app.classList.toggle('demo',ROLE==='demo');
-  window.RO=(ROLE==='demo');
+  window.RO=(ROLE==='demo');renderDReqBanner();
   const b=document.getElementById('rolebadge');if(b){b.textContent=(ROLE==='admin'?'Yönetici':ROLE==='demo'?'Demo (Misafir)':'Usta')+(CURUSER&&ROLE!=='demo'?' · '+CURUSER:'');b.className='rolebadge '+(ROLE||'');}
   const u2=document.getElementById('usta2');if(u2&&CURUSER)u2.value=CURUSER;const uh=document.getElementById('usta');if(uh&&CURUSER)uh.value=CURUSER;}
 function goHome(){document.getElementById('app').classList.add('hidden');document.getElementById('home').classList.remove('hidden');
@@ -1601,7 +1623,7 @@ function renderPJ(){const host=document.getElementById('pjgrid');if(!host)return
     '<div class="pjscroll"><table class="pjtab"><thead>'+head+'</thead><tbody>'+body+foot+'</tbody></table></div>';}
 
 /* ---- SİLME ONAYI / LOG ---- */
-async function reqDelete(key,label){const ts=Date.now();const r={ts,tip:'sil',key,label,by:CURUSER||ROLE||'?'};DREQ.push(r);await sset('dr:'+ts,r);await logAct('silme-talep',label);}
+async function reqDelete(key,label){const ts=Date.now();const r={ts,tip:'sil',key,label,by:CURUSER||ROLE||'?'};DREQ.push(r);await sset('dr:'+ts,r);await logAct('silme-talep',label);renderDReqBanner();}
 /* === Zaman + rol bazlı yetki kapısı ===
    Bugünün verisi → herkes serbest. Geçmiş veri → usta ise yönetici onayına düşer, admin serbest. */
 function editGate(day){if(ROLE==='admin')return 'ok';if(!day||day===dToday())return 'ok';return 'req';}
@@ -1610,7 +1632,7 @@ function footLastDay(masa,j){const side=j<7?'Ön':'Arka',num=(j%7)+1;const re=ne
     if(/tümü (işaretli|delindi|monte)|sıfırlandı/.test(d)||re.test(d)){const dd=dstr(r.ts);if(!last||dd>last)last=dd;}});
   return last;}
 function masaLastDay(masa){let last=null;ALOG.forEach(r=>{const d=r.detail||'';const mm=d.match(/Masa #(\d+)/);if(!mm||+mm[1]!==masa)return;const dd=dstr(r.ts);if(!last||dd>last)last=dd;});return last;}
-async function reqChange(payload,label){const ts=Date.now();const r={ts,tip:'degis',payload,label,by:CURUSER||ROLE||'?'};DREQ.push(r);await sset('dr:'+ts,r);await logAct('değişiklik-talep',label);try{renderPersonel();}catch(e){}}
+async function reqChange(payload,label){const ts=Date.now();const r={ts,tip:'degis',payload,label,by:CURUSER||ROLE||'?'};DREQ.push(r);await sset('dr:'+ts,r);await logAct('değişiklik-talep',label);try{renderPersonel();renderDReqBanner();}catch(e){}}
 async function applyChange(p){
   if(p.tip==='foot'||p.tip==='footAll'){const oldSEL=SEL;SEL=p.masa;
     if(p.tip==='foot'){const a=footArr();a[p.j]=p.to;syncFoot(a);}else{syncFoot(Array(14).fill(p.v));}
@@ -1621,13 +1643,19 @@ async function applyChange(p){
 async function approveDel(ts){if(roBlock())return;const r=DREQ.find(x=>x.ts===ts);if(!r)return;
   if(r.tip==='degis'){await applyChange(r.payload);}
   else{if(r.key&&r.key.indexOf('team:')===0){const id=r.key.slice(5);TEAM=TEAM.filter(x=>x.id!==id);await saveTeam();}else if(r.key)await sdel(r.key);}
-  DREQ=DREQ.filter(x=>x.ts!==ts);await sdel('dr:'+ts);await logAct('onay',r.label);await reloadAll();}
-async function rejectDel(ts){if(roBlock())return;const r=DREQ.find(x=>x.ts===ts);DREQ=DREQ.filter(x=>x.ts!==ts);await sdel('dr:'+ts);await logAct('talep-red',r?r.label:'');try{renderPersonel();}catch(e){}}
+  DREQ=DREQ.filter(x=>x.ts!==ts);renderDReqBanner();await sdel('dr:'+ts);await logAct('onay',r.label);await reloadAll();renderDReqBanner();}
+async function rejectDel(ts){if(roBlock())return;const r=DREQ.find(x=>x.ts===ts);DREQ=DREQ.filter(x=>x.ts!==ts);await sdel('dr:'+ts);await logAct('talep-red',r?r.label:'');try{renderPersonel();}catch(e){}renderDReqBanner();}
 function delReqPanel(){if(!DREQ.length)return '';
   return '<div class="tk2 adminonly" style="border-color:var(--solar)"><h3>⏳ Onay bekleyen ('+DREQ.length+')</h3>'+
     '<div class="hint" style="margin:-4px 0 8px">Usta\'nın geçmiş güne ait silme/değişiklik talepleri. Onaylarsan sistemde kalıcı uygulanır.</div>'+
     DREQ.slice().sort((a,b)=>b.ts-a.ts).map(r=>{const tg=r.tip==='degis'?'<span class="reqtag rqd">değişiklik</span>':'<span class="reqtag rqs">silme</span>';
       return '<div class="drrow"><span>'+tg+' '+esc(r.label)+' <small>· '+esc(r.by)+'</small></span><span><button class="btn sm" onclick="approveDel('+r.ts+')">Onayla</button> <button class="btn ghost sm" onclick="rejectDel('+r.ts+')">Reddet</button></span></div>';}).join('')+'</div>';}
+function renderDReqBanner(){const el=document.getElementById('dreqban');if(!el)return;
+  if(ROLE==='admin'&&DREQ.length){el.style.display='flex';
+    el.innerHTML='<span>⏳ <b>'+DREQ.length+' onay bekliyor</b> — usta\'nın geçmiş veri değişiklik/silme talebi</span><button class="btn sm" onclick="gotoOnay()">İncele →</button>';}
+  else{el.style.display='none';el.innerHTML='';}}
+function gotoOnay(){const tabs=document.querySelectorAll('.tabs .tab');if(tabs[5])tabTo(5,tabs[5]);
+  setTimeout(function(){const p=document.querySelector('#personel .tk2.adminonly');if(p)p.scrollIntoView({behavior:'smooth',block:'center'});},180);}
 function logPanel(){if(!ALOG.length)return '';
   return acc('İşlem kaydı (log) — son 30',('<table><thead><tr><th>Zaman</th><th>İşlem</th><th>Detay</th><th>Kim</th></tr></thead><tbody>'+
     ALOG.slice(0,30).map(r=>'<tr><td>'+new Date(r.ts).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</td><td>'+esc(r.act)+'</td><td>'+esc(r.detail)+'</td><td>'+esc(r.by||r.role)+'</td></tr>').join('')+'</tbody></table>'),false,'adminonly');}
@@ -2029,7 +2057,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s48</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s50</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -2155,6 +2183,41 @@ function footCumUpto(day){const st={};
     const fm=d.match(/(Ön|Arka)\s+(\d+)\s*→\s*(boş|işaretlendi|delindi|monte)/);
     if(fm){const pos=(fm[1]==='Ön'?0:7)+(+fm[2]-1);const mp={'boş':0,'işaretlendi':1,'delindi':2,'monte':3};st[masa+'_'+pos]=mp[fm[3]];}});
   let har=0,del=0,mon=0;for(const k in st){if(st[k]>=1)har++;if(st[k]>=2)del++;if(st[k]>=3)mon++;}return {har,del,mon};}
+/* ===== VERİ TUTARLILIK DENETİMİ — kayıt (log) vs gerçek (plan) ===== */
+function footCumByMasa(day){const st={};
+  ALOG.filter(r=>dstr(r.ts)<=day).slice().sort((a,b)=>a.ts-b.ts).forEach(r=>{
+    const d=r.detail||'';const mm=d.match(/Masa #(\d+)/);if(!mm)return;const masa=+mm[1];
+    const setAll=v=>{for(let p=0;p<14;p++)st[masa+'_'+p]=v;};
+    if(/sıfırlandı/.test(d))return setAll(0);
+    if(/tümü işaretli/.test(d))return setAll(1);
+    if(/tümü delindi/.test(d))return setAll(2);
+    if(/tümü monte/.test(d))return setAll(3);
+    const fm=d.match(/(Ön|Arka)\s+(\d+)\s*→\s*(boş|işaretlendi|delindi|monte)/);
+    if(fm){const pos=(fm[1]==='Ön'?0:7)+(+fm[2]-1);const mp={'boş':0,'işaretlendi':1,'delindi':2,'monte':3};st[masa+'_'+pos]=mp[fm[3]];}});
+  const by={};for(const k in st){const masa=+k.split('_')[0],v=st[k];if(!by[masa])by[masa]={har:0,del:0,mon:0};
+    if(v>=1)by[masa].har++;if(v>=2)by[masa].del++;if(v>=3)by[masa].mon++;}
+  return by;}
+function dataAudit(){const rec=footCumByMasa(dToday());const rows=[];let sumHar=0,sumDel=0,sumMon=0;
+  for(const t of LAYOUT.tables){const masa=t.i,ft=footOf(masa);
+    const realHar=ft.filter(x=>x>=1).length,realDel=ft.filter(x=>x>=2).length,realMon=ft.filter(x=>x>=3).length;
+    const r=rec[masa]||{har:0,del:0,mon:0};
+    const dHar=r.har-realHar,dDel=r.del-realDel,dMon=r.mon-realMon;
+    sumHar+=dHar;sumDel+=dDel;sumMon+=dMon;
+    if(dHar||dDel||dMon)rows.push({masa,realHar,realDel,realMon,recHar:r.har,recDel:r.del,recMon:r.mon,dHar,dDel,dMon});}
+  rows.sort((a,b)=>(Math.abs(b.dHar)+Math.abs(b.dDel)+Math.abs(b.dMon))-(Math.abs(a.dHar)+Math.abs(a.dDel)+Math.abs(a.dMon)));
+  return {rows,sumHar,sumDel,sumMon};}
+function auditCard(forPrint){if(forPrint)return '';const a=dataAudit();
+  if(!a.rows.length)return '<div class="auditok">✓ Kayıtlar ile gerçek saha durumu bire bir tutuyor — başlangıç değerleri sağlıklı.</div>';
+  const sm=(ad,d)=>d?`<span class="aud-ph">${ad} <b style="color:${d>0?'#E5484D':'#2e9e5b'}">${d>0?'+':''}${d}</b></span>`:'';
+  const cell=(rec,real,d)=>{if(!d)return `<span class="aud-c">${real}</span>`;
+    return `<span class="aud-c diff"><b>${rec}</b> / ${real} <i style="color:${d>0?'#E5484D':'#2e9e5b'}">${d>0?'+':''}${d}</i></span>`;};
+  let h='<div class="auditcard"><div class="aud-h">🔍 Veri tutarlılık denetimi <span class="aud-cnt">'+a.rows.length+' masa</span></div>';
+  h+='<div class="aud-sum">Kayıt − gerçek farkı: '+(sm('Harita',a.sumHar)+sm('Rok',a.sumDel)+sm('Montaj',a.sumMon)||'<b style="color:#2e9e5b">yok</b>')+'</div>';
+  h+='<div class="aud-note"><b style="color:#E5484D">+ pozitif</b> = kayıtta var ama sahada karşılığı yok (geri alma/düzeltme kayda net geçmemiş) → başlangıcı eksiye düşüren budur. <b style="color:#2e9e5b">− negatif</b> = sahada var ama kayıtta yok. Masaya dokun → aç, gerçek durumu doğrula.</div>';
+  h+='<div class="aud-tbl"><div class="aud-tr aud-th"><span>Masa</span><span>Harita</span><span>Rok</span><span>Montaj</span></div>';
+  for(const r of a.rows)h+=`<div class="aud-tr" onclick="openEd(${r.masa})"><span class="aud-m">#${r.masa}</span>${cell(r.recHar,r.realHar,r.dHar)}${cell(r.recDel,r.realDel,r.dDel)}${cell(r.recMon,r.realMon,r.dMon)}</div>`;
+  h+='</div><div class="aud-leg"><b>kayıt</b> / gerçek · fark olan hücrelerde gösterilir</div></div>';
+  return h;}
 function rapAgg(day){const logs=dayLogs(day);const persons={},masas={};let del=0,mon=0,konst=0;
   logs.forEach(r=>{const by=r.by||r.role||'—';persons[by]=(persons[by]||0)+1;
     const m=(r.detail||'').match(/Masa #(\d+)/);if(m)masas[+m[1]]=(masas[+m[1]]||0)+1;
@@ -2391,6 +2454,7 @@ function rapBody(day,forPrint){const A=rapAgg(day);
   h+=itemReportCards(day);
   h+='<h3 class="raph">Günlük × kümülatif matris</h3>';
   h+=renderItemMatrix(forPrint);
+  h+=auditCard(forPrint);
   h+='<h3 class="raph">İnverter (saha) bazlı yapılan işler</h3>';
   h+='<div class="hint" style="margin:-2px 0 8px">Sadece işlem görmüş inverter sahaları. Her saha için faz bazlı yapılan iş (renkli barlar) ve genel ilerleme.</div>';
   h+=invReport();
@@ -2411,7 +2475,7 @@ function rapBody(day,forPrint){const A=rapAgg(day);
   }
   return h;}
 async function backupAll(){try{
-  const dump={_app:'SHAMS1-TR1',_ver:'s48',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1-TR1',_ver:'s50',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:'];
   for(const pre of pref)for(const k of await slist(pre)){const v=await sget(k);if(v!=null)dump.data[k]=v;}
   const single=['targets','mpct','cab:dc','cab:ac','cab:og','dcstr','ogb','matin','matuse','matkov','matcustom','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
