@@ -326,6 +326,26 @@
   .epmat .epz{color:#c9ced8}
   .epmat tr.eptot td{background:var(--soft);font-weight:700;border-top:2px solid var(--line)}
   .epmat tr.eptot td.epname{background:var(--soft)}
+  .invcard{border:1px solid var(--line);border-radius:12px;padding:11px 13px;margin:8px 0;background:var(--card,#fff)}
+  .invhd{display:flex;align-items:center;gap:8px;margin-bottom:9px;flex-wrap:wrap}
+  .invtag{background:#15314e;color:#fff;font-weight:800;font-size:13px;padding:3px 11px;border-radius:8px}
+  .invsub{font-size:12px;color:var(--muted)}
+  .invpct{margin-left:auto;font-weight:800;color:var(--solar);font-size:15px}
+  .invktrl{background:#fdecec;color:#c0392b;border:1px solid #E5484D;border-radius:7px;padding:2px 8px;font-size:11px;font-weight:700}
+  .invbars{display:flex;flex-direction:column;gap:6px}
+  .invbar{display:flex;align-items:center;gap:8px;font-size:11.5px}
+  .ibl{flex:0 0 58px;color:#5B6573;font-weight:600}
+  .ibt{flex:1;height:10px;background:#eef0f3;border-radius:5px;overflow:hidden;position:relative}
+  .ibf{position:absolute;left:0;top:0;height:100%;border-radius:5px;transition:width .35s}
+  .ibv{flex:0 0 auto;min-width:64px;text-align:right;font-variant-numeric:tabular-nums;color:#444}
+  .ibv b{color:#15314e}
+  .invcmp-h{font-size:12px;color:#5B6573;font-weight:700;margin:6px 0 4px}
+  .invcmp{display:flex;flex-direction:column;gap:5px;margin-bottom:10px;border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:var(--soft)}
+  .invcmpr{display:flex;align-items:center;gap:8px;font-size:11.5px}
+  .iccl{flex:0 0 48px;font-weight:700;color:#15314e}
+  .icct{flex:1;height:11px;background:#fff;border-radius:6px;overflow:hidden;position:relative;border:1px solid var(--line)}
+  .iccf{position:absolute;left:0;top:0;height:100%;border-radius:6px;background:linear-gradient(90deg,#E8833A,#f0a35f)}
+  .iccv{flex:0 0 38px;text-align:right;font-weight:700;color:var(--solar)}
   .mailta{width:100%;height:200px;font-family:var(--mono);font-size:11px;border:1px solid var(--line);border-radius:8px;padding:8px}
   .xdel{color:var(--dc);cursor:pointer;font-size:11px;margin-left:6px;text-decoration:none}
   .gantt{margin-top:6px}
@@ -503,7 +523,7 @@
   <div class="homecard">
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 44 · Rapor matrisi: her gün ayrı sütun</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 45 · İnverter bazlı rapor (görsel)</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -527,7 +547,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 44 · Günlük matris · 18.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 45 · İnverter raporu · 18.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -1961,7 +1981,7 @@ async function delCustomMat(id){if(!confirm('Bu malzeme silinsin mi?'))return;MA
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s44</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s45</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -2165,6 +2185,32 @@ function repDays(){const set={};
   set[RAPDAY]=1;set[dToday()]=1;
   return Object.keys(set).sort();
 }
+function invReport(){
+  const N=maxInv();let html='',any=false,sumcards='';
+  const rows=[];
+  for(let inv=1;inv<=N;inv++){
+    const masalar=LAYOUT.tables.filter(t=>invOf(t)===inv);
+    if(!masalar.length)continue;
+    const phs=PHASE_ORDER.map(p=>({p,...phaseStats(p,inv)}));
+    const totalD=phs.reduce((a,x)=>a+x.d,0);
+    if(totalD<=0)continue;
+    any=true;
+    const totalT=phs.reduce((a,x)=>a+x.t,0);
+    const ov=totalT?Math.round(totalD/totalT*100):0;
+    let ktrl=0;masalar.forEach(t=>{const s=PLAN[t.i];if(!s)return;ktrl+=footOf(t.i).filter(x=>x>=4).length;for(const k of ['k1','k2','k3','k4','k5','k6'])if(s[k]===2)ktrl++;if(s.k7c)ktrl++;});
+    rows.push({inv,ov});
+    let bars='';
+    phs.forEach(ph=>{const pc=ph.t?Math.min(100,Math.round(ph.d/ph.t*100)):0;
+      bars+=`<div class="invbar"><span class="ibl">${STAGE_NM[ph.p]}</span><span class="ibt"><span class="ibf" style="width:${pc}%;background:${STAGE_COL[ph.p]}"></span></span><span class="ibv"><b>${tr(ph.d)}</b>/${tr(ph.t)}</span></div>`;});
+    html+=`<div class="invcard"><div class="invhd"><span class="invtag">INV${inv}</span><span class="invsub">${masalar.length} masa</span>${ktrl?'<span class="invktrl">⚠ '+ktrl+' kontrol</span>':''}<span class="invpct">%${ov}</span></div><div class="invbars">${bars}</div></div>`;
+  }
+  if(!any)return '<div class="hint" style="margin:4px 0">Henüz inverter sahalarında işlem görünmüyor.</div>';
+  // özet karşılaştırma çubuğu (işlem gören INV'ler)
+  let cmp='<div class="invcmp">';
+  rows.forEach(r=>{cmp+=`<div class="invcmpr"><span class="iccl">INV${r.inv}</span><span class="icct"><span class="iccf" style="width:${r.ov}%"></span></span><span class="iccv">%${r.ov}</span></div>`;});
+  cmp+='</div>';
+  return '<div class="invcmp-h">İşlem gören '+rows.length+' inverter — genel ilerleme</div>'+cmp+html;
+}
 function renderItemMatrix(forPrint){
   const items=repItems(RAPDAY);
   const allDays=repDays();
@@ -2297,6 +2343,9 @@ function rapBody(day,forPrint){const A=rapAgg(day);
   h+=itemReportCards(day);
   h+='<h3 class="raph">Günlük × kümülatif matris</h3>';
   h+=renderItemMatrix(forPrint);
+  h+='<h3 class="raph">İnverter (saha) bazlı yapılan işler</h3>';
+  h+='<div class="hint" style="margin:-2px 0 8px">Sadece işlem görmüş inverter sahaları. Her saha için faz bazlı yapılan iş (renkli barlar) ve genel ilerleme.</div>';
+  h+=invReport();
   h+=renderDayDetail(day);
   h+='<h3 class="raph">Saha haritası — '+humanDay(day)+' dokunulan masalar</h3>'+rapMap(A.masas);
   h+='<div class="hint" style="margin-top:4px"><span class="fdot" style="background:#E8833A"></span> dokunulan masa · '+masaList.length+' masa</div>';
@@ -2314,7 +2363,7 @@ function rapBody(day,forPrint){const A=rapAgg(day);
   }
   return h;}
 async function backupAll(){try{
-  const dump={_app:'SHAMS1-TR1',_ver:'s44',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1-TR1',_ver:'s45',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:'];
   for(const pre of pref)for(const k of await slist(pre)){const v=await sget(k);if(v!=null)dump.data[k]=v;}
   const single=['targets','mpct','cab:dc','cab:ac','cab:og','dcstr','ogb','matin','matuse','matkov','matcustom','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
@@ -2355,7 +2404,7 @@ function renderRapor(){const el=document.getElementById('rapor');if(!el)return;
     <div id="rapout">`+rapBody(RAPDAY,false)+`</div>`;}
 function printRapor(){const day=RAPDAY,fmtDay=day.split('-').reverse().join('.');
   const w=window.open('','_blank');if(!w){if(typeof toast==='function')toast('Açılır pencere engellendi');return;}
-  const cssText='body{font-family:Arial,sans-serif;color:#1c1c22;font-size:11px;margin:24px}h1{font-size:15px;color:#15314e;border-bottom:3px solid #E8833A;padding-bottom:6px}h3.raph{font-size:12px;color:#15314e;border-left:4px solid #E8833A;padding-left:8px;margin:14px 0 6px}table{width:100%;border-collapse:collapse;font-size:9.5px;margin:6px 0}th{background:#15314e;color:#fff;text-align:left;padding:4px 6px}td{border:1px solid #e0e0e6;padding:3px 6px}.m{text-align:center}.rapcards{display:flex;gap:8px;margin:8px 0}.rapcard{flex:1;border:1px solid #e3e3e8;border-radius:7px;padding:8px;text-align:center}.rc-n{font-size:18px;font-weight:800;color:#15314e}.rc-l{font-size:9px;color:#777}.rpbar{display:flex;align-items:center;gap:6px;margin:2px 0;font-size:9px}.rl{flex:0 0 150px}.rt{flex:1;height:9px;background:#eee;border-radius:4px;position:relative}.rt.mini{height:7px}.rf{position:absolute;left:0;top:0;height:100%;border-radius:4px}.rf.gm{background:#2f6fb0}.rf.ge{background:#E8833A}.rv{flex:0 0 34px;text-align:right}.rpcols{display:flex;gap:16px}.rpcol{flex:1}.fdot{display:inline-block;width:10px;height:10px;border-radius:3px}.hint{font-size:9px;color:#777}svg{max-width:100%}.epwrap{overflow-x:visible}.epmat{font-size:8px}.epmat td,.epmat th{padding:2px 4px;text-align:center;white-space:nowrap}.epmat td.epname,.epmat th.epname{text-align:left;font-weight:700}.epmat .epcum{background:#fbeee3;font-weight:700}.epmat th.epcum{background:#f3d9c2;color:#15314e}.epmat .epbas{background:#efeafd;font-weight:700;color:#4a3f7a}.epmat th.epbas{background:#e3dbfb;color:#15314e}.epmat .epsel{background:#dce8f5}.epmat .epz{color:#bbb}.epmat tr.eptot td{background:#eef0f3;font-weight:700}.raphero{background:#15314e;color:#fff;padding:12px 16px;border-radius:8px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.rh-badge{background:#E8833A;color:#fff;padding:2px 7px;border-radius:10px;font-size:9px;font-weight:700}.rh-title{font-size:15px;font-weight:800}.rh-sub{font-size:10px;color:#cfe0f0}.rh-parties{font-size:9px;color:#aecbe6;display:flex;gap:14px;margin-top:4px}.rh-parties b{color:#fff}.rh-r{display:flex;gap:12px}.rh-pl{font-size:9px;color:#dce8f5;text-align:center}.rh-ring svg text{fill:#fff}.dselbox{display:none}.kcards{display:flex;gap:6px;margin:6px 0}.kcard{flex:1;border:1px solid #e3e3e8;border-radius:7px;padding:7px;text-align:center}.k-n{font-size:16px;font-weight:800;color:#15314e}.k-l{font-size:8px;color:#777}.ircards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0}.ircard{border:1px solid #e3e3e8;border-radius:9px;padding:8px;position:relative;break-inside:avoid}.ir-top{display:flex;gap:8px;align-items:center}.ir-nm{font-size:11px;font-weight:800;color:#15314e}.ir-isv{font-size:7px;background:#f7ecd2;color:#9a7b2f;border-radius:4px;padding:1px 4px;margin-left:4px}.ir-tag{font-size:8px;font-weight:700;border-radius:4px;padding:1px 5px;display:inline-block;margin:2px 0}.ir-today{font-size:9px;color:#555}.ir-nums{display:flex;gap:4px;margin-top:6px}.ir-nums>div{flex:1;text-align:center;background:#f6f8fb;border-radius:6px;padding:4px 2px}.ir-nums b{display:block;font-size:11px;font-weight:800;color:#15314e}.ir-nums small{font-size:7.5px;color:#888}.ir-spark{margin-top:4px}.ir-sparkl{font-size:7.5px;color:#999;text-align:right}.ir-bar{display:none}';
+  const cssText='body{font-family:Arial,sans-serif;color:#1c1c22;font-size:11px;margin:24px}h1{font-size:15px;color:#15314e;border-bottom:3px solid #E8833A;padding-bottom:6px}h3.raph{font-size:12px;color:#15314e;border-left:4px solid #E8833A;padding-left:8px;margin:14px 0 6px}table{width:100%;border-collapse:collapse;font-size:9.5px;margin:6px 0}th{background:#15314e;color:#fff;text-align:left;padding:4px 6px}td{border:1px solid #e0e0e6;padding:3px 6px}.m{text-align:center}.rapcards{display:flex;gap:8px;margin:8px 0}.rapcard{flex:1;border:1px solid #e3e3e8;border-radius:7px;padding:8px;text-align:center}.rc-n{font-size:18px;font-weight:800;color:#15314e}.rc-l{font-size:9px;color:#777}.rpbar{display:flex;align-items:center;gap:6px;margin:2px 0;font-size:9px}.rl{flex:0 0 150px}.rt{flex:1;height:9px;background:#eee;border-radius:4px;position:relative}.rt.mini{height:7px}.rf{position:absolute;left:0;top:0;height:100%;border-radius:4px}.rf.gm{background:#2f6fb0}.rf.ge{background:#E8833A}.rv{flex:0 0 34px;text-align:right}.rpcols{display:flex;gap:16px}.rpcol{flex:1}.fdot{display:inline-block;width:10px;height:10px;border-radius:3px}.hint{font-size:9px;color:#777}svg{max-width:100%}.epwrap{overflow-x:visible}.epmat{font-size:8px}.epmat td,.epmat th{padding:2px 4px;text-align:center;white-space:nowrap}.epmat td.epname,.epmat th.epname{text-align:left;font-weight:700}.epmat .epcum{background:#fbeee3;font-weight:700}.epmat th.epcum{background:#f3d9c2;color:#15314e}.epmat .epbas{background:#efeafd;font-weight:700;color:#4a3f7a}.epmat th.epbas{background:#e3dbfb;color:#15314e}.epmat .epsel{background:#dce8f5}.epmat .epz{color:#bbb}.epmat tr.eptot td{background:#eef0f3;font-weight:700}.raphero{background:#15314e;color:#fff;padding:12px 16px;border-radius:8px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.rh-badge{background:#E8833A;color:#fff;padding:2px 7px;border-radius:10px;font-size:9px;font-weight:700}.rh-title{font-size:15px;font-weight:800}.rh-sub{font-size:10px;color:#cfe0f0}.rh-parties{font-size:9px;color:#aecbe6;display:flex;gap:14px;margin-top:4px}.rh-parties b{color:#fff}.rh-r{display:flex;gap:12px}.rh-pl{font-size:9px;color:#dce8f5;text-align:center}.rh-ring svg text{fill:#fff}.dselbox{display:none}.kcards{display:flex;gap:6px;margin:6px 0}.kcard{flex:1;border:1px solid #e3e3e8;border-radius:7px;padding:7px;text-align:center}.k-n{font-size:16px;font-weight:800;color:#15314e}.k-l{font-size:8px;color:#777}.ircards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0}.ircard{border:1px solid #e3e3e8;border-radius:9px;padding:8px;position:relative;break-inside:avoid}.ir-top{display:flex;gap:8px;align-items:center}.ir-nm{font-size:11px;font-weight:800;color:#15314e}.ir-isv{font-size:7px;background:#f7ecd2;color:#9a7b2f;border-radius:4px;padding:1px 4px;margin-left:4px}.ir-tag{font-size:8px;font-weight:700;border-radius:4px;padding:1px 5px;display:inline-block;margin:2px 0}.ir-today{font-size:9px;color:#555}.ir-nums{display:flex;gap:4px;margin-top:6px}.ir-nums>div{flex:1;text-align:center;background:#f6f8fb;border-radius:6px;padding:4px 2px}.ir-nums b{display:block;font-size:11px;font-weight:800;color:#15314e}.ir-nums small{font-size:7.5px;color:#888}.ir-spark{margin-top:4px}.ir-sparkl{font-size:7.5px;color:#999;text-align:right}.ir-bar{display:none}.invcmp-h{font-size:9px;color:#5B6573;font-weight:700;margin:5px 0 3px}.invcmp{display:flex;flex-direction:column;gap:3px;margin-bottom:7px;border:1px solid #e3e3e8;border-radius:7px;padding:6px 8px;background:#f7f8fa}.invcmpr{display:flex;align-items:center;gap:6px;font-size:8px}.iccl{flex:0 0 40px;font-weight:700;color:#15314e}.icct{flex:1;height:7px;background:#fff;border-radius:4px;position:relative;border:1px solid #e3e3e8}.iccf{position:absolute;left:0;top:0;height:100%;border-radius:4px;background:#E8833A}.iccv{flex:0 0 30px;text-align:right;font-weight:700;color:#E8833A}.invcard{border:1px solid #e3e3e8;border-radius:7px;padding:6px 9px;margin:5px 0;break-inside:avoid}.invhd{display:flex;align-items:center;gap:6px;margin-bottom:5px}.invtag{background:#15314e;color:#fff;font-weight:800;font-size:9px;padding:2px 7px;border-radius:5px}.invsub{font-size:8px;color:#777}.invpct{margin-left:auto;font-weight:800;color:#E8833A;font-size:10px}.invktrl{background:#fdecec;color:#c0392b;border:1px solid #E5484D;border-radius:4px;padding:1px 5px;font-size:7px;font-weight:700}.invbars{display:flex;flex-direction:column;gap:3px}.invbar{display:flex;align-items:center;gap:5px;font-size:8px}.ibl{flex:0 0 46px;color:#5B6573;font-weight:600}.ibt{flex:1;height:6px;background:#eef0f3;border-radius:3px;position:relative;overflow:hidden}.ibf{position:absolute;left:0;top:0;height:100%;border-radius:3px}.ibv{flex:0 0 50px;text-align:right;color:#444}.ibv b{color:#15314e}';
   const d=w.document;
   try{d.title='Günlük Rapor '+fmtDay;}catch(e){}
   const st=d.createElement('style');st.textContent=cssText;(d.head||d.documentElement).appendChild(st);
