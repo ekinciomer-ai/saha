@@ -503,7 +503,7 @@
   <div class="homecard">
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 43 · Kontrol/uygunsuzluk bayrağı (kırmızı)</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 44 · Rapor matrisi: her gün ayrı sütun</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -527,7 +527,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 43 · Kontrol bayrağı · 18.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 44 · Günlük matris · 18.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -1961,7 +1961,7 @@ async function delCustomMat(id){if(!confirm('Bu malzeme silinsin mi?'))return;MA
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s43</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s44</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -2167,31 +2167,36 @@ function repDays(){const set={};
 }
 function renderItemMatrix(forPrint){
   const items=repItems(RAPDAY);
-  const day=RAPDAY;const net=dayNet(day);
-  const isToday=(day===dToday());
+  const allDays=repDays();
+  const dn={};allDays.forEach(d=>dn[d]=dayNet(d));
+  const active=d=>{const n=dn[d];return ['harita','ayakdelme','ayakmont','ustm','panel'].some(k=>Math.abs(n[k]||0)>0)||GEN.some(g=>Math.abs(n[g.id]||0)>0);};
+  let cols=allDays.filter(active);
+  if(cols.indexOf(RAPDAY)<0)cols.push(RAPDAY);
+  cols=[...new Set(cols)].sort();
+  if(!cols.length)cols=[RAPDAY];
   const fmt=d=>d.slice(8,10)+'.'+d.slice(5,7);
-  const dlbl=isToday?'Bugün':(fmt(day)+' günü');
+  const WK=['Pz','Pt','Sa','Ça','Pe','Cu','Ct'];
+  const wd=d=>{const p=d.split('-');return WK[new Date(+p[0],+p[1]-1,+p[2]).getDay()];};
   let h='<div class="epwrap"><table class="mtab epmat"><thead><tr><th class="epname">İş kalemi</th><th>Birim</th>'
-    +'<th class="epbas" title="O güne kadarki birikim">Başlangıç</th>'
-    +'<th class="epsel" title="O gün yapılan net değişim (eksi = iptal/düzeltme)">'+dlbl+'</th>'
-    +'<th class="epcum" title="Konstrüksiyon\'daki güncel gerçek sayı">Toplam (onaylı)</th><th>Hedef</th><th>%</th></tr></thead><tbody>';
-  let basTot=0,bugTot=0,cumTot=0;
+    +'<th class="epbas" title="İlk görünen günden önceki birikim">Başlangıç</th>';
+  cols.forEach(d=>{const sel=d===RAPDAY;h+='<th class="epd'+(sel?' epsel':'')+'" title="'+humanDay(d)+'">'+fmt(d)+'<br><small style="font-weight:400;color:#8a93a3">'+wd(d)+'</small></th>';});
+  h+='<th class="epcum" title="Konstrüksiyon\'daki güncel gerçek sayı">Toplam (onaylı)</th><th>Hedef</th><th>%</th></tr></thead><tbody>';
+  let basTot=0,cumTot=0;const dayTot={};cols.forEach(d=>dayTot[d]=0);
   items.forEach(it=>{
-    const bug=net[it.id]||0;const bas=it.cum-bug;basTot+=bas;bugTot+=bug;cumTot+=it.cum;
-    const bugCell = bug>0 ? '<b style="color:#2e9e5b">+'+tr(bug)+'</b>' : (bug<0 ? '<b style="color:#E5484D">−'+tr(-bug)+'</b>' : '<span class="epz">·</span>');
+    let sum=0;const cells=cols.map(d=>{const v=dn[d][it.id]||0;sum+=v;dayTot[d]+=v;
+      return '<td'+(d===RAPDAY?' class="epsel"':'')+'>'+(v>0?'<b style="color:#2e9e5b">+'+tr(v)+'</b>':v<0?'<b style="color:#E5484D">−'+tr(-v)+'</b>':'<span class="epz">·</span>')+'</td>';}).join('');
+    const bas=it.cum-sum;basTot+=bas;cumTot+=it.cum;
     const pct=it.hedef>0?Math.min(100,it.cum/it.hedef*100):0;
     h+='<tr><td class="epname">'+esc(it.ad)+'</td><td class="m"><small>'+esc(it.birim)+'</small></td>'
-      +'<td class="epbas">'+(bas?tr(bas):'<span class="epz">·</span>')+'</td>'
-      +'<td class="epsel">'+bugCell+'</td>'
+      +'<td class="epbas">'+(bas?tr(bas):'<span class="epz">·</span>')+'</td>'+cells
       +'<td class="epcum"><b>'+tr(it.cum)+'</b></td><td class="m"><small>'+tr(it.hedef)+'</small></td><td class="m">%'+pct.toFixed(0)+'</td></tr>';
   });
-  const bugTotCell = bugTot>0?'+'+tr(bugTot):(bugTot<0?'−'+tr(-bugTot):'·');
+  let cellTot='';cols.forEach(d=>{const t=dayTot[d];cellTot+='<td'+(d===RAPDAY?' class="epsel"':'')+'><b>'+(t>0?'+'+tr(t):t<0?'−'+tr(-t):'·')+'</b></td>';});
   h+='<tr class="eptot"><td class="epname">TOPLAM</td><td></td>'
-    +'<td class="epbas"><b>'+(basTot?tr(basTot):'·')+'</b></td>'
-    +'<td class="epsel"><b>'+bugTotCell+'</b></td>'
+    +'<td class="epbas"><b>'+(basTot?tr(basTot):'·')+'</b></td>'+cellTot
     +'<td class="epcum"><b>'+tr(cumTot)+'</b></td><td></td><td></td></tr>';
   h+='</tbody></table></div>';
-  h+='<div class="hint" style="margin-top:4px"><b>Başlangıç + '+dlbl+' = Toplam (onaylı)</b> — her satır birebir tutar. «Toplam (onaylı)» = Konstrüksiyon\'daki güncel gerçek sayı. «'+dlbl+'» = o gün yapılan net değişim (<span style="color:#E5484D">eksi</span> = iptal/düzeltme). «Başlangıç» = o güne kadarki birikim.</div>';
+  h+='<div class="hint" style="margin-top:4px"><b>Başlangıç + tüm gün sütunları = Toplam (onaylı)</b> — her satır birebir tutar. Her sütun = o gün yapılan net iş (<span style="color:#E5484D">eksi</span> = iptal/düzeltme). Seçili gün <b style="color:#2f6fb0">mavi</b> vurgulu. Çok gün varsa tabloyu <b>yana kaydır</b>.</div>';
   return h;
 }
 function renderDayDetail(day){
@@ -2309,7 +2314,7 @@ function rapBody(day,forPrint){const A=rapAgg(day);
   }
   return h;}
 async function backupAll(){try{
-  const dump={_app:'SHAMS1-TR1',_ver:'s43',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1-TR1',_ver:'s44',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:'];
   for(const pre of pref)for(const k of await slist(pre)){const v=await sget(k);if(v!=null)dump.data[k]=v;}
   const single=['targets','mpct','cab:dc','cab:ac','cab:og','dcstr','ogb','matin','matuse','matkov','matcustom','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
