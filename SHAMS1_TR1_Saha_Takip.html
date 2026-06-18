@@ -366,14 +366,18 @@
   .footgrid{margin:4px 0}
   .footrow{display:flex;align-items:center;gap:5px;margin:4px 0}
   .fhdr{flex:0 0 40px;font-size:12px;color:#999}
-  .foot{width:36px;height:32px;border-radius:7px;border:1px solid #d8d8de;font-size:13px;font-weight:700;cursor:pointer;color:#999;background:#ececed;transition:.1s}
+  .foot{position:relative;width:36px;height:32px;border-radius:7px;border:1px solid #d8d8de;font-size:13px;font-weight:700;cursor:pointer;color:#999;background:#ececed;transition:.1s;touch-action:manipulation;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
   .foot.f1{background:#7c5cff;color:#fff;border-color:#6a49f0}
   .foot.f2{background:#E8833A;color:#fff;border-color:#d9712a}
   .foot.f3{background:#2e9e5b;color:#fff;border-color:#268a4f}
-  .foot.f4{background:#E5484D;color:#fff;border-color:#c0392b}
+  .foot.f4,.foot.fk{background:#E5484D;color:#fff;border-color:#c0392b;box-shadow:0 0 0 2px rgba(229,72,77,.28)}
+  .foot .fkdot{position:absolute;top:-6px;right:-4px;font-size:10px;line-height:1;filter:drop-shadow(0 1px 1px rgba(0,0,0,.3))}
   .footsum{margin-top:7px;font-size:12.5px;color:#444}
   .fdot{display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:-1px;margin-right:3px}
-  .fdot.f1{background:#7c5cff}.fdot.f2{background:#E8833A}.fdot.f3{background:#2e9e5b}.fdot.f4{background:#E5484D}
+  .fdot.f1{background:#7c5cff}.fdot.f2{background:#E8833A}.fdot.f3{background:#2e9e5b}.fdot.f4,.fdot.fk{background:#E5484D}
+  .foothint{margin-top:7px;font-size:11.5px;color:#7a8696;background:#f1f4f8;border:1px solid #e1e7ef;border-radius:6px;padding:5px 9px;line-height:1.4}
+  .foothint b{color:#c0392b}
+  .tg[data-lp]{touch-action:manipulation;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
   .footbtns{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
   .feettog{display:flex;align-items:center;gap:5px;font-size:12px;color:#555;margin:0 0 6px;cursor:pointer}
   .feettog input{margin:0}
@@ -527,7 +531,7 @@
   <div class="homecard">
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 47 · Giriş ekranı sadeleştirildi</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 48 · Kontrol = ayrı bayrak (uzun bas)</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -552,7 +556,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 47 · Demo modu · 18.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 48 · Kontrol uzun-bas · 18.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -926,6 +930,7 @@ async function reloadAll(){
   TARGETS=targets||{};MPCT=mpct||{};
   {const arr=[];for(const k in logs){const e=logs[k];if(e){e._key=k;arr.push(e);}}arr.sort((a,b)=>b.ts-a.ts);ENTRIES=arr;}
   PLAN={};for(const k in gks){if(gks[k])Object.assign(PLAN,gks[k]);}
+  for(const mk in PLAN)migrateKontrol(PLAN[mk]);
   CAB={dc:cabdc||{},ac:cabac||{},og:cabog||{}};
   DCDONE=new Set(dcstr||[]); OGB=ogb||0;
   MATIN=matin||[]; MATUSE=matuse||{}; MATKOV=matkov||{}; MATCUSTOM=matcustom||[]; ISB=isbasi||'2026-06-16'; UPCOUNT=upc||0; UPLAST=uplast||0; if(typeof renderUpBadge==='function')renderUpBadge();
@@ -1011,10 +1016,10 @@ function renderPlan(){
   for(const t of LAYOUT.tables){const st=tStatus(PLAN[t.i]);const x=sx(t.x)-rw/2,y=sy(t.y)-rh/2;
     const baseFill=SHOWFEET?'#e6e9ef':STC[st];
     r+=`<rect class="t${SEL===t.i?' sel':''}" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${rw.toFixed(1)}" height="${rh.toFixed(1)}" rx="1.4" fill="${baseFill}" onclick="openEd(${t.i})"></rect>`;
-    if(SHOWFEET){const ft=footOf(t.i),fw=Math.max(1,rw*0.045),fh=Math.max(1.4,rh*0.26);
-      for(let c=0;c<7;c++)for(let row=0;row<2;row++){const v=ft[row*7+c];
+    if(SHOWFEET){const ft=footOf(t.i),fk=footkOf(t.i),fw=Math.max(1,rw*0.045),fh=Math.max(1.4,rh*0.26);
+      for(let c=0;c<7;c++)for(let row=0;row<2;row++){const idx=row*7+c,v=ft[idx];
         const fx=x+(c+0.5)*(rw/7)-fw/2, fy=y+(row?rh*0.56:rh*0.18);
-        r+=`<rect x="${fx.toFixed(1)}" y="${fy.toFixed(1)}" width="${fw.toFixed(1)}" height="${fh.toFixed(1)}" rx=".5" fill="${footColor(v)}" pointer-events="none"/>`;}}
+        r+=`<rect x="${fx.toFixed(1)}" y="${fy.toFixed(1)}" width="${fw.toFixed(1)}" height="${fh.toFixed(1)}" rx=".5" fill="${fk[idx]?'#E5484D':footColor(v)}" pointer-events="none"/>`;}}
   }
   r+='</svg>';
   const ctrl=`<label class="feettog"><input type="checkbox" ${SHOWFEET?'checked':''} onchange="SHOWFEET=this.checked;renderPlan()"> Ayakları göster · <span class="fdot f1"></span>delindi <span class="fdot f2"></span>monte</label>`;
@@ -1095,17 +1100,18 @@ async function openEd(i){SEL=i;const t=tbl(i),s=PLAN[i]||{};
   // ayak adımları
   document.getElementById('ed_ayak').innerHTML=(()=>{
     let h='';
-    h+=`<div class="ayakgrp">Ayaklar — Harita · Delme · Montaj · Kontrol <i style="font-weight:400">(14 ayak · tıkla: boş → harita → delindi(rok) → monte → <b style="color:#E5484D">KONTROL</b> · rok delgi İşveren)</i></div>
+    h+=`<div class="ayakgrp">Ayaklar — Harita · Delme · Montaj <i style="font-weight:400">(kısa dokun: boş → harita → delindi(rok) → monte · <b style="color:#E5484D">uzun bas: kontrol</b> · rok delgi İşveren)</i></div>
      <div id="ed_footgrid" class="footgrid"></div>
      <div class="footbtns"><button class="tg" onclick="footAll(1)">Tümü harita</button>
       <button class="tg" onclick="footAll(2)">Tümü delindi</button>
       <button class="tg" onclick="footAll(3)">Tümü monte</button>
-      <button class="tg ktrl" onclick="footAll(4)">⚠ Tümü kontrol</button>
       <button class="tg" onclick="footAll(0)">Sıfırla</button></div>`;
     return h;})();
-  // konstrüksiyon
-  let kh=KONST.map(c=>{const kv=s[c.k]||0;return `<div class="stp"><div class="nm">${c.ad}</div>
-    <button class="tg ${kv===1?'act':kv===2?'ktrl':''}" id="t_${c.k}" onclick="toggle('${c.k}')">${kv===2?'⚠ Kontrol':kv===1?'Yapıldı ✓':'Yapılmadı'}</button></div>`;}).join('');
+  // konstrüksiyon (kısa dokun: yapıldı/yapılmadı · uzun bas: kontrol)
+  let kh=KONST.map(c=>{const raw=s[c.k]||0;const done=raw>=1;const kc=(s[c.k+'c']?1:0)||(raw===2?1:0);
+    const cls=kc?'ktrl':done?'act':'';const txt=kc?'⚠ Kontrol':done?'Yapıldı ✓':'Yapılmadı';
+    return `<div class="stp"><div class="nm">${c.ad}</div>
+    <button class="tg ${cls}" id="t_${c.k}" data-lp="konst:${c.k}">${txt}</button></div>`;}).join('');
   kh+=`<div class="stp"><div class="nm">Panel montaj</div><div class="stepper"><button onclick="bump('k7',-1,26)">−</button>
     <input class="num" id="i_k7" type="number" min="0" max="26" value="${s.k7||0}" onchange="setv('k7',this.value,26)">
     <button onclick="bump('k7',1,26)">+</button><button class="tg" style="min-width:70px" onclick="setv('k7',26,26)">Tümü 26</button>
@@ -1126,55 +1132,87 @@ async function setv(f,val,mx){if(SEL==null)return;if(roBlock())return;val=Math.m
   const s=PLAN[SEL]||{};const _o=+s[f]||0;s[f]=val;await saveTbl(s);const el=document.getElementById('i_'+f);if(el)el.value=val;
   if((f==='a1'||f==='k7')&&val!==_o)await logAct('Üretim','Masa #'+SEL+' · ['+f+'] '+(val-_o>=0?'+':'')+(val-_o));
   drawSchem();}
-async function toggle(f){if(SEL==null)return;if(roBlock())return;const s=PLAN[SEL]||(PLAN[SEL]={});const _o=s[f]||0;const nv=(_o+1)%3;s[f]=nv;await saveTbl(s);
-  const b=document.getElementById('t_'+f);if(b){b.classList.toggle('act',nv===1);b.classList.toggle('ktrl',nv===2);b.textContent=nv===2?'⚠ Kontrol':nv===1?'Yapıldı ✓':'Yapılmadı';}
-  if(/^k[1-6]$/.test(f)){const _d=(nv?1:0)-(_o?1:0);if(_d)await logAct('Üretim','Masa #'+SEL+' · ['+f+'] '+(_d>=0?'+':'')+_d);
-    if(nv===2)await logAct('Kontrol','Masa #'+SEL+' · ['+f+'] uygunsuzluk işaretlendi');else if(_o===2)await logAct('Kontrol','Masa #'+SEL+' · ['+f+'] uygunsuzluk giderildi');}
+async function toggle(f){if(SEL==null)return;if(roBlock())return;const s=PLAN[SEL]||(PLAN[SEL]={});const _o=s[f]>=1?1:0;const nv=_o?0:1;s[f]=nv;await saveTbl(s);
+  refreshKonstBtn(f);
+  if(/^k[1-6]$/.test(f)){const _d=nv-_o;if(_d)await logAct('Üretim','Masa #'+SEL+' · ['+f+'] '+(_d>=0?'+':'')+_d);}
   drawSchem();}
+async function longKonst(f){if(SEL==null)return;if(roBlock())return;const s=PLAN[SEL]||(PLAN[SEL]={});const kc=f+'c';s[kc]=s[kc]?0:1;await saveTbl(s);
+  refreshKonstBtn(f);if(navigator.vibrate)try{navigator.vibrate(30);}catch(e){}
+  await logAct('Kontrol','Masa #'+SEL+' · ['+f+'] uygunsuzluk '+(s[kc]?'işaretlendi':'giderildi'));drawSchem();}
+function refreshKonstBtn(f){const s=PLAN[SEL]||{};const b=document.getElementById('t_'+f);if(!b)return;const done=s[f]>=1,kc=!!s[f+'c'];
+  b.classList.toggle('act',done&&!kc);b.classList.toggle('ktrl',kc);
+  b.textContent=kc?'⚠ Kontrol':done?'Yapıldı ✓':'Yapılmadı';}
 async function toggleKtrl(f){if(SEL==null)return;if(roBlock())return;const s=PLAN[SEL]||(PLAN[SEL]={});s[f]=s[f]?0:1;await saveTbl(s);
   const b=document.getElementById('t_'+f);if(b){b.classList.toggle('ktrl',!!s[f]);b.textContent=s[f]?'⚠ Kontrol':'Kontrol?';}
   await logAct('Kontrol','Masa #'+SEL+' · [panel] uygunsuzluk '+(s[f]?'işaretlendi':'giderildi'));}
 /*FEET*/
 let SHOWFEET=true,LASTFOOT="";
+function migrateKontrol(s){if(!s)return s;
+  /* ayak: eski 4(KONTROL) durumu → 3(monte) + ayrı kontrol bayrağı */
+  if(Array.isArray(s.foot)&&s.footv===2){
+    if(!Array.isArray(s.footk)||s.footk.length!==14)s.footk=s.foot.map(x=>x>=4?1:0);
+    for(let j=0;j<14;j++)if(s.foot[j]>=4)s.foot[j]=3;
+  }
+  /* konstrüksiyon: eski 2(kontrol) → 1(yapıldı) + kontrol bayrağı kXc */
+  for(const k of ['k1','k2','k3','k4','k5','k6'])if(s[k]===2){s[k]=1;s[k+'c']=1;}
+  return s;}
 function footOf(i){const s=PLAN[i]||{};
   if(Array.isArray(s.foot)&&s.foot.length===14){
-    if(s.footv===2)return s.foot.slice();
-    return s.foot.map(x=>x>=2?3:x>=1?2:0); /* legacy 0/1/2 (boş/delindi/monte) → yeni 0/2/3 (boş/rok/monte); harita ayağı yoktu */
+    if(s.footv===2)return s.foot.map(x=>x>=4?3:x); /* eski 4(KONTROL) → 3(monte); kontrol ayrı bayrağa taşındı */
+    return s.foot.map(x=>x>=2?3:x>=1?2:0); /* legacy 0/1/2 (boş/delindi/monte) → yeni 0/2/3 */
   }
   const del=+s.a2||0,mon=Math.min(+s.a3||0,+s.a4||0,+s.a5||0);
   const a=[];for(let j=0;j<14;j++)a.push(j<mon?3:(j<del?2:0));return a;}
-function footColor(v){return v>=4?'#E5484D':v>=3?'#2e9e5b':v>=2?'#E8833A':v>=1?'#7c5cff':'#cdd2da';}
+function footkOf(i){const s=PLAN[i]||{};
+  if(Array.isArray(s.footk)&&s.footk.length===14)return s.footk.slice();
+  /* eski modelde foot[j]==4 KONTROL idi → kontrol bayrağına çevir */
+  if(Array.isArray(s.foot)&&s.footv===2)return s.foot.map(x=>x>=4?1:0);
+  return Array(14).fill(0);}
+function footColor(v){return v>=3?'#2e9e5b':v>=2?'#E8833A':v>=1?'#7c5cff':'#cdd2da';}
 function footArr(){return footOf(SEL).slice();}
-function syncFoot(a){const s=PLAN[SEL]||(PLAN[SEL]={});s.foot=a.slice();s.footv=2;
+function footkArr(){return footkOf(SEL).slice();}
+function syncFoot(a,k){const s=PLAN[SEL]||(PLAN[SEL]={});s.foot=a.slice();s.footv=2;
+  if(k)s.footk=k.slice();else if(!Array.isArray(s.footk)||s.footk.length!==14)s.footk=Array(14).fill(0);
   s.a1=a.filter(x=>x>=1).length;
   s.a2=a.filter(x=>x>=2).length;
   const m=a.filter(x=>x>=3).length;s.a3=m;s.a4=m;s.a5=m;
-  s.ktrl=a.filter(x=>x>=4).length;}
+  s.ktrl=s.footk.filter(x=>x>=1).length;}
 async function cycleFoot(j){if(SEL==null)return;if(roBlock())return;
   if(ROLE!=='admin'){const ld=footLastDay(SEL,j);
-    if(ld&&ld!==dToday()){const a0=footArr();const to=(a0[j]+1)%5;const pz=(j<7?'Ön ':'Arka ')+((j%7)+1);
+    if(ld&&ld!==dToday()){const a0=footArr();const to=(a0[j]+1)%4;const pz=(j<7?'Ön ':'Arka ')+((j%7)+1);
       await reqChange({tip:'foot',masa:SEL,j,to},'Masa #'+SEL+' · '+pz+' ('+ld+' verisi)');
       toast('Geçmiş veri — yönetici onayına gönderildi');return;}}
-  const a=footArr();a[j]=(a[j]+1)%5;syncFoot(a);await saveTbl(PLAN[SEL]);
-  const lbl=['boş','işaretlendi','delindi','monte','KONTROL'],pos=(j<7?'Ön ':'Arka ')+((j%7)+1);
+  const a=footArr(),k=footkArr();a[j]=(a[j]+1)%4;syncFoot(a,k);await saveTbl(PLAN[SEL]);
+  const lbl=['boş','işaretlendi','delindi','monte'],pos=(j<7?'Ön ':'Arka ')+((j%7)+1);
   LASTFOOT='Seçili ayak: <b>'+pos+'</b> → '+lbl[a[j]];
   await logAct('Ayak işaretleme','Masa #'+SEL+' · '+pos+' → '+lbl[a[j]]);
   drawFootGrid();renderProgress();drawSchem();renderKonstPlan();}
+async function longFoot(j){if(SEL==null)return;if(roBlock())return;
+  const a=footArr(),k=footkArr();k[j]=k[j]?0:1;syncFoot(a,k);await saveTbl(PLAN[SEL]);
+  const pos=(j<7?'Ön ':'Arka ')+((j%7)+1);
+  LASTFOOT='Seçili ayak: <b>'+pos+'</b> → '+(k[j]?'⚠ KONTROL (uygunsuzluk)':'kontrol kaldırıldı');
+  if(navigator.vibrate)try{navigator.vibrate(30);}catch(e){}
+  await logAct('Kontrol','Masa #'+SEL+' · '+pos+' uygunsuzluk '+(k[j]?'işaretlendi':'giderildi'));
+  drawFootGrid();renderProgress();drawSchem();renderKonstPlan();}
 async function footAll(v){if(SEL==null)return;if(roBlock())return;
   if(ROLE!=='admin'){const ld=masaLastDay(SEL);
-    if(ld&&ld!==dToday()){await reqChange({tip:'footAll',masa:SEL,v},'Masa #'+SEL+' · toplu '+['sıfırla','işaretle','delme','montaj','KONTROL'][v]+' ('+ld+' verisi)');
+    if(ld&&ld!==dToday()){await reqChange({tip:'footAll',masa:SEL,v},'Masa #'+SEL+' · toplu '+['sıfırla','işaretle','delme','montaj'][v]+' ('+ld+' verisi)');
       toast('Geçmiş veri — yönetici onayına gönderildi');return;}}
-  syncFoot(Array(14).fill(v));await saveTbl(PLAN[SEL]);
-  await logAct('Ayak (toplu)','Masa #'+SEL+' · '+['sıfırlandı','tümü işaretli','tümü delindi','tümü monte','TÜMÜ KONTROL'][v]);
+  const k=(v===0)?Array(14).fill(0):footkArr();  /* sıfırla → kontrol de temizlenir */
+  syncFoot(Array(14).fill(v),k);await saveTbl(PLAN[SEL]);
+  await logAct('Ayak (toplu)','Masa #'+SEL+' · '+['sıfırlandı','tümü işaretli','tümü delindi','tümü monte'][v]);
   LASTFOOT='';drawFootGrid();renderProgress();drawSchem();renderKonstPlan();}
-function drawFootGrid(){const el=document.getElementById('ed_footgrid');if(!el)return;const a=footArr();const lbl=['boş','işaretlendi','delindi','monte','KONTROL'];
+function drawFootGrid(){const el=document.getElementById('ed_footgrid');if(!el)return;const a=footArr(),k=footkArr();const lbl=['boş','işaretlendi','delindi','monte'];
+  const cell=j=>{const kf=k[j]?'fk':'f'+a[j];const tip=(j<7?'Ön ':'Arka ')+((j%7)+1)+' · '+(k[j]?'⚠ KONTROL':lbl[a[j]]);
+    return `<button class="foot ${kf}" data-lp="foot:${j}" title="${tip}">${(j%7)+1}${k[j]?'<i class="fkdot">⚠</i>':''}</button>`;};
   let h='<div class="footrow"><span class="fhdr">Ön</span>';
-  for(let j=0;j<7;j++)h+=`<button class="foot f${a[j]}" onclick="cycleFoot(${j})" title="Ön ${j+1} · ${lbl[a[j]]}">${j+1}</button>`;
+  for(let j=0;j<7;j++)h+=cell(j);
   h+='</div><div class="footrow"><span class="fhdr">Arka</span>';
-  for(let j=7;j<14;j++)h+=`<button class="foot f${a[j]}" onclick="cycleFoot(${j})" title="Arka ${j-6} · ${lbl[a[j]]}">${j-6}</button>`;
+  for(let j=7;j<14;j++)h+=cell(j);
   h+='</div>';
-  const har=a.filter(x=>x>=1).length,del=a.filter(x=>x>=2).length,mon=a.filter(x=>x>=3).length,ktr=a.filter(x=>x>=4).length;
-  h+=`<div class="footsum"><span class="fdot f1"></span>Harita <b>${har}/14</b> &nbsp; <span class="fdot f2"></span>Delinen <b>${del}/14</b> &nbsp; <span class="fdot f3"></span>Monte <b>${mon}/14</b>${ktr?` &nbsp; <span class="fdot f4"></span><b style="color:#E5484D">Kontrol ${ktr}</b>`:''}</div>`;
+  const har=a.filter(x=>x>=1).length,del=a.filter(x=>x>=2).length,mon=a.filter(x=>x>=3).length,ktr=k.filter(x=>x>=1).length;
+  h+=`<div class="footsum"><span class="fdot f1"></span>Harita <b>${har}/14</b> &nbsp; <span class="fdot f2"></span>Delinen <b>${del}/14</b> &nbsp; <span class="fdot f3"></span>Monte <b>${mon}/14</b>${ktr?` &nbsp; <span class="fdot fk"></span><b style="color:#E5484D">Kontrol ${ktr}</b>`:''}</div>`;
+  h+=`<div class="foothint">Kısa dokun: durumu ilerlet · <b>uzun bas: ⚠ kontrol işaretle/kaldır</b></div>`;
   if(LASTFOOT)h+=`<div class="footpos">${LASTFOOT}</div>`;
   el.innerHTML=h;}
 async function saveTbl(s){s.by=CURUSER||document.getElementById('usta').value.trim()||'—';s.at=Date.now();PLAN[SEL]=s;
@@ -1258,10 +1296,10 @@ function renderKonstPlan(){const el=document.getElementById('plan2');if(!el)retu
     const selc=(SEL===t.i||KFIND===t.i);const dim=(ZONE&&inv!==ZONE)?' opacity="0.16"':'';
     const fill=(CURPHASE==='all')?stageFill(t.i):konstFill(phaseFracOf(CURPHASE,PLAN[t.i]||{}));
     r+='<rect'+dim+' class="t'+(selc?' sel':'')+'" x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+S.rw.toFixed(1)+'" height="'+S.rh.toFixed(1)+'" rx="1.3" fill="'+fill+'" stroke="'+(selc?'#16161A':invColor(inv))+'" stroke-width="'+(selc?2.2:1.1)+'" onclick="openEd('+t.i+')"></rect>';
-    if(SHOWFEET&&CURPHASE==='all'){const ft=footOf(t.i),fw=Math.max(0.8,S.rw*0.05),fh=Math.max(1.2,S.rh*0.30);
-      for(let c=0;c<7;c++)for(let row=0;row<2;row++){const v=ft[row*7+c];
+    if(SHOWFEET&&CURPHASE==='all'){const ft=footOf(t.i),fk=footkOf(t.i),fw=Math.max(0.8,S.rw*0.05),fh=Math.max(1.2,S.rh*0.30);
+      for(let c=0;c<7;c++)for(let row=0;row<2;row++){const idx=row*7+c,v=ft[idx];
         const fx=x+(c+0.5)*(S.rw/7)-fw/2, fy=y+(row?S.rh*0.55:S.rh*0.16);
-        r+='<rect'+dim+' x="'+fx.toFixed(1)+'" y="'+fy.toFixed(1)+'" width="'+fw.toFixed(1)+'" height="'+fh.toFixed(1)+'" rx=".4" fill="'+footColor(v)+'" pointer-events="none"></rect>';}}
+        r+='<rect'+dim+' x="'+fx.toFixed(1)+'" y="'+fy.toFixed(1)+'" width="'+fw.toFixed(1)+'" height="'+fh.toFixed(1)+'" rx=".4" fill="'+(fk[idx]?'#E5484D':footColor(v))+'" pointer-events="none"></rect>';}}
   }
   for(const inv in cen){if(ZONE&&+inv!==ZONE)continue;const pts=cen[inv];const mx=pts.reduce((a,p)=>a+p[0],0)/pts.length,my=pts.reduce((a,p)=>a+p[1],0)/pts.length;
     r+='<text class="invlbl" x="'+mx.toFixed(1)+'" y="'+my.toFixed(1)+'" text-anchor="middle" dominant-baseline="middle" font-size="9" fill="'+invColor(+inv)+'">INV'+inv+'</text>';}
@@ -1302,8 +1340,8 @@ function pickTR(id){if(id==='TR1'){focusZone(0);const b=document.getElementById(
 
 function kontrolCount(){let ayak=0,konst=0;const masalar=new Set();
   for(const t of LAYOUT.tables){const s=PLAN[t.i];if(!s)continue;
-    const fa=footOf(t.i).filter(x=>x>=4).length;if(fa){ayak+=fa;masalar.add(t.i);}
-    for(const k of ['k1','k2','k3','k4','k5','k6'])if(s[k]===2){konst++;masalar.add(t.i);}
+    const fa=footkOf(t.i).filter(x=>x>=1).length;if(fa){ayak+=fa;masalar.add(t.i);}
+    for(const k of ['k1','k2','k3','k4','k5','k6'])if(s[k+'c']||s[k]===2){konst++;masalar.add(t.i);}
     if(s.k7c){konst++;masalar.add(t.i);}}
   return {ayak,konst,toplam:ayak+konst,masalar:[...masalar].sort((a,b)=>a-b)};}
 function kontrolBanner(){const kc=kontrolCount();if(!kc.toplam)return '';
@@ -1991,7 +2029,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s47</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s48</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -2207,7 +2245,7 @@ function invReport(){
     any=true;
     const totalT=phs.reduce((a,x)=>a+x.t,0);
     const ov=totalT?Math.round(totalD/totalT*100):0;
-    let ktrl=0;masalar.forEach(t=>{const s=PLAN[t.i];if(!s)return;ktrl+=footOf(t.i).filter(x=>x>=4).length;for(const k of ['k1','k2','k3','k4','k5','k6'])if(s[k]===2)ktrl++;if(s.k7c)ktrl++;});
+    let ktrl=0;masalar.forEach(t=>{const s=PLAN[t.i];if(!s)return;ktrl+=footkOf(t.i).filter(x=>x>=1).length;for(const k of ['k1','k2','k3','k4','k5','k6'])if(s[k+'c']||s[k]===2)ktrl++;if(s.k7c)ktrl++;});
     rows.push({inv,ov});
     let bars='';
     phs.forEach(ph=>{const pc=ph.t?Math.min(100,Math.round(ph.d/ph.t*100)):0;
@@ -2373,7 +2411,7 @@ function rapBody(day,forPrint){const A=rapAgg(day);
   }
   return h;}
 async function backupAll(){try{
-  const dump={_app:'SHAMS1-TR1',_ver:'s47',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1-TR1',_ver:'s48',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:'];
   for(const pre of pref)for(const k of await slist(pre)){const v=await sget(k);if(v!=null)dump.data[k]=v;}
   const single=['targets','mpct','cab:dc','cab:ac','cab:og','dcstr','ogb','matin','matuse','matkov','matcustom','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
@@ -2572,6 +2610,29 @@ function renderBilgi(){const el=document.getElementById('bilgi');if(!el)return;
   logPanel();}
 
 /* ana ekran açık; proje seçilince openProject() yükler */
+
+/* ===== Uzun-bas (kontrol bayrağı) — kısa dokun: ilerlet · uzun bas: kontrol ===== */
+(function(){
+  var lpTimer=null,lpFired=false,LP_MS=420,sx=0,sy=0,moved=false;
+  function fire(b,long){var p=(b.getAttribute('data-lp')||'').split(':');
+    if(p[0]==='foot'){long?longFoot(+p[1]):cycleFoot(+p[1]);}
+    else if(p[0]==='konst'){long?longKonst(p[1]):toggle(p[1]);}}
+  function start(e){var b=e.target.closest&&e.target.closest('[data-lp]');if(!b)return;
+    lpFired=false;moved=false;sx=e.clientX;sy=e.clientY;
+    clearTimeout(lpTimer);lpTimer=setTimeout(function(){if(moved)return;lpFired=true;fire(b,true);},LP_MS);}
+  function move(e){if(Math.abs(e.clientX-sx)>10||Math.abs(e.clientY-sy)>10){moved=true;clearTimeout(lpTimer);}}
+  function cancel(){clearTimeout(lpTimer);}
+  function onclick(e){var b=e.target.closest&&e.target.closest('[data-lp]');if(!b)return;
+    e.preventDefault();e.stopPropagation();
+    if(lpFired){lpFired=false;return;}   /* uzun bas zaten çalıştı → kısa tıkı atla */
+    if(moved){moved=false;return;}        /* kaydırma → işlem yok */
+    fire(b,false);}
+  document.addEventListener('pointerdown',start,true);
+  document.addEventListener('pointermove',move,true);
+  document.addEventListener('pointerup',cancel,true);
+  document.addEventListener('pointercancel',cancel,true);
+  document.addEventListener('click',onclick,true);
+})();
 </script>
 <div id="dmodal" class="dmodal" style="display:none" onclick="if(event.target===this)closeDetay()"><div class="dbox"><div class="dhead"><b id="dtitle"></b><button class="dx" onclick="closeDetay()">✕</button></div><div id="dbody"></div></div></div>
 
