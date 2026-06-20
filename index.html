@@ -619,7 +619,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 65 · Puantaj iş-kalemi bazlı + günlüğe bağlı</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 68 · Puantaj iş-kalemi bazlı + günlüğe bağlı</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -644,7 +644,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 65 · Puantaj·iş kalemi · 20.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 68 · Puantaj·iş kalemi · 20.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -1215,12 +1215,13 @@ async function openEd(i){SEL=i;const t=tbl(i),s=PLAN[i]||{};
   // ayak adımları
   document.getElementById('ed_ayak').innerHTML=(()=>{
     let h='';
-    h+=`<div class="ayakgrp">Ayaklar — Harita · Delme · Montaj <i style="font-weight:400">(kısa dokun: boş → harita → delindi(rok) → monte · <b style="color:#E5484D">uzun bas: kontrol</b> · rok delgi İşveren)</i></div>
+    h+=`<div class="ayakgrp">Ayaklar — Harita · Delme · Montaj <i style="font-weight:400">(kısa dokun: boş → harita → delindi(rok) → monte (beton+terazi) · <b style="color:#E5484D">uzun bas: kontrol</b> · rok delgi İşveren)</i></div>
      <div id="ed_footgrid" class="footgrid"></div>
      <div class="footbtns"><button class="tg" onclick="footAll(1)">Tümü harita</button>
       <button class="tg" onclick="footAll(2)">Tümü delindi</button>
       <button class="tg" onclick="footAll(3)">Tümü monte</button>
       <button class="tg" onclick="footAll(0)">Sıfırla</button></div>`;
+    h+=`<details class="montdet" style="margin:8px 0;border:1px solid #e3e3e8;border-radius:10px;padding:4px 10px;background:#fafafb"><summary style="cursor:pointer;font-weight:700;padding:6px 2px;color:#1f2d3d">📋 Montaj detayı (şartname) — &quot;monte&quot; ne demek?</summary><div style="font-size:12px;line-height:1.5;color:#444;padding:4px 2px 8px"><b>Ayak = ön (P1) + arka (P2) kolon.</b> Ø200 rok deliğine dikilir, etrafı beton ile doldurulur.<br><b style="color:#2e9e5b">&quot;Monte&quot; = ayak dikildi + beton atıldı + teraziye alındı.</b> (ön ~1,2 m / arka ~1,3–1,4 m gömme)<br><br><b>Şartname montaj kuralları:</b><ul style="margin:4px 0;padding-left:18px"><li>Tüm ayaklar aplikasyon projesine uygun, RTK + lazer nivo ile işaretlenir.</li><li>İşveren kontrolünde koordinatı kayan ayak kabul edilmez → sökülüp tekrar yapılır; zayi malzeme hakedişten düşülür.</li><li>Yan yana sehpalarda kot kazığı + ip ile sehpa başı-sonu kot farkı sıfırlanır; gölgeleme yapılmaz, panel-zemin mesafe toleransı korunur (yol geçişleri dahil).</li><li>Ölçü/açı toleransı dışı ayaklar sökülür, bilabedel tekrar imal edilir.</li><li>Konstrüksiyon profilleri kesilmez/delinmez; formu bozulan değiştirilir.</li><li>Cıvata/pul/rondela/somun projeye uygun. Montaj bitince yüklenici onayı → nezaretinde tork kontrolü → tork boyası (silinmez).</li><li>Temel: çakma kazık/beton, TS500 + Azerbaycan Deprem Yön.; bağlantı için çekme/basınç/eğilme testleri müşteri onaylı.</li></ul><span style="color:#8a93a3">Kaynak: Ek-5 Teknik Şartname (5.4.7/5.4.8) + Mekanik Sorumluluk Matrisi imalat detayları.</span></div></details>`;
     return h;})();
   // konstrüksiyon (kısa dokun: yapıldı/yapılmadı · uzun bas: kontrol)
   let kh=KONST.map(c=>{const raw=s[c.k]||0;const done=raw>=1;const kc=(s[c.k+'c']?1:0)||(raw===2?1:0);
@@ -2019,7 +2020,7 @@ const MATKESIF=[
  {id:'t_nyaf',  kisim:'Kanal/Topraklama', ad:'1×16 mm² NYAF (masa topraklama drop)', birim:'adet', mik:378, est:1},
  {id:'t_serit', kisim:'Kanal/Topraklama', ad:'Galv. şerit 30×3,5 mm (ana ağ)', birim:'m', mik:0, est:1},
  {id:'t_pabuc', kisim:'Kanal/Topraklama', ad:'AG kablo pabucu', birim:'adet', mik:0, est:1},
- {id:'b_rok',   kisim:'Beton', ad:'Beton — rok yuvasına döküm (transmikser · sahadan)', birim:'m³', mik:0, est:1},
+ {id:'b_rok',   kisim:'Beton', ad:'Beton — gömme ayak Ø200 dolgu (ön 1,2 / arka 1,35 m · 5.292 ayak)', birim:'m³', mik:212, est:1, not:'Net 212 m³ — Ø200 · tüm 5.292 ayak (ön 1,2 / arka 1,35 m). Sipariş için +%8 fire ≈ 229 m³.'},
  {id:'s_kbag',  kisim:'Sarf', ad:'Kablo bağı', birim:'adet', mik:0, sarf:1},
  {id:'s_mc4',   kisim:'Sarf', ad:'MC4 konnektör', birim:'adet', mik:0, sarf:1},
  {id:'s_makaron',kisim:'Sarf', ad:'Makaron / etiket', birim:'adet', mik:0, sarf:1},
@@ -2161,7 +2162,7 @@ function matKesifView(){let h='<div class="tk2"><h3>Keşif — proje metrajları
     h+='<div class="matgrp"><div class="matgh">'+k+'</div>';
     for(const m of items){const sel=MATSEL.has(m.id);
       h+='<div class="matrow"><label class="matck"><input type="checkbox" '+(sel?'checked':'')+' onchange="toggleMatSel(\''+m.id+'\')"> <span>'+m.ad+'</span></label>'+
-        '<span class="matq">'+(ROLE==='admin'?'<input class="mikin" type="number" value="'+mikOf(m.id)+'" onchange="setKesifMik(\''+m.id+'\',this.value)">':'<b>'+trn(mikOf(m.id))+'</b>')+' '+m.birim+(m.est?' <i class="estb">e</i>':'')+(m.custom?' <a class="xdel" onclick="delCustomMat(\''+m.id+'\')">✕</a>':'')+'</span></div>';}
+        '<span class="matq">'+(ROLE==='admin'?'<input class="mikin" type="number" value="'+mikOf(m.id)+'" onchange="setKesifMik(\''+m.id+'\',this.value)">':'<b>'+trn(mikOf(m.id))+'</b>')+' '+m.birim+(m.est?' <i class="estb">e</i>':'')+(m.custom?' <a class="xdel" onclick="delCustomMat(\''+m.id+'\')">✕</a>':'')+'</span></div>'+(m.not?'<div class="mathint" style="font-size:11px;color:#8a93a3;margin:-2px 0 6px 2px">📝 '+esc(m.not)+'</div>':'');}
     h+='</div>';}
   h+='<div class="matgrp"><div class="matgh">+ Malzeme ekle (listede yoksa · kod gerekmez)</div>'+'<div class="frow"><label>Kısım<select id="cm_kis">'+MATKIS.concat(['Diğer']).map(k=>'<option>'+k+'</option>').join('')+'</select></label>'+'<label>Malzeme adı<input id="cm_ad" placeholder="ad"></label>'+'<label>Birim<input id="cm_bir" placeholder="adet" style="width:64px"></label>'+'<label>Keşif<input id="cm_mik" type="number" placeholder="0" style="width:78px"></label>'+'<button class="btn sm" onclick="addCustomMat()">Ekle</button></div></div>';
   h+='<div class="drow" style="margin-top:10px"><button class="btn sm" onclick="MATSEL=new Set(allItems().filter(m=>m.kisim!==\'Sarf\').map(m=>m.id));renderMalzeme()">Tümünü seç</button><button class="btn ghost sm" onclick="MATSEL=new Set();renderMalzeme()">Temizle</button><button class="btn sm" onclick="MSUB=1;renderMalzeme()">Seçilenlerle irsaliye →</button></div></div>';
@@ -2272,8 +2273,27 @@ async function setUse(id,v){MATUSE[id]=parseFloat(v)||0;await sset('matuse',MATU
 
 /* ----- RAPOR ----- */
 function matRows(){return allItems().map(m=>({kisim:m.kisim,ad:m.ad,birim:m.birim,kesif:mikOf(m.id),gelen:gelenOf(m.id),kul:kullanilanOf(m.id),kalan:kalanOf(m.id),eksik:eksikOf(m.id)}));}
-function matRaporView(){const R=matRows();const kesBox='<details class="kesdet" style="margin:8px 0;border:1px solid #e3e3e8;border-radius:10px;padding:4px 10px"><summary style="cursor:pointer;font-weight:700;padding:6px 2px">🔧 Keşif metrajı — gör / düzenle</summary>'+matKesifView()+'</details>';
-  let h=kesBox+'<div class="tk2"><h3>Malzeme raporu — kullanılan / kalan / eksik</h3>'+
+function betonKarsi(){
+  const TOT=212, AYAK=5292, U=TOT/AYAK;
+  const at=(typeof sumP==='function'?sumP('a4'):0);
+  const gel=gelenOf('b_rok')||0;
+  const teo=at*U, bUnit=at>0?gel/at:0, fark=gel-teo, fire=teo>0?(gel/teo-1)*100:0;
+  const pAyak=AYAK>0?at/AYAK*100:0, pBet=TOT>0?gel/TOT*100:0;
+  const f1=x=>(Math.round(x*10)/10).toString().replace('.',','), f2=x=>(Math.round(x*1000)/1000).toString().replace('.',',');
+  return '<div class="tk2"><h3>Beton — Proje vs İmalat metraj</h3>'+
+   '<div class="sub">Proje (keşif) tüm 5.292 ayak; imalat sahadan: atılan ayak (Beton atılması adımı) × birim, gelen m³ irsaliyeden.</div>'+
+   '<table class="mtab"><tbody>'+
+   '<tr><td>Proje metraj (keşif)</td><td><b>'+f1(TOT)+' m³</b> · '+AYAK+' ayak · '+f2(U)+' m³/ayak</td></tr>'+
+   '<tr><td>Atılan ayak (imalat)</td><td><b>'+trn(at)+'</b> / '+AYAK+' · %'+f1(pAyak)+'</td></tr>'+
+   '<tr><td>Atılan ayağın teorik betonu</td><td><b>'+f1(teo)+' m³</b></td></tr>'+
+   '<tr><td>Gelen / dökülen beton</td><td><b>'+f1(gel)+' m³</b> · proje payı %'+f1(pBet)+'</td></tr>'+
+   '<tr><td>Gerçek birim tüketim</td><td><b>'+f2(bUnit)+' m³/ayak</b> (proje '+f2(U)+')</td></tr>'+
+   '<tr><td>Fark (gelen − teorik)</td><td><b style="color:'+(fark>=0?'#2e9e5b':'#E5484D')+'">'+(fark>=0?'+':'')+f1(fark)+' m³</b> · sapma %'+f1(fire)+'</td></tr>'+
+   '</tbody></table>'+
+   '<div class="hint">Fark + → teorikten fazla tüketim (fire/taşma); − → eksik (henüz dökülmemiş ayak ya da ölçüm farkı).</div></div>';
+}
+function matRaporView(){const R=matRows();const kesBox='<details class="kesdet" style="margin:8px 0;border:1px solid #e3e3e8;border-radius:10px;padding:4px 10px"><summary style="cursor:pointer;font-weight:700;padding:6px 2px">🔧 Keşif metrajı — gör / düzenle</summary>'+matKesifView()+'</details>';const betonBox=betonKarsi();
+  let h=kesBox+betonBox+'<div class="tk2"><h3>Malzeme raporu — kullanılan / kalan / eksik</h3>'+
    '<div class="sub">Keşif vs gelen vs kullanılan. Kalan = gelen − kullanılan · Eksik = keşif − gelen. Solar kullanım DC ilerlemesinden otomatik.</div>'+
    '<div class="drow" style="margin:4px 0 10px"><button class="btn sm" onclick="exportXls()">⬇ Excel (.xls) indir</button><button class="btn ghost sm" onclick="exportMail()">✉ E-posta metni</button></div>'+
    '<div style="overflow:auto"><table class="mtab"><thead><tr><th>Kısım</th><th>Malzeme</th><th>Birim</th><th>Keşif</th><th>Gelen</th><th>Kullanılan</th><th>Kalan</th><th>Eksik</th></tr></thead><tbody>';
@@ -2300,7 +2320,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s65</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s68</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -2718,7 +2738,7 @@ function rapBody(day,forPrint){const A=rapAgg(day);
   }
   return h;}
 async function backupAll(){try{
-  const dump={_app:'SHAMS1-TR1',_ver:'s65',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1-TR1',_ver:'s68',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:'];
   for(const pre of pref)for(const k of await slist(pre)){const v=await sget(k);if(v!=null)dump.data[k]=v;}
   const single=['targets','mpct','cab:dc','cab:ac','cab:og','dcstr','ogb','matin','matuse','matkov','matcustom','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
