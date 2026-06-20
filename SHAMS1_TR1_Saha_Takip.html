@@ -619,7 +619,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 61 · Puantaj iş-kalemi bazlı + günlüğe bağlı</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 62 · Puantaj iş-kalemi bazlı + günlüğe bağlı</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -644,7 +644,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 61 · Puantaj·iş kalemi · 20.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 62 · Puantaj·iş kalemi · 20.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -2188,7 +2188,7 @@ function matGelenView(){
   if(!MATIN.length)list+='<div class="empty">Henüz irsaliye yok.</div>';
   else{list+='<div class="irlist">'+MATIN.map(r=>{const n=Object.values(r.items).filter(x=>+x>0).length;
     return '<div class="ircard"><div class="irh"><b>İrs '+(esc(r.no)||'-')+'</b> · '+(esc(r.ted)||'?')+' · '+(esc(r.tarih)||'')+'<span class="irby">'+esc(r.by||'')+'</span></div>'+
-      '<div class="hint">'+n+' kalem · '+Object.entries(r.items).filter(([,q])=>+q>0).map(([id,q])=>(matItem(id)?matItem(id).ad.split(' ')[0]:id)+':'+trn(q)).join(' · ')+'</div>'+
+      '<div class="hint">'+(n?n+' kalem · '+Object.entries(r.items).filter(([,q])=>+q>0).map(([id,q])=>(matItem(id)?matItem(id).ad.split(' ')[0]:id)+':'+trn(q)).join(' · '):'📷 foto okutuldu · miktar bekliyor')+'</div>'+
       '<div class="drow"><button class="btn sm" onclick="irDetay(\''+r.id+'\')">🔍 Detay</button><button class="btn ghost sm" onclick="viewIrPhoto(\''+r.id+'\')">📷 foto</button>'+(ROLE==='admin'?'<button class="btn ghost sm" onclick="delIrsaliye(\''+r.id+'\')">sil</button>':'')+'</div></div>';}).join('')+'</div>';}
   list+='</div>';
   setTimeout(()=>{const d=document.getElementById('ir_date');if(d&&!d.value)d.value=new Date().toISOString().slice(0,10);if(CURPHOTO){const t=document.getElementById('ir_thumb');if(t)t.innerHTML='<img class="irthumb" src="'+CURPHOTO+'">';}},0);
@@ -2208,14 +2208,14 @@ async function ocrPhoto(){const o=document.getElementById('ocrout');if(!CURPHOTO
 async function addIrsaliye(){if(roBlock())return;const no=fval('ir_no'),date=fval('ir_date'),ted=fval('ir_ted');
   const sel=MATSEL.size?[...MATSEL]:allItems().filter(m=>m.kisim!=='Sarf').map(m=>m.id);
   const items={};let any=false;for(const id of sel){const e=document.getElementById('q_'+id);const v=e?parseFloat(e.value):0;if(v>0){items[id]=v;any=true;}}
-  if(!any){toast('En az bir miktar girin');return;}
+  if(!any&&!CURPHOTO&&!no&&!ted){toast('Foto okut, irsaliye no gir ya da en az bir miktar girin');return;}
   const id='irs'+Date.now();const rec={id,no,tarih:date,ted,items,by:ROLE||'?',ts:Date.now()};
   MATIN.unshift(rec);await sset('matin',MATIN);if(CURPHOTO){await sset('matph:'+id,CURPHOTO);}CURPHOTO=null;
-  await logAct('irsaliye',no+' · '+Object.keys(items).length+' kalem');toast('İrsaliye kaydedildi');renderMalzeme();}
+  await logAct('irsaliye',(no||'(no yok)')+' · '+Object.keys(items).length+' kalem'+(rec.no||rec.ted?'':' · foto'));toast('İrsaliye kaydedildi'+(any?'':' (miktar sonra eklenebilir)'));renderMalzeme();}
 function zoomImg(el){el.classList.toggle("zoom");}
 async function irDetay(id){
   var r=MATIN.find(function(x){return x.id===id;}); if(!r)return;
-  var ph=null; try{ ph=await sget('matph:'+id); }catch(e){}
+  var ph=null; try{ ph=await sget('matph:'+id); }catch(e){} if(!ph&&r.img)ph=r.img;
   var rows=Object.entries(r.items).filter(function(e){return +e[1]>0;}).map(function(e){
     var mid=e[0], q=+e[1], it=matItem(mid), ad=it?it.ad:mid;
     var kes=mikOf(mid)||0, gel=gelenOf(mid)||0;
@@ -2235,7 +2235,7 @@ async function irDetay(id){
   var photo=ph?('<div class="irdphoto"><div class="dscroll"><img id="dimg" src="'+ph+'" onclick="zoomImg(this)"></div><div class="drow" style="margin-top:8px"><a class="btn ghost sm" href="'+ph+'" download="'+(esc(r.no)||"irsaliye")+'.jpg">⬇ İndir</a><span class="hint">Fotoğrafa dokun → büyüt</span></div></div>'):'<div class="empty">Bu irsaliyeye foto eklenmemiş.</div>';
   modalShow('İrsaliye '+(esc(r.no)||""), info+'<div class="irdh">Gelen kalemler · iş katkısı</div>'+rows+'<div class="irdh">Çeki listesi fotoğrafı</div>'+photo);
 }
-async function viewIrPhoto(id){const ph=await sget('matph:'+id);modalShow('İrsaliye fotoğrafı',ph?'<div class="dscroll"><img id="dimg" src="'+ph+'" onclick="this.classList.toggle(\'zoom\')"></div>':'<div class="empty">Bu irsaliyeye foto eklenmemiş.</div>');}
+async function viewIrPhoto(id){let ph=null;try{ph=await sget('matph:'+id);}catch(e){}if(!ph){const r=MATIN.find(x=>x.id===id);if(r&&r.img)ph=r.img;}modalShow('İrsaliye fotoğrafı',ph?'<div class="dscroll"><img id="dimg" src="'+ph+'" onclick="this.classList.toggle(\'zoom\')"></div>':'<div class="empty">Bu irsaliyeye foto eklenmemiş.</div>');}
 async function delIrsaliye(id){if(roBlock())return;if(ROLE!=='admin')return;if(!confirm('İrsaliye silinsin mi?'))return;MATIN=MATIN.filter(r=>r.id!==id);await sset('matin',MATIN);await sdel('matph:'+id);renderMalzeme();}
 
 /* ----- SARF ----- */
@@ -2277,7 +2277,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s61</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s62</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -2695,7 +2695,7 @@ function rapBody(day,forPrint){const A=rapAgg(day);
   }
   return h;}
 async function backupAll(){try{
-  const dump={_app:'SHAMS1-TR1',_ver:'s61',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1-TR1',_ver:'s62',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:'];
   for(const pre of pref)for(const k of await slist(pre)){const v=await sget(k);if(v!=null)dump.data[k]=v;}
   const single=['targets','mpct','cab:dc','cab:ac','cab:og','dcstr','ogb','matin','matuse','matkov','matcustom','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
