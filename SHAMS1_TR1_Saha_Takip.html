@@ -604,6 +604,10 @@
   .gmeta{font-size:12px;color:#6b7480;margin-top:5px}
   .gengel{font-size:12px;font-weight:600;color:#c5341c;margin-top:7px;background:#ffeae5;border-radius:8px;padding:6px 9px}
   .gnot{font-size:12px;color:#6b7480;margin-top:6px;font-style:italic}
+   .groster{display:flex;flex-wrap:wrap;gap:5px;margin:-2px 0 4px}
+   .grchip{background:#eef2f7;border:1px solid #dde3ea;border-radius:20px;padding:3px 9px;font-size:11.5px;font-weight:600;color:#33404f}
+   .grchip i{color:#d97706;font-style:normal}
+   .grnames{font-size:11.5px;color:#33404f;margin-top:5px;line-height:1.5}
   .hckgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:6px 0 10px}
   .hckrow{display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid #e7e6e1;border-radius:10px;padding:7px 10px;background:#fff}
   .hckrow span{font-size:12.5px;color:#1f2730}
@@ -619,7 +623,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 69 · Puantaj iş-kalemi bazlı + günlüğe bağlı</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 72 · Puantaj iş-kalemi bazlı + günlüğe bağlı</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -644,7 +648,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 69 · Puantaj·iş kalemi · 20.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 72 · Puantaj·iş kalemi · 20.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -1053,6 +1057,7 @@ async function reloadAll(){
   {const _del=team_del||[];let ch=false;for(const [ad,kn] of SEED_TEAM){if(_del.indexOf(kn)>=0)continue;if(!TEAM.some(t=>(t.kimlikno&&t.kimlikno===kn)||t.ad===ad)){TEAM.push({id:uid(),ad,gorev:'Mekanik',tel:'',kimlikno:kn,giris:dToday(),cikis:'',aktif:true,foto:'',kimlik:''});ch=true;}}if(ch)await sset('team',TEAM);}
   HC={};for(const k in hcs)if(hcs[k])HC[k.slice(3)]=hcs[k];
   PJ={};for(const k in pjs)if(pjs[k])PJ[k.slice(3)]=pjs[k];
+  PJG={};{const _pg=(await sgetAll('pjg:'))||{};for(const k in _pg)if(_pg[k])PJG[k.slice(4)]=_pg[k];}
   DREQ=[];for(const k in drs)if(drs[k])DREQ.push(drs[k]);
   ALOG=[];for(const k in als)if(als[k])ALOG.push(als[k]);ALOG.sort((a,b)=>b.ts-a.ts);
   renderHCbanner();
@@ -1083,7 +1088,7 @@ function mechItems(){
   return [
    {id:'harita',ad:'Harita Aplikasyon',dis:'MEK',pur:0.00,birim:'ayak',done:sumP('a1'),hedef:5292,plan:1},
    {id:'ayakdelme',ad:'Ayak Delme (rok)',dis:'MEK',pur:0.00,birim:'ayak',done:sumP('a2'),hedef:5292,plan:1,isv:true},
-   {id:'ayakmont',ad:'Ayak Montajı',dis:'MEK',pur:0.42,birim:'ayak',done:sumP('a3')+sumP('a4')+sumP('a5'),hedef:3*5292,plan:1},
+   {id:'ayakmont',ad:'Ayak Montajı',dis:'MEK',pur:0.42,birim:'ayak',done:sumMon(),hedef:5292,plan:1},
    {id:'ustm',ad:'Üst Montaj / Aşık',dis:'MEK',pur:0.31,birim:'adım',done:cntK('k1')+cntK('k2')+cntK('k3')+cntK('k4')+cntK('k5')+cntK('k6'),hedef:6*T1,plan:1},
    {id:'panel',ad:'Panel Montajı',dis:'MEK',pur:0.27,birim:'panel',done:sumP('k7'),hedef:9828,plan:1},
   ];
@@ -1143,7 +1148,7 @@ function renderPlan(){
 function renderPlanSummary(){
   if(!document.getElementById('m_rok'))return;
   document.getElementById('m_rok').textContent=tr(sumP('a2'))+' / 5.292';
-  document.getElementById('m_ayak').textContent=tr(sumP('a3')+sumP('a4')+sumP('a5'))+' / 15.876';
+  document.getElementById('m_ayak').textContent=tr(sumMon())+' / 5.292';
   document.getElementById('m_konst').textContent=tr(cntK('k1'))+' / 378';
   document.getElementById('m_panel').textContent=tr(sumP('k7'))+' / 9.828';
 }
@@ -1498,7 +1503,7 @@ function curFrac(s){return CURPHASE==='all'?konstFrac(s):phaseFrac(s);}
 function phaseUnits(p,s){s=s||{};
   if(p==='harita')return {d:Math.min(14,+s.a1||0),t:14};
   if(p==='rok')return {d:Math.min(14,+s.a2||0),t:14};
-  if(p==='beton')return {d:Math.min(14,+s.a3||0)+Math.min(14,+s.a4||0)+Math.min(14,+s.a5||0),t:42};
+  if(p==='beton')return {d:Math.min(14,+s.a4||0),t:14};
   if(p==='kolon')return {d:(s.k1?1:0)+(s.k2?1:0),t:2};
   if(p==='celik')return {d:(s.k3?1:0)+(s.k4?1:0)+(s.k5?1:0)+(s.k6?1:0),t:4};
   if(p==='panel')return {d:Math.min(26,+s.k7||0),t:26};
@@ -1508,7 +1513,7 @@ function phaseFrac(s){if(!s)return 0;if(CURPHASE==='all')return konstFrac(s);ret
 const PHASE_ORDER=['harita','rok','beton','kolon','celik','panel'];
 const STAGE_COL={harita:'#a78bfa',rok:'#E8833A',beton:'#8a93a3',kolon:'#3f7cc0',celik:'#1f9d8f',panel:'#2e9e5b'};
 const STAGE_NM={harita:'Harita',rok:'Rok',beton:'Beton',kolon:'Kolon',celik:'Çelik',panel:'Panel'};
-const PHASE_UNIT={harita:'ayak işaretlendi',rok:'ayak delindi',beton:'montaj adımı',kolon:'kolon (P1/P2)',celik:'çelik adım',panel:'panel'};
+const PHASE_UNIT={harita:'ayak işaretlendi',rok:'ayak delindi',beton:'ayak (beton atılan)',kolon:'kolon (P1/P2)',celik:'çelik adım',panel:'panel'};
 /* sıra zorunlu: bir masanın ilk tamamlanmamış fazı = bulunduğu aşama */
 function masaStage(s){if(!s)return {phase:'none',frac:0,started:false};
   for(const p of PHASE_ORDER){const f=phaseFracOf(p,s);if(f<1)return {phase:p,frac:f,started:f>0};}
@@ -1530,7 +1535,7 @@ function renderPhaseInfo(){const c=document.getElementById('phasecount');if(!c)r
   const s=phaseStats(CURPHASE,z);const pct=s.t?Math.round(s.d/s.t*100):0;
   c.innerHTML='<b>'+zlbl+'</b> · '+tr(s.d)+' / '+tr(s.t)+' '+(PHASE_UNIT[CURPHASE]||'')+' · <b style="color:var(--solar)">%'+pct+'</b>';}
 function setPhase(p){CURPHASE=p;const lbl=document.getElementById('phaselbl');
-  const nm={all:'Tüm konstrüksiyon · aşama renkleri',harita:'1. Harita işaretleme',rok:'2. Rok delme (İşveren)',beton:'3. Beton / ayak montajı',kolon:'4. Kolon (P1/P2)',celik:'5. Çelik montaj',panel:'6. Panel montaj'};
+  const nm={all:'Tüm konstrüksiyon · aşama renkleri',harita:'1. Harita işaretleme',rok:'2. Rok delme (İşveren)',beton:'3. Beton — atılan ayak',kolon:'4. Kolon (P1/P2)',celik:'5. Çelik montaj',panel:'6. Panel montaj'};
   if(lbl)lbl.textContent=nm[p]||p;renderPhaseChips();renderKonstPlan();renderZoneMasa();}
 
 /* ===== ortak teknik-kart yardımcıları ===== */
@@ -1553,6 +1558,8 @@ function ghCard(){const g=GH||{};return '<div class="tk2 adminonly"><h3>📡 Ver
 /* ===================== EKİP · PUANTAJ · LOG · SİLME ONAYI · HARİTA ===================== */
 let TEAM=[], HC={}, DREQ=[], ALOG=[], ARAC=[];
 let PJ={}, PJ_YM='';
+let PJG={};
+let GROSTER=[];
 const PJST=[
  {c:'',  l:'—', v:0,   bg:'transparent', fg:'var(--muted,#888)'},
  {c:'V', l:'●', v:1,   bg:'#16a34a',     fg:'#fff'},
@@ -1563,6 +1570,8 @@ const PJST=[
 ];
 const PJORDER=['','V','Y','X','İ','R'];
 function pjMeta(c){return PJST.find(s=>s.c===(c||''))||PJST[0];}
+const PJGOREV=[{id:'harita',l:'Harita',c:'#a78bfa'},{id:'rok',l:'Rok delme',c:'#E8833A'},{id:'beton',l:'Beton / montaj',c:'#8a93a3'},{id:'kolon',l:'Kolon (P1/P2)',c:'#3f7cc0'},{id:'celik',l:'Çelik montaj',c:'#1f9d8f'},{id:'panel',l:'Panel montajı',c:'#2e9e5b'},{id:'kazi',l:'Kazı / araç',c:'#b45309'},{id:'nakliye',l:'Nakliye / taşıma',c:'#6b7280'},{id:'genel',l:'Saha / genel',c:'#475569'}];
+function pjgOf(id){return PJGOREV.find(function(g){return g.id===id;});}
 function pjFmt(n){return n%1?String(n).replace('.',','):String(n);}
 const TROLES=['Şantiye Şefi','Mühendis','Formen','Mekanik','Elektrik','Yardımcı','Güvenlik'];
 const SEED_TEAM=[
@@ -1676,9 +1685,18 @@ function pjPanel(){return '<style>'+
  '.pjc:hover{outline:2px solid var(--solar,#E8833A);outline-offset:-2px}'+
  '.pjtot{font-weight:700;background:#fafbfc;min-width:34px}'+
  '.pjfoot td{background:#f6f7f9;font-weight:600}.pjfoot .pjname{background:#f6f7f9}'+
+ '.pjgov{position:fixed;inset:0;background:rgba(15,18,24,.46);z-index:9999;display:flex;align-items:flex-end;justify-content:center}'+
+ '.pjgsheet{background:#fff;width:100%;max-width:520px;border-radius:16px 16px 0 0;padding:14px 14px calc(14px + env(safe-area-inset-bottom));box-shadow:0 -8px 28px rgba(0,0,0,.25)}'+
+ '.pjgh{display:flex;flex-direction:column;margin-bottom:10px}.pjgh b{font-size:16px}.pjgh small{color:var(--muted,#888)}'+
+ '.pjggrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}'+
+ '.pjgb{display:flex;align-items:center;gap:8px;padding:11px 10px;border:1.5px solid #ccc;border-radius:10px;background:#fff;font-weight:600;font-size:13px;text-align:left;cursor:pointer}'+
+ '.pjgb i{width:12px;height:12px;border-radius:3px;flex:0 0 auto}'+
+ '.pjgb.on{color:#fff!important}.pjgb.on i{background:#fff!important}'+
+ '.pjgclr{width:100%;margin-top:10px;padding:10px;border:1px solid var(--line,#e6e9ef);border-radius:10px;background:#fff;color:#c0392b;font-weight:600;cursor:pointer}'+
+ '.pjgx{width:100%;margin-top:6px;padding:10px;border:none;border-radius:10px;background:#222;color:#fff;font-weight:600;cursor:pointer}'+
  '</style>'+
  '<div class="tk2"><h3>Puantaj cetveli — kişi bazlı (aylık)</h3>'+
- '<div class="sub">Hücreye dokun → durum değişir (● tam · ½ yarım · – yok · İ izin · R rapor). "Gün" = kişinin aylık çalışılan gün toplamı.</div>'+
+ '<div class="sub">Hücreye dokun → durum değişir (● tam · ½ yarım · – yok · İ izin · R rapor). "Gün" = aylık çalışılan gün. <b>Hücreye uzun bas → o günkü görevi seç.</b></div>'+
  '<div id="pjgrid"></div></div>';}
 
 async function pjCycle(pid,day){if(roBlock())return;const ym=PJ_YM;if(!PJ[ym])PJ[ym]={};if(!PJ[ym][pid])PJ[ym][pid]={};
@@ -1686,6 +1704,26 @@ async function pjCycle(pid,day){if(roBlock())return;const ym=PJ_YM;if(!PJ[ym])PJ
   if(nx)PJ[ym][pid][day]=nx;else delete PJ[ym][pid][day];
   if(Object.keys(PJ[ym][pid]).length===0)delete PJ[ym][pid];
   await sset('pj:'+ym,PJ[ym]);renderPJ();}
+let PJLP=null,PJLPfired=false;
+function pjDown(ev,pid,day){PJLPfired=false;clearTimeout(PJLP);PJLP=setTimeout(function(){PJLPfired=true;try{if(navigator.vibrate)navigator.vibrate(15);}catch(e){}pjGorevPick(pid,day);},460);}
+function pjUp(ev,pid,day){clearTimeout(PJLP);if(PJLPfired){PJLPfired=false;return;}pjCycle(pid,day);}
+function pjPCancel(){clearTimeout(PJLP);}
+function pjGorevPick(pid,day){if(roBlock())return;const ym=PJ_YM;const p=(TEAM||[]).find(function(x){return x.id===pid;});if(!p)return;
+  const cur=(PJG[ym]&&PJG[ym][pid]&&PJG[ym][pid][day])||'';
+  let ov=document.getElementById('pjgov');if(ov)ov.remove();
+  ov=document.createElement('div');ov.id='pjgov';ov.className='pjgov';
+  ov.onclick=function(e){if(e.target===ov)ov.remove();};
+  const btns=PJGOREV.map(function(g){const on=g.id===cur;return '<button class="pjgb'+(on?' on':'')+'" style="border-color:'+g.c+(on?';background:'+g.c:';color:'+g.c)+'" onclick="pjSetGorev(\''+pid+'\','+day+',\''+g.id+'\')"><i style="background:'+g.c+'"></i>'+esc(g.l)+'</button>';}).join('');
+  ov.innerHTML='<div class="pjgsheet"><div class="pjgh"><b>'+esc(p.ad)+'</b><small>'+day+'. gün · '+esc(p.gorev||'')+' — görev seç</small></div><div class="pjggrid">'+btns+'</div><button class="pjgclr" onclick="pjSetGorev(\''+pid+'\','+day+',\'\')">Görevi temizle</button><button class="pjgx" onclick="var o=document.getElementById(\'pjgov\');if(o)o.remove()">Kapat</button></div>';
+  document.body.appendChild(ov);}
+async function pjSetGorev(pid,day,gid){const ym=PJ_YM;if(!PJG[ym])PJG[ym]={};if(!PJG[ym][pid])PJG[ym][pid]={};
+  if(gid)PJG[ym][pid][day]=gid;else delete PJG[ym][pid][day];
+  if(Object.keys(PJG[ym][pid]).length===0)delete PJG[ym][pid];
+  var o=document.getElementById('pjgov');if(o)o.remove();
+  await sset('pjg:'+ym,PJG[ym]||{});
+  const g=gid?pjgOf(gid):null;const p=(TEAM||[]).find(function(x){return x.id===pid;});
+  await logAct('Görev',(p?p.ad:pid)+' · '+day+'. gün → '+(g?g.l:'temizlendi'));
+  renderPJ();}
 
 function pjNav(d){const[y,m]=PJ_YM.split('-').map(Number);const dt=new Date(y,m-1+d,1);
   PJ_YM=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0');renderPJ();}
@@ -1706,7 +1744,8 @@ function renderPJ(){const host=document.getElementById('pjgrid');if(!host)return
   for(const p of persons){const pd=data[p.id]||{};let tot=0;
     let row='<td class="pjname">'+esc(p.ad)+'<small>'+esc(p.gorev)+'</small></td>';
     for(let d=ld;d>=1;d--){const mt=pjMeta(pd[d]);tot+=mt.v;dayTot[d]+=mt.v;
-      row+='<td class="pjc'+(we(d)?' we':'')+'" onclick="pjCycle(\''+p.id+'\','+d+')" style="background:'+mt.bg+';color:'+mt.fg+'">'+(mt.c?mt.l:'')+'</td>';}
+      const gv=(PJG[ym]&&PJG[ym][p.id]&&PJG[ym][p.id][d])||'';const go=gv?pjgOf(gv):null;
+      row+='<td class="pjc'+(we(d)?' we':'')+'" onpointerdown="pjDown(event,\''+p.id+'\','+d+')" onpointerup="pjUp(event,\''+p.id+'\','+d+')" onpointerleave="pjPCancel()" onpointercancel="pjPCancel()" title="'+esc(p.ad)+' · '+d+(go?' · '+esc(go.l):'')+'" style="background:'+mt.bg+';color:'+mt.fg+(go?';box-shadow:inset 0 -3px 0 '+go.c:'')+'">'+(mt.c?mt.l:'')+'</td>';}
     grand+=tot;body+='<tr>'+row+'<td class="pjtot">'+(tot?pjFmt(tot):'')+'</td></tr>';}
   let foot='<tr class="pjfoot"><td class="pjname">Günlük toplam</td>';
   for(let d=ld;d>=1;d--)foot+='<td class="'+(we(d)?'we':'')+'">'+(dayTot[d]?pjFmt(dayTot[d]):'')+'</td>';
@@ -2057,7 +2096,7 @@ async function addGunluk(){
   var ev=document.getElementById('g_engel'),engelVar=!!(ev&&ev.checked);
   var engelTip=engelVar?fval('g_etip'):'',engelSure=engelVar?(+fval('g_esure')||0):0,engelNot=engelVar?fval('g_enot'):'';
   if(!tarih){toast('Tarih girin');return;}
-  GUNLUK.unshift({id:'g'+Date.now(),tarih:tarih,kalem:kalem,ilerleme:ilerleme,kisi:kisi,arac:arac,engelVar:engelVar,engelTip:engelTip,engelSure:engelSure,engelNot:engelNot,not:not,by:(typeof ROLE!=='undefined'?ROLE:'')||'?',ts:Date.now()});
+  GUNLUK.unshift({id:'g'+Date.now(),tarih:tarih,kalem:kalem,ilerleme:ilerleme,kisi:kisi,kisiler:(typeof GROSTER!=='undefined'&&GROSTER.length?GROSTER.slice():[]),arac:arac,engelVar:engelVar,engelTip:engelTip,engelSure:engelSure,engelNot:engelNot,not:not,by:(typeof ROLE!=='undefined'?ROLE:'')||'?',ts:Date.now()});
   await sset('gunluk',GUNLUK);
   try{await logAct('gunluk',tarih+' · '+gKalemAd(kalem));}catch(e){}
   toast('Saha günlüğü kaydedildi');renderGunluk();
@@ -2081,6 +2120,7 @@ function renderGunluk(){
     '<label>İlerleme (adet)<input id="g_ilerleme" type="number" placeholder="0"></label></div>'+
     '<div class="frow"><label>Çalışan kişi (puantajdan)<input id="g_kisi" type="number" placeholder="0"><span class="hint" id="g_kisihint"></span></label>'+
     '<label>Çalışan araç/ekipman<input id="g_arac" placeholder="vinç, manlift..."></label></div>'+
+    '<div id="g_roster" class="groster"></div>'+
     '<div class="frow"><label class="gck"><input type="checkbox" id="g_engel" onchange="gEngelTgl()"> Engel / bekleme oldu</label></div>'+
     '<div id="g_engelbox" style="display:none">'+
       '<div class="frow"><label>Engel nedeni<select id="g_etip">'+engelOpts+'</select></label>'+
@@ -2105,7 +2145,7 @@ function renderGunluk(){
     var eng=r.engelVar?'<div class="gengel">⚠ ENGEL · '+esc(gEngelAd(r.engelTip))+(r.engelSure?' · '+gnum(r.engelSure)+' gün':'')+(r.engelNot?' — '+esc(r.engelNot):'')+'</div>':'';
     var meta=[];if(r.ilerleme)meta.push('İlerleme '+trn(r.ilerleme));if(r.kisi)meta.push(trn(r.kisi)+' kişi');if(r.arac)meta.push('🚜 '+esc(r.arac));
     return '<div class="gcard'+(r.engelVar?' gcard-e':'')+'"><div class="gch"><b>'+esc(r.tarih||'-')+'</b> · '+esc(gKalemAd(r.kalem))+'<span class="gby">'+esc(r.by||'')+'</span></div>'+
-      (meta.length?'<div class="gmeta">'+meta.join(' · ')+'</div>':'')+eng+(r.not?'<div class="gnot">'+esc(r.not)+'</div>':'')+
+      (meta.length?'<div class="gmeta">'+meta.join(' · ')+'</div>':'')+((r.kisiler&&r.kisiler.length)?'<div class="grnames">👷 '+r.kisiler.map(esc).join(', ')+'</div>':'')+eng+(r.not?'<div class="gnot">'+esc(r.not)+'</div>':'')+
       ((typeof ROLE!=='undefined'&&ROLE==='admin')?'<div class="drow"><button class="btn ghost sm" onclick="delGunluk(\''+r.id+'\')">sil</button></div>':'')+'</div>';
   }).join('')+'</div>';
   hist+='</div>';
@@ -2140,13 +2180,27 @@ async function setHCKalem(){
   renderPersonel();
 }
 /* günlükte kişi sayısını puantajdan getir */
+function gRoster(d,k){var out=[];if(!d||!k)return out;var ym=d.slice(0,7),day=+d.slice(8,10);
+  (TEAM||[]).forEach(function(pp){if(pp.aktif===false)return;
+    var st=(PJ[ym]&&PJ[ym][pp.id]&&PJ[ym][pp.id][day])||'';var v=pjMeta(st).v;if(!(v>0))return;
+    var g=(PJG[ym]&&PJG[ym][pp.id]&&PJG[ym][pp.id][day])||'';
+    if(g===k)out.push({ad:pp.ad,gorev:pp.gorev,half:v<1});});
+  return out;}
 function gFillKisi(){
   var d=fval('g_tarih'), k=fval('g_kalem');
-  var rec=HC[d]; var n=(rec&&rec.kalem&&rec.kalem[k]!=null)?rec.kalem[k]:'';
-  var inp=document.getElementById('g_kisi'); if(inp&&n!=='')inp.value=n;
-  var hint=document.getElementById('g_kisihint');
-  if(hint)hint.textContent=(n!==''?('✓ puantajdan: '+n+' kişi'):'⚠ bu tarih/kalem için puantaj girilmemiş');
-  if(hint)hint.className='hint '+(n!==''?'gok':'gwarn');
+  var inp=document.getElementById('g_kisi'),hint=document.getElementById('g_kisihint'),rEl=document.getElementById('g_roster');
+  var roster=gRoster(d,k);
+  if(roster.length){
+    GROSTER=roster.map(function(x){return x.ad;});
+    if(inp)inp.value=roster.length;
+    if(hint){hint.textContent='✓ puantajdan (görev eşleşen): '+roster.length+' kişi';hint.className='hint gok';}
+    if(rEl)rEl.innerHTML=roster.map(function(x){return '<span class="grchip">'+esc(x.ad)+(x.half?' <i>½</i>':'')+'</span>';}).join('');
+  }else{
+    GROSTER=[];var rec=HC[d];var n=(rec&&rec.kalem&&rec.kalem[k]!=null)?rec.kalem[k]:'';
+    if(inp&&n!=='')inp.value=n;
+    if(hint){hint.textContent=(n!==''?('✓ puantajdan (sayı): '+n+' kişi · isim için puantajda görev ata'):'⚠ puantajda bu güne görev atanmamış — hücreye uzun bas → görev seç');hint.className='hint '+(n!==''?'gok':'gwarn');}
+    if(rEl)rEl.innerHTML='';
+  }
 }
 
 function renderMalzeme(){const el=document.getElementById('malzeme');if(!el)return;if(!window._matinWatched)watchMatin();
@@ -2320,7 +2374,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s69</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s72</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -2738,7 +2792,7 @@ function rapBody(day,forPrint){const A=rapAgg(day);
   }
   return h;}
 async function backupAll(){try{
-  const dump={_app:'SHAMS1-TR1',_ver:'s69',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1-TR1',_ver:'s72',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:'];
   for(const pre of pref)for(const k of await slist(pre)){const v=await sget(k);if(v!=null)dump.data[k]=v;}
   const single=['targets','mpct','cab:dc','cab:ac','cab:og','dcstr','ogb','matin','matuse','matkov','matcustom','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
