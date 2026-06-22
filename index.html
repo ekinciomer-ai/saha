@@ -646,6 +646,12 @@
    .fhdr.fh-on{background:#2e9e5b;color:#fff}
    .fhdr.fh-arka{background:#15314e;color:#fff}
    .fgnote{font-size:11.5px;color:#a32a2e;background:#fdecec;border:1px solid #E5484D;border-radius:7px;padding:4px 9px;margin:6px 0 4px}
+   .pjpstep{display:flex;align-items:center;gap:8px;padding:8px 2px;justify-content:center}
+   .pjpstep span{font-size:13px;color:#15314e}
+   .pjpstep button{width:36px;height:36px;border-radius:8px;border:1px solid var(--line,#e6e9ef);background:#fff;font-size:18px;font-weight:700;cursor:pointer}
+   .pjpstep .pjpz{width:auto;padding:0 12px;font-size:13px;color:#a32a2e}
+   .pjpstep b{min-width:34px;text-align:center;font-size:19px}
+   .pjgdot{display:block;height:3px;border-radius:2px;margin:1px auto 0;width:72%}
   .hckgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:6px 0 10px}
   .hckrow{display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid #e7e6e1;border-radius:10px;padding:7px 10px;background:#fff}
   .hckrow span{font-size:12.5px;color:#1f2730}
@@ -661,7 +667,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 82 · Puantaj iş-kalemi bazlı + günlüğe bağlı</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 83 · Puantaj iş-kalemi bazlı + günlüğe bağlı</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -686,7 +692,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 82 · Puantaj·iş kalemi · 20.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 83 · Puantaj·iş kalemi · 20.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -714,7 +720,7 @@
     <button class="tab adminonly" onclick="tabTo(2,this)">▤ Hakediş</button>
     <button class="tab" onclick="tabTo(3,this)">▦ Bilgi Bankası</button>
     <button class="tab" onclick="tabTo(4,this)">▣ Malzeme</button>
-    <button class="tab" onclick="tabTo(5,this)">👷 Personel</button>
+    <button class="tab" onclick="tabTo(5,this)">👷 Puantaj</button>
     <button class="tab adminonly" onclick="tabTo(6,this)">📋 Sözleşme</button>
     <button class="tab" onclick="tabTo(7,this)">📅 İş Programı</button>
     <button class="tab" onclick="tabTo(8,this)">📊 Rapor</button>
@@ -1100,6 +1106,9 @@ async function reloadAll(){
   PJG={};{const _pg=(await sgetAll('pjg:'))||{};for(const k in _pg)if(_pg[k])PJG[k.slice(4)]=_pg[k];}
   PJA={};{const _pa=(await sgetAll('pja:'))||{};for(const k in _pa)if(_pa[k])PJA[k.slice(4)]=_pa[k];}
   PJAG={};{const _pag=(await sgetAll('pjag:'))||{};for(const k in _pag)if(_pag[k])PJAG[k.slice(5)]=_pag[k];}
+  PJP={};{const _pp=(await sgetAll('pjp:'))||{};for(const k in _pp)if(_pp[k])PJP[k.slice(4)]=_pp[k];}
+  PJPG={};{const _ppg=(await sgetAll('pjpg:'))||{};for(const k in _ppg)if(_ppg[k])PJPG[k.slice(5)]=_ppg[k];}
+  PARAC=(await sget('parac'))||[];
   DREQ=[];for(const k in drs)if(drs[k])DREQ.push(drs[k]);
   ALOG=[];for(const k in als)if(als[k])ALOG.push(als[k]);ALOG.sort((a,b)=>b.ts-a.ts);
   renderHCbanner();
@@ -1603,6 +1612,7 @@ let PJ={}, PJ_YM='';
 let PJG={};
 let GROSTER=[];
 let PJA={},PJAG={};
+let PARAC=[],PJP={},PJPG={};
 const PJST=[
  {c:'',  l:'—', v:0,   bg:'transparent', fg:'var(--muted,#888)'},
  {c:'V', l:'●', v:1,   bg:'#16a34a',     fg:'#fff'},
@@ -1769,7 +1779,7 @@ async function pjSetGorev(pid,day,gid){const ym=PJ_YM;if(!PJG[ym])PJG[ym]={};if(
   renderPJ();}
 
 function pjNav(d){const[y,m]=PJ_YM.split('-').map(Number);const dt=new Date(y,m-1+d,1);
-  PJ_YM=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0');renderPJ();try{renderPJA();}catch(e){}}
+  PJ_YM=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0');renderPJ();try{renderPJA();}catch(e){}try{renderPJP();}catch(e){}}
 
 function renderPJ(){const host=document.getElementById('pjgrid');if(!host)return;
   if(!PJ_YM)PJ_YM=dToday().slice(0,7);
@@ -2500,7 +2510,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s82</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s83</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -2894,10 +2904,12 @@ function rapAdamMakina(day,forPrint){if(!day)return '';
     arows.push({ad:a.ad,plaka:a.plaka||'',gorev:go?go.l:(a.gorev||'—'),gc:go?go.c:'#9aa3af',durum:mt.c==='A'?'⚠ arıza':(mt.v<1?'½ yarım':'çalıştı'),tg:pjaTotalDays(a.id)});});
   arows.sort(function(a,b){return (a.gorev||'').localeCompare(b.gorev||'','tr')||a.ad.localeCompare(b.ad,'tr');});
   var q=dayItemQty(day);var dtot=0;for(var k in q)dtot+=q[k];
+  var paGel=0;if(typeof PJP!=='undefined'&&PJP[ym])for(var pv in PJP[ym])paGel+=+(PJP[ym][pv]&&PJP[ym][pv][d])||0;
   var gun='<table class="mtab raptbl"><tbody>'+
     '<tr><td>Tarih</td><td><b>'+fd+'</b></td></tr>'+
     '<tr><td>Bugün çalışan personel</td><td><b>'+prows.length+'</b> kişi</td></tr>'+
     '<tr><td>Bugün çalışan araç</td><td><b>'+arows.length+'</b></td></tr>'+
+    '<tr><td>Proje aracı geliş (mikser/vinç/kamyon)</td><td><b>'+paGel+'</b></td></tr>'+
     '<tr><td>Bu gün toplam iş</td><td><b>'+tr(dtot)+'</b></td></tr></tbody></table>';
   function ptbl(rows,c1){if(!rows.length)return '<div class="hint">Bu güne puantaj/görev girilmemiş — Personel ekranından gün+görev işaretle.</div>';
     return '<table class="mtab raptbl"><thead><tr><th>'+c1+'</th><th>Bugün görev</th><th>Durum</th><th>Toplam gün</th></tr></thead><tbody>'+
@@ -2951,10 +2963,10 @@ function rapBody(day,forPrint){const A=rapAgg(day);
   }
   return h;}
 async function backupAll(){try{
-  const dump={_app:'SHAMS1-TR1',_ver:'s82',_ts:Date.now(),data:{}};
-  const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pja:','pjag:','hc:'];
+  const dump={_app:'SHAMS1-TR1',_ver:'s83',_ts:Date.now(),data:{}};
+  const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pja:','pjag:','pjp:','pjpg:','hc:'];
   for(const pre of pref)for(const k of await slist(pre)){const v=await sget(k);if(v!=null)dump.data[k]=v;}
-  const single=['targets','mpct','cab:dc','cab:ac','cab:og','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
+  const single=['targets','mpct','cab:dc','cab:ac','cab:og','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
   for(const k of single){const v=await sget(k);if(v!=null)dump.data[k]=v;}
   const blob=new Blob([JSON.stringify(dump)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);
@@ -3203,6 +3215,80 @@ async function delArac(id){
   ARAC=ARAC.filter(function(a){return a.id!==id;});
   await sset('arac',ARAC); renderPersonel();
 }
+
+/* ===== PROJE ARAÇLARI (günlük temin · sayaçlı) ===== */
+const PARAC_GOREV=['Beton döküm','Beton pompalama','Panel/profil taşıma','Kazı / hafriyat','Vinç kaldırma','Malzeme nakliyesi','Su tankeri','Genel'];
+const PJPGOREV=PARAC_GOREV.map(function(g,i){return {id:'pg'+i,l:g,c:_agp[i%_agp.length]};});
+function pjpgOf(id){return PJPGOREV.find(function(g){return g.id===id;});}
+function pjpPanel(){return '<div class="tk2"><h3>Proje aracı puantajı — '+(PJ_YM||dToday().slice(0,7))+'</h3><div class="sub">Günlük temin edilen dış araçlar. Hücreye <b>dokun → o gün +1 geliş</b> (örn. 5 mikser = 5 dokun). <b>Uzun bas → görev seç / sayıyı düzelt.</b></div><div id="pjpgrid"></div></div>';}
+function renderPJP(){var host=document.getElementById('pjpgrid');if(!host)return;
+  if(!PJ_YM)PJ_YM=dToday().slice(0,7);
+  var ym=PJ_YM,sp=ym.split('-'),Y=+sp[0],M=+sp[1],nd=new Date(Y,M,0).getDate();
+  var ld=(ym===dToday().slice(0,7)?Math.min(+dToday().slice(8,10),nd):nd);
+  var WK=['Pz','Pt','Sa','Ça','Pe','Cu','Ct'];
+  var wd=function(d){return new Date(Y,M-1,d).getDay();},we=function(d){var w=wd(d);return w===0||w===6;};
+  var list=(PARAC||[]).slice();
+  if(!list.length){host.innerHTML='<div class="empty">Önce proje aracı ekleyin (vinç, mikser, kamyon…).</div>';return;}
+  var data=PJP[ym]||{};
+  var head='<tr><th class="pjname">Proje aracı</th>';
+  for(var d=ld;d>=1;d--)head+='<th class="'+(we(d)?'we':'')+'">'+d+'<small>'+WK[wd(d)]+'</small></th>';
+  head+='<th class="pjtot">Toplam</th></tr>';
+  var dayTot=new Array(nd+1).fill(0),grand=0,body='';
+  list.forEach(function(a){var pd=data[a.id]||{};var tot=0;
+    var row='<td class="pjname">'+esc(a.ad)+'</td>';
+    for(var d=ld;d>=1;d--){var n=+pd[d]||0;tot+=n;dayTot[d]+=n;
+      var gv=(PJPG[ym]&&PJPG[ym][a.id]&&PJPG[ym][a.id][d])||'';var go=gv?pjpgOf(gv):null;
+      var st=n?'background:#0e7490;color:#fff;font-weight:700':'';
+      row+='<td class="pjc'+(we(d)?' we':'')+'" style="'+st+'" onpointerdown="pjpDown(event,\''+a.id+'\','+d+')" onpointerup="pjpUp(event,\''+a.id+'\','+d+')" onpointerleave="pjpPCancel()" onpointercancel="pjpPCancel()" title="'+esc(a.ad)+' · '+d+'. gün'+(go?' · '+esc(go.l):'')+'">'+(n||'')+(go?'<i class="pjgdot" style="background:'+go.c+'"></i>':'')+'</td>';}
+    grand+=tot;body+='<tr>'+row+'<td class="pjtot">'+(tot||'')+'</td></tr>';});
+  var foot='<tr class="pjfoot"><td class="pjname">Günlük toplam geliş</td>';
+  for(var d=ld;d>=1;d--)foot+='<td class="'+(we(d)?'we':'')+'">'+(dayTot[d]||'')+'</td>';
+  foot+='<td class="pjtot">'+(grand||'')+'</td></tr>';
+  host.innerHTML='<div class="pjnav"><span class="pjlegend"><i style="background:#0e7490"></i>geliş sayısı · dokun +1 · uzun bas: görev/düzelt</span></div><div style="overflow:auto"><table class="pjtab"><thead>'+head+'</thead><tbody>'+body+foot+'</tbody></table></div>';
+}
+let PJPLP=null,PJPLPfired=false;
+function pjpDown(ev,vid,day){PJPLPfired=false;clearTimeout(PJPLP);PJPLP=setTimeout(function(){PJPLPfired=true;try{if(navigator.vibrate)navigator.vibrate(15);}catch(e){}pjpGorevPick(vid,day);},460);}
+function pjpUp(ev,vid,day){clearTimeout(PJPLP);if(PJPLPfired){PJPLPfired=false;return;}pjpInc(vid,day);}
+function pjpPCancel(){clearTimeout(PJPLP);}
+async function pjpInc(vid,day){if(roBlock())return;var ym=PJ_YM;if(!PJP[ym])PJP[ym]={};if(!PJP[ym][vid])PJP[ym][vid]={};
+  PJP[ym][vid][day]=(+PJP[ym][vid][day]||0)+1;
+  await sset('pjp:'+ym,PJP[ym]||{});renderPJP();}
+async function pjpSetCount(vid,day,n){if(roBlock())return;var ym=PJ_YM;if(!PJP[ym])PJP[ym]={};if(!PJP[ym][vid])PJP[ym][vid]={};
+  n=Math.max(0,+n||0);if(n)PJP[ym][vid][day]=n;else delete PJP[ym][vid][day];
+  if(Object.keys(PJP[ym][vid]).length===0)delete PJP[ym][vid];
+  await sset('pjp:'+ym,PJP[ym]||{});var o=document.getElementById('pjgov');if(o)o.remove();renderPJP();}
+function pjpGorevPick(vid,day){if(roBlock())return;var ym=PJ_YM;var a=(PARAC||[]).find(function(x){return x.id===vid;});if(!a)return;
+  var cur=(PJPG[ym]&&PJPG[ym][vid]&&PJPG[ym][vid][day])||'';
+  var cnt=(PJP[ym]&&PJP[ym][vid]&&PJP[ym][vid][day])||0;
+  var ov=document.getElementById('pjgov');if(ov)ov.remove();
+  ov=document.createElement('div');ov.id='pjgov';ov.className='pjgov';ov.onclick=function(e){if(e.target===ov)ov.remove();};
+  var btns=PJPGOREV.map(function(g){var on=g.id===cur;return '<button class="pjgb'+(on?' on':'')+'" style="border-color:'+g.c+(on?';background:'+g.c:';color:'+g.c)+'" onclick="pjpSetGorev(\''+vid+'\','+day+',\''+g.id+'\')"><i style="background:'+g.c+'"></i>'+esc(g.l)+'</button>';}).join('');
+  var stepper='<div class="pjpstep"><span>Geliş:</span><button onclick="pjpSetCount(\''+vid+'\','+day+','+(cnt-1)+')">−</button><b>'+cnt+'</b><button onclick="pjpSetCount(\''+vid+'\','+day+','+(cnt+1)+')">+</button><button class="pjpz" onclick="pjpSetCount(\''+vid+'\','+day+',0)">sıfırla</button></div>';
+  ov.innerHTML='<div class="pjgsheet"><div class="pjgh"><b>'+esc(a.ad)+'</b><small>'+day+'. gün — geliş sayısı & görev</small></div>'+stepper+'<div class="pjggrid">'+btns+'</div><button class="pjgclr" onclick="pjpSetGorev(\''+vid+'\','+day+',\'\')">görev temizle</button></div>';
+  document.body.appendChild(ov);}
+async function pjpSetGorev(vid,day,gid){var ym=PJ_YM;if(!PJPG[ym])PJPG[ym]={};if(!PJPG[ym][vid])PJPG[ym][vid]={};
+  if(gid)PJPG[ym][vid][day]=gid;else delete PJPG[ym][vid][day];
+  if(Object.keys(PJPG[ym][vid]).length===0)delete PJPG[ym][vid];
+  var o=document.getElementById('pjgov');if(o)o.remove();
+  await sset('pjpg:'+ym,PJPG[ym]||{});renderPJP();}
+function paracPanel(){
+  var form='<div class="tk2"><div class="sub">Proje için günlük/periyodik temin edilen dış araçlar (vinç, beton mikseri, beton pompası, kamyon, lowbed…).</div>'+
+    '<div class="frow"><label>Araç türü<input id="pa_ad" placeholder="ör. Beton mikseri"></label></div>'+
+    '<div class="drow"><button class="btn" onclick="addParac()">Araç ekle</button></div></div>';
+  var quick=['Vinç','Beton mikseri','Beton pompası','Kamyon','Lowbed','Su tankeri'];
+  var list='<div class="tk2"><h3>Proje araçları ('+PARAC.length+')</h3>';
+  if(!PARAC.length)list+='<div class="empty">Henüz eklenmedi.<div style="margin-top:6px">'+quick.map(function(x){return '<button class="btn ghost sm" onclick="addParacQuick(\''+x+'\')">+ '+x+'</button>';}).join(' ')+'</div></div>';
+  else list+='<div class="irlist">'+PARAC.map(function(a){
+    return '<div class="ircard"><div class="irh"><b>🚛 '+esc(a.ad||'-')+'</b></div>'+
+      ((typeof ROLE!=='undefined'&&ROLE==='admin')?'<div class="drow"><button class="btn ghost sm" onclick="delParac(\''+a.id+'\')">sil</button></div>':'')+'</div>';
+  }).join('')+'</div>';
+  return form+list+'</div>';
+}
+async function addParac(){if(typeof roBlock==='function'&&roBlock())return;var ad=fval('pa_ad');if(!ad){toast('Araç türü girin');return;}
+  PARAC.push({id:'pra'+Date.now(),ad:ad});await sset('parac',PARAC);toast('Eklendi');renderPersonel();}
+async function addParacQuick(ad){if(typeof roBlock==='function'&&roBlock())return;PARAC.push({id:'pra'+Date.now()+Math.floor(Math.random()*99),ad:ad});await sset('parac',PARAC);renderPersonel();}
+async function delParac(id){if(typeof roBlock==='function'&&roBlock())return;if(typeof ROLE!=='undefined'&&ROLE!=='admin')return;if(!confirm('Bu araç silinsin mi?'))return;PARAC=PARAC.filter(function(a){return a.id!==id;});await sset('parac',PARAC);renderPersonel();}
+
 function renderPersonel(){const el=document.getElementById('personel');if(!el)return;if(!window._aracLoaded){window._aracLoaded=true;sget('arac').then(function(a){ARAC=a||[];renderPersonel();});}
   el.innerHTML=
    pjPanel()+
@@ -3210,8 +3296,9 @@ function renderPersonel(){const el=document.getElementById('personel');if(!el)re
    '<h2 style="margin:14px 0 10px">Ekip / Personel</h2>'+teamForm()+teamCards()+
    '<h2 style="margin:16px 0 10px">Araç parkı</h2>'+aracPanel()+
    pjaPanel()+
+   '<h2 style="margin:18px 0 10px">🚛 Proje araçları (günlük temin)</h2>'+paracPanel()+pjpPanel()+
    '<h2 style="margin:16px 0 10px">Organizasyon şeması</h2><div class="hint" style="margin-bottom:6px">Sözleşme: imzadan 3 gün içinde onaylı org. şeması sunulmalı.</div><div class="tk2">'+orgTree()+'</div>';
-  renderPJ();try{renderPJA();}catch(e){}}
+  renderPJ();try{renderPJA();}catch(e){}try{renderPJP();}catch(e){}}
 
 function editPerson(id){const p=teamGet(id);if(!p)return;
   modalShow('Personel düzenle — '+esc(p.ad),'<div class="tform">'+
