@@ -652,6 +652,13 @@
    .pjpstep .pjpz{width:auto;padding:0 12px;font-size:13px;color:#a32a2e}
    .pjpstep b{min-width:34px;text-align:center;font-size:19px}
    .pjgdot{display:block;height:3px;border-radius:2px;margin:1px auto 0;width:72%}
+   .pjpstat{display:flex;gap:6px;justify-content:center;margin:4px 0 8px;flex-wrap:wrap}
+   .pjps{padding:7px 12px;border-radius:8px;border:1.5px solid var(--line,#e6e9ef);background:#fff;font-size:13px;font-weight:600;cursor:pointer}
+   .pjps-a{color:#b91c1c;border-color:#f3c0c0}
+   .pjps-a.on{background:#b91c1c;color:#fff;border-color:#b91c1c}
+   .pjps-t{color:#475569;border-color:#cbd5e1}
+   .pjps-t.on{background:#94a3b8;color:#fff;border-color:#94a3b8}
+   .pjps-x{color:#8a93a3}
   .hckgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:6px 0 10px}
   .hckrow{display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid #e7e6e1;border-radius:10px;padding:7px 10px;background:#fff}
   .hckrow span{font-size:12.5px;color:#1f2730}
@@ -667,7 +674,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 83 · Puantaj iş-kalemi bazlı + günlüğe bağlı</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 87 · Puantaj iş-kalemi bazlı + günlüğe bağlı</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -692,7 +699,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 83 · Puantaj·iş kalemi · 20.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 87 · Puantaj·iş kalemi · 20.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -2510,7 +2517,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s83</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s87</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -2901,14 +2908,17 @@ function rapAdamMakina(day,forPrint){if(!day)return '';
   prows.sort(function(a,b){return (a.gorev||'').localeCompare(b.gorev||'','tr')||a.ad.localeCompare(b.ad,'tr');});
   var arows=[];(ARAC||[]).forEach(function(a){var st=(PJA[ym]&&PJA[ym][a.id]&&PJA[ym][a.id][d])||'';var mt=pjaMeta(st);if(!(mt.v>0)&&mt.c!=='A')return;
     var g=(PJAG[ym]&&PJAG[ym][a.id]&&PJAG[ym][a.id][d])||'';var go=g?pjagOf(g):null;
-    arows.push({ad:a.ad,plaka:a.plaka||'',gorev:go?go.l:(a.gorev||'—'),gc:go?go.c:'#9aa3af',durum:mt.c==='A'?'⚠ arıza':(mt.v<1?'½ yarım':'çalıştı'),tg:pjaTotalDays(a.id)});});
+    arows.push({ad:a.ad,plaka:a.plaka||'',gorev:go?go.l:(a.gorev||'—'),gc:go?go.c:'#9aa3af',durum:mt.c==='A'?'⚠ arıza':(mt.v<1?'½ yarım':'çalıştı'),ar:mt.c==='A',tg:pjaTotalDays(a.id)});});
   arows.sort(function(a,b){return (a.gorev||'').localeCompare(b.gorev||'','tr')||a.ad.localeCompare(b.ad,'tr');});
   var q=dayItemQty(day);var dtot=0;for(var k in q)dtot+=q[k];
   var paGel=0;if(typeof PJP!=='undefined'&&PJP[ym])for(var pv in PJP[ym])paGel+=+(PJP[ym][pv]&&PJP[ym][pv][d])||0;
+  var aAr=arows.filter(function(r){return r.ar;}).length,aCal=arows.length-aAr;
   var gun='<table class="mtab raptbl"><tbody>'+
     '<tr><td>Tarih</td><td><b>'+fd+'</b></td></tr>'+
     '<tr><td>Bugün çalışan personel</td><td><b>'+prows.length+'</b> kişi</td></tr>'+
-    '<tr><td>Bugün çalışan araç</td><td><b>'+arows.length+'</b></td></tr>'+
+    '<tr><td>Bugün çalışan araç</td><td><b>'+aCal+'</b></td></tr>'+
+    '<tr><td>Arızalı araç</td><td><b>'+aAr+'</b></td></tr>'+
+    '<tr><td>Toplam araç (çalışan+arızalı)</td><td><b>'+(aCal+aAr)+'</b></td></tr>'+
     '<tr><td>Proje aracı geliş (mikser/vinç/kamyon)</td><td><b>'+paGel+'</b></td></tr>'+
     '<tr><td>Bu gün toplam iş</td><td><b>'+tr(dtot)+'</b></td></tr></tbody></table>';
   function ptbl(rows,c1){if(!rows.length)return '<div class="hint">Bu güne puantaj/görev girilmemiş — Personel ekranından gün+görev işaretle.</div>';
@@ -2918,6 +2928,37 @@ function rapAdamMakina(day,forPrint){if(!day)return '';
   return '<h3 class="raph">Gün özeti</h3>'+gun+
     '<h3 class="raph">👷 Personel — bugün ve öncesi ('+fd+')</h3>'+ptbl(prows,'Personel')+
     '<h3 class="raph">🚜 Araç / makine — bugün ve öncesi</h3>'+ptbl(arows,'Araç');
+}
+function rapGunGun(day){
+  if(!day)return '';
+  var end=day,start=(typeof ISB!=='undefined'?ISB:day);if(start>end)start=end;
+  var rows=[],guard=0;
+  for(var iso=end; iso>=start && guard<200; iso=dadd(iso,-1),guard++){
+    var ym=iso.slice(0,7),d=+iso.slice(8,10);
+    var pers=0;(TEAM||[]).forEach(function(p){if(pjMeta((PJ[ym]&&PJ[ym][p.id]&&PJ[ym][p.id][d])||'').v>0)pers++;});
+    var arac=0;(ARAC||[]).forEach(function(a){if(pjaMeta((PJA[ym]&&PJA[ym][a.id]&&PJA[ym][a.id][d])||'').v>0)arac++;});
+    var pa=0;if(typeof PJP!=='undefined'&&PJP[ym])for(var v in PJP[ym])pa+=+(PJP[ym][v]&&PJP[ym][v][d])||0;
+    if(pers||arac||pa)rows.push({iso:iso,pers:pers,arac:arac,pa:pa});
+    if(iso===start)break;
+  }
+  if(!rows.length)return '';
+  var tp=0,ta=0,tpa=0;rows.forEach(function(r){tp+=r.pers;ta+=r.arac;tpa+=r.pa;});
+  return '<h3 class="raph">Gün gün çalışma — şimdiye kadar</h3>'+
+    '<table class="mtab raptbl"><thead><tr><th>Tarih</th><th>Çalışan personel</th><th>Çalışan araç</th><th>Proje aracı geliş</th></tr></thead><tbody>'+
+    rows.map(function(r){return '<tr><td>'+dtr(r.iso)+'</td><td class="m"><b>'+r.pers+'</b></td><td class="m"><b>'+r.arac+'</b></td><td class="m">'+(r.pa||'')+'</td></tr>';}).join('')+
+    '<tr class="eptot"><td>TOPLAM (adam-gün · araç-gün)</td><td class="m"><b>'+tp+'</b></td><td class="m"><b>'+ta+'</b></td><td class="m">'+tpa+'</td></tr>'+
+    '</tbody></table>';
+}
+function rapAracOzet(){
+  var own=(ARAC||[]).map(function(a){var c=0,y=0,ar=0;for(var ym in PJA){var m=PJA[ym][a.id];if(!m)continue;for(var d in m){var mt=pjaMeta(m[d]);if(mt.c==='V')c++;else if(mt.c==='Y')y++;else if(mt.c==='A')ar++;}}return {ad:a.ad,plaka:a.plaka||'',cal:c,yar:y,ariza:ar,tatil:0,proj:false};});
+  var proj=(typeof PARAC!=='undefined'?PARAC:[]).map(function(a){var g=0,ar=0,t=0;for(var ym in PJP){var m=PJP[ym][a.id];if(!m)continue;for(var d in m){var v=m[d];if(v==='A')ar++;else if(v==='T')t++;else if(+v>0)g++;}}return {ad:a.ad,plaka:'',cal:g,yar:0,ariza:ar,tatil:t,proj:true};});
+  var all=own.concat(proj).filter(function(r){return r.cal||r.yar||r.ariza||r.tatil;});
+  if(!all.length)return '';
+  return '<h3 class="raph">Araç çalışma özeti — gün bazında</h3>'+
+    '<table class="mtab raptbl"><thead><tr><th>Araç</th><th>Çalıştı</th><th>Yarım</th><th>Arıza</th><th>Tatil</th></tr></thead><tbody>'+
+    all.map(function(r){return '<tr><td>'+(r.proj?'🚛 ':'🚜 ')+esc(r.ad)+(r.plaka?' <small>('+esc(r.plaka)+')</small>':'')+'</td><td class="m"><b>'+r.cal+'</b> gün</td><td class="m">'+(r.yar||'')+'</td><td class="m'+(r.ariza?' neg':'')+'">'+(r.ariza||'')+'</td><td class="m">'+(r.tatil||'')+'</td></tr>';}).join('')+
+    '</tbody></table>'+
+    '<div class="hint">🚜 kendi araç parkı (çalıştı/yarım/arıza) · 🚛 proje temin araçları (çalıştı = geliş günü).</div>';
 }
 function rapBody(day,forPrint){const A=rapAgg(day);
   const masaList=Object.keys(A.masas).map(Number).sort((a,b)=>a-b);
@@ -2939,7 +2980,7 @@ function rapBody(day,forPrint){const A=rapAgg(day);
     if(forPrint)h+=`<div style="background:#fdecec;border:1.5px solid #E5484D;color:#a32a2e;border-radius:8px;padding:8px 12px;margin:8px 0;font-size:10px">⚠ <b>${kc.toplam} uygunsuzluk / kontrol bekliyor</b> — ${kc.ayak} ayak, ${kc.konst} montaj kalemi · Masa: ${kc.masalar.map(m=>'#'+m).join(', ')}</div>`;
     else h+=kontrolBanner();}}
   if(!A.logs.length)h+='<div class="hint" style="margin:6px 0 0">Seçili güne ait saha kaydı bulunamadı.</div>';
-  h+=genelDurum();h+=rapAdamMakina(day,forPrint);h+='<h3 class="raph">İş kalemleri — ilerleme kartları</h3>';
+  h+=genelDurum();h+=rapAdamMakina(day,forPrint);h+=rapGunGun(day);h+=rapAracOzet();h+='<h3 class="raph">İş kalemleri — ilerleme kartları</h3>';
   h+='<div class="hint" style="margin:-2px 0 8px">Her kalem: tamamlanma oranı · «yapıldı / hedef / kalan» · seçili günün katkısı · son günlerin grafiği. Tüm değerler saha kayıtlarından (log) türetilir.</div>';
   h+=itemReportCards(day);
   h+='<h3 class="raph">Günlük × kümülatif matris</h3>';
@@ -2963,7 +3004,7 @@ function rapBody(day,forPrint){const A=rapAgg(day);
   }
   return h;}
 async function backupAll(){try{
-  const dump={_app:'SHAMS1-TR1',_ver:'s83',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1-TR1',_ver:'s87',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pja:','pjag:','pjp:','pjpg:','hc:'];
   for(const pre of pref)for(const k of await slist(pre)){const v=await sget(k);if(v!=null)dump.data[k]=v;}
   const single=['targets','mpct','cab:dc','cab:ac','cab:og','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
@@ -3019,6 +3060,19 @@ function verimForecast(){
   return {rows:rows,gun:gun,calElapsed:calElapsed,density:density,workToDeadline:workToDeadline,calToDeadline:calToDeadline,today:today};
 }
 function vcard(l,n,sub,col){return '<div class="vcard"><div class="vc-l">'+l+'</div><div class="vc-n" style="color:'+col+'">'+n+'</div><div class="vc-s">'+(sub||'')+'</div></div>';}
+function verimEOT(F){
+  var dl=ISBITIS,delme=null,mont=null;
+  F.rows.forEach(function(r){if(r.it.id==='ayakdelme')delme=r;if(r.it.id==='ayakmont')mont=r;});
+  var delmeBitis=delme&&delme.bitis,montKendiBitis=mont&&mont.bitis;
+  var eotIsv=(delmeBitis&&ddiff(dl,delmeBitis)>0)?ddiff(dl,delmeBitis):0;
+  var matCrit=[];
+  [['Ayak çeliği (P1+P2 kolon)','k_p1','k_p2'],['Güneş paneli','k_panel'],['Kiriş (P3)','k_p3'],['Aşık (P4)','k_p41','k_p42','k_p43']].forEach(function(c){
+    var need=0,gel=0;for(var i=1;i<c.length;i++){need+=mikOf(c[i]);gel+=gelenOf(c[i]);}
+    if(need>0&&gel<need)matCrit.push({ad:c[0],need:need,gel:gel,eksik:need-gel});
+  });
+  var eot=Math.max(eotIsv,0);
+  return {delme:delme,mont:mont,delmeBitis:delmeBitis,montKendiBitis:montKendiBitis,eotIsv:eotIsv,matCrit:matCrit,eot:eot,revDeadline:dadd(dl,eot)};
+}
 function renderVerim(){
   var el=document.getElementById('verim');if(!el)return;
   if(typeof ROLE!=='undefined'&&ROLE!=='admin'){el.innerHTML='<div class="tk2"><div class="empty">Bu sekme yöneticiye açıktır.</div></div>';return;}
@@ -3035,7 +3089,7 @@ function renderVerim(){
     vcard('Genel ilerleme','%'+genPct,tr(totYap)+' / '+tr(totHedef),'#2e9e5b')+
     vcard('Tahmini bitiş',maxBitis?dtr(maxBitis):'—',gec>0?'<span style="color:#E5484D">'+gec+' gün gecikme</span>':'deadline içinde',gec>0?'#E5484D':'#2e9e5b')+
     vcard('Ort. personel/gün',(Math.round(cr.pers*10)/10),cr.pDays+' çalışma günü','#3f7cc0')+
-    vcard('Ort. araç/gün',(Math.round(cr.arac*10)/10),cr.aDays+' çalışma günü','#b45309')+
+    vcard('Ort. çalışan araç/gün',(Math.round(cr.arac*10)/10),cr.aDays+' gün · arıza hariç','#b45309')+
     '</div>';
   var band=gec>0
     ?'<div class="vband vbad">⚠ Mevcut ortalama hızla iş <b>'+dtr(maxBitis)+'</b> biter — deadline <b>'+dl+'</b> <b>'+gec+' gün</b> aşılıyor. Aşağıdaki kalemlerde hız/kaynak artışı şart.</div>'
@@ -3061,11 +3115,29 @@ function renderVerim(){
   } else {
     plan='<div class="vband vgood">✓ Tüm kalemler mevcut ortalama hızla deadline içinde. Ek kaynak gerekmiyor — tempoyu koru.</div>';
   }
+  var MR=(typeof matRows==='function')?matRows():[];
+  var mEksik=MR.filter(function(x){return x.eksik>0;}).length,mNeg=MR.filter(function(x){return x.kalan<0;}).length;
+  var kmband='<div class="vband '+((mEksik||mNeg)?'vbad':'vgood')+'">'+((mEksik||mNeg)?'⚠ Malzeme & kaynak etkisi: <b>'+mEksik+'</b> kalem sipariş bekliyor'+(mNeg?', <b>'+mNeg+'</b> kalemde stok uyarısı':'')+'. Eksik malzeme + arızalı araç sahanın hızını doğrudan düşürür — ilgili kalemler malzeme/kaynak gelene kadar yavaşlar. Hız = (çalışan personel + çalışan araç) × malzeme hazırlığı.':'✓ Malzeme akışı dengeli, kritik eksik yok. Hız doğrudan kaynağa (çalışan personel + çalışan araç) bağlı.')+'</div>';
   el.innerHTML='<div class="tk2"><h3>⚡ Verimlilik & bitiş tahmini — SHAMS-1 TR-1</h3>'+
     '<div class="sub">Her iş kalemi için <b>şimdiye kadarki ortalama hız</b> (yapıldı ÷ çalışılan gün) → kalan işe orantılı <b>tahmini bitiş tarihi</b>. Deadline: <b>'+dl+'</b>.</div>'+
-    ozet+band+'</div>'+
+    ozet+band+kmband+'</div>'+
     '<div class="tk2"><h3>İş kalemi bazında tahmin</h3>'+tbl+basUyari+'</div>'+
-    '<div class="tk2">'+plan+'</div>';
+    (function(){var EO=verimEOT(F);
+    var maxB=null;F.rows.forEach(function(r){if(r.bitis&&(!maxB||r.bitis>maxB))maxB=r.bitis;});
+    var rd=EO.revDeadline, yetisir=maxB&&(maxB<=rd);
+    var eb='<h3>📅 Süre uzatımı (hak ediş) analizi</h3>'+
+      '<div class="sub">Aksaray kontrolü dışı gecikmeler — ROK delme (işveren/ana yüklenici kapsamı) ve MENSİS malzeme teslimi — süre uzatımı gerekçesidir; bu gecikmeler için Aksaray\'a ceza/gecikme tazminatı doğmaz.</div>'+
+      '<table class="mtab raptbl"><tbody>'+
+        '<tr><td>ROK delme (işveren) ilerleme</td><td>'+(EO.delme?tr(EO.delme.it.cum)+' / '+tr(EO.delme.it.hedef)+' · %'+EO.delme.pct.toFixed(0):'—')+'</td></tr>'+
+        '<tr><td>Delme tahmini bitiş</td><td><b>'+(EO.delmeBitis?dtr(EO.delmeBitis):'—')+'</b>'+(EO.eotIsv>0?' <span style="color:#E5484D">deadline +'+EO.eotIsv+' gün</span>':' <span style="color:#2e9e5b">deadline içinde</span>')+'</td></tr>'+
+        '<tr><td>Ayak montajı (Aksaray) kendi hız bitiş</td><td>'+(EO.montKendiBitis?dtr(EO.montKendiBitis):'—')+'</td></tr>'+
+        '<tr><td>Montaj delmeyi geçemez → fiili bitiş</td><td><b>'+((EO.delmeBitis&&EO.montKendiBitis)?dtr(EO.delmeBitis>EO.montKendiBitis?EO.delmeBitis:EO.montKendiBitis):'—')+'</b></td></tr>'+
+      '</tbody></table>'+
+      (EO.matCrit.length?'<div class="vband vbad" style="margin-top:8px">⚠ MENSİS malzeme teslimi eksik (ilgili montajı bloklar): '+EO.matCrit.map(function(m){return esc(m.ad)+' '+tr(m.gel)+'/'+tr(m.need)+' (eksik '+tr(m.eksik)+')';}).join(' · ')+'. Teslim tamamlanmadan bu işler bitemez → ek süre uzatımı gerekçesi.</div>':'<div class="vband vgood" style="margin-top:8px">✓ Kritik malzemeler tam teslim — malzeme kaynaklı gecikme yok.</div>')+
+      '<div class="vband '+(EO.eot>0?'vbad':'vgood')+'" style="margin-top:8px">'+(EO.eot>0?'📌 Haklı süre uzatımı talebi &asymp; <b>'+EO.eot+' gün</b> (işveren ROK delme kaynaklı). Düzeltilmiş hedef bitiş: <b>'+dtr(rd)+'</b> (asıl '+dtr(ISBITIS)+').'+(EO.matCrit.length?' Malzeme gecikmesi için ek talep hakkı saklıdır.':''):'✓ Şu an işveren/MENSİS kaynaklı sayısal süre uzatımı gerekçesi yok — kritik yol Aksaray kontrolünde.'+(EO.matCrit.length?' (Ancak malzeme eksiği sürerse gerekçe doğar.)':''))+'</div>'+
+      ((EO.eot>0&&maxB)?'<div class="hint">Düzeltilmiş hedefe göre durum: mevcut tahmini bitiş '+dtr(maxB)+' → '+(yetisir?'düzeltilmiş süre içinde ✓':'düzeltilmiş süreyi de aşıyor ⚠ (Aksaray kaynaklı pay var)')+'.</div>':'')+
+      '<div class="hint">Bu analiz süre uzatımı talebinin <b>sayısal dayanağı</b>dır; resmi olarak NCR (Uygunsuzluk Raporu) ve yazışmalarla (delme/malzeme teslim tarihleri) desteklenmelidir.</div>';
+    return '<div class="tk2">'+plan+'</div><div class="tk2">'+eb+'</div>';})();
 }
 function renderRapor(){const el=document.getElementById('rapor');if(!el)return;
   el.innerHTML=`<div class="tk2"><h3>Günlük Saha Raporu — SHAMS-1 TR-1 (6,9 MWp)</h3>
@@ -3236,15 +3308,16 @@ function renderPJP(){var host=document.getElementById('pjpgrid');if(!host)return
   var dayTot=new Array(nd+1).fill(0),grand=0,body='';
   list.forEach(function(a){var pd=data[a.id]||{};var tot=0;
     var row='<td class="pjname">'+esc(a.ad)+'</td>';
-    for(var d=ld;d>=1;d--){var n=+pd[d]||0;tot+=n;dayTot[d]+=n;
+    for(var d=ld;d>=1;d--){var raw=pd[d];var n=+raw||0;var stt=(raw==='A'||raw==='T')?raw:'';tot+=n;dayTot[d]+=n;
       var gv=(PJPG[ym]&&PJPG[ym][a.id]&&PJPG[ym][a.id][d])||'';var go=gv?pjpgOf(gv):null;
-      var st=n?'background:#0e7490;color:#fff;font-weight:700':'';
-      row+='<td class="pjc'+(we(d)?' we':'')+'" style="'+st+'" onpointerdown="pjpDown(event,\''+a.id+'\','+d+')" onpointerup="pjpUp(event,\''+a.id+'\','+d+')" onpointerleave="pjpPCancel()" onpointercancel="pjpPCancel()" title="'+esc(a.ad)+' · '+d+'. gün'+(go?' · '+esc(go.l):'')+'">'+(n||'')+(go?'<i class="pjgdot" style="background:'+go.c+'"></i>':'')+'</td>';}
+      var st=stt==='A'?'background:#b91c1c;color:#fff':(stt==='T'?'background:#94a3b8;color:#fff':(n?'background:#0e7490;color:#fff;font-weight:700':''));
+      var disp=stt==='A'?'⚠':(stt==='T'?'🏖':(n||''));
+      row+='<td class="pjc'+(we(d)?' we':'')+'" style="'+st+'" onpointerdown="pjpDown(event,\''+a.id+'\','+d+')" onpointerup="pjpUp(event,\''+a.id+'\','+d+')" onpointerleave="pjpPCancel()" onpointercancel="pjpPCancel()" title="'+esc(a.ad)+' · '+d+'. gün'+(stt==='A'?' · arızalı':(stt==='T'?' · tatil':''))+(go?' · '+esc(go.l):'')+'">'+disp+(go?'<i class="pjgdot" style="background:'+go.c+'"></i>':'')+'</td>';}
     grand+=tot;body+='<tr>'+row+'<td class="pjtot">'+(tot||'')+'</td></tr>';});
   var foot='<tr class="pjfoot"><td class="pjname">Günlük toplam geliş</td>';
   for(var d=ld;d>=1;d--)foot+='<td class="'+(we(d)?'we':'')+'">'+(dayTot[d]||'')+'</td>';
   foot+='<td class="pjtot">'+(grand||'')+'</td></tr>';
-  host.innerHTML='<div class="pjnav"><span class="pjlegend"><i style="background:#0e7490"></i>geliş sayısı · dokun +1 · uzun bas: görev/düzelt</span></div><div style="overflow:auto"><table class="pjtab"><thead>'+head+'</thead><tbody>'+body+foot+'</tbody></table></div>';
+  host.innerHTML='<div class="pjnav"><span class="pjlegend"><i style="background:#0e7490"></i>geliş · dokun +1<i style="background:#b91c1c"></i>arıza<i style="background:#94a3b8"></i>tatil · uzun bas: görev/durum</span></div><div style="overflow:auto"><table class="pjtab"><thead>'+head+'</thead><tbody>'+body+foot+'</tbody></table></div>';
 }
 let PJPLP=null,PJPLPfired=false;
 function pjpDown(ev,vid,day){PJPLPfired=false;clearTimeout(PJPLP);PJPLP=setTimeout(function(){PJPLPfired=true;try{if(navigator.vibrate)navigator.vibrate(15);}catch(e){}pjpGorevPick(vid,day);},460);}
@@ -3259,13 +3332,17 @@ async function pjpSetCount(vid,day,n){if(roBlock())return;var ym=PJ_YM;if(!PJP[y
   await sset('pjp:'+ym,PJP[ym]||{});var o=document.getElementById('pjgov');if(o)o.remove();renderPJP();}
 function pjpGorevPick(vid,day){if(roBlock())return;var ym=PJ_YM;var a=(PARAC||[]).find(function(x){return x.id===vid;});if(!a)return;
   var cur=(PJPG[ym]&&PJPG[ym][vid]&&PJPG[ym][vid][day])||'';
-  var cnt=(PJP[ym]&&PJP[ym][vid]&&PJP[ym][vid][day])||0;
+  var rawv=(PJP[ym]&&PJP[ym][vid]&&PJP[ym][vid][day]);var cnt=+rawv||0;var isA=rawv==='A',isT=rawv==='T';
   var ov=document.getElementById('pjgov');if(ov)ov.remove();
   ov=document.createElement('div');ov.id='pjgov';ov.className='pjgov';ov.onclick=function(e){if(e.target===ov)ov.remove();};
   var btns=PJPGOREV.map(function(g){var on=g.id===cur;return '<button class="pjgb'+(on?' on':'')+'" style="border-color:'+g.c+(on?';background:'+g.c:';color:'+g.c)+'" onclick="pjpSetGorev(\''+vid+'\','+day+',\''+g.id+'\')"><i style="background:'+g.c+'"></i>'+esc(g.l)+'</button>';}).join('');
   var stepper='<div class="pjpstep"><span>Geliş:</span><button onclick="pjpSetCount(\''+vid+'\','+day+','+(cnt-1)+')">−</button><b>'+cnt+'</b><button onclick="pjpSetCount(\''+vid+'\','+day+','+(cnt+1)+')">+</button><button class="pjpz" onclick="pjpSetCount(\''+vid+'\','+day+',0)">sıfırla</button></div>';
-  ov.innerHTML='<div class="pjgsheet"><div class="pjgh"><b>'+esc(a.ad)+'</b><small>'+day+'. gün — geliş sayısı & görev</small></div>'+stepper+'<div class="pjggrid">'+btns+'</div><button class="pjgclr" onclick="pjpSetGorev(\''+vid+'\','+day+',\'\')">görev temizle</button></div>';
+  ov.innerHTML='<div class="pjgsheet"><div class="pjgh"><b>'+esc(a.ad)+'</b><small>'+day+'. gün — geliş sayısı & görev</small></div>'+stepper+'<div class="pjpstat"><button class="pjps pjps-a'+(isA?' on':'')+'" onclick="pjpSetStatus(\''+vid+'\','+day+',\'A\')">⚠ Arızalı</button><button class="pjps pjps-t'+(isT?' on':'')+'" onclick="pjpSetStatus(\''+vid+'\','+day+',\'T\')">🏖 Tatil</button><button class="pjps pjps-x" onclick="pjpSetStatus(\''+vid+'\','+day+',\'\')">temizle</button></div><div class="pjggrid">'+btns+'</div><button class="pjgclr" onclick="pjpSetGorev(\''+vid+'\','+day+',\'\')">görev temizle</button></div>';
   document.body.appendChild(ov);}
+async function pjpSetStatus(vid,day,st){if(roBlock())return;var ym=PJ_YM;if(!PJP[ym])PJP[ym]={};if(!PJP[ym][vid])PJP[ym][vid]={};
+  if(st==='A'||st==='T')PJP[ym][vid][day]=st;else delete PJP[ym][vid][day];
+  if(Object.keys(PJP[ym][vid]).length===0)delete PJP[ym][vid];
+  await sset('pjp:'+ym,PJP[ym]||{});var o=document.getElementById('pjgov');if(o)o.remove();renderPJP();}
 async function pjpSetGorev(vid,day,gid){var ym=PJ_YM;if(!PJPG[ym])PJPG[ym]={};if(!PJPG[ym][vid])PJPG[ym][vid]={};
   if(gid)PJPG[ym][vid][day]=gid;else delete PJPG[ym][vid][day];
   if(Object.keys(PJPG[ym][vid]).length===0)delete PJPG[ym][vid];
