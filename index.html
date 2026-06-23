@@ -670,6 +670,12 @@
    .gdul{margin:3px 0 2px 4px;padding:0;list-style:none}
    .gdul li{font-size:13px;margin:3px 0;padding-left:2px}
    .gdrec{background:#f8fafc;border-radius:8px;padding:6px 9px;margin:5px 0;font-size:13px}
+   .isgunbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#eef4ff;border:1px solid #c9ddff;border-radius:10px;padding:7px 11px;margin:8px 0;font-size:13px}
+   .isgunbar.past{background:#fff4e6;border-color:#f0c089}
+   .isgunbar label{font-weight:700;color:#15314e;display:flex;align-items:center;gap:6px}
+   .isgunbar input[type=date]{font-size:13px;padding:3px 6px;border:1px solid #cbd5e1;border-radius:7px}
+   .isgunw{color:#b45309;font-weight:600}
+   .isgunok{color:#15803d}
    .gdnot{background:#f0f7ff;border-left:3px solid #3f7cc0;border-radius:6px;padding:5px 9px;margin-top:4px;white-space:pre-wrap;font-size:13px}
   .hckgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:6px 0 10px}
   .hckrow{display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid #e7e6e1;border-radius:10px;padding:7px 10px;background:#fff}
@@ -686,7 +692,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 91 · Puantaj iş-kalemi bazlı + günlüğe bağlı</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 92 · Puantaj iş-kalemi bazlı + günlüğe bağlı</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -711,7 +717,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 91 · Puantaj·iş kalemi · 20.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 92 · Puantaj·iş kalemi · 20.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -841,7 +847,8 @@
   <div class="adr" id="ed_adr"></div>
   <div class="schem" id="ed_schem"></div>
 
-  <div class="seg">Ayak / Kolon Süreci — her adım /14 ayak</div>
+  <div id="isgunbar" class="isgunbar"></div>
+   <div class="seg">Ayak / Kolon Süreci — her adım /14 ayak</div>
   <div id="ed_ayak"></div>
 
   <div class="seg">Konstrüksiyon Montajı</div>
@@ -1115,7 +1122,7 @@ async function reloadAll(){
     if(ch){ try{ sset('matin',MATIN); }catch(e){} }
     try{ localStorage.setItem('seed_pl_kolon_v2','1'); }catch(e){}
   })();
-  GUNLUK=(await sget('gunluk'))||[]; MATUSE=matuse||{}; MATKOV=matkov||{}; MATCUSTOM=matcustom||[]; MATLINK=(await sget('matlink'))||{}; ISB=isbasi||'2026-06-16'; UPCOUNT=upc||0; UPLAST=uplast||0; if(typeof renderUpBadge==='function')renderUpBadge();
+  GUNLUK=await _mergeGunluk((await sget('gunluk'))||[]); MATUSE=matuse||{}; MATKOV=matkov||{}; MATCUSTOM=matcustom||[]; MATLINK=(await sget('matlink'))||{}; ISB=isbasi||'2026-06-16'; UPCOUNT=upc||0; UPLAST=uplast||0; if(typeof renderUpBadge==='function')renderUpBadge();
   CINS={dc:cinsdc||{},ac:cinsac||{},og:cinsog||{}};
   TEAM=team||[];
   TEAM.forEach(p=>{if(p.gorev==='Ara eleman')p.gorev='Yardımcı';});
@@ -1337,7 +1344,7 @@ async function toggleKtrl(f){if(SEL==null)return;if(roBlock())return;const s=PLA
   const b=document.getElementById('t_'+f);if(b){b.classList.toggle('ktrl',!!s[f]);b.textContent=s[f]?'⚠ Kontrol':'Kontrol?';}
   await logAct('Kontrol','Masa #'+SEL+' · [panel] uygunsuzluk '+(s[f]?'işaretlendi':'giderildi'));}
 /*FEET*/
-let SHOWFEET=true,LASTFOOT="";
+let SHOWFEET=true,LASTFOOT="",ISGUN="",_ALSEQ=0;
 function migrateKontrol(s){if(!s)return s;
   /* ayak: eski 4(KONTROL) durumu → 3(monte) + ayrı kontrol bayrağı */
   if(Array.isArray(s.foot)&&s.footv===2){
@@ -1393,7 +1400,7 @@ async function footAll(v){if(SEL==null)return;if(roBlock())return;
   syncFoot(Array(14).fill(v),k);await saveTbl(PLAN[SEL]);
   await logAct('Ayak (toplu)','Masa #'+SEL+' · '+['sıfırlandı','tümü işaretli','tümü delindi','tümü monte'][v]);
   LASTFOOT='';drawFootGrid();renderProgress();drawSchem();renderKonstPlan();}
-function drawFootGrid(){const el=document.getElementById('ed_footgrid');if(!el)return;const a=footArr(),k=footkArr();const lbl=['boş','işaretlendi','delindi','monte'];
+function drawFootGrid(){const el=document.getElementById('ed_footgrid');if(!el)return;renderIsgunBar();const a=footArr(),k=footkArr();const lbl=['boş','işaretlendi','delindi','monte'];
   const cell=j=>{const kf=k[j]?'fk':'f'+a[j];const tip=(j<7?'Arka ':'Ön ')+((j%7)+1)+' · '+(k[j]?'⚠ KONTROL':lbl[a[j]]);
     return `<button class="foot ${kf}" data-lp="foot:${j}" title="${tip}">${(j%7)+1}${k[j]?'<i class="fkdot">⚠</i>':''}</button>`;};
   let h='<div class="fgnote">⚠ Saha düzeltmesi: üst sıra = <b>ARKA</b> ayak · alt sıra = <b>ÖN</b> ayak</div><div class="footrow"><span class="fhdr fh-arka">ARKA</span>';
@@ -1657,7 +1664,7 @@ function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','
 function fval(id){const e=document.getElementById(id);return e?e.value.trim():'';}
 function dToday(){return new Date().toISOString().slice(0,10);}
 function uid(){return 'p'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
-async function logAct(act,detail){const ts=Date.now();const by=CURUSER||(document.getElementById('usta')&&document.getElementById('usta').value.trim())||'';const r={act,detail:detail||'',role:ROLE||'?',by:by,ts};ALOG.unshift(r);await sset('al:'+ts,r);}
+async function logAct(act,detail){const ts=(typeof ISGUN!=='undefined'&&ISGUN&&typeof dToday==='function'&&ISGUN!==dToday())?(Date.parse(ISGUN+'T00:00:00Z')+(Date.now()%86400000)):Date.now();const by=CURUSER||(document.getElementById('usta')&&document.getElementById('usta').value.trim())||'';const r={act,detail:detail||'',role:ROLE||'?',by:by,ts};ALOG.unshift(r);_ALSEQ=(_ALSEQ||0)+1;await sset('al:'+ts+'_'+_ALSEQ,r);}
 
 /* ---- görsel küçültme ---- */
 function resizeImg(file,max,cb){const r=new FileReader();r.onload=e=>{const img=new Image();img.onload=()=>{
@@ -2167,14 +2174,31 @@ function gKalemAd(k){var L=(typeof PHASES!=='undefined'?PHASES:[]);for(var i=0;i
 function gEngelAd(t){for(var i=0;i<ENGEL_TIP.length;i++){if(ENGEL_TIP[i][0]===t)return ENGEL_TIP[i][1];}return t||'-';}
 function gnum(n){return (''+(Math.round((+n||0)*10)/10)).replace('.',',');}
 function gEngelTgl(){var b=document.getElementById('g_engelbox'),c=document.getElementById('g_engel');if(b)b.style.display=(c&&c.checked)?'block':'none';}
+async function _mergeGunluk(legacy){
+  var seen={};
+  try{var gk=await sgetAll('g:');for(var kk in gk){var r=gk[kk];if(r&&r.id)seen[r.id]=r;}}catch(e){}
+  (legacy||[]).forEach(function(r){if(r&&r.id&&!seen[r.id]){seen[r.id]=r;try{sset('g:'+r.id,r);}catch(e){}}});
+  var arr=[];for(var id in seen)arr.push(seen[id]);
+  arr.sort(function(a,b){return (b.ts||0)-(a.ts||0);});
+  return arr;
+}
+function renderIsgunBar(){var el=document.getElementById('isgunbar');if(!el)return;
+  if(!ISGUN)ISGUN=dToday();
+  var past=ISGUN!==dToday();
+  el.className='isgunbar'+(past?' past':'');
+  el.innerHTML='<label>📅 İş günü <input type="date" value="'+ISGUN+'" max="'+dToday()+'" onchange="setIsgun(this.value)"></label>'+
+    (past?'<span class="isgunw">⚠ İşaretlemeler <b>'+dtr(ISGUN)+'</b> gününe yazılıyor</span>':'<span class="isgunok">bugüne yazılıyor</span>');
+}
+function setIsgun(v){ISGUN=v||dToday();renderIsgunBar();if(typeof toast==='function')toast('İş günü: '+dtr(ISGUN));}
 async function addGunluk(){
   if(typeof roBlock==='function'&&roBlock())return;
   var tarih=fval('g_tarih'),kalem=fval('g_kalem'),ilerleme=+fval('g_ilerleme')||0,kisi=+fval('g_kisi')||0,arac=fval('g_arac'),not=fval('g_not'),gozlem=fval('g_gozlem');
   var ev=document.getElementById('g_engel'),engelVar=!!(ev&&ev.checked);
   var engelTip=engelVar?fval('g_etip'):'',engelSure=engelVar?(+fval('g_esure')||0):0,engelNot=engelVar?fval('g_enot'):'';
   if(!tarih){toast('Tarih girin');return;}
-  GUNLUK.unshift({id:'g'+Date.now(),tarih:tarih,kalem:kalem,ilerleme:ilerleme,kisi:kisi,kisiler:(typeof GROSTER!=='undefined'&&GROSTER.length?GROSTER.slice():[]),arac:arac,engelVar:engelVar,engelTip:engelTip,engelSure:engelSure,engelNot:engelNot,not:not,gozlem:gozlem,by:(typeof ROLE!=='undefined'?ROLE:'')||'?',ts:Date.now()});
-  await sset('gunluk',GUNLUK);
+  var _rec={id:'g'+Date.now(),tarih:tarih,kalem:kalem,ilerleme:ilerleme,kisi:kisi,kisiler:(typeof GROSTER!=='undefined'&&GROSTER.length?GROSTER.slice():[]),arac:arac,engelVar:engelVar,engelTip:engelTip,engelSure:engelSure,engelNot:engelNot,not:not,gozlem:gozlem,by:(typeof ROLE!=='undefined'?ROLE:'')||'?',ts:Date.now()};
+  GUNLUK.unshift(_rec);
+  await sset('g:'+_rec.id,_rec);
   try{await logAct('gunluk',tarih+' · '+gKalemAd(kalem));}catch(e){}
   toast('Saha günlüğü kaydedildi');renderGunluk();
 }
@@ -2183,7 +2207,7 @@ async function delGunluk(id){
   if(typeof ROLE!=='undefined'&&ROLE!=='admin')return;
   if(!confirm('Bu günlük kaydı silinsin mi?'))return;
   GUNLUK=GUNLUK.filter(function(r){return r.id!==id;});
-  await sset('gunluk',GUNLUK);renderGunluk();
+  await sdel('g:'+id);renderGunluk();
 }
 function gunIsSatir(iso,persArr,q){
   q=q||((typeof dayItemQty==='function')?dayItemQty(iso):{});
@@ -2578,7 +2602,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s91</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s92</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -3063,7 +3087,7 @@ function rapBody(day,forPrint){const A=rapAgg(day);
   }
   return h;}
 async function backupAll(){try{
-  const dump={_app:'SHAMS1-TR1',_ver:'s91',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1-TR1',_ver:'s92',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pja:','pjag:','pjp:','pjpg:','hc:'];
   for(const pre of pref)for(const k of await slist(pre)){const v=await sget(k);if(v!=null)dump.data[k]=v;}
   const single=['targets','mpct','cab:dc','cab:ac','cab:og','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
