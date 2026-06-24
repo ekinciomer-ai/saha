@@ -708,7 +708,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 96 · Puantaj iş-kalemi bazlı + günlüğe bağlı</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 97 · Puantaj iş-kalemi bazlı + günlüğe bağlı</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -733,7 +733,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 96 · Puantaj·iş kalemi · 20.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 97 · Puantaj·iş kalemi · 20.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -2255,11 +2255,14 @@ function toAZN(amt,pb){amt=+amt||0;var r=gRate();if(pb==='USD')return amt*r.usda
 function curSym(k){return ({AZN:'₼',TRY:'₺',USD:'$'}[k])||k;}
 function curOpts(sel){return ['AZN','TRY','USD'].map(function(k){return '<option value="'+k+'"'+(sel===k?' selected':'')+'>'+({AZN:'₼ Manat',TRY:'₺ TL',USD:'$ USD'}[k])+'</option>';}).join('');}
 function arbStr(azn){var r=gRate();var o=fmtN(azn)+' ₼';if(r.usdazn){o+=' · '+fmtN(azn/r.usdazn)+' $';if(r.usdtry)o+=' · '+fmtN(azn*r.usdtry/r.usdazn)+' ₺';}return o;}
-function gFxSave(){FX.usdazn=+fval('fx_usdazn')||0;FX.usdtry=+fval('fx_usdtry')||0;sset('fx',FX);toast('Kur kaydedildi');renderGider();}
+function gFxSave(){FX.usdazn=+fval('fx_usdazn')||0;FX.usdtry=+fval('fx_usdtry')||0;FX._src='elle';FX._t=dToday();sset('fx',FX);toast('Kur kaydedildi');renderGider();}
+var _FXTRIED=false;
+async function gFxAuto(){try{var res=await fetch('https://open.er-api.com/v6/latest/USD');var j=await res.json();if(j&&j.rates&&j.rates.AZN&&j.rates.TRY){FX.usdazn=Math.round(j.rates.AZN*10000)/10000;FX.usdtry=Math.round(j.rates.TRY*10000)/10000;FX._t=j.time_last_update_utc||new Date().toUTCString();FX._src='open.er-api.com';await sset('fx',FX);toast('Canlı kur güncellendi');renderGider();}else{toast('Kur alınamadı, elle gir');}}catch(e){toast('Kur alınamadı (çevrimdışı?), elle gir');}}
 function gkatAd(k){if(k==='personel')return '👷 Personel (yevmiye)';var x=GKAT.find(function(g){return g.k===k;});return x?x.ic+' '+x.ad:k;}
 function wageOf(pid){var w=(WAGE&&WAGE[pid]!=null&&WAGE[pid]!=='')?WAGE[pid]:((WAGE&&WAGE._def)||0);return +w||0;}
 function gPjv(pid,iso){var ym=iso.slice(0,7),d=+iso.slice(8,10);return pjMeta((PJ[ym]&&PJ[ym][pid]&&PJ[ym][pid][d])||'').v;}
-function gPersCostDay(iso){var t=0;(TEAM||[]).forEach(function(p){t+=gPjv(p.id,iso)*wageOf(p.id);});return toAZN(t,(WAGE&&WAGE._wpb)||'AZN');}
+function wageCur(pid){return (WAGE&&WAGE._c&&WAGE._c[pid])||(WAGE&&WAGE._wpb)||'AZN';}
+function gPersCostDay(iso){var t=0;(TEAM||[]).forEach(function(p){t+=toAZN(gPjv(p.id,iso)*wageOf(p.id),wageCur(p.id));});return t;}
 function gGiderDay(iso){var o={};(GIDER||[]).forEach(function(g){if(g.tarih===iso)o[g.kat]=(o[g.kat]||0)+toAZN(g.tutar,g.pb||'AZN');});return o;}
 function gDays(){var out=[],today=dToday(),iso=(typeof ISB!=='undefined'?ISB:today),g=0;while(iso<=today&&g<400){out.push(iso);iso=dadd(iso,1);g++;}return out;}
 function gPersDays(pid){var t=0;gDays().forEach(function(iso){t+=gPjv(pid,iso);});return t;}
@@ -2276,7 +2279,7 @@ async function addGider(){
 }
 async function delGider(id){if(!confirm('Gider kaydı silinsin mi?'))return;GIDER=GIDER.filter(function(r){return r.id!==id;});try{var all=await sgetAll('gd:');for(var k in all){if(all[k]&&all[k].id===id)await sdel(k);}}catch(e){}renderGider();}
 function gdShowFoto(id){var r=(GIDER||[]).find(function(x){return x.id===id;});if(r&&r.foto)modalShow('Belge','<img src="'+r.foto+'" style="width:100%;border-radius:10px">');}
-function gWageSave(){(TEAM||[]).forEach(function(p){var e=document.getElementById('wg_'+p.id);if(e)WAGE[p.id]=(e.value===''?'':(+e.value||0));});var d=document.getElementById('wg__def');if(d)WAGE._def=+d.value||0;var wp=document.getElementById('wg__wpb');if(wp)WAGE._wpb=wp.value||'AZN';sset('wage',WAGE);toast('Yevmiye kaydedildi');renderGider();}
+function gWageSave(){WAGE._c=WAGE._c||{};(TEAM||[]).forEach(function(p){var e=document.getElementById('wg_'+p.id);if(e)WAGE[p.id]=(e.value===''?'':(+e.value||0));var c=document.getElementById('wgc_'+p.id);if(c)WAGE._c[p.id]=c.value||'AZN';});var d=document.getElementById('wg__def');if(d)WAGE._def=+d.value||0;var wp=document.getElementById('wg__wpb');if(wp)WAGE._wpb=wp.value||'AZN';sset('wage',WAGE);toast('Yevmiye kaydedildi');renderGider();}
 function renderGider(){
   var el=document.getElementById('gider');if(!el)return;
   var days=gDays();
@@ -2300,8 +2303,10 @@ function renderGider(){
   var fxPanel='<div class="tk2"><h3>💱 Para birimi &amp; kur</h3><div class="gdform">'+
     '<label>1 USD = ? ₼ Manat<input type="number" id="fx_usdazn" inputmode="decimal" value="'+(FX.usdazn||'')+'" placeholder="örn 1.70"></label>'+
     '<label>1 USD = ? ₺ TL<input type="number" id="fx_usdtry" inputmode="decimal" value="'+(FX.usdtry||'')+'" placeholder="örn 39"></label>'+
-    '<button class="btn" onclick="gFxSave()">Kuru kaydet</button></div>'+
-    '<div class="hint">Taban: ₼ Manat. Toplamlar Manat hesaplanır; USD/TL karşılığı arbitraj olarak gösterilir. Kurları sen girersin.</div></div>';
+    '<button class="btn" onclick="gFxAuto()">🔄 Otomatik getir</button>'+
+    '<button class="btn ghost" onclick="gFxSave()">Elle kaydet</button></div>'+
+    (FX._src?('<div class="hint">Kaynak: '+esc(String(FX._src))+(FX._t?' · '+esc(String(FX._t)):'')+'</div>'):'')+
+    '<div class="hint">Taban: ₼ Manat. Otomatik kur: open.er-api.com (canlı, USD bazlı). İstersen elle de girebilirsin.</div></div>';
   var katRows=GKAT.map(function(g){var v=katTot[g.k]||0;return v?'<tr><td>'+g.ic+' '+g.ad+'</td><td class="num">'+gMoney(v)+'</td></tr>':'';}).join('');
   var katTbl='<div class="tk2"><h3>Kategori bazında (harcama)</h3><table class="gtbl"><tbody>'+(katRows||'<tr><td colspan=2>Kayıt yok</td></tr>')+'<tr class="gtot"><td>HARCAMA TOPLAMI</td><td class="num">'+arbStr(harcTot)+'</td></tr></tbody></table></div>';
   var gunRows='';days.slice().reverse().forEach(function(iso){var gd=gGiderDay(iso);var dt=0;for(var k in gd)dt+=gd[k];if(!dt)return;var parts=[];GKAT.forEach(function(g){if(gd[g.k])parts.push(g.ic+gMoney(gd[g.k]));});gunRows+='<tr><td>'+dtr(iso)+'</td><td>'+parts.join('  ')+'</td><td class="num"><b>'+gMoney(dt)+'</b></td></tr>';});
@@ -2309,10 +2314,11 @@ function renderGider(){
   var wk={};days.forEach(function(iso){var key=gWeekKey(iso);var gd=gGiderDay(iso);var dt=0;for(var k in gd)dt+=gd[k];var pc=gPersCostDay(iso);if(!wk[key])wk[key]={harc:0,pers:0,a:iso,b:iso};wk[key].harc+=dt;wk[key].pers+=pc;if(iso<wk[key].a)wk[key].a=iso;if(iso>wk[key].b)wk[key].b=iso;});
   var wkRows=Object.keys(wk).sort().reverse().map(function(k){var w=wk[k];if(!(w.harc+w.pers))return '';return '<tr><td>'+dtr(w.a)+' – '+dtr(w.b)+'</td><td class="num">'+gMoney(w.harc)+'</td><td class="num gmoneycol">'+gMoney(w.pers)+'</td><td class="num"><b>'+gMoney(w.harc+w.pers)+'</b></td></tr>';}).join('');
   var wkTbl='<div class="tk2"><h3>🗓 Hafta hafta</h3><table class="gtbl"><thead><tr><th>Hafta</th><th>Harcama</th><th class="gmoneycol">Personel</th><th>Toplam</th></tr></thead><tbody>'+(wkRows||'<tr><td colspan=4>—</td></tr>')+'</tbody></table><div class="hint">Personel sütunu yalnızca yöneticide görünür.</div></div>';
-  var wgRows=(TEAM||[]).map(function(p){var gun=gPersDays(p.id);return '<tr><td>'+esc(p.ad)+'</td><td><input type="number" id="wg_'+p.id+'" value="'+(WAGE[p.id]!=null&&WAGE[p.id]!==''?WAGE[p.id]:'')+'" placeholder="'+(WAGE._def||0)+'" style="width:88px"></td><td class="num">'+gun+'</td><td class="num">'+fmtN(gun*wageOf(p.id))+' '+curSym((WAGE._wpb||'AZN'))+'</td></tr>';}).join('');
-  var wgTbl='<div class="tk2 money"><h3>👷 Yevmiye / personel maliyeti</h3><div class="gdform"><label>Varsayılan yevmiye<input type="number" id="wg__def" value="'+(WAGE._def||'')+'"></label><label>Yevmiye birimi<select id="wg__wpb">'+curOpts((WAGE._wpb||'AZN'))+'</select></label><button class="btn" onclick="gWageSave()">Kaydet</button></div><table class="gtbl"><thead><tr><th>Personel</th><th>Yevmiye</th><th>Gün</th><th>Maliyet</th></tr></thead><tbody>'+wgRows+'</tbody></table><div class="gtot2">Toplam personel maliyeti: <b>'+arbStr(persTot)+'</b> · Gün sayıları puantajdan alınır.</div></div>';
+  var wgRows=(TEAM||[]).map(function(p){var gun=gPersDays(p.id);return '<tr><td>'+esc(p.ad)+'</td><td><input type="number" id="wg_'+p.id+'" value="'+(WAGE[p.id]!=null&&WAGE[p.id]!==''?WAGE[p.id]:'')+'" placeholder="'+(WAGE._def||0)+'" style="width:76px"></td><td><select id="wgc_'+p.id+'">'+curOpts(wageCur(p.id))+'</select></td><td class="num">'+gun+'</td><td class="num">'+fmtN(gun*wageOf(p.id))+' '+curSym(wageCur(p.id))+'</td></tr>';}).join('');
+  var wgTbl='<div class="tk2 money"><h3>👷 Yevmiye / personel maliyeti</h3><div class="gdform"><label>Varsayılan yevmiye<input type="number" id="wg__def" value="'+(WAGE._def||'')+'"></label><label>Varsayılan birim<select id="wg__wpb">'+curOpts((WAGE._wpb||'AZN'))+'</select></label><button class="btn" onclick="gWageSave()">Kaydet</button></div><table class="gtbl"><thead><tr><th>Personel</th><th>Yevmiye</th><th>Birim</th><th>Gün</th><th>Maliyet</th></tr></thead><tbody>'+wgRows+'</tbody></table><div class="gtot2">Toplam personel maliyeti: <b>'+arbStr(persTot)+'</b> · Gün sayıları puantajdan alınır.</div></div>';
   var recRows=(GIDER||[]).slice(0,200).map(function(r){return '<tr><td>'+dtr(r.tarih)+'</td><td>'+gkatAd(r.kat)+'</td><td class="num">'+fmtN(r.tutar)+' '+curSym(r.pb||'AZN')+'</td><td>'+esc(r.aciklama||'')+'</td><td>'+(r.foto?'<button class="btn ghost sm" onclick="gdShowFoto(\''+r.id+'\')">📷</button>':'')+'</td><td>'+((typeof ROLE!=='undefined'&&ROLE==='admin')?'<button class="btn ghost sm" onclick="delGider(\''+r.id+'\')">sil</button>':'')+'</td></tr>';}).join('');
   var recTbl='<div class="tk2"><h3>Gider kayıtları ('+(GIDER||[]).length+')</h3><table class="gtbl"><thead><tr><th>Tarih</th><th>Kategori</th><th>Tutar</th><th>Açıklama</th><th>Belge</th><th></th></tr></thead><tbody>'+(recRows||'<tr><td colspan=6>Kayıt yok</td></tr>')+'</tbody></table></div>';
+  if(!FX.usdazn&&!_FXTRIED){_FXTRIED=true;gFxAuto();}
   el.innerHTML=form+fxPanel+sum+katTbl+gunTbl+wkTbl+wgTbl+recTbl;
 }
 function gunlukDiary(){
@@ -2698,7 +2704,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s96</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s97</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -3183,7 +3189,7 @@ function rapBody(day,forPrint){const A=rapAgg(day);
   }
   return h;}
 async function backupAll(){try{
-  const dump={_app:'SHAMS1-TR1',_ver:'s96',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1-TR1',_ver:'s97',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pja:','pjag:','pjp:','pjpg:','hc:','g:','gd:'];
   for(const pre of pref)for(const k of await slist(pre)){const v=await sget(k);if(v!=null)dump.data[k]=v;}
   const single=['wage','fx','targets','mpct','cab:dc','cab:ac','cab:og','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
