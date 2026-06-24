@@ -676,6 +676,22 @@
    .isgunbar input[type=date]{font-size:13px;padding:3px 6px;border:1px solid #cbd5e1;border-radius:7px}
    .isgunw{color:#b45309;font-weight:600}
    .isgunok{color:#15803d}
+   .gdform{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
+   .gdform label{display:flex;flex-direction:column;font-size:12px;font-weight:600;color:#15314e;gap:3px}
+   .gdform input,.gdform select{font-size:14px;padding:6px 8px;border:1px solid #cbd5e1;border-radius:8px}
+   .gdform .gdwide{flex:1 1 100%}
+   .gdpv{flex:1 1 100%}
+   .gsum{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
+   .gscard{flex:1;min-width:140px;background:#f8fafc;border:1px solid #e6e9ef;border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:3px}
+   .gscard span{font-size:12px;color:#64748b}
+   .gscard b{font-size:18px;color:#15314e}
+   .gtbl{width:100%;border-collapse:collapse;font-size:13px}
+   .gtbl th,.gtbl td{padding:6px 8px;border-bottom:1px solid #eef1f5;text-align:left}
+   .gtbl th{color:#64748b;font-weight:700;font-size:12px}
+   .gtbl .num{text-align:right;white-space:nowrap}
+   .gtbl .gtot td{font-weight:800;border-top:2px solid #cbd5e1}
+   .gtot2{margin-top:8px;font-size:13px;color:#33404f}
+   #app.usta .gmoneycol,#app.demo .gmoneycol{display:none!important}
    .gdnot{background:#f0f7ff;border-left:3px solid #3f7cc0;border-radius:6px;padding:5px 9px;margin-top:4px;white-space:pre-wrap;font-size:13px}
   .hckgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:6px 0 10px}
   .hckrow{display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid #e7e6e1;border-radius:10px;padding:7px 10px;background:#fff}
@@ -692,7 +708,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 94 · Puantaj iş-kalemi bazlı + günlüğe bağlı</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 95 · Puantaj iş-kalemi bazlı + günlüğe bağlı</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -717,7 +733,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 94 · Puantaj·iş kalemi · 20.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 95 · Puantaj·iş kalemi · 20.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -751,11 +767,13 @@
     <button class="tab" onclick="tabTo(8,this)">📊 Rapor</button>
     <button class="tab" onclick="tabTo(9,this)">🗓 Saha Günlüğü</button>
     <button class="tab adminonly" onclick="tabTo(10,this)">⚡ Verimlilik</button>
+    <button class="tab" onclick="tabTo(11,this)">💸 Gider</button>
   </div>
 
   <!-- ===== PROJE ===== -->
   <div class="pane on" id="pane0"><div id="proje"></div></div>
   <div class="pane" id="pane10"><div id="verim"></div></div>
+  <div class="pane" id="pane11"><div id="gider"></div></div>
 
   <!-- ===== MONTAJ ===== -->
   <div class="pane" id="pane1">
@@ -1059,7 +1077,7 @@ function grpOf(i){return Math.floor((i-1)/20);}
 
 let MCUR=0;
 function tabTo(n,el){document.querySelectorAll('.tabs .tab').forEach(t=>t.classList.remove('on'));el.classList.add('on');
-  for(let i=0;i<11;i++){const pn=document.getElementById('pane'+i);if(pn)pn.classList.toggle('on',i===n);}
+  for(let i=0;i<12;i++){const pn=document.getElementById('pane'+i);if(pn)pn.classList.toggle('on',i===n);}
   if(n===0)renderProje();
   if(n===1)mShow();
   if(n===2){renderProgress();renderHakedisKesinti();}
@@ -1069,7 +1087,7 @@ function tabTo(n,el){document.querySelectorAll('.tabs .tab').forEach(t=>t.classL
   if(n===6)renderSozlesme();
   if(n===7)renderIsProg();
   if(n===8)renderRapor();
-  if(n===9)renderGunluk();if(n===10)renderVerim();}
+  if(n===9)renderGunluk();if(n===10)renderVerim();if(n===11)renderGider();}
 function mTo(n,el){MCUR=n;document.querySelectorAll('#msub .subtab').forEach(t=>t.classList.remove('on'));el.classList.add('on');
   for(let i=0;i<7;i++)document.getElementById('mpane'+i).classList.toggle('on',i===n);mShow();}
 function mShow(){if(MCUR===0){renderPhaseChips();renderZoneChips();renderMinimap();renderZoneMasa();renderKonstPlan();konstStats();renderKonstTek();}
@@ -1122,7 +1140,7 @@ async function reloadAll(){
     if(ch){ try{ sset('matin',MATIN); }catch(e){} }
     try{ localStorage.setItem('seed_pl_kolon_v2','1'); }catch(e){}
   })();
-  GUNLUK=await _mergeGunluk((await sget('gunluk'))||[]); MATUSE=matuse||{}; MATKOV=matkov||{}; MATCUSTOM=matcustom||[]; MATLINK=(await sget('matlink'))||{}; ISB=isbasi||'2026-06-16'; UPCOUNT=upc||0; UPLAST=uplast||0; if(typeof renderUpBadge==='function')renderUpBadge();
+  GUNLUK=await _mergeGunluk((await sget('gunluk'))||[]); GIDER=Object.values((await sgetAll('gd:'))||{}).filter(Boolean).sort(function(a,b){return (b.ts||0)-(a.ts||0);}); WAGE=(await sget('wage'))||{}; MATUSE=matuse||{}; MATKOV=matkov||{}; MATCUSTOM=matcustom||[]; MATLINK=(await sget('matlink'))||{}; ISB=isbasi||'2026-06-16'; UPCOUNT=upc||0; UPLAST=uplast||0; if(typeof renderUpBadge==='function')renderUpBadge();
   CINS={dc:cinsdc||{},ac:cinsac||{},og:cinsog||{}};
   TEAM=team||[];
   TEAM.forEach(p=>{if(p.gorev==='Ara eleman')p.gorev='Yardımcı';});
@@ -1639,6 +1657,7 @@ let PJG={};
 let GROSTER=[];
 let PJA={},PJAG={};
 let PARAC=[],PJP={},PJPG={};
+let GIDER=[],WAGE={},_GDSEQ=0;
 const PJST=[
  {c:'',  l:'—', v:0,   bg:'transparent', fg:'var(--muted,#888)'},
  {c:'V', l:'●', v:1,   bg:'#16a34a',     fg:'#fff'},
@@ -2219,6 +2238,70 @@ function gunIsSatir(iso,persArr,q){
   for(var k in q){if(NM[k]||!(+q[k]>0))continue;lines.push('• <b>'+trn(q[k])+'</b> '+esc(k));}
   return lines;
 }
+const GKAT=[
+ {k:'yemek',ad:'Yemek',ic:'🍽'},
+ {k:'hirdavat',ad:'Hırdavat',ic:'🔧'},
+ {k:'sarf',ad:'Sarf malzeme',ic:'📦'},
+ {k:'isg',ad:'İSG malzeme',ic:'🦺'},
+ {k:'yakit',ad:'Yakıt',ic:'⛽'},
+ {k:'ulasim',ad:'Ulaşım',ic:'🚐'},
+ {k:'diger',ad:'Diğer',ic:'🧾'}
+];
+function gPB(){return (WAGE&&WAGE._pb)||'₺';}
+function gMoney(n){n=+n||0;return n.toLocaleString('tr-TR',{maximumFractionDigits:2})+' '+gPB();}
+function gkatAd(k){if(k==='personel')return '👷 Personel (yevmiye)';var x=GKAT.find(function(g){return g.k===k;});return x?x.ic+' '+x.ad:k;}
+function wageOf(pid){var w=(WAGE&&WAGE[pid]!=null&&WAGE[pid]!=='')?WAGE[pid]:((WAGE&&WAGE._def)||0);return +w||0;}
+function gPjv(pid,iso){var ym=iso.slice(0,7),d=+iso.slice(8,10);return pjMeta((PJ[ym]&&PJ[ym][pid]&&PJ[ym][pid][d])||'').v;}
+function gPersCostDay(iso){var t=0;(TEAM||[]).forEach(function(p){t+=gPjv(p.id,iso)*wageOf(p.id);});return t;}
+function gGiderDay(iso){var o={};(GIDER||[]).forEach(function(g){if(g.tarih===iso)o[g.kat]=(o[g.kat]||0)+(+g.tutar||0);});return o;}
+function gDays(){var out=[],today=dToday(),iso=(typeof ISB!=='undefined'?ISB:today),g=0;while(iso<=today&&g<400){out.push(iso);iso=dadd(iso,1);g++;}return out;}
+function gPersDays(pid){var t=0;gDays().forEach(function(iso){t+=gPjv(pid,iso);});return t;}
+function gWeekKey(iso){var p=iso.split('-').map(Number);var d=new Date(p[0],p[1]-1,p[2]);var day=(d.getDay()+6)%7;d.setDate(d.getDate()-day);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+var GD_FOTO='';
+function gdPhoto(inp){var f=inp.files&&inp.files[0];if(!f)return;resizeImg(f,720,function(d){GD_FOTO=d||'';var pv=document.getElementById('gd_foto_pv');if(pv)pv.innerHTML=GD_FOTO?'<img src="'+GD_FOTO+'" style="max-height:80px;border-radius:8px;border:1px solid #cbd5e1">':'';});}
+async function addGider(){
+  var kat=fval('gd_kat'),tarih=fval('gd_tarih')||dToday(),tutar=+fval('gd_tutar')||0,acik=fval('gd_acik');
+  if(!tutar&&!GD_FOTO){toast('Tutar veya belge fotoğrafı gerekli');return;}
+  var rec={id:'gd'+Date.now(),tarih:tarih,kat:kat,tutar:tutar,aciklama:acik,foto:GD_FOTO||'',by:(typeof ROLE!=='undefined'?ROLE:'')||'?',ts:Date.now()};
+  GIDER.unshift(rec);_GDSEQ=(_GDSEQ||0)+1;await sset('gd:'+rec.id+'_'+_GDSEQ,rec);
+  GD_FOTO='';['gd_tutar','gd_acik'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});var pv=document.getElementById('gd_foto_pv');if(pv)pv.innerHTML='';
+  toast('Gider eklendi');renderGider();
+}
+async function delGider(id){if(!confirm('Gider kaydı silinsin mi?'))return;GIDER=GIDER.filter(function(r){return r.id!==id;});try{var all=await sgetAll('gd:');for(var k in all){if(all[k]&&all[k].id===id)await sdel(k);}}catch(e){}renderGider();}
+function gdShowFoto(id){var r=(GIDER||[]).find(function(x){return x.id===id;});if(r&&r.foto)modalShow('Belge','<img src="'+r.foto+'" style="width:100%;border-radius:10px">');}
+function gWageSave(){(TEAM||[]).forEach(function(p){var e=document.getElementById('wg_'+p.id);if(e)WAGE[p.id]=(e.value===''?'':(+e.value||0));});var d=document.getElementById('wg__def');if(d)WAGE._def=+d.value||0;var pb=document.getElementById('wg__pb');if(pb)WAGE._pb=pb.value||'₺';sset('wage',WAGE);toast('Yevmiye kaydedildi');renderGider();}
+function renderGider(){
+  var el=document.getElementById('gider');if(!el)return;
+  var days=gDays();
+  var katTot={},persTot=0,harcTot=0;
+  days.forEach(function(iso){var gd=gGiderDay(iso);for(var k in gd){katTot[k]=(katTot[k]||0)+gd[k];harcTot+=gd[k];}persTot+=gPersCostDay(iso);});
+  var genel=harcTot+persTot;
+  var katOpts=GKAT.map(function(g){return '<option value="'+g.k+'">'+g.ic+' '+g.ad+'</option>';}).join('');
+  var form='<div class="tk2"><h3>💸 Gider ekle</h3><div class="gdform">'+
+    '<label>Tarih<input type="date" id="gd_tarih" value="'+dToday()+'" max="'+dToday()+'"></label>'+
+    '<label>Kategori<select id="gd_kat">'+katOpts+'</select></label>'+
+    '<label>Tutar ('+gPB()+')<input type="number" id="gd_tutar" inputmode="decimal" placeholder="0"></label>'+
+    '<label class="gdwide">Açıklama<input type="text" id="gd_acik" placeholder="fatura no / detay"></label>'+
+    '<label class="gdwide">📷 Fatura / fiş / irsaliye<input type="file" accept="image/*" capture="environment" onchange="gdPhoto(this)"></label>'+
+    '<div id="gd_foto_pv" class="gdpv"></div>'+
+    '<button class="btn" onclick="addGider()">+ Ekle</button></div></div>';
+  var sum='<div class="gsum">'+
+    '<div class="gscard"><span>Harcama toplamı</span><b>'+gMoney(harcTot)+'</b></div>'+
+    '<div class="gscard money"><span>Personel maliyeti</span><b>'+gMoney(persTot)+'</b></div>'+
+    '<div class="gscard money"><span>GENEL TOPLAM</span><b>'+gMoney(genel)+'</b></div></div>';
+  var katRows=GKAT.map(function(g){var v=katTot[g.k]||0;return v?'<tr><td>'+g.ic+' '+g.ad+'</td><td class="num">'+gMoney(v)+'</td></tr>':'';}).join('');
+  var katTbl='<div class="tk2"><h3>Kategori bazında (harcama)</h3><table class="gtbl"><tbody>'+(katRows||'<tr><td colspan=2>Kayıt yok</td></tr>')+'<tr class="gtot"><td>HARCAMA TOPLAMI</td><td class="num">'+gMoney(harcTot)+'</td></tr></tbody></table></div>';
+  var gunRows='';days.slice().reverse().forEach(function(iso){var gd=gGiderDay(iso);var dt=0;for(var k in gd)dt+=gd[k];if(!dt)return;var parts=[];GKAT.forEach(function(g){if(gd[g.k])parts.push(g.ic+gMoney(gd[g.k]));});gunRows+='<tr><td>'+dtr(iso)+'</td><td>'+parts.join('  ')+'</td><td class="num"><b>'+gMoney(dt)+'</b></td></tr>';});
+  var gunTbl='<div class="tk2"><h3>📅 Gün gün (harcama)</h3><table class="gtbl"><thead><tr><th>Tarih</th><th>Kalemler</th><th>Gün toplamı</th></tr></thead><tbody>'+(gunRows||'<tr><td colspan=3>Kayıt yok</td></tr>')+'</tbody></table></div>';
+  var wk={};days.forEach(function(iso){var key=gWeekKey(iso);var gd=gGiderDay(iso);var dt=0;for(var k in gd)dt+=gd[k];var pc=gPersCostDay(iso);if(!wk[key])wk[key]={harc:0,pers:0,a:iso,b:iso};wk[key].harc+=dt;wk[key].pers+=pc;if(iso<wk[key].a)wk[key].a=iso;if(iso>wk[key].b)wk[key].b=iso;});
+  var wkRows=Object.keys(wk).sort().reverse().map(function(k){var w=wk[k];if(!(w.harc+w.pers))return '';return '<tr><td>'+dtr(w.a)+' – '+dtr(w.b)+'</td><td class="num">'+gMoney(w.harc)+'</td><td class="num gmoneycol">'+gMoney(w.pers)+'</td><td class="num"><b>'+gMoney(w.harc+w.pers)+'</b></td></tr>';}).join('');
+  var wkTbl='<div class="tk2"><h3>🗓 Hafta hafta</h3><table class="gtbl"><thead><tr><th>Hafta</th><th>Harcama</th><th class="gmoneycol">Personel</th><th>Toplam</th></tr></thead><tbody>'+(wkRows||'<tr><td colspan=4>—</td></tr>')+'</tbody></table><div class="hint">Personel sütunu yalnızca yöneticide görünür.</div></div>';
+  var wgRows=(TEAM||[]).map(function(p){var gun=gPersDays(p.id);return '<tr><td>'+esc(p.ad)+'</td><td><input type="number" id="wg_'+p.id+'" value="'+(WAGE[p.id]!=null&&WAGE[p.id]!==''?WAGE[p.id]:'')+'" placeholder="'+(WAGE._def||0)+'" style="width:88px"></td><td class="num">'+gun+'</td><td class="num">'+gMoney(gun*wageOf(p.id))+'</td></tr>';}).join('');
+  var wgTbl='<div class="tk2 money"><h3>👷 Yevmiye / personel maliyeti</h3><div class="gdform"><label>Varsayılan yevmiye<input type="number" id="wg__def" value="'+(WAGE._def||'')+'"></label><label>Para birimi<input type="text" id="wg__pb" value="'+gPB()+'" style="width:64px"></label><button class="btn" onclick="gWageSave()">Kaydet</button></div><table class="gtbl"><thead><tr><th>Personel</th><th>Yevmiye</th><th>Gün</th><th>Maliyet</th></tr></thead><tbody>'+wgRows+'</tbody></table><div class="gtot2">Toplam personel maliyeti: <b>'+gMoney(persTot)+'</b> · Gün sayıları puantajdan alınır.</div></div>';
+  var recRows=(GIDER||[]).slice(0,200).map(function(r){return '<tr><td>'+dtr(r.tarih)+'</td><td>'+gkatAd(r.kat)+'</td><td class="num">'+gMoney(r.tutar)+'</td><td>'+esc(r.aciklama||'')+'</td><td>'+(r.foto?'<button class="btn ghost sm" onclick="gdShowFoto(\''+r.id+'\')">📷</button>':'')+'</td><td>'+((typeof ROLE!=='undefined'&&ROLE==='admin')?'<button class="btn ghost sm" onclick="delGider(\''+r.id+'\')">sil</button>':'')+'</td></tr>';}).join('');
+  var recTbl='<div class="tk2"><h3>Gider kayıtları ('+(GIDER||[]).length+')</h3><table class="gtbl"><thead><tr><th>Tarih</th><th>Kategori</th><th>Tutar</th><th>Açıklama</th><th>Belge</th><th></th></tr></thead><tbody>'+(recRows||'<tr><td colspan=6>Kayıt yok</td></tr>')+'</tbody></table></div>';
+  el.innerHTML=form+sum+katTbl+gunTbl+wkTbl+wgTbl+recTbl;
+}
 function gunlukDiary(){
   var byDay={};(GUNLUK||[]).forEach(function(r){if(r.tarih)(byDay[r.tarih]=byDay[r.tarih]||[]).push(r);});
   var today=dToday(),start=(typeof ISB!=='undefined'?ISB:today);if(start>today)start=today;
@@ -2602,7 +2685,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s94</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s95</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -3087,10 +3170,10 @@ function rapBody(day,forPrint){const A=rapAgg(day);
   }
   return h;}
 async function backupAll(){try{
-  const dump={_app:'SHAMS1-TR1',_ver:'s94',_ts:Date.now(),data:{}};
-  const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pja:','pjag:','pjp:','pjpg:','hc:'];
+  const dump={_app:'SHAMS1-TR1',_ver:'s95',_ts:Date.now(),data:{}};
+  const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pja:','pjag:','pjp:','pjpg:','hc:','g:','gd:'];
   for(const pre of pref)for(const k of await slist(pre)){const v=await sget(k);if(v!=null)dump.data[k]=v;}
-  const single=['targets','mpct','cab:dc','cab:ac','cab:og','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
+  const single=['wage','targets','mpct','cab:dc','cab:ac','cab:og','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
   for(const k of single){const v=await sget(k);if(v!=null)dump.data[k]=v;}
   const blob=new Blob([JSON.stringify(dump)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);
