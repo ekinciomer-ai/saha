@@ -708,7 +708,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 98 · Puantaj iş-kalemi bazlı + günlüğe bağlı</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 99 · Puantaj iş-kalemi bazlı + günlüğe bağlı</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -733,7 +733,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 98 · Puantaj·iş kalemi · 20.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 99 · Puantaj·iş kalemi · 20.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -1565,13 +1565,17 @@ function kontrolBanner(){const kc=kontrolCount();if(!kc.toplam)return '';
     `<div class="kbmasa">Masa: ${kc.masalar.map(m=>'<button onclick="openEd('+m+')">#'+m+'</button>').join(' ')}</div></div>`;}
 function konstStats(){const wrap=document.getElementById('kbars');if(!wrap)return;
   const steps=[['k1','Ön kolon (P1)'],['k2','Arka kolon (P2/P6)'],['k3','Diyagonal makas (P5)'],['k4','Üst kuşak (P3)'],['k5','Alt kuşak (P4-1)'],['k6','Terazi + tork']];
-  let sd=0;for(const s of steps)sd+=cntK(s[0]);const pan=sumP('k7');sd+=pan/26;const ov=sd/(7*378)*100;
+  const onM=footMonRow(false),arkaM=footMonRow(true);function stepVal(k){return k==='k1'?onM/7:k==='k2'?arkaM/7:cntK(k);}
+  let sd=0;for(const s of steps)sd+=stepVal(s[0]);const pan=sumP('k7');sd+=pan/26;const ov=sd/(7*378)*100;
   let html=kontrolBanner()+'<div class="pr"><div class="nm">Konstrüksiyon — genel<small>Mek · '+tr(Math.round(sd))+' / 2.646 adım</small></div>'+
     '<div class="track"><div class="fill fMEK" style="width:'+ov+'%"></div></div>'+
     '<div style="text-align:right"><div class="pct" style="color:'+(ov>=100?'var(--gnd)':'var(--solar)')+'">%'+ov.toFixed(0)+'</div></div></div>';
-  for(const [k,nm] of steps){const c=cntK(k),p=c/378*100;
+  for(const [k,nm] of steps){let c,p,q;
+    if(k==='k1'){c=onM;p=c/2646*100;q='<b>'+tr(c)+'</b>/2.646 ön ayak';}
+    else if(k==='k2'){c=arkaM;p=c/2646*100;q='<b>'+tr(c)+'</b>/2.646 arka ayak';}
+    else{c=cntK(k);p=c/378*100;q='<b>'+tr(c)+'</b>/378 masa';}
     html+='<div class="pr"><div class="nm">'+nm+'</div><div class="track"><div class="fill fMEK" style="width:'+p+'%"></div></div>'+
-      '<div style="text-align:right"><div class="pct">%'+p.toFixed(0)+'</div><div class="q"><b>'+tr(c)+'</b>/378 masa</div></div></div>';}
+      '<div style="text-align:right"><div class="pct">%'+p.toFixed(0)+'</div><div class="q">'+q+'</div></div></div>';}
   const pp=pan/9828*100;
   html+='<div class="pr"><div class="nm">Panel montaj<small>26/masa</small></div><div class="track"><div class="fill fMEK" style="width:'+pp+'%"></div></div>'+
     '<div style="text-align:right"><div class="pct">%'+pp.toFixed(0)+'</div><div class="q"><b>'+tr(pan)+'</b>/9.828</div></div></div>';
@@ -1599,7 +1603,7 @@ function phaseUnits(p,s){s=s||{};
   if(p==='harita')return {d:Math.min(14,+s.a1||0),t:14};
   if(p==='rok')return {d:Math.min(14,+s.a2||0),t:14};
   if(p==='beton')return {d:Math.min(14,+s.a4||0),t:14};
-  if(p==='kolon')return {d:(s.k1?1:0)+(s.k2?1:0),t:2};
+  if(p==='kolon')return {d:Math.min(14,+s.a4||0),t:14};
   if(p==='celik')return {d:(s.k3?1:0)+(s.k4?1:0)+(s.k5?1:0)+(s.k6?1:0),t:4};
   if(p==='panel')return {d:Math.min(26,+s.k7||0),t:26};
   return {d:0,t:1};}
@@ -2704,7 +2708,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s98</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s99</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -3189,7 +3193,7 @@ function rapBody(day,forPrint){const A=rapAgg(day);
   }
   return h;}
 async function backupAll(){try{
-  const dump={_app:'SHAMS1-TR1',_ver:'s98',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1-TR1',_ver:'s99',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pja:','pjag:','pjp:','pjpg:','hc:','g:','gd:'];
   for(const pre of pref)for(const k of await slist(pre)){const v=await sget(k);if(v!=null)dump.data[k]=v;}
   const single=['wage','fx','targets','mpct','cab:dc','cab:ac','cab:og','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
