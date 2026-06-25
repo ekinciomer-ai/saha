@@ -708,7 +708,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 111 · Puantaj iş-kalemi bazlı + günlüğe bağlı</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 112 · Puantaj iş-kalemi bazlı + günlüğe bağlı</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -733,7 +733,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 111 · Puantaj·iş kalemi · 20.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 112 · Puantaj·iş kalemi · 20.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -2708,7 +2708,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s111</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s112</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -3233,7 +3233,7 @@ function rapBody(day,forPrint){const A=rapAgg(day);
   }
   return h;}
 async function backupAll(){try{
-  const dump={_app:'SHAMS1-TR1',_ver:'s111',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1-TR1',_ver:'s112',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pja:','pjag:','pjp:','pjpg:','hc:','g:','gd:'];
   for(const pre of pref)for(const k of await slist(pre)){const v=await sget(k);if(v!=null)dump.data[k]=v;}
   const single=['wage','fx','targets','mpct','cab:dc','cab:ac','cab:og','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
@@ -3473,7 +3473,7 @@ function printKontrolForm(){
 function printEl(id,baslik){
   const el=document.getElementById(id);if(!el){if(typeof toast==='function')toast('Yazdırılacak içerik bulunamadı');return;}
   const w=window.open('','_blank');if(!w){if(typeof toast==='function')toast('Açılır pencere engellendi');return;}
-  const css='*{box-sizing:border-box}body{font-family:Arial,sans-serif;font-size:10px;color:#1c1c22;margin:18px;background:#fff}h1{font-size:14px;color:#15314e;border-bottom:3px solid #E8833A;padding-bottom:6px;margin:0 0 2px}h3{font-size:12px;color:#15314e;margin:12px 0 5px}table{width:100%;border-collapse:collapse;font-size:9px;margin:6px 0}th{background:#15314e;color:#fff;padding:4px 6px;text-align:left}td{border:1px solid #d8dce2;padding:3px 6px}.m{text-align:center}.hint,.sub{font-size:8.5px;color:#777}button,input,select,.btn,.subtabs,.subtab{display:none!important}svg{max-width:100%}@page{margin:12mm}';
+  const css='*{box-sizing:border-box}body{font-family:Arial,sans-serif;font-size:10px;color:#1c1c22;margin:18px;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}h1{font-size:14px;color:#15314e;border-bottom:3px solid #E8833A;padding-bottom:6px;margin:0 0 2px}h3{font-size:12px;color:#15314e;margin:12px 0 5px}table{width:100%;border-collapse:collapse;font-size:9px;margin:6px 0}th{background:#15314e;color:#fff;padding:4px 6px;text-align:left}td{border:1px solid #d8dce2;padding:3px 6px}.m{text-align:center}.hint,.sub{font-size:8.5px;color:#777}button,input,select,.btn,.subtabs,.subtab{display:none!important}svg{max-width:100%}.gantt{margin-top:6px}.grow{display:flex;align-items:center;gap:8px;margin:3px 0}.glbl{flex:0 0 200px;font-size:9px;color:#555;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.gtrack{position:relative;flex:1;height:18px;background:#f1f1f4;border-radius:5px}.gaxis{background:transparent;height:16px}.gtick{position:absolute;top:0;font-size:8px;color:#9a9aa5;transform:translateX(-50%);white-space:nowrap}.gtick:first-child{transform:none}.gtick:last-child{transform:translateX(-100%)}.gbar{position:absolute;top:0;height:18px;border-radius:5px;opacity:.95;display:flex;align-items:center;overflow:hidden}.gbar i{font-style:normal;font-size:8px;color:#fff;padding:0 5px;white-space:nowrap}.gbar.gm{background:#3B82C4}.gbar.ge{background:#E8833A}@page{margin:12mm}';
   const d=w.document;try{d.title=baslik+' — SHAMS-1 TR-1';}catch(e){}
   const st=d.createElement('style');st.textContent=css;(d.head||d.documentElement).appendChild(st);
   const wrap=d.createElement('div');
@@ -3507,7 +3507,7 @@ function renderIsProg(){const el=document.getElementById('isprog');if(!el)return
   let h='<div style="text-align:right;margin-bottom:6px"><button class="btn" onclick="printIsProg()">📄 Yazdır / PDF</button></div><div class="tk2"><h3>İş Programı — SHAMS-1 TR-1 (6,9 MWp)</h3>'+
     '<div class="frow" style="align-items:center;gap:10px"><label>İş başı<input type="date" id="isb_in" value="'+ISB+'" onchange="setIsbasi(this.value)"></label>'+
     '<span class="hint">Sözleşme bitişi: <b>'+dtr(ISBITIS)+'</b> · süre '+total+' gün · planlanan '+endPlan+' gün</span></div>'+
-    (endPlan>total?'<div class="hint" style="color:var(--dc)">⚠ Planlanan iş ('+endPlan+' gün) sözleşme süresini ('+total+' gün) aşıyor — paralel ekip / vardiya şart.</div>':'')+'</div>';
+    ''+'</div>';
   // sevk takvimi
   h+='<div class="tk2 ceza"><h3>📦 Malzeme sevk takvimi</h3><div style="overflow:auto"><table class="mtab"><thead><tr><th>Sevke hazır (en geç)</th><th>Malzeme</th><th>Miktar</th><th>İş (poz)</th><th>Gelen</th><th>Durum</th></tr></thead><tbody>'+
     slist.map(x=>{const ac=x.rd<today;
