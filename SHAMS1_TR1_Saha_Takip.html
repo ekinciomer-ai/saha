@@ -708,7 +708,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 116 · Puantaj iş-kalemi bazlı + günlüğe bağlı</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 117 · Puantaj iş-kalemi bazlı + günlüğe bağlı</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -733,7 +733,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 116 · Puantaj·iş kalemi · 20.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 117 · Puantaj·iş kalemi · 20.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -2710,7 +2710,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s116</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s117</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -3235,7 +3235,7 @@ function rapBody(day,forPrint){const A=rapAgg(day);
   }
   return h;}
 async function backupAll(){try{
-  const dump={_app:'SHAMS1-TR1',_ver:'s116',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1-TR1',_ver:'s117',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pja:','pjag:','pjp:','pjpg:','hc:','g:','gd:'];
   for(const pre of pref)for(const k of await slist(pre)){const v=await sget(k);if(v!=null)dump.data[k]=v;}
   const single=['wage','fx','targets','mpct','cab:dc','cab:ac','cab:og','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
@@ -3304,6 +3304,9 @@ function verimEOT(F){
   var eot=Math.max(eotIsv,0);
   return {delme:delme,mont:mont,delmeBitis:delmeBitis,montKendiBitis:montKendiBitis,eotIsv:eotIsv,matCrit:matCrit,eot:eot,revDeadline:dadd(dl,eot)};
 }
+var MATREQ={ayakmont:['k_p1','k_p2','b_rok'],ustm:['k_p3','k_p41','k_p42','k_p43','k_p5','k_p6','k_p7','k_m12'],panel:['k_panel','k_p11','k_orta']};
+function verimMatLimit(id,hedef,cum){var req=MATREQ[id];if(!req||!req.length)return null;var ratio=1,worst=null;req.forEach(function(m){if(typeof mikOf!=='function')return;var need=mikOf(m),gel=(typeof gelenOf==='function')?gelenOf(m):0;if(need>0){var r=Math.min(1,gel/need);if(worst===null||r<ratio){ratio=r;worst={id:m,need:need,gel:gel,r:r};}}});if(worst===null)return null;var cap=Math.round((hedef||0)*ratio);return {ratio:ratio,cap:cap,worst:worst,limited:cap<(hedef||0),blocked:cap<=(cum||0)};}
+function verimLitView(F){var cr=verimAvgCrew();var pers=cr.pers||0;var find=function(id){var x=null;F.rows.forEach(function(r){if(r.it.id===id)x=r;});return x;};var delme=find('ayakdelme'),mont=find('ayakmont'),pan=find('panel');var rows=[];rows.push(['Ayak delme / çakma (ROK)','150–200 adet/gün-makine (Vermeer · iyi koşulda 200–400)',(delme&&delme.hiz>0?('saha ≈ '+Math.round(delme.hiz)+' adet/gün'):'–')+' · <b>İşveren kapsamı</b>']);rows.push(['Ayak / kolon montajı','saha verisinden',(mont&&mont.hiz>0?('saha ≈ '+Math.round(mont.hiz)+' adet/gün'+(pers>0?(' · işçi başına ≈ '+(Math.round(mont.hiz/pers*10)/10)):'')):'–')]);var panDaily=pers>0?Math.round(pers*42):0;var panDays=panDaily>0?Math.ceil(9828/panDaily):null;rows.push(['Panel montajı','~42 panel/işçi-gün (deneyimli ekip 20 kişi → 800–900/gün)',(pan&&pan.it.cum>0?('saha ≈ '+Math.round(pan.hiz)+' panel/gün'):'<b>başlamadı – panel sahaya gelmedi</b>')+(panDaily>0?(' · '+Math.round(pers)+' kişi × 42 ≈ '+panDaily+' panel/gün → malzeme gelse ~'+panDays+' gün'):'')]);return '<h3>🌍 Literatür verimliliği &amp; malzeme kısıtı</h3><div class="sub">Dünya literatüründeki tipik kurulum hızları ile saha hızının karşılaştırması. Aktif kalemlerde ekip literatürle uyumlu; gecikme işgücünden değil <b>malzeme akışından</b> kaynaklanıyor – sahada personel olsa da malzeme gelmeden iş ilerleyemez.</div><div style="overflow:auto"><table class="mtab vtab"><thead><tr><th>İş kalemi</th><th>Literatür normu (kaynak)</th><th>Saha durumu</th></tr></thead><tbody>'+rows.map(function(x){return '<tr><td>'+x[0]+'</td><td>'+x[1]+'</td><td>'+x[2]+'</td></tr>';}).join('')+'</tbody></table></div><div class="hint">Kaynaklar: panel ~42 panel/işçi-gün – güneş santrali kurulum literatürü; kazık 150–200/gün-makine – Vermeer / Solar Builder. Normlar gösterge niteliğindedir; zemin, hava ve malzeme akışına göre değişir. İşçi başına verim literatür bandındaysa gecikmenin nedeni işgücü değil malzemedir.</div>';}
 function renderVerim(){
   var el=document.getElementById('verim');if(!el)return;
   if(typeof ROLE!=='undefined'&&ROLE!=='admin'){el.innerHTML='<div class="tk2"><div class="empty">Bu sekme yöneticiye açıktır.</div></div>';return;}
@@ -3335,14 +3338,13 @@ function renderVerim(){
   });
   tbl+='</tbody></table></div>';
   var basUyari=basla.length?'<div class="hint" style="margin-top:6px">⚠ Henüz başlamamış '+basla.length+' kalem ('+basla.map(function(r){return esc(r.it.ad);}).join(', ')+') — hıza dahil değil; başlayınca yeniden hesaplanır.</div>':'';
-  var lag=F.rows.filter(function(r){return r.durum==='gecikme';});
+  var lag=F.rows.filter(function(r){return r.durum==='gecikme';});var matBlk=F.rows.filter(function(r){if(r.it.id==='ayakdelme')return false;var ml=(typeof verimMatLimit==='function')?verimMatLimit(r.it.id,r.it.hedef,r.it.cum):null;return ml&&ml.blocked&&r.kalan>0;});var matBlockBand=matBlk.length?'<div class="vband vbad">⛔ <b>Malzeme gelmediği için başlayamayan / duran kalemler</b> (personel sorunu değil): '+matBlk.map(function(r){var ml=verimMatLimit(r.it.id,r.it.hedef,r.it.cum);return esc(r.it.ad)+' (gelen %'+Math.round(ml.ratio*100)+')';}).join(' · ')+'. Sahada ek personel olsa da bu işler yapılamaz – malzeme teslimi tamamlanana kadar beklemededir ve <b>süre uzatımı gerekçesidir</b>.</div>':'';
   var plan;
   if(lag.length){
     var maxKat=Math.max.apply(null,lag.map(function(r){return r.kat||1;}));
     plan='<h3 class="raph">📋 İş planı — deadline ('+dl+') için gereken</h3><div style="overflow:auto"><table class="mtab vtab"><thead><tr><th>Kalem</th><th>Şu anki hız</th><th>Gereken hız</th><th>Artış</th><th>Öneri</th></tr></thead><tbody>'+
-      lag.map(function(r){var kat=r.kat||1;var oner=kat>1.05?'Ekip/araç ≈ <b>'+(Math.round(kat*10)/10)+'×</b> ya da vardiya':'Mevcut hız yeterli';
-        return '<tr><td>'+esc(r.it.ad)+'</td><td class="m">'+(Math.round(r.hiz*10)/10)+'/gün</td><td class="m"><b>'+(Math.round((r.gerekHiz||0)*10)/10)+'</b>/gün</td><td class="m"><b style="color:#E5484D">'+(Math.round(kat*10)/10)+'×</b></td><td>'+oner+'</td></tr>';}).join('')+
-      '</tbody></table></div><div class="hint">Denklem: günlük iş ≈ (personel + araç) × verim. En kritik kalem için hızı <b>'+(Math.round(maxKat*10)/10)+'×</b> artırmak gerekiyor → ekip/araç sayısını veya çalışma saatini orantılı yükselt. Malzemenin de hazır olduğundan emin ol (Malzeme sekmesi).</div>';
+      lag.map(function(r){var kat=r.kat||1;var ml=(typeof verimMatLimit==='function')?verimMatLimit(r.it.id,r.it.hedef,r.it.cum):null;var isIsv=(r.it.id==='ayakdelme');var oner,art;if(isIsv){oner='ROK delme <b>İşveren</b> kapsamında – Aksaray personeli/vardiyası bunu hızlandıramaz.';art='–';}else if(ml&&ml.blocked){var wn=(matItem(ml.worst.id)||{}).ad||ml.worst.id;oner='⛔ <b>Malzeme kısıtı</b>: gelen '+esc(wn)+' yalnızca %'+Math.round(ml.ratio*100)+'. Sahada personel olsa da iş yok – personel/vardiya artışı <b>çözüm değil</b>. Süre uzatımı gerekçesi.';art='malzeme';}else if(ml&&ml.limited){oner='⚠ Malzeme sınırlı (gelen %'+Math.round(ml.ratio*100)+'): gelen kadar iş sürer, hedefe ulaşmak için eksik malzeme şart. Personel ikincil.';art=(kat>1.05?(Math.round(kat*10)/10)+'×':'–');}else{oner=kat>1.05?'Ekip/araç ≈ <b>'+(Math.round(kat*10)/10)+'×</b> ya da vardiya':'Mevcut hız yeterli';art=(kat>1.05?(Math.round(kat*10)/10)+'×':'–');}return '<tr><td>'+esc(r.it.ad)+'</td><td class="m">'+(Math.round(r.hiz*10)/10)+'/gün</td><td class="m"><b>'+(Math.round((r.gerekHiz||0)*10)/10)+'</b>/gün</td><td class="m"><b style="color:#E5484D">'+art+'</b></td><td>'+oner+'</td></tr>';}).join('')+
+      '</tbody></table></div><div class="hint">Denklem: günlük iş ≈ (çalışan personel + çalışan araç) × verim × <b>malzeme hazırlığı</b>. Malzeme gelmeyen kalemde personel/vardiya artışı işe yaramaz; bu kalemler malzeme kaynaklı gecikir ve süre uzatımına esas olur. Yalnızca malzemesi tam, hızı düşük kalemlerde ekip/vardiya artışı gerekir.</div>';
   } else {
     plan='<div class="vband vgood">✓ Tüm kalemler mevcut ortalama hızla deadline içinde. Ek kaynak gerekmiyor — tempoyu koru.</div>';
   }
@@ -3368,7 +3370,7 @@ function renderVerim(){
       '<div class="vband '+(EO.eot>0?'vbad':'vgood')+'" style="margin-top:8px">'+(EO.eot>0?'📌 Haklı süre uzatımı talebi &asymp; <b>'+EO.eot+' gün</b> (işveren ROK delme kaynaklı). Düzeltilmiş hedef bitiş: <b>'+dtr(rd)+'</b> (asıl '+dtr(ISBITIS)+').'+(EO.matCrit.length?' Malzeme gecikmesi için ek talep hakkı saklıdır.':''):'✓ Şu an işveren/MENSİS kaynaklı sayısal süre uzatımı gerekçesi yok — kritik yol Aksaray kontrolünde.'+(EO.matCrit.length?' (Ancak malzeme eksiği sürerse gerekçe doğar.)':''))+'</div>'+
       ((EO.eot>0&&maxB)?'<div class="hint">Düzeltilmiş hedefe göre durum: mevcut tahmini bitiş '+dtr(maxB)+' → '+(yetisir?'düzeltilmiş süre içinde ✓':'düzeltilmiş süreyi de aşıyor ⚠ (Aksaray kaynaklı pay var)')+'.</div>':'')+
       '<div class="hint">Bu analiz süre uzatımı talebinin <b>sayısal dayanağı</b>dır; resmi olarak NCR (Uygunsuzluk Raporu) ve yazışmalarla (delme/malzeme teslim tarihleri) desteklenmelidir.</div>';
-    return '<div class="tk2">'+plan+'</div><div class="tk2">'+eb+'</div>';})();
+    return '<div class="tk2">'+matBlockBand+plan+'</div>'+'<div class="tk2">'+verimLitView(F)+'</div>'+'<div class="tk2">'+eb+'</div>';})();
 }
 function renderRapor(){const el=document.getElementById('rapor');if(!el)return;
   el.innerHTML=`<div class="tk2"><h3>Günlük Saha Raporu — SHAMS-1 TR-1 (6,9 MWp)</h3>
