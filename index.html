@@ -723,7 +723,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 124 · Puantaj iş-kalemi bazlı + günlüğe bağlı</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 125 · Puantaj iş-kalemi bazlı + günlüğe bağlı</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -748,7 +748,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 124 · Puantaj·iş kalemi · 20.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 125 · Puantaj·iş kalemi · 20.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -1194,6 +1194,7 @@ function doneGen(id){return ENTRIES.filter(e=>e.id===id).reduce((s,e)=>s+(+e.qty
 function sumP(f){let s=0;for(const k in PLAN)s+=(+PLAN[k][f]||0);return s;}
 function sumMon(){let s=0;for(const k in PLAN){const p=PLAN[k];s+=Math.min(+p.a3||0,+p.a4||0,+p.a5||0);}return s;}
 function cntK(f){let c=0;for(const k in PLAN)if(PLAN[k][f])c++;return c;}
+function sumKiris(){let s=0;for(const k in PLAN){const a=PLAN[k]&&PLAN[k].kiris;if(Array.isArray(a))s+=a.filter(x=>x>=1).length;}return s;}
 
 // mekanik kalemler (plandan)
 function mechItems(){
@@ -1202,7 +1203,7 @@ function mechItems(){
    {id:'harita',ad:'Harita Aplikasyon',dis:'MEK',pur:0.00,birim:'ayak',done:sumP('a1'),hedef:5292,plan:1},
    {id:'ayakdelme',ad:'Ayak Delme (rok)',dis:'MEK',pur:0.00,birim:'ayak',done:sumP('a2'),hedef:5292,plan:1,isv:true},
    {id:'ayakmont',ad:'Ayak Montajı',dis:'MEK',pur:0.42,birim:'ayak',done:sumMon(),hedef:5292,plan:1},
-   {id:'ustm',ad:'Üst Montaj / Aşık',dis:'MEK',pur:0.31,birim:'adım',done:cntK('k1')+cntK('k2')+cntK('k3')+cntK('k4')+cntK('k5')+cntK('k6'),hedef:6*T1,plan:1},
+   {id:'ustm',ad:'Üst Montaj (kiriş+aşık+çapraz)',dis:'MEK',pur:0.31,birim:'oran',done:sumKiris()/2646+cntK('asik')/378+cntK('capraz')/378,hedef:3,plan:1},
    {id:'panel',ad:'Panel Montajı',dis:'MEK',pur:0.27,birim:'panel',done:sumP('k7'),hedef:9828,plan:1},
   ];
 }
@@ -1238,7 +1239,7 @@ function renderLog(){const lw=document.getElementById('logwrap');if(!lw)return;i
   lw.innerHTML=`<table><thead><tr><th>Tarih</th><th>Kalem</th><th>Miktar</th><th>Kişi</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;}
 
 /* ---- PLAN ---- */
-function tStatus(s){if(!s)return 0;if((s.k7||0)>=26)return 4;if(s.k1||s.k2||s.k3||s.k4||s.k5||s.k6)return 3;
+function tStatus(s){if(!s)return 0;if((s.k7||0)>=26)return 4;const _a=s.kiris;if((Array.isArray(_a)&&_a.some(x=>x>=1))||s.asik||s.capraz)return 3;
   if((s.a3||0)+(s.a4||0)+(s.a5||0)>0)return 2;if((s.a2||0)>0||(s.a1||0)>0)return 1;return 0;}
 const STC=['var(--slate)','var(--mv)','var(--solar)','var(--ac)','var(--gnd)'];
 function renderPlan(){
@@ -1270,7 +1271,7 @@ function renderPlanSummary(){
 function schematic(s){
   s=s||{};const W=480,H=430;
   const colA=['#D8DCE2','#B9C0CC','var(--mv)','var(--solar)','var(--conc)','var(--gnd)'];
-  const k=f=>!!s[f];const on=(c,a)=>a?c:'#C9CCD6';
+  const _kall=Array.isArray(s.kiris)&&s.kiris.filter(Boolean).length===7,_ayd=(+s.a4||0)>=14;const k=f=>(f==='k1'||f==='k2'||f==='k6')?_ayd:(f==='k4')?_kall:(f==='k5')?!!s.asik:(f==='k3')?!!s.capraz:!!s[f];const on=(c,a)=>a?c:'#C9CCD6';
   let ay=0;for(const a of ['a1','a2','a3','a4','a5']){if((s[a]||0)>=14)ay++;else break;}
   const k7=Math.max(0,Math.min(26,s.k7||0)),pf=k7/26;
   const F=(n)=>n.toFixed(1);
@@ -1345,10 +1346,9 @@ async function openEd(i){SEL=i;const t=tbl(i),s=PLAN[i]||{};
     h+=`<details class="montdet" style="margin:8px 0;border:1px solid #e3e3e8;border-radius:10px;padding:4px 10px;background:#fafafb"><summary style="cursor:pointer;font-weight:700;padding:6px 2px;color:#1f2d3d">📋 Montaj detayı (şartname) — &quot;monte&quot; ne demek?</summary><div style="font-size:12px;line-height:1.5;color:#444;padding:4px 2px 8px"><b>Ayak = ön (P1) + arka (P2) kolon.</b> Ø200 rok deliğine dikilir, etrafı beton ile doldurulur.<br><b style="color:#2e9e5b">&quot;Monte&quot; = ayak dikildi + beton atıldı + teraziye alındı.</b> (ön ~1,2 m / arka ~1,3–1,4 m gömme)<br><br><b>Şartname montaj kuralları:</b><ul style="margin:4px 0;padding-left:18px"><li>Tüm ayaklar aplikasyon projesine uygun, RTK + lazer nivo ile işaretlenir.</li><li>İşveren kontrolünde koordinatı kayan ayak kabul edilmez → sökülüp tekrar yapılır; zayi malzeme hakedişten düşülür.</li><li>Yan yana sehpalarda kot kazığı + ip ile sehpa başı-sonu kot farkı sıfırlanır; gölgeleme yapılmaz, panel-zemin mesafe toleransı korunur (yol geçişleri dahil).</li><li>Ölçü/açı toleransı dışı ayaklar sökülür, bilabedel tekrar imal edilir.</li><li>Konstrüksiyon profilleri kesilmez/delinmez; formu bozulan değiştirilir.</li><li>Cıvata/pul/rondela/somun projeye uygun. Montaj bitince yüklenici onayı → nezaretinde tork kontrolü → tork boyası (silinmez).</li><li>Temel: çakma kazık/beton, TS500 + Azerbaycan Deprem Yön.; bağlantı için çekme/basınç/eğilme testleri müşteri onaylı.</li></ul><span style="color:#8a93a3">Kaynak: Ek-5 Teknik Şartname (5.4.7/5.4.8) + Mekanik Sorumluluk Matrisi imalat detayları.</span></div></details>`;
     return h;})();
   // konstrüksiyon (kısa dokun: yapıldı/yapılmadı · uzun bas: kontrol)
-  let kh=KONST.map(c=>{const raw=s[c.k]||0;const done=raw>=1;const kc=(s[c.k+'c']?1:0)||(raw===2?1:0);
-    const cls=kc?'ktrl':done?'act':'';const txt=kc?'⚠ Kontrol':done?'Yapıldı ✓':'Yapılmadı';
-    return `<div class="stp"><div class="nm">${c.ad}</div>
-    <button class="tg ${cls}" id="t_${c.k}" data-lp="konst:${c.k}">${txt}</button></div>`;}).join('');
+  let kh='';
+  kh+=`<div class="stp"><div class="nm">Aşık montajı (P4)</div><button class="tg ${s.asik?'act':''}" id="t_asik" onclick="toggleMont('asik')">${s.asik?'Yapıldı ✓':'Yapılmadı'}</button></div>`;
+  kh+=`<div class="stp"><div class="nm">Çapraz montajı (P6)</div><button class="tg ${s.capraz?'act':''}" id="t_capraz" onclick="toggleMont('capraz')">${s.capraz?'Yapıldı ✓':'Yapılmadı'}</button></div>`;
   kh+=`<div class="stp"><div class="nm">Panel montaj</div><div class="stepper"><button onclick="bump('k7',-1,26)">−</button>
     <input class="num" id="i_k7" type="number" min="0" max="26" value="${s.k7||0}" onchange="setv('k7',this.value,26)">
     <button onclick="bump('k7',1,26)">+</button><button class="tg" style="min-width:70px" onclick="setv('k7',26,26)">Tümü 26</button>
@@ -1408,7 +1408,7 @@ function footkOf(i){const s=PLAN[i]||{};
 function footColor(v){return v>=3?'#2e9e5b':v>=2?'#E8833A':v>=1?'#7c5cff':'#cdd2da';}
 function kirisOf(i){const s=PLAN[i]||{};return (Array.isArray(s.kiris)&&s.kiris.length===7)?s.kiris.slice():Array(7).fill(0);}
 function kirisArr(){return kirisOf(SEL).slice();}
-function syncKiris(a){const s=PLAN[SEL]||(PLAN[SEL]={});s.kiris=a.slice();s.k4=(a.filter(x=>x>=1).length===7)?1:0;}
+function syncKiris(a){const s=PLAN[SEL]||(PLAN[SEL]={});s.kiris=a.slice();}
 function footArr(){return footOf(SEL).slice();}
 function footkArr(){return footkOf(SEL).slice();}
 function syncFoot(a,k){const s=PLAN[SEL]||(PLAN[SEL]={});s.foot=a.slice();s.footv=2;
@@ -1456,8 +1456,15 @@ function drawFootGrid(){const el=document.getElementById('ed_footgrid');if(!el)r
   if(LASTFOOT)h+=`<div class="footpos">${LASTFOOT}</div>`;
   el.innerHTML=h;}
 function drawKirisGrid(){const el=document.getElementById('ed_kirisgrid');if(!el)return;const a=kirisArr();
+  var _W=300,vis='<svg viewBox="0 0 '+_W+' 64" style="width:100%;max-width:300px;display:block;margin:2px auto 4px">';
+  vis+='<text x="2" y="11" font-size="8.5" fill="#15314e" font-family="monospace">ARKA</text><text x="2" y="61" font-size="8.5" fill="#2e9e5b" font-family="monospace">ÖN</text>';
+  for(var _j=0;_j<7;_j++){var _cx=28+_j*((_W-44)/6),_on=a[_j]>=1,_col=_on?'#1f9d8f':'#ccd2da';
+    vis+='<line x1="'+_cx+'" y1="18" x2="'+_cx+'" y2="50" stroke="'+_col+'" stroke-width="'+(_on?4:2)+'"/>';
+    vis+='<circle cx="'+_cx+'" cy="18" r="3.5" fill="#15314e"/><circle cx="'+_cx+'" cy="50" r="3.5" fill="#2e9e5b"/>';
+    vis+='<text x="'+_cx+'" y="37" font-size="8" fill="'+(_on?'#1f9d8f':'#9aa0a6')+'" text-anchor="middle" font-family="monospace">'+(_j+1)+'</text>';}
+  vis+='</svg>';
   const cell=j=>{const tip='Eksen '+(j+1)+' · '+(a[j]?'kiriş monte':'monte değil');return `<button class="foot ${a[j]?'f3':'f0'}" data-lp="kiris:${j}" title="${tip}">${j+1}</button>`;};
-  let h='<div class="fgnote">Her kiriş bir <b>ÖN</b> + bir <b>ARKA</b> ayağı bağlar · 7 eksen</div><div class="footrow"><span class="fhdr fh-kiris">KİRİŞ</span>';
+  let h='<div class="fgnote">Her kiriş bir <b>ÖN</b> + bir <b>ARKA</b> ayağı düz çizgiyle bağlar · 7 eksen</div>'+vis+'<div class="footrow"><span class="fhdr fh-kiris">KİRİŞ</span>';
   for(let j=0;j<7;j++)h+=cell(j);
   h+='</div>';
   const mon=a.filter(x=>x>=1).length;
@@ -1468,14 +1475,18 @@ async function cycleKiris(j){if(SEL==null)return;if(roBlock())return;
   if(ROLE!=='admin'){const ld=masaLastDay(SEL);
     if(ld&&ld!==dToday()){const a0=kirisArr();await reqChange({tip:'kiris',masa:SEL,j,to:a0[j]?0:1},'Masa #'+SEL+' · kiriş '+(j+1)+' ('+ld+' verisi)');toast('Geçmiş veri — yönetici onayına gönderildi');return;}}
   const a=kirisArr();a[j]=a[j]?0:1;syncKiris(a);await saveTbl(PLAN[SEL]);
-  await logAct('Kiriş montajı','Masa #'+SEL+' · kiriş '+(j+1)+' → '+(a[j]?'monte':'boş'));
+  await logAct('Kiriş montajı','Masa #'+SEL+' · [kiris] '+(a[j]?'+1':'-1')+' (eksen '+(j+1)+')');
   drawKirisGrid();renderProgress();drawSchem();renderKonstPlan();}
 async function kirisAll(v){if(SEL==null)return;if(roBlock())return;
   if(ROLE!=='admin'){const ld=masaLastDay(SEL);
     if(ld&&ld!==dToday()){await reqChange({tip:'kirisAll',masa:SEL,v},'Masa #'+SEL+' · kiriş toplu '+(v?'monte':'sıfırla')+' ('+ld+' verisi)');toast('Geçmiş veri — yönetici onayına gönderildi');return;}}
-  syncKiris(Array(7).fill(v));await saveTbl(PLAN[SEL]);
-  await logAct('Kiriş (toplu)','Masa #'+SEL+' · '+(v?'tümü monte':'sıfırlandı'));
+  var _pk=kirisArr().filter(x=>x>=1).length;syncKiris(Array(7).fill(v));await saveTbl(PLAN[SEL]);
+  var _dk=(v?7:0)-_pk;await logAct('Kiriş (toplu)','Masa #'+SEL+' · [kiris] '+(_dk>=0?'+':'')+_dk);
   drawKirisGrid();renderProgress();drawSchem();renderKonstPlan();}
+async function toggleMont(f){if(SEL==null)return;if(roBlock())return;const s=PLAN[SEL]||(PLAN[SEL]={});s[f]=s[f]?0:1;await saveTbl(PLAN[SEL]);
+  const b=document.getElementById('t_'+f);if(b){b.classList.toggle('act',!!s[f]);b.textContent=s[f]?'Yapıldı ✓':'Yapılmadı';}
+  await logAct(f==='asik'?'Aşık montajı':'Çapraz montajı','Masa #'+SEL+' · ['+f+'] '+(s[f]?'+1':'-1'));
+  renderProgress();drawSchem();renderKonstPlan();}
 async function saveTbl(s){s.by=CURUSER||document.getElementById('usta').value.trim()||'—';s.at=Date.now();PLAN[SEL]=s;
   const g=grpOf(SEL),obj={};for(const t of LAYOUT.tables){if(grpOf(t.i)===g&&PLAN[t.i])obj[t.i]=PLAN[t.i];}
   await sset('tr1g:'+g,obj);renderProgress();renderPlan();renderKonstPlan();}
@@ -1507,7 +1518,7 @@ let KFIND=null, ZONE=0, MAXINV=0;
 function syncUsta(el){const u=document.getElementById('usta');if(u)u.value=el.value;}
 function invOf(t){const m=(t.adr||t.adrf||'').match(/INV(\d+)/);return m?+m[1]:0;}
 function invColor(n){const h=(n*53)%360;return 'hsl('+h+',62%,58%)';}
-function konstFrac(s){if(!s)return 0;let d=0;for(const k of ['k1','k2','k3','k4','k5','k6'])if(s[k])d++;if((s.k7||0)>=26)d++;return d/7;}
+function konstFrac(s){if(!s)return 0;const a=s.kiris;const kr=Array.isArray(a)?a.filter(x=>x>=1).length/7:0;const d=kr+(s.asik?1:0)+(s.capraz?1:0)+(((s.k7||0)>=26)?1:0);return d/4;}
 function konstFill(f){if(f<=0)return 'var(--slate)';if(f>=1)return 'var(--gnd)';
   const a=[244,178,62],b=[143,210,122],c=a.map((v,i)=>Math.round(v+(b[i]-v)*f));return 'rgb('+c[0]+','+c[1]+','+c[2]+')';}
 function konstScale(){const W=1000,dx=LAYOUT.maxx-LAYOUT.minx,dy=LAYOUT.maxy-LAYOUT.miny,H=Math.round(W*dy/dx);
@@ -1609,21 +1620,15 @@ function kontrolBanner(){const kc=kontrolCount();if(!kc.toplam)return '';
   return `<div class="kontrolban">⚠ <b>${kc.toplam} uygunsuzluk / kontrol bekliyor</b> — ${kc.ayak} ayak, ${kc.konst} montaj kalemi`+
     `<div class="kbmasa">Masa: ${kc.masalar.map(m=>'<button onclick="openEd('+m+')">#'+m+'</button>').join(' ')}</div></div>`;}
 function konstStats(){const wrap=document.getElementById('kbars');if(!wrap)return;
-  const steps=[['k1','Ön kolon (P1)'],['k2','Arka kolon (P2/P6)'],['k3','Diyagonal makas (P5)'],['k4','Üst kuşak (P3)'],['k5','Alt kuşak (P4-1)'],['k6','Terazi + tork']];
-  const onM=footMonRow(false),arkaM=footMonRow(true);function stepVal(k){return k==='k1'?onM/7:k==='k2'?arkaM/7:cntK(k);}
-  let sd=0;for(const s of steps)sd+=stepVal(s[0]);const pan=sumP('k7');sd+=pan/26;const ov=sd/(7*378)*100;
-  let html=kontrolBanner()+'<div class="pr"><div class="nm">Konstrüksiyon — genel<small>Mek · '+tr(Math.round(sd))+' / 2.646 adım</small></div>'+
+  const kr=sumKiris(),as=cntK('asik'),cp=cntK('capraz'),pan=sumP('k7');
+  const frac=(kr/2646+as/378+cp/378+pan/9828)/4;const ov=frac*100;
+  let html=kontrolBanner()+'<div class="pr"><div class="nm">Üst montaj + panel — genel<small>Mek · kiriş+aşık+çapraz+panel</small></div>'+
     '<div class="track"><div class="fill fMEK" style="width:'+ov+'%"></div></div>'+
     '<div style="text-align:right"><div class="pct" style="color:'+(ov>=100?'var(--gnd)':'var(--solar)')+'">%'+ov.toFixed(0)+'</div></div></div>';
-  for(const [k,nm] of steps){let c,p,q;
-    if(k==='k1'){c=onM;p=c/2646*100;q='<b>'+tr(c)+'</b>/2.646 ön ayak';}
-    else if(k==='k2'){c=arkaM;p=c/2646*100;q='<b>'+tr(c)+'</b>/2.646 arka ayak';}
-    else{c=cntK(k);p=c/378*100;q='<b>'+tr(c)+'</b>/378 masa';}
-    html+='<div class="pr"><div class="nm">'+nm+'</div><div class="track"><div class="fill fMEK" style="width:'+p+'%"></div></div>'+
-      '<div style="text-align:right"><div class="pct">%'+p.toFixed(0)+'</div><div class="q">'+q+'</div></div></div>';}
-  const pp=pan/9828*100;
-  html+='<div class="pr"><div class="nm">Panel montaj<small>26/masa</small></div><div class="track"><div class="fill fMEK" style="width:'+pp+'%"></div></div>'+
-    '<div style="text-align:right"><div class="pct">%'+pp.toFixed(0)+'</div><div class="q"><b>'+tr(pan)+'</b>/9.828</div></div></div>';
+  const rows=[['Kiriş (P3)',kr,2646],['Aşık (P4)',as,378],['Çapraz (P6)',cp,378],['Panel',pan,9828]];
+  for(const [nm,c,t] of rows){const pp=t?c/t*100:0;
+    html+='<div class="pr"><div class="nm">'+nm+'</div><div class="track"><div class="fill fMEK" style="width:'+pp+'%"></div></div>'+
+      '<div style="text-align:right"><div class="pct">%'+pp.toFixed(0)+'</div><div class="q"><b>'+tr(c)+'</b>/'+tr(t)+'</div></div></div>';}
   wrap.innerHTML=html;}
 
 function refreshKonst(){konstStats();renderZoneChips();renderMinimap();renderZoneMasa();const p1=document.getElementById('pane1'),m0=document.getElementById('mpane0');if(p1&&p1.classList.contains('on')&&m0&&m0.classList.contains('on'))renderKonstPlan();}
@@ -1647,17 +1652,18 @@ function curFrac(s){return CURPHASE==='all'?konstFrac(s):phaseFrac(s);}
 function phaseUnits(p,s){s=s||{};
   if(p==='harita')return {d:Math.min(14,+s.a1||0),t:14};
   if(p==='rok')return {d:Math.min(14,+s.a2||0),t:14};
-  if(p==='beton')return {d:Math.min(14,+s.a4||0),t:14};
   if(p==='kolon')return {d:Math.min(14,+s.a4||0),t:14};
-  if(p==='celik')return {d:(s.k3?1:0)+(s.k4?1:0)+(s.k5?1:0)+(s.k6?1:0),t:4};
+  if(p==='kiris'){const a=s.kiris;return {d:Array.isArray(a)?a.filter(x=>x>=1).length:0,t:7};}
+  if(p==='asik')return {d:s.asik?1:0,t:1};
+  if(p==='capraz')return {d:s.capraz?1:0,t:1};
   if(p==='panel')return {d:Math.min(26,+s.k7||0),t:26};
   return {d:0,t:1};}
 function phaseFracOf(p,s){const u=phaseUnits(p,s);return u.t?Math.min(1,u.d/u.t):0;}
 function phaseFrac(s){if(!s)return 0;if(CURPHASE==='all')return konstFrac(s);return phaseFracOf(CURPHASE,s);}
-const PHASE_ORDER=['harita','rok','beton','kolon','celik','panel'];
-const STAGE_COL={harita:'#a78bfa',rok:'#E8833A',beton:'#8a93a3',kolon:'#3f7cc0',celik:'#1f9d8f',panel:'#2e9e5b'};
-const STAGE_NM={harita:'Harita',rok:'Rok',beton:'Beton',kolon:'Kolon',celik:'Çelik',panel:'Panel'};
-const PHASE_UNIT={harita:'ayak işaretlendi',rok:'ayak delindi',beton:'ayak (beton atılan)',kolon:'kolon (P1/P2)',celik:'çelik adım',panel:'panel'};
+const PHASE_ORDER=['harita','rok','kolon','kiris','asik','capraz','panel'];
+const STAGE_COL={harita:'#a78bfa',rok:'#E8833A',kolon:'#3f7cc0',kiris:'#1f9d8f',asik:'#d97706',capraz:'#b45309',panel:'#2e9e5b'};
+const STAGE_NM={harita:'Harita',rok:'Rok',kolon:'Kolon/Ayak',kiris:'Kiriş',asik:'Aşık',capraz:'Çapraz',panel:'Panel'};
+const PHASE_UNIT={harita:'ayak işaretlendi',rok:'ayak delindi',kolon:'ayak monte',kiris:'kiriş',asik:'aşık',capraz:'çapraz',panel:'panel'};
 /* sıra zorunlu: bir masanın ilk tamamlanmamış fazı = bulunduğu aşama */
 function masaStage(s){if(!s)return {phase:'none',frac:0,started:false};
   for(const p of PHASE_ORDER){const f=phaseFracOf(p,s);if(f<1)return {phase:p,frac:f,started:f>0};}
@@ -1667,7 +1673,7 @@ function stageFill(i){const st=masaStage(PLAN[i]);
   if(st.phase==='none'||(st.phase==='harita'&&!st.started))return 'var(--slate)';
   return STAGE_COL[st.phase];}
 function phaseStats(p,zone){let d=0,t=0;for(const tb of LAYOUT.tables){if(zone&&invOf(tb)!==zone)continue;const u=phaseUnits(p,PLAN[tb.i]||{});d+=u.d;t+=u.t;}return {d,t};}
-const PHASES=[['all','Tümü'],['harita','Harita'],['rok','Rok'],['beton','Beton'],['kolon','Kolon'],['celik','Çelik'],['panel','Panel']];
+const PHASES=[['all','Tümü'],['harita','Harita'],['rok','Rok'],['kolon','Kolon'],['kiris','Kiriş'],['asik','Aşık'],['capraz','Çapraz'],['panel','Panel']];
 function renderPhaseChips(){const w=document.getElementById('phasechips');if(!w)return;
   w.innerHTML=PHASES.map(([k,n])=>'<button class="subtab'+(CURPHASE===k?' on':'')+'" onclick="setPhase(\''+k+'\')">'+n+'</button>').join('');
   renderPhaseInfo();}
@@ -1679,7 +1685,7 @@ function renderPhaseInfo(){const c=document.getElementById('phasecount');if(!c)r
   const s=phaseStats(CURPHASE,z);const pct=s.t?Math.round(s.d/s.t*100):0;
   c.innerHTML='<b>'+zlbl+'</b> · '+tr(s.d)+' / '+tr(s.t)+' '+(PHASE_UNIT[CURPHASE]||'')+' · <b style="color:var(--solar)">%'+pct+'</b>';}
 function setPhase(p){CURPHASE=p;const lbl=document.getElementById('phaselbl');
-  const nm={all:'Tüm konstrüksiyon · aşama renkleri',harita:'1. Harita işaretleme',rok:'2. Rok delme (İşveren)',beton:'3. Beton — atılan ayak',kolon:'4. Kolon (P1/P2)',celik:'5. Çelik montaj',panel:'6. Panel montaj'};
+  const nm={all:'Tüm konstrüksiyon · aşama renkleri',harita:'1. Harita işaretleme',rok:'2. Rok delme (İşveren)',kolon:'3. Ayak/kolon montajı',kiris:'4. Kiriş montajı',asik:'5. Aşık montajı',capraz:'6. Çapraz montajı',panel:'7. Panel montajı'};
   if(lbl)lbl.textContent=nm[p]||p;renderPhaseChips();renderKonstPlan();renderZoneMasa();}
 
 /* ===== ortak teknik-kart yardımcıları ===== */
@@ -2802,7 +2808,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s124</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s125</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -2985,12 +2991,12 @@ function toggleRapPers(){RAP_SHOWPERS=!RAP_SHOWPERS;renderRapor();}
 function klogSum(f,upto){let s=0;ALOG.forEach(r=>{if(upto&&dstr(r.ts)>upto)return;const m=(r.detail||'').match(/\[(\w+)\]\s*([+-]?\d+)/);if(m&&m[1]===f)s+=(+m[2]||0);});return Math.max(0,s);}
 function doneGenUpto(id,upto){return ENTRIES.filter(e=>e.id===id&&(!upto||(e.date||dstr(e.ts))<=upto)).reduce((s,e)=>s+(+e.qty||0),0);}
 function repItems(day){
-  const ust=cntK('k1')+cntK('k2')+cntK('k3')+cntK('k4')+cntK('k5')+cntK('k6');
+  const ust=sumKiris()/2646+cntK('asik')/378+cntK('capraz')/378;
   return [
   {id:'harita',   ad:'Harita işaretleme', birim:'ayak',  cum:sumP('a1'), hedef:5292, dis:'MEK', pur:0.00},
   {id:'ayakdelme',ad:'Ayak delme (rok)',  birim:'ayak',  cum:sumP('a2'), hedef:5292, dis:'MEK', pur:0.00, isv:true},
   {id:'ayakmont', ad:'Ayak montajı',       birim:'ayak',  cum:sumMon(),   hedef:5292, dis:'MEK', pur:0.42},
-  {id:'ustm',     ad:'Üst montaj / aşık',  birim:'adım',  cum:ust,        hedef:6*378, dis:'MEK', pur:0.31},
+  {id:'ustm',     ad:'Üst montaj (kiriş+aşık+çapraz)',  birim:'oran',  cum:ust,        hedef:3, dis:'MEK', pur:0.31},
   {id:'panel',    ad:'Panel montajı',      birim:'panel', cum:sumP('k7'),  hedef:9828, dis:'MEK', pur:0.27},
   ...GEN.map(g=>({id:g.id,ad:g.ad,birim:g.birim,cum:doneGen(g.id),hedef:g.hedef,dis:'ELK',pur:g.pur||0}))
 ];}
@@ -3009,7 +3015,7 @@ function dayItemQty(day){
   dayLogs(day).forEach(r=>{const d=r.detail||'';
     const m=d.match(/\[(\w+)\]\s*([+-]?\d+)/);
     if(m){const f=m[1],v=+m[2]||0;
-      if(f==='k7')q.panel+=v; else if(/^k[1-6]$/.test(f))q.ustm+=v;}
+      if(f==='k7')q.panel+=v; else if(f==='kiris'||f==='asik'||f==='capraz')q.ustm+=v;}
   });
   if(q.harita<0)q.harita=0;if(q.panel<0)q.panel=0;if(q.ustm<0)q.ustm=0;
   ENTRIES.forEach(e=>{const ed=e.date||dstr(e.ts);if(ed===day)q[e.id]=(q[e.id]||0)+(+e.qty||0);});
@@ -3026,7 +3032,7 @@ function dayNet(day){
   dayLogs(day).forEach(r=>{const d=r.detail||'';
     const m=d.match(/\[(\w+)\]\s*([+-]?\d+)/);
     if(m){const f=m[1],v=+m[2]||0;
-      if(f==='k7')q.panel+=v; else if(/^k[1-6]$/.test(f))q.ustm+=v;}
+      if(f==='k7')q.panel+=v; else if(f==='kiris'||f==='asik'||f==='capraz')q.ustm+=v;}
   });
   ENTRIES.forEach(e=>{const ed=e.date||dstr(e.ts);if(ed===day)q[e.id]=(q[e.id]||0)+(+e.qty||0);});
   return q;
@@ -3327,7 +3333,7 @@ function rapBody(day,forPrint){const A=rapAgg(day);
   }
   return h;}
 async function backupAll(){try{
-  const dump={_app:'SHAMS1-TR1',_ver:'s124',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1-TR1',_ver:'s125',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pja:','pjag:','pjp:','pjpg:','hc:','g:','gd:'];
   for(const pre of pref)for(const k of await slist(pre)){const v=await sget(k);if(v!=null)dump.data[k]=v;}
   const single=['wage','fx','targets','mpct','cab:dc','cab:ac','cab:og','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
