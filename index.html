@@ -722,7 +722,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 121 · Puantaj iş-kalemi bazlı + günlüğe bağlı</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 122 · Puantaj iş-kalemi bazlı + günlüğe bağlı</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -747,7 +747,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 121 · Puantaj·iş kalemi · 20.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 122 · Puantaj·iş kalemi · 20.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -1174,6 +1174,7 @@ async function reloadAll(){
   renderMemWarn();renderAll();
   if(typeof seedIrs2606==='function'){try{seedIrs2606();}catch(e){}}
   if(typeof migIrsFull==='function'){setTimeout(function(){try{migIrsFull();}catch(e){}},900);}
+  if(typeof migAddMat==='function'){setTimeout(function(){try{migAddMat();}catch(e){}},950);}
   }finally{RELOADINGNOW=false;}
 }
 async function addEntry(){const it=GEN.find(x=>x.id===document.getElementById('f_item').value);
@@ -2586,8 +2587,8 @@ async function irDetay(id){
     (r.koli?'<div><span>Koli</span><b>'+r.koli+'</b></div>':"")+'</div>';
   var photo=ph?('<div class="irdphoto"><div class="dscroll"><img id="dimg" src="'+ph+'" onclick="zoomImg(this)"></div><div class="drow" style="margin-top:8px"><a class="btn ghost sm" href="'+ph+'" download="'+(esc(r.no)||"irsaliye")+'.jpg">⬇ İndir</a><span class="hint">Fotoğrafa dokun → büyüt</span></div></div>'):'<div class="empty">Bu irsaliyeye foto eklenmemiş.</div>';
   var analyze=rows?'':('<div class="irdsub" style="margin:6px 0">📷 Bu irsaliye fotoğraftan yüklendi — miktar girilmedi. Aşağıdan analiz et.</div>'+(ph?'<div class="drow"><button class="btn sm" onclick="irAnalyze(\''+id+'\')">🔍 Fotoğrafı analiz et (OCR)</button></div>':'<div class="hint">Foto yok — düzenleyip elle ekleyin.</div>')+'<div id="iran_'+id+'" class="iranbox"></div>');
-  var kesOpts=(typeof MATKESIF!=='undefined'?MATKESIF:[]).map(function(m){return '<option value="'+m.id+'"'+(m.id==='b_rok'&&!rows?' selected':'')+'>'+esc(m.ad).slice(0,42)+' ('+esc(m.birim)+')</option>';}).join('');
-  var manualInner='<div class="irdman"><select id="ird_pick">'+kesOpts+'</select><button class="btn sm" onclick="irdAddRow(\''+id+'\')">+ Ekle</button></div><div id="ird_rows2"></div><div class="drow" style="margin-top:6px"><button class="btn sm" onclick="irdSaveRows(\''+id+'\')">Seçilenleri kaydet</button></div><div class="hint" style="margin:4px 0 2px">Listeden malzeme seç → + Ekle → miktar gir; birden çok kalem ekleyip topluca kaydet.</div>';
+  var kesOpts=(typeof allItems==='function'?allItems():[]).map(function(m){return '<option value="'+m.id+'"'+(m.id==='b_rok'&&!rows?' selected':'')+'>'+esc(m.ad).slice(0,42)+' ('+esc(m.birim)+')</option>';}).join('');
+  var manualInner='<div class="irdman"><select id="ird_pick">'+kesOpts+'</select><button class="btn sm" onclick="irdAddRow(\''+id+'\')">+ Ekle</button></div><div id="ird_rows2"></div><div class="irdman" style="margin-top:6px"><input id="ird_newad" placeholder="Listede yoksa: yeni malzeme adı"><button class="btn ghost sm" onclick="irdAddNew(\''+id+'\')">+ Yeni malzeme</button></div><div class="drow" style="margin-top:6px"><button class="btn sm" onclick="irdSaveRows(\''+id+'\')">Seçilenleri kaydet</button></div><div class="hint" style="margin:4px 0 2px">Listeden seç → + Ekle, ya da yeni malzeme yaz → + Yeni malzeme; miktarları gir → topluca kaydet.</div>';
   var inc=!rows;
   var manualBox=inc?'<div class="irman-hero"><div class="irdh" style="margin-top:0">✏ Miktarı gir</div><div class="hint" style="margin:-2px 0 6px">Kural: gelen/giden her malzeme kaydedilir — bu irsaliyenin miktarını seç + gir (ör. beton 6 m³).</div>'+manualInner+'</div>':'<div class="irdh">Elle miktar ekle</div>'+manualInner;
   var bekBanner=r.bekliyor===true?('<div class="irbekbox">⚠ <b>Netleştirilmeyi bekliyor</b>'+(r.kalemTanim?' — '+esc(r.kalemTanim):'')+'<div class="drow" style="margin-top:6px"><button class="btn sm" onclick="irMarkNet(\''+id+'\')">✓ Netleştirildi olarak işaretle</button></div><div class="hint" style="margin-top:4px">Fatura/datasheet gelince aşağıdan kap içeriği + adet gir; tamamlanınca işaretle.</div></div>'):'';
@@ -2611,6 +2612,7 @@ async function irManualSave(id){if(roBlock())return;
 function irdAddRow(id){var sel=document.getElementById('ird_pick');if(!sel||!sel.value)return;var mid=sel.value;var it=matItem(mid);if(!it)return;var c=document.getElementById('ird_rows2');if(!c)return;if(document.getElementById('irdr_'+mid)){var ex=document.getElementById('irdq_'+mid);if(ex)ex.focus();return;}var row=document.createElement('div');row.className='matrow';row.id='irdr_'+mid;row.innerHTML='<span>'+esc(it.ad)+'</span><span class="matq"><input class="qin" id="irdq_'+mid+'" type="number" step="any" placeholder="0"> '+esc(it.birim)+' <a class="xdel" onclick="irdDelRow(\''+mid+'\')">✕</a></span>';c.appendChild(row);var q=document.getElementById('irdq_'+mid);if(q)q.focus();}
 function irdDelRow(mid){var r=document.getElementById('irdr_'+mid);if(r)r.remove();}
 async function irdSaveRows(id){if(roBlock())return;var r=MATIN.find(function(x){return x.id===id;});if(!r)return;var c=document.getElementById('ird_rows2');var inps=c?c.querySelectorAll('input.qin'):[];if(!inps.length){toast('Önce malzeme ekle (+ Ekle)');return;}var n=0;r.items=r.items||{};inps.forEach(function(e){var mid=e.id.replace('irdq_','');var q=parseFloat(((e.value||'')+'').replace(',','.'));if(q>0){r.items[mid]=q;n++;}});if(!n){toast('En az bir miktar gir');return;}await sset('matin',MATIN);try{await logAct('irsaliye',(r.no||'')+' · '+n+' kalem netleştirildi');}catch(e){}toast(n+' kalem işlendi');irDetay(id);renderMalzeme();}
+async function irdAddNew(id){if(roBlock())return;var inp=document.getElementById('ird_newad');if(!inp)return;var ad=((inp.value||'')+'').trim();if(!ad){toast('Malzeme adı yaz');return;}var nid='c_'+Date.now();if(!Array.isArray(MATCUSTOM))MATCUSTOM=[];MATCUSTOM.push({id:nid,kisim:'Diğer',ad:ad,birim:'adet',mik:0,custom:1});await sset('matcustom',MATCUSTOM);inp.value='';var c=document.getElementById('ird_rows2');if(c&&!document.getElementById('irdr_'+nid)){var row=document.createElement('div');row.className='matrow';row.id='irdr_'+nid;row.innerHTML='<span>'+esc(ad)+'</span><span class="matq"><input class="qin" id="irdq_'+nid+'" type="number" step="any" placeholder="0"> adet <a class="xdel" onclick="irdDelRow(\''+nid+'\')">✕</a></span>';c.appendChild(row);var q=document.getElementById('irdq_'+nid);if(q)q.focus();}toast('Yeni malzeme: '+ad);}
 async function viewIrPhoto(id){let ph=null;try{ph=await sget('matph:'+id);}catch(e){}if(!ph){const r=MATIN.find(x=>x.id===id);if(r&&r.img)ph=r.img;if(!ph&&r&&r.imgUrl)ph=r.imgUrl;}modalShow('İrsaliye fotoğrafı',ph?'<div class="dscroll"><img id="dimg" src="'+ph+'" onclick="this.classList.toggle(\'zoom\')"></div>':'<div class="empty">Bu irsaliyeye foto eklenmemiş.</div>');}
 async function delIrsaliye(id){if(roBlock())return;if(ROLE!=='admin')return;if(!confirm('İrsaliye silinsin mi?'))return;MATIN=MATIN.filter(r=>r.id!==id);await sset('matin',MATIN);await sdel('matph:'+id);renderMalzeme();}
 async function irMarkNet(id){if(roBlock())return;var r=MATIN.find(function(x){return x.id===id;});if(!r)return;r.bekliyor=false;await sset('matin',MATIN);try{await logAct('irsaliye',(r.no||'')+' · netleştirildi');}catch(e){}toast('Netleştirildi');renderMalzeme();if(document.getElementById('modal'))irDetay(id);}
@@ -2627,6 +2629,11 @@ var DATA={
 };
 var ch=false;if(Array.isArray(MATIN))MATIN.forEach(function(r){var d=r&&DATA[r.id];if(d){r.no=d.no;r.fatura=d.fatura;r.kalemler=d.kalemler;ch=true;}});
 if(ch)await sset('matin',MATIN);try{await sset('mig_irsfull1',true);}catch(e){}
+if(ch&&document.getElementById('malzeme'))renderMalzeme();}
+async function migAddMat(){if(ROLE!=='admin')return;if(window._migAddTried)return;window._migAddTried=true;try{if(await sget('mig_addmat1'))return;}catch(e){}
+var ADD=[{id:'c_celikklemp',kisim:'Bağlantı/Donanım',ad:'Çelik klemp',birim:'adet',mik:0,custom:1},{id:'c_destekplaka',kisim:'Bağlantı/Donanım',ad:'Destek bağlantı plakası',birim:'adet',mik:0,custom:1},{id:'c_somun6923',kisim:'Bağlantı/Donanım',ad:'DIN 6923 flanşlı somun',birim:'adet',mik:0,custom:1},{id:'c_cbbaglanti',kisim:'Bağlantı/Donanım',ad:'C.B. bağlantı',birim:'adet',mik:0,custom:1},{id:'c_genispul',kisim:'Bağlantı/Donanım',ad:'Geniş pul M8',birim:'adet',mik:0,custom:1},{id:'c_imbus912',kisim:'Bağlantı/Donanım',ad:'DIN 912 imbus cıvata M8×35',birim:'adet',mik:0,custom:1}];
+var ch=false;if(!Array.isArray(MATCUSTOM))MATCUSTOM=[];ADD.forEach(function(m){if(!MATCUSTOM.some(function(x){return x&&x.id===m.id;})){MATCUSTOM.push(m);ch=true;}});
+if(ch)await sset('matcustom',MATCUSTOM);try{await sset('mig_addmat1',true);}catch(e){}
 if(ch&&document.getElementById('malzeme'))renderMalzeme();}
 async function seedIrs2606(){
   if(ROLE!=='admin')return;if(window._irsSeedTried)return;window._irsSeedTried=true;
@@ -2763,7 +2770,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s121</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s122</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -3288,7 +3295,7 @@ function rapBody(day,forPrint){const A=rapAgg(day);
   }
   return h;}
 async function backupAll(){try{
-  const dump={_app:'SHAMS1-TR1',_ver:'s121',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1-TR1',_ver:'s122',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pja:','pjag:','pjp:','pjpg:','hc:','g:','gd:'];
   for(const pre of pref)for(const k of await slist(pre)){const v=await sget(k);if(v!=null)dump.data[k]=v;}
   const single=['wage','fx','targets','mpct','cab:dc','cab:ac','cab:og','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
