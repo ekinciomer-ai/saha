@@ -723,7 +723,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 126 · Puantaj iş-kalemi bazlı + günlüğe bağlı</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 127 · Puantaj iş-kalemi bazlı + günlüğe bağlı</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -748,7 +748,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 126 · Puantaj·iş kalemi · 20.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 127 · Puantaj·iş kalemi · 20.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -1203,7 +1203,9 @@ function mechItems(){
    {id:'harita',ad:'Harita Aplikasyon',dis:'MEK',pur:0.00,birim:'ayak',done:sumP('a1'),hedef:5292,plan:1},
    {id:'ayakdelme',ad:'Ayak Delme (rok)',dis:'MEK',pur:0.00,birim:'ayak',done:sumP('a2'),hedef:5292,plan:1,isv:true},
    {id:'ayakmont',ad:'Ayak Montajı',dis:'MEK',pur:0.42,birim:'ayak',done:sumMon(),hedef:5292,plan:1},
-   {id:'ustm',ad:'Üst Montaj (kiriş+aşık+çapraz)',dis:'MEK',pur:0.31,birim:'oran',done:sumKiris()/2646+cntK('asik')/378+cntK('capraz')/378,hedef:3,plan:1},
+   {id:'kiris',ad:'Kiriş Montajı (P3)',dis:'MEK',pur:0.31/3,birim:'adet',done:sumKiris(),hedef:2646,plan:1},
+   {id:'asik',ad:'Aşık Montajı (P4)',dis:'MEK',pur:0.31/3,birim:'masa',done:cntK('asik'),hedef:378,plan:1},
+   {id:'capraz',ad:'Çapraz Montajı (P6)',dis:'MEK',pur:0.31/3,birim:'masa',done:cntK('capraz'),hedef:378,plan:1},
    {id:'panel',ad:'Panel Montajı',dis:'MEK',pur:0.27,birim:'panel',done:sumP('k7'),hedef:9828,plan:1},
   ];
 }
@@ -1219,7 +1221,7 @@ function renderProgress(){
   for(const it of items){
     const pct=itemPct(it);totUsd+=bedel(it)*pct/100;
     if(it.dis==='MEK'){mek+=it.pur*pct;mekW+=it.pur;}else{elk+=it.pur*pct;elkW+=it.pur;}
-    html+=`<div class="pr"><div class="nm">${it.ad}<small>${it.dis==='MEK'?'Mek':'Elk'} · ${(it.pur*100).toFixed(0)}%${it.plan?' · plandan':' · manuel'}</small></div>
+    html+=`<div class="pr"><div class="nm">${it.ad}<small>${it.dis==='MEK'?'Mek':'Elk'} · ${(it.pur*100).toFixed(0)}%${it.plan?' · '+tr(Math.round(it.done))+'/'+tr(it.hedef)+' '+it.birim:' · manuel'}</small></div>
       <div class="track"><div class="fill f${it.dis}" style="width:${pct}%"></div></div>
       <div style="text-align:right"><div class="pct" style="color:${pct>=100?'var(--gnd)':'var(--txt)'}">%${pct.toFixed(0)}</div></div></div>`;
   }
@@ -2197,13 +2199,13 @@ const MATKESIF=[
  {id:'k_panel', kisim:'Konstrüksiyon', ad:'Güneş paneli (26/masa)', birim:'adet', mik:9828, mont:'pp'},
  {id:'k_p1',    kisim:'Konstrüksiyon', ad:'P1 Ön kolon/ayak (S355JR · 7/masa)', birim:'adet', mik:2646, mont:'k1', pt:7},
  {id:'k_p2',    kisim:'Konstrüksiyon', ad:'P2 Arka kolon/ayak (S355JR · 7/masa)', birim:'adet', mik:2646, mont:'k2', pt:7},
- {id:'k_p3',    kisim:'Konstrüksiyon', ad:'P3 Kiriş (S350GD · 7/masa)', birim:'adet', mik:2646, mont:'k4', pt:7},
- {id:'k_p41',   kisim:'Konstrüksiyon', ad:'P4-1 Aşık-1 (S350GD · 4/masa)', birim:'adet', mik:1512, mont:'k5', pt:4},
- {id:'k_p42',   kisim:'Konstrüksiyon', ad:'P4-2 Aşık-2 (S350GD · 4/masa)', birim:'adet', mik:1512, mont:'k5', pt:4},
- {id:'k_p43',   kisim:'Konstrüksiyon', ad:'P4-3 Aşık-3 (S350GD · 4/masa)', birim:'adet', mik:1512, mont:'k5', pt:4},
- {id:'k_p5',    kisim:'Konstrüksiyon', ad:'P5 Payanda (S350GD · 7/masa)', birim:'adet', mik:2646, mont:'k3', pt:7},
- {id:'k_p6',    kisim:'Konstrüksiyon', ad:'P6 Çapraz (S350GD · 12/masa)', birim:'adet', mik:4536, mont:'k2', pt:12},
- {id:'k_p7',    kisim:'Konstrüksiyon', ad:'P7 Aşık birleştirme (S350GD · 8/masa)', birim:'adet', mik:3024, mont:'k5', pt:8},
+ {id:'k_p3',    kisim:'Konstrüksiyon', ad:'P3 Kiriş (S350GD · 7/masa)', birim:'adet', mik:2646, mont:'kiris', pt:7},
+ {id:'k_p41',   kisim:'Konstrüksiyon', ad:'P4-1 Aşık-1 (S350GD · 4/masa)', birim:'adet', mik:1512, mont:'asik', pt:4},
+ {id:'k_p42',   kisim:'Konstrüksiyon', ad:'P4-2 Aşık-2 (S350GD · 4/masa)', birim:'adet', mik:1512, mont:'asik', pt:4},
+ {id:'k_p43',   kisim:'Konstrüksiyon', ad:'P4-3 Aşık-3 (S350GD · 4/masa)', birim:'adet', mik:1512, mont:'asik', pt:4},
+ {id:'k_p5',    kisim:'Konstrüksiyon', ad:'P5 Payanda (S350GD · 7/masa)', birim:'adet', mik:2646, mont:'asik', pt:7},
+ {id:'k_p6',    kisim:'Konstrüksiyon', ad:'P6 Çapraz (S350GD · 12/masa)', birim:'adet', mik:4536, mont:'capraz', pt:12},
+ {id:'k_p7',    kisim:'Konstrüksiyon', ad:'P7 Aşık birleştirme (S350GD · 8/masa)', birim:'adet', mik:3024, mont:'asik', pt:8},
  {id:'k_p11',   kisim:'Konstrüksiyon', ad:'P11 Kenar klemp (Alu 6063-T6 · 8/masa)', birim:'adet', mik:3024, mont:'pp'},
  {id:'k_orta',  kisim:'Konstrüksiyon', ad:'Orta klemp (Alu · 24/masa)', birim:'adet', mik:9072, mont:'pp'},
  {id:'k_m12',   kisim:'Konstrüksiyon', ad:'P13 M12 cıvata seti (Çelik HDG · 140/masa)', birim:'adet', mik:52920, mont:'k6', pt:140},
@@ -2235,6 +2237,8 @@ function kullanilanOf(id){const it=matItem(id);if(!it)return +(MATUSE[id]||0);
   if(id==='b_rok')return gelenOf('b_rok');/* beton stoklanmaz: gelen=dökülen */
   if(id==='k_p1')return footMonRow(false);/* P1 ön ayak = ön sıra j7-13 (saha düzeltmesi s82) *//* P1 ön ayak = ayak montajından (footk≥3 · j0-6) */
   if(id==='k_p2')return footMonRow(true);/* P2 arka ayak = arka sıra j0-6 (saha düzeltmesi s82) *//* P2 arka ayak = ayak montajından (footk≥3 · j7-13) */
+  if(it.mont==='kiris')return sumKiris();/* kiriş: eleman bazlı (7/masa, toplam 2646) */
+  if(id==='k_m12'){const fr=(sumKiris()/2646+cntK('asik')/378+cntK('capraz')/378)/3;return Math.round(fr*(it.mik||52920));}/* M12 civata seti: ust montaj (kiris+asik+capraz) ortalamasina orantili tuketilir */
   const dm=(typeof dcMeters==='function'?dcMeters():0), sp=(typeof sumP==='function'?sumP('k7'):0);
   if(it.auto==='dc')return Math.round(dm);
   if(it.mont==='pp')return Math.round(sp/9828*it.mik);
@@ -2291,11 +2295,11 @@ async function delGunluk(id){
 }
 function gunIsSatir(iso,persArr,q){
   q=q||((typeof dayItemQty==='function')?dayItemQty(iso):{});
-  var NM={harita:'ayak harita işaretlendi',ayakdelme:'ROK delgi yapıldı',beton:'ayağa beton atıldı',ayakmont:'ayak montajı yapıldı',ustm:'üst montaj yapıldı',panel:'panel monte edildi'};
-  var IC={harita:'📍',ayakdelme:'🔩',beton:'🧱',ayakmont:'🏗',ustm:'🔧',panel:'☀'};
+  var NM={harita:'ayak harita işaretlendi',ayakdelme:'ROK delgi yapıldı',beton:'ayağa beton atıldı',ayakmont:'ayak montajı yapıldı',kiris:'kiriş montajı yapıldı',asik:'aşık montajı yapıldı',capraz:'çapraz montajı yapıldı',panel:'panel monte edildi'};
+  var IC={harita:'📍',ayakdelme:'🔩',beton:'🧱',ayakmont:'🏗',kiris:'🔧',asik:'📏',capraz:'❎',panel:'☀'};
   var lines=[];
   if(persArr&&persArr.length)lines.push('👷 <b>'+persArr.length+'</b> kişi çalıştı: '+persArr.map(esc).join(', '));
-  ['harita','ayakdelme','beton','ayakmont','ustm','panel'].forEach(function(k){var v=+q[k]||0;if(v>0)lines.push((IC[k]||'•')+' <b>'+trn(v)+'</b> '+NM[k]);});
+  ['harita','ayakdelme','beton','ayakmont','kiris','asik','capraz','panel'].forEach(function(k){var v=+q[k]||0;if(v>0)lines.push((IC[k]||'•')+' <b>'+trn(v)+'</b> '+NM[k]);});
   for(var k in q){if(NM[k]||!(+q[k]>0))continue;lines.push('• <b>'+trn(q[k])+'</b> '+esc(k));}
   return lines;
 }
@@ -2708,8 +2712,7 @@ async function setUse(id,v){MATUSE[id]=parseFloat(v)||0;await sset('matuse',MATU
 /* ----- RAPOR ----- */
 let MATSRC=[
  ['ayak_on','Ayak montajı · ön ayak'],['ayak_arka','Ayak montajı · arka ayak'],['ayak_top','Ayak montajı · toplam ayak'],
- ['k1','Üst montaj · ön kolon (masa)'],['k2','Üst montaj · arka kolon (masa)'],['k3','Üst montaj · payanda (masa)'],
- ['k4','Üst montaj · kiriş (masa)'],['k5','Üst montaj · aşık (masa)'],['k6','Üst montaj · cıvata (masa)'],
+ ['kiris','Üst montaj · kiriş (P3 · 2646 eleman)'],['asik','Üst montaj · aşık (P4 · 378 masa)'],['capraz','Üst montaj · çapraz (P6 · 378 masa)'],
  ['panel','Panel montajı (adet)'],['masa','Montajı biten masa (adet)'],['dc','DC kablo döşeme (m)'],['og','OG başlık (adet)']
 ];
 function srcAd(src){const f=MATSRC.find(x=>x[0]===src);return f?f[1]:src;}
@@ -2721,7 +2724,8 @@ function srcCount(src){
   if(src==='masa'){let c=0;for(const k in PLAN){if(footOf(k).filter(x=>x>=3).length>=14)c++;}return c;}
   if(src==='dc')return Math.round(typeof dcMeters==='function'?dcMeters():0);
   if(src==='og')return (typeof OGB!=='undefined'?(OGB||0):0);
-  if(/^k[1-7]$/.test(src))return (typeof cntK==='function'?cntK(src):0);
+  if(src==='kiris')return (typeof sumKiris==='function'?sumKiris():0);
+  if(src==='asik'||src==='capraz')return (typeof cntK==='function'?cntK(src):0);
   return 0;
 }
 let _LKID=null,_LKD=[];
@@ -2758,6 +2762,9 @@ function kulKaynak(id){if(MATLINK[id]&&MATLINK[id].length)return MATLINK[id].map
   if(it.mont==='og')return 'OG kablo';
   if(it.mont==='ag')return 'AG kablo';
   if(it.mont&&it.mont.slice(0,5)==='mpct:')return 'kurulum ilerlemesi';
+  if(it.mont==='kiris')return 'kiriş montajı';
+  if(it.mont==='asik')return 'aşık/payanda montajı';
+  if(it.mont==='capraz')return 'çapraz montajı';
   if(it.mont)return 'üst montaj · '+(STAGEAD[it.mont]||it.mont);
   return 'manuel giriş';}
 function matRows(){return allItems().map(m=>({id:m.id,kisim:m.kisim,ad:m.ad,birim:m.birim,kesif:mikOf(m.id),gelen:gelenOf(m.id),kul:kullanilanOf(m.id),kalan:kalanOf(m.id),eksik:eksikOf(m.id),kaynak:kulKaynak(m.id)}));}
@@ -2810,7 +2817,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s126</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s127</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -2993,12 +3000,13 @@ function toggleRapPers(){RAP_SHOWPERS=!RAP_SHOWPERS;renderRapor();}
 function klogSum(f,upto){let s=0;ALOG.forEach(r=>{if(upto&&dstr(r.ts)>upto)return;const m=(r.detail||'').match(/\[(\w+)\]\s*([+-]?\d+)/);if(m&&m[1]===f)s+=(+m[2]||0);});return Math.max(0,s);}
 function doneGenUpto(id,upto){return ENTRIES.filter(e=>e.id===id&&(!upto||(e.date||dstr(e.ts))<=upto)).reduce((s,e)=>s+(+e.qty||0),0);}
 function repItems(day){
-  const ust=sumKiris()/2646+cntK('asik')/378+cntK('capraz')/378;
   return [
   {id:'harita',   ad:'Harita işaretleme', birim:'ayak',  cum:sumP('a1'), hedef:5292, dis:'MEK', pur:0.00},
   {id:'ayakdelme',ad:'Ayak delme (rok)',  birim:'ayak',  cum:sumP('a2'), hedef:5292, dis:'MEK', pur:0.00, isv:true},
   {id:'ayakmont', ad:'Ayak montajı',       birim:'ayak',  cum:sumMon(),   hedef:5292, dis:'MEK', pur:0.42},
-  {id:'ustm',     ad:'Üst montaj (kiriş+aşık+çapraz)',  birim:'oran',  cum:ust,        hedef:3, dis:'MEK', pur:0.31},
+  {id:'kiris',    ad:'Kiriş montajı (P3)',  birim:'adet',  cum:sumKiris(),     hedef:2646, dis:'MEK', pur:0.31/3},
+  {id:'asik',     ad:'Aşık montajı (P4)',   birim:'masa',  cum:cntK('asik'),   hedef:378,  dis:'MEK', pur:0.31/3},
+  {id:'capraz',   ad:'Çapraz montajı (P6)', birim:'masa',  cum:cntK('capraz'), hedef:378,  dis:'MEK', pur:0.31/3},
   {id:'panel',    ad:'Panel montajı',      birim:'panel', cum:sumP('k7'),  hedef:9828, dis:'MEK', pur:0.27},
   ...GEN.map(g=>({id:g.id,ad:g.ad,birim:g.birim,cum:doneGen(g.id),hedef:g.hedef,dis:'ELK',pur:g.pur||0}))
 ];}
@@ -3007,7 +3015,7 @@ function repItems(day){
    - harita/üst montaj/panel: ALOG 'Üretim' delta logları (undo-duyarlı net)
    - elektrik (GEN): ENTRIES üretim kayıtları (o günün tarihi) */
 function dayItemQty(day){
-  const q={harita:0,ayakdelme:0,ayakmont:0,ustm:0,panel:0};
+  const q={harita:0,ayakdelme:0,ayakmont:0,kiris:0,asik:0,capraz:0,panel:0};
   /* rok & montaj: o güne kadar net durum farkı (telescoping) → günlük toplamı kümülatifi asla aşmaz */
   const cur=footCumUpto(day),pre=footCumUpto(dadd(day,-1));
   q.ayakdelme=Math.max(0,cur.del-pre.del);
@@ -3017,16 +3025,16 @@ function dayItemQty(day){
   dayLogs(day).forEach(r=>{const d=r.detail||'';
     const m=d.match(/\[(\w+)\]\s*([+-]?\d+)/);
     if(m){const f=m[1],v=+m[2]||0;
-      if(f==='k7')q.panel+=v; else if(f==='kiris'||f==='asik'||f==='capraz')q.ustm+=v;}
+      if(f==='k7')q.panel+=v; else if(f==='kiris')q.kiris+=v; else if(f==='asik')q.asik+=v; else if(f==='capraz')q.capraz+=v;}
   });
-  if(q.harita<0)q.harita=0;if(q.panel<0)q.panel=0;if(q.ustm<0)q.ustm=0;
+  if(q.harita<0)q.harita=0;if(q.panel<0)q.panel=0;if(q.kiris<0)q.kiris=0;if(q.asik<0)q.asik=0;if(q.capraz<0)q.capraz=0;
   ENTRIES.forEach(e=>{const ed=e.date||dstr(e.ts);if(ed===day)q[e.id]=(q[e.id]||0)+(+e.qty||0);});
   return q;
 }
 /* o günün NET değişimi (clamp YOK → silme/iptal eksi görünür). Matris ve kart "bugün" değeri buradan.
    rok/montaj = footCumUpto farkı (mutlak 'gürültülü' sayı DEĞİL, sadece gün farkı). harita = yalnız işaretleme aksiyonları. */
 function dayNet(day){
-  const q={harita:0,ayakdelme:0,ayakmont:0,ustm:0,panel:0};
+  const q={harita:0,ayakdelme:0,ayakmont:0,kiris:0,asik:0,capraz:0,panel:0};
   const cur=footCumUpto(day),pre=footCumUpto(dadd(day,-1));
   q.ayakdelme=cur.del-pre.del;
   q.ayakmont=cur.mon-pre.mon;
@@ -3034,7 +3042,7 @@ function dayNet(day){
   dayLogs(day).forEach(r=>{const d=r.detail||'';
     const m=d.match(/\[(\w+)\]\s*([+-]?\d+)/);
     if(m){const f=m[1],v=+m[2]||0;
-      if(f==='k7')q.panel+=v; else if(f==='kiris'||f==='asik'||f==='capraz')q.ustm+=v;}
+      if(f==='k7')q.panel+=v; else if(f==='kiris')q.kiris+=v; else if(f==='asik')q.asik+=v; else if(f==='capraz')q.capraz+=v;}
   });
   ENTRIES.forEach(e=>{const ed=e.date||dstr(e.ts);if(ed===day)q[e.id]=(q[e.id]||0)+(+e.qty||0);});
   return q;
@@ -3075,7 +3083,7 @@ function renderItemMatrix(forPrint){
   const items=repItems(RAPDAY);
   const allDays=repDays();
   const dn={};allDays.forEach(d=>dn[d]=dayNet(d));
-  const active=d=>{const n=dn[d];return ['harita','ayakdelme','ayakmont','ustm','panel'].some(k=>Math.abs(n[k]||0)>0)||GEN.some(g=>Math.abs(n[g.id]||0)>0);};
+  const active=d=>{const n=dn[d];return ['harita','ayakdelme','ayakmont','kiris','asik','capraz','panel'].some(k=>Math.abs(n[k]||0)>0)||GEN.some(g=>Math.abs(n[g.id]||0)>0);};
   let cols=allDays.filter(active);
   if(cols.indexOf(RAPDAY)<0)cols.push(RAPDAY);
   cols=[...new Set(cols)].sort();
@@ -3118,7 +3126,7 @@ function renderDayDetail(day){
 /* ===== SUNUM KATMANI — işveren-sunum rapor bileşenleri ===== */
 const RAP_MN=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 function humanDay(day){const p=day.split('-');return (+p[2])+' '+RAP_MN[(+p[1])-1]+' '+p[0];}
-function itemColor(id,dis){const c={harita:'#7c5cff',ayakdelme:'#E8833A',ayakmont:'#2e9e5b',ustm:'#3f7cc0',panel:'#1f9d8f'};return c[id]||(dis==='ELK'?'#d98324':'#2f6fb0');}
+function itemColor(id,dis){const c={harita:'#7c5cff',ayakdelme:'#E8833A',ayakmont:'#2e9e5b',kiris:'#3f7cc0',asik:'#d97706',capraz:'#b45309',panel:'#1f9d8f'};return c[id]||(dis==='ELK'?'#d98324':'#2f6fb0');}
 function rapProgress(day){const items=repItems(day);let mek=0,mekW=0,elk=0,elkW=0;
   items.forEach(it=>{const pct=it.hedef>0?Math.min(100,it.cum/it.hedef*100):0;
     if(it.dis==='MEK'){mek+=it.pur*pct;mekW+=it.pur;}else{elk+=it.pur*pct;elkW+=it.pur;}});
@@ -3221,7 +3229,7 @@ function rapAdamMakina(day,forPrint){if(!day)return '';
 function rapGunGun(day){
   if(!day)return '';
   var end=day,start=(typeof ISB!=='undefined'?ISB:day);if(start>end)start=end;
-  var NM={harita:'harita',ayakdelme:'ROK delgi',beton:'beton',ayakmont:'ayak montaj',ustm:'üst montaj',panel:'panel'};
+  var NM={harita:'harita',ayakdelme:'ROK delgi',beton:'beton',ayakmont:'ayak montaj',kiris:'kiriş',asik:'aşık',capraz:'çapraz',panel:'panel'};
   var rows=[],guard=0;
   for(var iso=end; iso>=start && guard<200; iso=dadd(iso,-1),guard++){
     var ym=iso.slice(0,7),d=+iso.slice(8,10);
@@ -3229,7 +3237,7 @@ function rapGunGun(day){
     var arac=0,aAr=0;(ARAC||[]).forEach(function(a){var mt=pjaMeta((PJA[ym]&&PJA[ym][a.id]&&PJA[ym][a.id][d])||'');if(mt.v>0)arac++;else if(mt.c==='A')aAr++;});
     var pa=0;if(typeof PJP!=='undefined'&&PJP[ym])for(var v in PJP[ym]){var pv=PJP[ym][v]&&PJP[ym][v][d];if(typeof pv==='number')pa+=pv;}
     var q=(typeof dayItemQty==='function')?dayItemQty(iso):{};var isParts=[];
-    ['harita','ayakdelme','beton','ayakmont','ustm','panel'].forEach(function(k){if(+q[k]>0)isParts.push(tr(q[k])+' '+NM[k]);});
+    ['harita','ayakdelme','beton','ayakmont','kiris','asik','capraz','panel'].forEach(function(k){if(+q[k]>0)isParts.push(tr(q[k])+' '+NM[k]);});
     var neden=[];(typeof GUNLUK!=='undefined'?GUNLUK:[]).forEach(function(r){if(r&&r.tarih===iso&&r.engelVar){neden.push((typeof gEngelAd==='function'?gEngelAd(r.engelTip):r.engelTip||'engel')+(r.engelNot?' ('+r.engelNot+')':''));}});
     var holName=(typeof HOL!=='undefined'&&HOL[iso])?HOL[iso]:'';    var wx=(typeof wxShort==='function')?wxShort(iso):'';    var noWork=(!pers&&!isParts.length);    var nedenP=[];if(holName&&noWork)nedenP.push('Resmi tatil');if(neden.length)nedenP.push(neden.join('; '));    if(pers||arac||aAr||pa||isParts.length||neden.length||holName)rows.push({iso:iso,pers:pers,arac:arac,aAr:aAr,pa:pa,isler:isParts.join(', '),neden:nedenP.join(' · '),hol:holName,wx:wx});
     if(iso===start)break;
@@ -3335,7 +3343,7 @@ function rapBody(day,forPrint){const A=rapAgg(day);
   }
   return h;}
 async function backupAll(){try{
-  const dump={_app:'SHAMS1-TR1',_ver:'s126',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1-TR1',_ver:'s127',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pja:','pjag:','pjp:','pjpg:','hc:','g:','gd:'];
   for(const pre of pref)for(const k of await slist(pre)){const v=await sget(k);if(v!=null)dump.data[k]=v;}
   const single=['wage','fx','targets','mpct','cab:dc','cab:ac','cab:og','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
@@ -3404,7 +3412,7 @@ function verimEOT(F){
   var eot=Math.max(eotIsv,0);
   return {delme:delme,mont:mont,delmeBitis:delmeBitis,montKendiBitis:montKendiBitis,eotIsv:eotIsv,matCrit:matCrit,eot:eot,revDeadline:dadd(dl,eot)};
 }
-var MATREQ={ayakmont:['k_p1','k_p2','b_rok'],ustm:['k_p3','k_p41','k_p42','k_p43','k_p5','k_p6','k_p7','k_m12'],panel:['k_panel','k_p11','k_orta']};
+var MATREQ={ayakmont:['k_p1','k_p2','b_rok'],kiris:['k_p3'],asik:['k_p41','k_p42','k_p43','k_p5'],capraz:['k_p6','k_p7','k_m12'],panel:['k_panel','k_p11','k_orta']};
 function verimMatLimit(id,hedef,cum){var req=MATREQ[id];if(!req||!req.length)return null;var ratio=1,worst=null;req.forEach(function(m){if(typeof mikOf!=='function')return;var need=mikOf(m),gel=(typeof gelenOf==='function')?gelenOf(m):0;if(need>0){var r=Math.min(1,gel/need);if(worst===null||r<ratio){ratio=r;worst={id:m,need:need,gel:gel,r:r};}}});if(worst===null)return null;var cap=Math.round((hedef||0)*ratio);return {ratio:ratio,cap:cap,worst:worst,limited:cap<(hedef||0),blocked:cap<=(cum||0)};}
 function verimLitView(F){var cr=verimAvgCrew();var pers=cr.pers||0;var find=function(id){var x=null;F.rows.forEach(function(r){if(r.it.id===id)x=r;});return x;};var delme=find('ayakdelme'),mont=find('ayakmont'),pan=find('panel');var rows=[];rows.push(['Ayak delme / çakma (ROK)','150–200 adet/gün-makine (Vermeer · iyi koşulda 200–400)',(delme&&delme.hiz>0?('saha ≈ '+Math.round(delme.hiz)+' adet/gün'):'–')+' · <b>İşveren kapsamı</b>']);rows.push(['Ayak / kolon montajı','saha verisinden',(mont&&mont.hiz>0?('saha ≈ '+Math.round(mont.hiz)+' adet/gün'+(pers>0?(' · işçi başına ≈ '+(Math.round(mont.hiz/pers*10)/10)):'')):'–')]);var panDaily=pers>0?Math.round(pers*42):0;var panDays=panDaily>0?Math.ceil(9828/panDaily):null;rows.push(['Panel montajı','~42 panel/işçi-gün (deneyimli ekip 20 kişi → 800–900/gün)',(pan&&pan.it.cum>0?('saha ≈ '+Math.round(pan.hiz)+' panel/gün'):'<b>başlamadı – panel sahaya gelmedi</b>')+(panDaily>0?(' · '+Math.round(pers)+' kişi × 42 ≈ '+panDaily+' panel/gün → malzeme gelse ~'+panDays+' gün'):'')]);return '<h3>🌍 Literatür verimliliği &amp; malzeme kısıtı</h3><div class="sub">Dünya literatüründeki tipik kurulum hızları ile saha hızının karşılaştırması. Aktif kalemlerde ekip literatürle uyumlu; gecikme işgücünden değil <b>malzeme akışından</b> kaynaklanıyor – sahada personel olsa da malzeme gelmeden iş ilerleyemez.</div><div style="overflow:auto"><table class="mtab vtab"><thead><tr><th>İş kalemi</th><th>Literatür normu (kaynak)</th><th>Saha durumu</th></tr></thead><tbody>'+rows.map(function(x){return '<tr><td>'+x[0]+'</td><td>'+x[1]+'</td><td>'+x[2]+'</td></tr>';}).join('')+'</tbody></table></div><div class="hint">Kaynaklar: panel ~42 panel/işçi-gün – güneş santrali kurulum literatürü; kazık 150–200/gün-makine – Vermeer / Solar Builder. Normlar gösterge niteliğindedir; zemin, hava ve malzeme akışına göre değişir. İşçi başına verim literatür bandındaysa gecikmenin nedeni işgücü değil malzemedir.</div>';}
 function renderVerim(){
@@ -3542,7 +3550,7 @@ function kontrolFormPaket(){
      '<div class="ffields" style="margin-top:6px"><b>Tespit Eden:</b> '+kfDot()+' &nbsp;·&nbsp; <b>Sorumlu:</b> '+kfDot()+' &nbsp;·&nbsp; <b>Onay (Yüklenici):</b> '+kfDot()+'</div></div>';
   /* F-07 Montaj Tamamlama — tamamlanma %'sinden otomatik */
   const ayakP=Math.min(pctOf('ayakdelme'),pctOf('ayakmont'));
-  const f7=[['Ayak imalatı (delme + beton)',ayakP],['Konstrüksiyon montajı',pctOf('ustm')],['Panel montajı',pctOf('panel')],['DC kablaj',pctOf('solar')],['Topraklama',null],['AC kablaj / inverter',pctOf('invtr')],['OG hattı',pctOf('ogbas')]];
+  const f7=[['Ayak imalatı (delme + beton)',ayakP],['Konstrüksiyon montajı (kiriş+aşık+çapraz)',Math.round((pctOf('kiris')+pctOf('asik')+pctOf('capraz'))/3)],['Panel montajı',pctOf('panel')],['DC kablaj',pctOf('solar')],['Topraklama',null],['AC kablaj / inverter',pctOf('invtr')],['OG hattı',pctOf('ogbas')]];
   const f7rows=f7.map((x,ix)=>{const p=x[1];const eh=(p===null)?'—':(p>=100?'E':'H');const not=(p===null)?'saha muayenesi':('%'+p+' tamamlandı');
     return '<tr><td class="ftc">'+(ix+1)+'</td><td>'+x[0]+'</td><td class="ftc"><b>'+eh+'</b></td><td class="ftc">'+not+'</td></tr>';}).join('');
   H+='<div class="fform"><div class="ftitle">F-07 Montaj Tamamlama Protokolü</div>'+
