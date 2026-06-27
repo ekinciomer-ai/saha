@@ -659,6 +659,7 @@
    .lkedit{color:#3f7cc0;cursor:pointer;font-weight:600;white-space:nowrap}
    .fhdr.fh-on{background:#2e9e5b;color:#fff}
    .fhdr.fh-arka{background:#15314e;color:#fff}
+.fh-kiris{background:#1f9d8f;color:#fff}
    .fgnote{font-size:11.5px;color:#a32a2e;background:#fdecec;border:1px solid #E5484D;border-radius:7px;padding:4px 9px;margin:6px 0 4px}
    .pjpstep{display:flex;align-items:center;gap:8px;padding:8px 2px;justify-content:center}
    .pjpstep span{font-size:13px;color:#15314e}
@@ -722,7 +723,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 122 · Puantaj iş-kalemi bazlı + günlüğe bağlı</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 123 · Puantaj iş-kalemi bazlı + günlüğe bağlı</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -747,7 +748,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 122 · Puantaj·iş kalemi · 20.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 123 · Puantaj·iş kalemi · 20.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -931,7 +932,7 @@ const AYAK=[
 // konstrüksiyon (k1-k6 ikili, k7 panel 0-26)
 const KONST=[
  {k:'k1',ad:'Ön kolon (P1)'},{k:'k2',ad:'Arka kolon (P2 / P6)'},{k:'k3',ad:'Diyagonal makas (P5)'},
- {k:'k4',ad:'Üst kuşak (P3)'},{k:'k5',ad:'Alt kuşak (P4-1)'},{k:'k6',ad:'Terazi + cıvata tork'},
+ {k:'k5',ad:'Alt kuşak (P4-1)'},{k:'k6',ad:'Terazi + cıvata tork'},
 ];
 // Saha — 5 TR bölgesi (DXF genel yerleşimden). Aksaray kapsamı = TR-1.
 const PLANT={minx:524678,maxx:525047,miny:4342655,maxy:4343640,
@@ -1287,12 +1288,12 @@ function schematic(s){
   g+=`<line x1="${pX-4}" y1="${pY+pH+3}" x2="${pX+pW+4}" y2="${pY+pH+3}" stroke="${on('#0E9E97',k('k5'))}" stroke-width="2.6"/>`;
   // 7 ayak ekseni + rüzgar bağlantısı + kazıklar
   for(let p=0;p<7;p++){const x=pX+(p+0.5)*(pW/7);
-    g+=`<line x1="${F(x)}" y1="${pY+pH+3}" x2="${F(x)}" y2="${gY}" stroke="${on('#2D6BE0',k('k1'))}" stroke-width="3.4"/>`;
+    g+=`<line x1="${F(x)}" y1="${pY+pH+3}" x2="${F(x)}" y2="${gY}" stroke="${on('#2D6BE0',k('k1'))}" stroke-width="3.4"/>`;g+=`<rect x="${F(x-5)}" y="${pY+pH-1}" width="10" height="4.5" rx="1.5" fill="${(Array.isArray(s.kiris)&&s.kiris[p])?'#1f9d8f':'#C9CCD6'}"/>`;
     if(p<6){const x2=pX+(p+1.5)*(pW/7);g+=`<line x1="${F(x)}" y1="${gY-4}" x2="${F(x2)}" y2="${pY+pH+10}" stroke="${on('#FF5722',k('k3'))}" stroke-width="1.6"/>`;}
     g+=`<rect x="${F(x-7)}" y="${gY}" width="4.5" height="30" rx="2" fill="${colA[ay]}"/>`;
     g+=`<rect x="${F(x+3)}" y="${gY}" width="4.5" height="20" rx="2" fill="${colA[ay]}"/>`;}
   g+=`<line x1="20" y1="${gY}" x2="${W-20}" y2="${gY}" stroke="#C9CCD6" stroke-width="1.6"/>`;
-  g+=T(pX,pY-8,'P3 üst kuşak','#FF5722');g+=T(pX+pW+4,pY+pH+14,'P4-1','#0E9E97','end');
+  g+=T(pX,pY-8,'P3 kiriş '+(Array.isArray(s.kiris)?s.kiris.filter(Boolean).length:(s.k4?7:0))+'/7','#FF5722');g+=T(pX+pW+4,pY+pH+14,'P4-1','#0E9E97','end');
   g+=T(W-20,pY+6,`${k7}/26 panel`,'#9A9AA5','end');
 
   /* ===== YAN GÖRÜNÜŞ (kesit) ===== */
@@ -1338,6 +1339,9 @@ async function openEd(i){SEL=i;const t=tbl(i),s=PLAN[i]||{};
       <button class="tg" onclick="footAll(2)">Tümü delindi</button>
       <button class="tg" onclick="footAll(3)">Tümü monte</button>
       <button class="tg" onclick="footAll(0)">Sıfırla</button></div>`;
+    h+=`<div class="ayakgrp" style="margin-top:12px">Kiriş (P3) montajı — ön+arka ayağı bağlar · 7 eksen <i style="font-weight:400">(kısa dokun: monte / geri al)</i></div>
+     <div id="ed_kirisgrid" class="footgrid"></div>
+     <div class="footbtns"><button class="tg" onclick="kirisAll(1)">Tümü monte</button><button class="tg" onclick="kirisAll(0)">Sıfırla</button></div>`;
     h+=`<details class="montdet" style="margin:8px 0;border:1px solid #e3e3e8;border-radius:10px;padding:4px 10px;background:#fafafb"><summary style="cursor:pointer;font-weight:700;padding:6px 2px;color:#1f2d3d">📋 Montaj detayı (şartname) — &quot;monte&quot; ne demek?</summary><div style="font-size:12px;line-height:1.5;color:#444;padding:4px 2px 8px"><b>Ayak = ön (P1) + arka (P2) kolon.</b> Ø200 rok deliğine dikilir, etrafı beton ile doldurulur.<br><b style="color:#2e9e5b">&quot;Monte&quot; = ayak dikildi + beton atıldı + teraziye alındı.</b> (ön ~1,2 m / arka ~1,3–1,4 m gömme)<br><br><b>Şartname montaj kuralları:</b><ul style="margin:4px 0;padding-left:18px"><li>Tüm ayaklar aplikasyon projesine uygun, RTK + lazer nivo ile işaretlenir.</li><li>İşveren kontrolünde koordinatı kayan ayak kabul edilmez → sökülüp tekrar yapılır; zayi malzeme hakedişten düşülür.</li><li>Yan yana sehpalarda kot kazığı + ip ile sehpa başı-sonu kot farkı sıfırlanır; gölgeleme yapılmaz, panel-zemin mesafe toleransı korunur (yol geçişleri dahil).</li><li>Ölçü/açı toleransı dışı ayaklar sökülür, bilabedel tekrar imal edilir.</li><li>Konstrüksiyon profilleri kesilmez/delinmez; formu bozulan değiştirilir.</li><li>Cıvata/pul/rondela/somun projeye uygun. Montaj bitince yüklenici onayı → nezaretinde tork kontrolü → tork boyası (silinmez).</li><li>Temel: çakma kazık/beton, TS500 + Azerbaycan Deprem Yön.; bağlantı için çekme/basınç/eğilme testleri müşteri onaylı.</li></ul><span style="color:#8a93a3">Kaynak: Ek-5 Teknik Şartname (5.4.7/5.4.8) + Mekanik Sorumluluk Matrisi imalat detayları.</span></div></details>`;
     return h;})();
   // konstrüksiyon (kısa dokun: yapıldı/yapılmadı · uzun bas: kontrol)
@@ -1350,7 +1354,7 @@ async function openEd(i){SEL=i;const t=tbl(i),s=PLAN[i]||{};
     <button onclick="bump('k7',1,26)">+</button><button class="tg" style="min-width:70px" onclick="setv('k7',26,26)">Tümü 26</button>
     <button class="tg ${s.k7c?'ktrl':''}" id="t_k7c" style="min-width:90px" onclick="toggleKtrl('k7c')">${s.k7c?'⚠ Kontrol':'Kontrol?'}</button></div></div>`;
   document.getElementById('ed_konst').innerHTML=kh;
-  drawSchem();drawFootGrid();
+  drawSchem();drawFootGrid();drawKirisGrid();
   // media yükle
   MEDIA[i]=await sget('tr1m:'+i)||[];renderMedia();
   document.getElementById('editor').classList.add('on');document.getElementById('backdrop').classList.add('on');document.body.classList.add('edopen');renderPlan();refreshKonst();
@@ -1402,6 +1406,9 @@ function footkOf(i){const s=PLAN[i]||{};
   if(Array.isArray(s.foot)&&s.footv===2)return s.foot.map(x=>x>=4?1:0);
   return Array(14).fill(0);}
 function footColor(v){return v>=3?'#2e9e5b':v>=2?'#E8833A':v>=1?'#7c5cff':'#cdd2da';}
+function kirisOf(i){const s=PLAN[i]||{};return (Array.isArray(s.kiris)&&s.kiris.length===7)?s.kiris.slice():Array(7).fill(0);}
+function kirisArr(){return kirisOf(SEL).slice();}
+function syncKiris(a){const s=PLAN[SEL]||(PLAN[SEL]={});s.kiris=a.slice();s.k4=(a.filter(x=>x>=1).length===7)?1:0;}
 function footArr(){return footOf(SEL).slice();}
 function footkArr(){return footkOf(SEL).slice();}
 function syncFoot(a,k){const s=PLAN[SEL]||(PLAN[SEL]={});s.foot=a.slice();s.footv=2;
@@ -1448,6 +1455,27 @@ function drawFootGrid(){const el=document.getElementById('ed_footgrid');if(!el)r
   h+=`<div class="foothint">Kısa dokun: durumu ilerlet · <b>uzun bas: ⚠ kontrol işaretle/kaldır</b></div>`;
   if(LASTFOOT)h+=`<div class="footpos">${LASTFOOT}</div>`;
   el.innerHTML=h;}
+function drawKirisGrid(){const el=document.getElementById('ed_kirisgrid');if(!el)return;const a=kirisArr();
+  const cell=j=>{const tip='Eksen '+(j+1)+' · '+(a[j]?'kiriş monte':'monte değil');return `<button class="foot ${a[j]?'f3':'f0'}" data-lp="kiris:${j}" title="${tip}">${j+1}</button>`;};
+  let h='<div class="fgnote">Her kiriş bir <b>ÖN</b> + bir <b>ARKA</b> ayağı bağlar · 7 eksen</div><div class="footrow"><span class="fhdr fh-kiris">KİRİŞ</span>';
+  for(let j=0;j<7;j++)h+=cell(j);
+  h+='</div>';
+  const mon=a.filter(x=>x>=1).length;
+  h+=`<div class="footsum"><span class="fdot f3"></span>Monte kiriş <b>${mon}/7</b>${mon===7?' · <b style="color:var(--gnd)">tam ✓</b>':''}</div>`;
+  h+=`<div class="foothint">Kısa dokun: kiriş montajını işaretle / geri al</div>`;
+  el.innerHTML=h;}
+async function cycleKiris(j){if(SEL==null)return;if(roBlock())return;
+  if(ROLE!=='admin'){const ld=masaLastDay(SEL);
+    if(ld&&ld!==dToday()){const a0=kirisArr();await reqChange({tip:'kiris',masa:SEL,j,to:a0[j]?0:1},'Masa #'+SEL+' · kiriş '+(j+1)+' ('+ld+' verisi)');toast('Geçmiş veri — yönetici onayına gönderildi');return;}}
+  const a=kirisArr();a[j]=a[j]?0:1;syncKiris(a);await saveTbl(PLAN[SEL]);
+  await logAct('Kiriş montajı','Masa #'+SEL+' · kiriş '+(j+1)+' → '+(a[j]?'monte':'boş'));
+  drawKirisGrid();renderProgress();drawSchem();renderKonstPlan();}
+async function kirisAll(v){if(SEL==null)return;if(roBlock())return;
+  if(ROLE!=='admin'){const ld=masaLastDay(SEL);
+    if(ld&&ld!==dToday()){await reqChange({tip:'kirisAll',masa:SEL,v},'Masa #'+SEL+' · kiriş toplu '+(v?'monte':'sıfırla')+' ('+ld+' verisi)');toast('Geçmiş veri — yönetici onayına gönderildi');return;}}
+  syncKiris(Array(7).fill(v));await saveTbl(PLAN[SEL]);
+  await logAct('Kiriş (toplu)','Masa #'+SEL+' · '+(v?'tümü monte':'sıfırlandı'));
+  drawKirisGrid();renderProgress();drawSchem();renderKonstPlan();}
 async function saveTbl(s){s.by=CURUSER||document.getElementById('usta').value.trim()||'—';s.at=Date.now();PLAN[SEL]=s;
   const g=grpOf(SEL),obj={};for(const t of LAYOUT.tables){if(grpOf(t.i)===g&&PLAN[t.i])obj[t.i]=PLAN[t.i];}
   await sset('tr1g:'+g,obj);renderProgress();renderPlan();renderKonstPlan();}
@@ -1890,6 +1918,10 @@ async function applyChange(p){
     if(p.tip==='foot'){const a=footArr();a[p.j]=p.to;syncFoot(a);}else{syncFoot(Array(14).fill(p.v));}
     await saveTbl(PLAN[p.masa]);SEL=oldSEL;
     await logAct('Ayak (onaylı)','Masa #'+p.masa+(p.tip==='foot'?(' · ayak '+(p.j+1)):' · toplu'));}
+  else if(p.tip==='kiris'||p.tip==='kirisAll'){const oldSEL=SEL;SEL=p.masa;
+    if(p.tip==='kiris'){const a=kirisArr();a[p.j]=p.to;syncKiris(a);}else{syncKiris(Array(7).fill(p.v));}
+    await saveTbl(PLAN[p.masa]);SEL=oldSEL;
+    await logAct('Kiriş (onaylı)','Masa #'+p.masa+(p.tip==='kiris'?(' · kiriş '+(p.j+1)):' · toplu'));}
   else if(p.tip==='entry-del'){await sdel(p.key);}
 }
 async function approveDel(ts){if(roBlock())return;const r=DREQ.find(x=>x.ts===ts);if(!r)return;
@@ -2770,7 +2802,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s122</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s123</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -3295,7 +3327,7 @@ function rapBody(day,forPrint){const A=rapAgg(day);
   }
   return h;}
 async function backupAll(){try{
-  const dump={_app:'SHAMS1-TR1',_ver:'s122',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1-TR1',_ver:'s123',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pja:','pjag:','pjp:','pjpg:','hc:','g:','gd:'];
   for(const pre of pref)for(const k of await slist(pre)){const v=await sget(k);if(v!=null)dump.data[k]=v;}
   const single=['wage','fx','targets','mpct','cab:dc','cab:ac','cab:og','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
@@ -3890,7 +3922,8 @@ function renderBilgi(){const el=document.getElementById('bilgi');if(!el)return;
   var lpTimer=null,lpFired=false,LP_MS=420,sx=0,sy=0,moved=false;
   function fire(b,long){var p=(b.getAttribute('data-lp')||'').split(':');
     if(p[0]==='foot'){long?longFoot(+p[1]):cycleFoot(+p[1]);}
-    else if(p[0]==='konst'){long?longKonst(p[1]):toggle(p[1]);}}
+    else if(p[0]==='konst'){long?longKonst(p[1]):toggle(p[1]);}
+    else if(p[0]==='kiris'){cycleKiris(+p[1]);}}
   function start(e){var b=e.target.closest&&e.target.closest('[data-lp]');if(!b)return;
     lpFired=false;moved=false;sx=e.clientX;sy=e.clientY;
     clearTimeout(lpTimer);lpTimer=setTimeout(function(){if(moved)return;lpFired=true;fire(b,true);},LP_MS);}
