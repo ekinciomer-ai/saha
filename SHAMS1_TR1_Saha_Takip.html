@@ -723,7 +723,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 132 · Puantaj iş-kalemi bazlı + günlüğe bağlı</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 134 · Puantaj iş-kalemi bazlı + günlüğe bağlı</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -748,7 +748,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 132 · Puantaj·iş kalemi · 20.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 134 · Puantaj·iş kalemi · 20.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -2952,7 +2952,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s132</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s134</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -3157,12 +3157,14 @@ function dayItemQty(day){
   q.ayakmont=Math.max(0,cur.mon-pre.mon);
   q.harita=Math.max(0,cur.har-pre.har);
   /* harita NET: footCumUpto.har farkı — sıfırlama/geri-alma/atlama dahil, toplam onaylıyla tutar */
-  dayLogs(day).forEach(r=>{const d=r.detail||'';
-    const m=d.match(/\[(\w+)\]\s*([+-]?\d+)/);
-    if(m){const f=m[1],v=+m[2]||0;
-      if(f==='k7')q.panel+=v; else if(f==='kiris')q.kiris+=v; else if(f==='asik')q.asik+=v; else if(f==='capraz')q.capraz+=v;}
-  });
-  if(q.harita<0)q.harita=0;if(q.panel<0)q.panel=0;if(q.kiris<0)q.kiris=0;if(q.asik<0)q.asik=0;if(q.capraz<0)q.capraz=0;
+  /* kiriş/aşık/çapraz/panel: [f] log kümülatifini GERÇEK grid toplamına clamp'le → telescoping.
+     Böylece hiçbir gün onaylı toplamı aşmaz, Σgün = onaylı; hayalet / geri-alma logları (ör. +245/−146) absorbe olur. */
+  var _cl=function(f,grid){var c=Math.min(grid,klogSum(f,day)),pd=Math.min(grid,klogSum(f,dadd(day,-1)));return Math.max(0,c-pd);};
+  q.kiris=_cl('kiris',(typeof sumKiris==='function'?sumKiris():0));
+  q.asik=_cl('asik',(typeof cntK==='function'?cntK('asik'):0));
+  q.capraz=_cl('capraz',(typeof cntK==='function'?cntK('capraz'):0));
+  q.panel=_cl('k7',(typeof sumP==='function'?sumP('k7'):0));
+  if(q.harita<0)q.harita=0;
   ENTRIES.forEach(e=>{const ed=e.date||dstr(e.ts);if(ed===day)q[e.id]=(q[e.id]||0)+(+e.qty||0);});
   return q;
 }
@@ -3481,9 +3483,41 @@ function rapBody(day,forPrint){const A=rapAgg(day);
     h+='<div class="hint" style="margin-top:4px">Not: Bu liste uygulamaya <b>veri girişi yapan</b> kişileri gösterir — saha puantajı <u>değildir</u>. Puantaj <b>Personel</b> ekranından yapılır.</div>';
   }
   return h;}
+function tanIsGiris(){
+  var grid=(typeof sumKiris==='function')?sumKiris():0;
+  var logNet=(typeof klogSum==='function')?klogSum('kiris'):0;
+  var asikG=(typeof cntK==='function')?cntK('asik'):0, asikL=klogSum('asik');
+  var caprazG=(typeof cntK==='function')?cntK('capraz'):0, caprazL=klogSum('capraz');
+  var tblK=0,tblFull=0;
+  for(var k in PLAN){var a=PLAN[k]&&PLAN[k].kiris;if(Array.isArray(a)){var c=a.filter(function(x){return x>=1;}).length;if(c>0)tblK++;if(c>=7)tblFull++;}}
+  // gün gün [kiris] (pozitif+negatif net)
+  var byDay={};ALOG.forEach(function(r){var m=(r.detail||'').match(/\[kiris\]\s*([+-]?\d+)/);if(m){var d=(typeof dstr==='function')?dstr(r.ts):'';byDay[d]=(byDay[d]||0)+(+m[1]||0);}});
+  var gunlist=Object.keys(byDay).sort().map(function(d){return (typeof dtr==='function'?dtr(d):d)+': '+(byDay[d]>=0?'+':'')+byDay[d];}).join(' · ')||'—';
+  // beton
+  var betonGelen=(typeof gelenOf==='function')?gelenOf('b_rok'):0;
+  var betonN=0,betonSum=0;[].concat(MATIN||[],(typeof ZIMMET!=='undefined'?ZIMMET:[])||[]).forEach(function(r){if(r&&r.items&&+r.items['b_rok']>0){betonN++;betonSum+=+r.items['b_rok'];}});
+  var fk=logNet-grid, fa=asikL-asikG, fc=caprazL-caprazG;
+  var col=function(v){return v?'#E5484D':'#2e9e5b';};
+  var h='<div class="irdwrap">'+
+    '<div class="irdh">Kiriş montajı (P3)</div>'+
+    '<div class="irdsub">Grid durumu (onaylı = sumKiris): <b>'+grid+'</b> / 2646</div>'+
+    '<div class="irdsub">[kiris] log net toplamı: <b>'+logNet+'</b></div>'+
+    '<div class="irdsub">Fark (log − grid): <b style="color:'+col(fk)+'">'+(fk>=0?'+':'')+fk+'</b>'+(fk?' → tutarsız':' → tutarlı')+'</div>'+
+    '<div class="irdsub">Kirişi olan masa: <b>'+tblK+'</b> · tam (7/7): <b>'+tblFull+'</b></div>'+
+    '<div class="irdsub" style="font-size:11px;color:#6b7682">Gün gün net: '+gunlist+'</div>'+
+    '<div class="irdh" style="margin-top:10px">Aşık / Çapraz</div>'+
+    '<div class="irdsub">Aşık: grid '+asikG+' · log '+asikL+' · fark <b style="color:'+col(fa)+'">'+(fa>=0?'+':'')+fa+'</b></div>'+
+    '<div class="irdsub">Çapraz: grid '+caprazG+' · log '+caprazL+' · fark <b style="color:'+col(fc)+'">'+(fc>=0?'+':'')+fc+'</b></div>'+
+    '<div class="irdh" style="margin-top:10px">Beton (b_rok)</div>'+
+    '<div class="irdsub">Toplam gelen/dökülen: <b>'+betonGelen+'</b> m³ · <b>'+betonN+'</b> irsaliye · planlanan 212 m³</div>'+
+    '<div class="hint" style="margin-top:10px">Fark = 0 ise kayıt ile saha birebir. Fark ≠ 0 ise: log ile grid durumu ayrışmış (geri-alma matriste gizli · olarak, ya da onaysız usta girişi). Bu ekranı screenshot alıp gönder.</div>'+
+    '</div>';
+  if(typeof modalShow==='function')modalShow('Tanı — kiriş / aşık / çapraz / beton',h);
+}
+
 async function backupAll(){try{
   if(typeof toast==='function')toast('Yedek hazırlanıyor…');
-  const dump={_app:'SHAMS1-TR1',_ver:'s132',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1-TR1',_ver:'s134',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pja:','pjag:','pjp:','pjpg:','hc:','g:','gd:'];
   for(const pre of pref){try{const o=await sgetAll(pre);for(const k in o){if(o[k]!=null)dump.data[k]=o[k];}}catch(e){}}
   const single=['wage','fx','targets','mpct','cab:dc','cab:ac','cab:og','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','zimmet','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
@@ -3635,6 +3669,7 @@ function renderRapor(){const el=document.getElementById('rapor');if(!el)return;
     <div class="tk2 ceza adminonly"><h3>🛡 Veri Yedekleme & Güvenlik</h3>
       <div class="frow" style="gap:8px;flex-wrap:wrap;align-items:center">
         <button class="btn" onclick="backupAll()">⬇ Yedek al (tüm veri · JSON)</button>
+        <button class="btn ghost" onclick="tanIsGiris()">🔍 Tanı — kiriş / beton</button>
         <label class="tg" style="cursor:pointer;display:inline-flex;align-items:center">⬆ Yedekten geri yükle<input type="file" accept="application/json,.json" style="display:none" onchange="restoreBackup(this.files[0])"></label>
         <span class="hint" id="lastbk">${lastBackupTxt()}</span>
       </div>
