@@ -661,6 +661,7 @@
    .fhdr.fh-arka{background:#15314e;color:#fff}
 .fh-kiris{background:#1f9d8f;color:#fff}
 .fh-asik{background:#d97706;color:#fff}
+.fh-hex{background:#64748b;color:#fff}
    .fgnote{font-size:11.5px;color:#a32a2e;background:#fdecec;border:1px solid #E5484D;border-radius:7px;padding:4px 9px;margin:6px 0 4px}
    .pjpstep{display:flex;align-items:center;gap:8px;padding:8px 2px;justify-content:center}
    .pjpstep span{font-size:13px;color:#15314e}
@@ -724,7 +725,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 139 · Puantaj iş-kalemi bazlı + günlüğe bağlı</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 141 · Puantaj iş-kalemi bazlı + günlüğe bağlı</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -749,7 +750,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 139 · Puantaj·iş kalemi · 20.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 141 · Puantaj·iş kalemi · 20.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -783,7 +784,7 @@
     <button class="tab" onclick="tabTo(8,this)">📊 Rapor</button>
     <button class="tab" onclick="tabTo(9,this)">🗓 Saha Günlüğü</button>
     <button class="tab adminonly" onclick="tabTo(10,this)">⚡ Verimlilik</button>
-    <button class="tab" onclick="tabTo(11,this)">💸 Gider</button>
+    <button class="tab adminonly" onclick="tabTo(11,this)">💸 Gider</button>
   </div>
 
   <!-- ===== PROJE ===== -->
@@ -1351,6 +1352,9 @@ async function openEd(i){SEL=i;const t=tbl(i),s=PLAN[i]||{};
     h+=`<div class="ayakgrp" style="margin-top:12px">Kiriş (P3) montajı — ön+arka ayağı bağlar · 7 eksen <i style="font-weight:400">(kısa dokun: monte / geri al)</i></div>
      <div id="ed_kirisgrid" class="footgrid"></div>
      <div class="footbtns"><button class="tg" onclick="kirisAll(1)">Tümü monte</button><button class="tg" onclick="kirisAll(0)">Sıfırla</button></div>`;
+    h+=`<div class="ayakgrp" style="margin-top:12px">Hegzagonal (M12×30) montajı — kiriş bağlantı · her kiriş 4 · 7×4 = 28 <i style="font-weight:400">(kısa dokun: sıkıldı / geri al)</i></div>
+     <div id="ed_hexgrid" class="footgrid"></div>
+     <div class="footbtns"><button class="tg" onclick="hexAll(1)">Tümü sıkıldı</button><button class="tg" onclick="hexAll(0)">Sıfırla</button></div>`;
     h+=`<details class="montdet" style="margin:8px 0;border:1px solid #e3e3e8;border-radius:10px;padding:4px 10px;background:#fafafb"><summary style="cursor:pointer;font-weight:700;padding:6px 2px;color:#1f2d3d">📋 Montaj detayı (şartname) — &quot;monte&quot; ne demek?</summary><div style="font-size:12px;line-height:1.5;color:#444;padding:4px 2px 8px"><b>Ayak = ön (P1) + arka (P2) kolon.</b> Ø200 rok deliğine dikilir, etrafı beton ile doldurulur.<br><b style="color:#2e9e5b">&quot;Monte&quot; = ayak dikildi + beton atıldı + teraziye alındı.</b> (ön ~1,2 m / arka ~1,3–1,4 m gömme)<br><br><b>Şartname montaj kuralları:</b><ul style="margin:4px 0;padding-left:18px"><li>Tüm ayaklar aplikasyon projesine uygun, RTK + lazer nivo ile işaretlenir.</li><li>İşveren kontrolünde koordinatı kayan ayak kabul edilmez → sökülüp tekrar yapılır; zayi malzeme hakedişten düşülür.</li><li>Yan yana sehpalarda kot kazığı + ip ile sehpa başı-sonu kot farkı sıfırlanır; gölgeleme yapılmaz, panel-zemin mesafe toleransı korunur (yol geçişleri dahil).</li><li>Ölçü/açı toleransı dışı ayaklar sökülür, bilabedel tekrar imal edilir.</li><li>Konstrüksiyon profilleri kesilmez/delinmez; formu bozulan değiştirilir.</li><li>Cıvata/pul/rondela/somun projeye uygun. Montaj bitince yüklenici onayı → nezaretinde tork kontrolü → tork boyası (silinmez).</li><li>Temel: çakma kazık/beton, TS500 + Azerbaycan Deprem Yön.; bağlantı için çekme/basınç/eğilme testleri müşteri onaylı.</li></ul><span style="color:#8a93a3">Kaynak: Ek-5 Teknik Şartname (5.4.7/5.4.8) + Mekanik Sorumluluk Matrisi imalat detayları.</span></div></details>`;
     return h;})();
   // konstrüksiyon (kısa dokun: yapıldı/yapılmadı · uzun bas: kontrol)
@@ -1364,7 +1368,7 @@ async function openEd(i){SEL=i;const t=tbl(i),s=PLAN[i]||{};
     <button onclick="bump('k7',1,26)">+</button><button class="tg" style="min-width:70px" onclick="setv('k7',26,26)">Tümü 26</button>
     <button class="tg ${s.k7c?'ktrl':''}" id="t_k7c" style="min-width:90px" onclick="toggleKtrl('k7c')">${s.k7c?'⚠ Kontrol':'Kontrol?'}</button></div></div>`;
   document.getElementById('ed_konst').innerHTML=kh;
-  drawSchem();drawFootGrid();drawKirisGrid();drawAsikGrid();
+  drawSchem();drawFootGrid();drawKirisGrid();drawHexGrid();drawAsikGrid();
   // media yükle
   MEDIA[i]=await sget('tr1m:'+i)||[];renderMedia();
   document.getElementById('editor').classList.add('on');document.getElementById('backdrop').classList.add('on');document.body.classList.add('edopen');renderPlan();refreshKonst();
@@ -1423,6 +1427,11 @@ function asik12Arr(){return asik12Of(SEL);}
 function asik12Cnt(s){if(!s)return 0;const a=s.asik12;if(Array.isArray(a))return a.filter(x=>x>=1).length;return (s.asik===true||s.asik===1)?12:0;}
 function sumAsik12(){let t=0;for(const k in PLAN)t+=asik12Cnt(PLAN[k]);return t;}
 function syncAsik12(a){const s=PLAN[SEL]||(PLAN[SEL]={});s.asik12=a.slice();s.asik=(a.filter(x=>x>=1).length===12)?1:0;}/* s.asik(boolean) = tam 12 → hakediş/cntK korunur */
+function hex28Of(i){const s=PLAN[i]||{};const a=s.hex28;if(Array.isArray(a)&&a.length===28)return a.slice();const kr=(Array.isArray(s.kiris)&&s.kiris.length===7)?s.kiris:Array(7).fill(0);const out=Array(28).fill(0);for(let j=0;j<28;j++)out[j]=(kr[Math.floor(j/4)]>=1)?1:0;return out;}/* geriye dönük: kiriş montajından türet (her kiriş 4 hegzagonal) */
+function hex28Arr(){return hex28Of(SEL);}
+function hex28Cnt(s){if(!s)return 0;const a=s.hex28;if(Array.isArray(a))return a.filter(x=>x>=1).length;const kr=Array.isArray(s.kiris)?s.kiris.filter(x=>x>=1).length:0;return kr*4;}
+function sumHex28(){let t=0;for(const k in PLAN)t+=hex28Cnt(PLAN[k]);return t;}
+function syncHex28(a){const s=PLAN[SEL]||(PLAN[SEL]={});s.hex28=a.slice();}
 function syncKiris(a){const s=PLAN[SEL]||(PLAN[SEL]={});s.kiris=a.slice();}
 function footArr(){return footOf(SEL).slice();}
 function footkArr(){return footkOf(SEL).slice();}
@@ -1498,6 +1507,27 @@ async function kirisAll(v){if(SEL==null)return;if(roBlock())return;
   var _pk=kirisArr().filter(x=>x>=1).length;syncKiris(Array(7).fill(v));await saveTbl(PLAN[SEL]);
   var _dk=(v?7:0)-_pk;await logAct('Kiriş (toplu)','Masa #'+SEL+' · [kiris] '+(_dk>=0?'+':'')+_dk);
   drawKirisGrid();renderProgress();drawSchem();renderKonstPlan();}
+function drawHexGrid(){const el=document.getElementById('ed_hexgrid');if(!el)return;const a=hex28Arr();
+  let h='<div class="fgnote">Her kiriş <b>4</b> hegzagonal (M12×30) · 7 kiriş × 4 = <b>28</b>/masa</div>';
+  for(let k=0;k<7;k++){h+='<div class="footrow"><span class="fhdr fh-hex">K'+(k+1)+'</span>';
+    for(let b=0;b<4;b++){const j=k*4+b;h+='<button class="foot '+(a[j]?'f3':'f0')+'" data-lp="hex:'+j+'" title="Kiriş '+(k+1)+' · cıvata '+(b+1)+' · '+(a[j]?'sıkıldı ✓':'sıkılmadı')+'">'+(j+1)+'</button>';}
+    h+='</div>';}
+  const mon=a.filter(x=>x>=1).length,pct=Math.round(mon/28*100);
+  h+='<div class="footsum"><span class="fdot f3"></span>Hegzagonal <b>'+mon+'/28</b> · <b style="color:'+(mon===28?'var(--gnd)':'var(--solar)')+'">%'+pct+'</b>'+(mon===28?' · tam ✓':'')+'</div>';
+  h+='<div class="foothint">Kısa dokun: cıvata sıkıldı / geri al</div>';
+  el.innerHTML=h;}
+async function cycleHex(j){if(SEL==null)return;if(roBlock())return;
+  if(ROLE!=='admin'){const ld=masaLastDay(SEL);
+    if(ld&&ld!==dToday()){const a0=hex28Arr();await reqChange({tip:'hex',masa:SEL,j,to:a0[j]?0:1},'Masa #'+SEL+' · hegzagonal '+(j+1)+' ('+ld+' verisi)');toast('Geçmiş veri — yönetici onayına gönderildi');return;}}
+  const a=hex28Arr();a[j]=a[j]?0:1;syncHex28(a);await saveTbl(PLAN[SEL]);
+  await logAct('Hegzagonal','Masa #'+SEL+' · [hex] '+(a[j]?'+1':'-1')+' (cıvata '+(j+1)+')');
+  drawHexGrid();renderProgress();drawSchem();renderKonstPlan();}
+async function hexAll(v){if(SEL==null)return;if(roBlock())return;
+  if(ROLE!=='admin'){const ld=masaLastDay(SEL);
+    if(ld&&ld!==dToday()){await reqChange({tip:'hexAll',masa:SEL,v},'Masa #'+SEL+' · hegzagonal toplu '+(v?'sıkıldı':'sıfırla')+' ('+ld+' verisi)');toast('Geçmiş veri — yönetici onayına gönderildi');return;}}
+  var _ph=hex28Arr().filter(x=>x>=1).length;syncHex28(Array(28).fill(v));await saveTbl(PLAN[SEL]);
+  var _dh=(v?28:0)-_ph;await logAct('Hegzagonal (toplu)','Masa #'+SEL+' · [hex] '+(_dh>=0?'+':'')+_dh);
+  drawHexGrid();renderProgress();drawSchem();renderKonstPlan();}
 function drawAsikGrid(){const el=document.getElementById('ed_asikgrid');if(!el)return;const a=asik12Arr();
   var _W=300,vis='<svg viewBox="0 0 '+_W+' 96" style="width:100%;max-width:300px;display:block;margin:2px auto 4px">';
   vis+='<text x="2" y="10" font-size="8" fill="#7a5b12" font-family="monospace">4 sıra × 3 = 12 aşık (kirişe dik)</text>';
@@ -1562,7 +1592,7 @@ let KFIND=null, ZONE=0, MAXINV=0;
 function syncUsta(el){const u=document.getElementById('usta');if(u)u.value=el.value;}
 function invOf(t){const m=(t.adr||t.adrf||'').match(/INV(\d+)/);return m?+m[1]:0;}
 function invColor(n){const h=(n*53)%360;return 'hsl('+h+',62%,58%)';}
-function konstFrac(s){if(!s)return 0;const a=s.kiris;const kr=Array.isArray(a)?a.filter(x=>x>=1).length/7:0;const d=kr+(asik12Cnt(s)/12)+(s.capraz?1:0)+(((s.k7||0)>=26)?1:0);return d/4;}
+function konstFrac(s){if(!s)return 0;const a=s.kiris;const kr=Array.isArray(a)?a.filter(x=>x>=1).length/7:0;const d=kr+(hex28Cnt(s)/28)+(asik12Cnt(s)/12)+(s.capraz?1:0)+(((s.k7||0)>=26)?1:0);return d/5;}
 function konstFill(f){if(f<=0)return 'var(--slate)';if(f>=1)return 'var(--gnd)';
   const a=[244,178,62],b=[143,210,122],c=a.map((v,i)=>Math.round(v+(b[i]-v)*f));return 'rgb('+c[0]+','+c[1]+','+c[2]+')';}
 function konstScale(){const W=1000,dx=LAYOUT.maxx-LAYOUT.minx,dy=LAYOUT.maxy-LAYOUT.miny,H=Math.round(W*dy/dx);
@@ -1700,7 +1730,7 @@ function phaseUnits(p,s){s=s||{};
   if(p==='rok')return {d:Math.min(14,+s.a2||0),t:14};
   if(p==='kolon')return {d:Math.min(14,+s.a4||0),t:14};
   if(p==='kiris'){const a=s.kiris;return {d:Array.isArray(a)?a.filter(x=>x>=1).length:0,t:7};}
-  if(p==='hegzagonal'){const a=s.kiris;return {d:Array.isArray(a)?a.filter(x=>x>=1).length:0,t:7};}/* hegzagonal = M12×30, kiriş montajıyla birebir */
+  if(p==='hegzagonal')return {d:hex28Cnt(s),t:28};/* hegzagonal = 28 M12×30 (7 kiriş × 4), parça bazlı */
   if(p==='asik')return {d:asik12Cnt(s),t:12};/* aşık = 12 segment (parça bazlı ilerleme) */
   if(p==='capraz')return {d:s.capraz?1:0,t:1};
   if(p==='panel')return {d:Math.min(26,+s.k7||0),t:26};
@@ -1975,6 +2005,10 @@ async function applyChange(p){
     if(p.tip==='kiris'){const a=kirisArr();a[p.j]=p.to;syncKiris(a);}else{syncKiris(Array(7).fill(p.v));}
     await saveTbl(PLAN[p.masa]);SEL=oldSEL;
     await logAct('Kiriş (onaylı)','Masa #'+p.masa+(p.tip==='kiris'?(' · kiriş '+(p.j+1)):' · toplu'));}
+  else if(p.tip==='hex'||p.tip==='hexAll'){const oldSEL=SEL;SEL=p.masa;
+    if(p.tip==='hex'){const a=hex28Arr();a[p.j]=p.to;syncHex28(a);}else{syncHex28(Array(28).fill(p.v));}
+    await saveTbl(PLAN[p.masa]);SEL=oldSEL;
+    await logAct('Hegzagonal (onaylı)','Masa #'+p.masa+(p.tip==='hex'?(' · cıvata '+(p.j+1)):' · toplu'));}
   else if(p.tip==='asik'||p.tip==='asikAll'){const oldSEL=SEL;SEL=p.masa;
     if(p.tip==='asik'){const a=asik12Arr();a[p.j]=p.to;syncAsik12(a);}else{syncAsik12(Array(12).fill(p.v));}
     await saveTbl(PLAN[p.masa]);SEL=oldSEL;
@@ -2287,7 +2321,7 @@ function kullanilanOf(id){const it=matItem(id);if(!it)return +(MATUSE[id]||0);
   if(id==='b_rok')return Math.round((typeof sumP==='function'?sumP('a4'):0)*(212/5292));/* beton dökülen = atılan ayak(a4)×birim(212/5292); Kalan=Gelen−Dökülen = sahadaki gerçek beton */
   if(id==='k_p1')return footMonRow(false);/* P1 ön ayak = ön sıra j7-13 (saha düzeltmesi s82) *//* P1 ön ayak = ayak montajından (footk≥3 · j0-6) */
   if(id==='k_p2')return footMonRow(true);/* P2 arka ayak = arka sıra j0-6 (saha düzeltmesi s82) *//* P2 arka ayak = ayak montajından (footk≥3 · j7-13) */
-  if(id==='k_hex')return sumKiris()*4;/* M12×30 hegzagonal: kiriş başına 4 (4×2646=10584) */
+  if(id==='k_hex')return sumHex28();/* M12×30 hegzagonal: gerçek monte (28/masa); eski kiriş verisi otomatik türer */
   if(it.mont==='kiris')return sumKiris();/* kiriş: eleman bazlı (7/masa, toplam 2646) */
   if(id==='k_m12'){const fr=(sumKiris()/2646+cntK('asik')/378+cntK('capraz')/378)/3;return Math.round(fr*(it.mik||52920));}/* M12 civata seti: ust montaj (kiris+asik+capraz) ortalamasina orantili tuketilir */
   const dm=(typeof dcMeters==='function'?dcMeters():0), sp=(typeof sumP==='function'?sumP('k7'):0);
@@ -2396,6 +2430,42 @@ async function addGider(){
 }
 async function delGider(id){if(!confirm('Gider kaydı silinsin mi?'))return;GIDER=GIDER.filter(function(r){return r.id!==id;});try{var all=await sgetAll('gd:');for(var k in all){if(all[k]&&all[k].id===id)await sdel(k);}}catch(e){}renderGider();}
 function gdShowFoto(id){var r=(GIDER||[]).find(function(x){return x.id===id;});if(r&&r.foto)modalShow('Belge','<img src="'+r.foto+'" style="width:100%;border-radius:10px">');}
+function pjMonthDays(pid,ym){ym=ym||PJ_YM||dToday().slice(0,7);var t=0;var mp=(PJ[ym]&&PJ[ym][pid])||{};for(var d in mp)t+=pjMeta(mp[d]).v;return t;}
+function yevmiyeSave(){WAGE._c=WAGE._c||{};(TEAM||[]).forEach(function(p){var e=document.getElementById('yv_'+p.id);if(e)WAGE[p.id]=(e.value===''?'':(+e.value||0));var c=document.getElementById('yvc_'+p.id);if(c)WAGE._c[p.id]=c.value||'AZN';});var d=document.getElementById('yv__def');if(d)WAGE._def=+d.value||0;var wp=document.getElementById('yv__wpb');if(wp)WAGE._wpb=wp.value||'AZN';sset('wage',WAGE);toast('Yevmiye kaydedildi');try{renderPersonel();}catch(e){}}
+function yevmiyePanel(){
+  var ym=PJ_YM||dToday().slice(0,7);
+  var act=(TEAM||[]).filter(function(p){return p.aktif;});
+  if(!act.length)return '';
+  var rows=act.map(function(p){var w=wageOf(p.id),cur=wageCur(p.id),ayGun=pjMonthDays(p.id,ym),topGun=gPersDays(p.id);var aylik=ayGun*w,toplam=topGun*w;
+    return '<tr><td>'+esc(p.ad)+'<br><small style="color:#8a93a3">'+esc(p.gorev||'')+'</small></td>'+
+      '<td><input type="number" id="yv_'+p.id+'" value="'+(WAGE[p.id]!=null&&WAGE[p.id]!==''?WAGE[p.id]:'')+'" placeholder="'+(WAGE._def||0)+'" style="width:80px"></td>'+
+      '<td><select id="yvc_'+p.id+'">'+curOpts(cur)+'</select></td>'+
+      '<td class="num">'+fmtN(ayGun)+'</td>'+
+      '<td class="num"><b>'+fmtN(aylik)+'</b> '+curSym(cur)+'</td>'+
+      '<td class="num">'+fmtN(topGun)+'</td>'+
+      '<td class="num">'+fmtN(toplam)+' '+curSym(cur)+'</td></tr>';}).join('');
+  return '<h2 style="margin:16px 0 10px">👷 Personel yevmiye / maaş</h2>'+
+    '<div class="tk2"><div class="sub">Günlük yevmiye gir → puantaj çalışma günlerinden <b>günlük & aylık maaş</b> otomatik. Ay = <b>'+ym+'</b>. Gün sayıları puantaj cetvelinden gelir. (Günlük maaş = yevmiye · Aylık maaş = ay gün × yevmiye)</div>'+
+    '<div class="gdform"><label>Varsayılan yevmiye<input type="number" id="yv__def" value="'+(WAGE._def||'')+'"></label><label>Varsayılan birim<select id="yv__wpb">'+curOpts(WAGE._wpb||'AZN')+'</select></label><button class="btn" onclick="yevmiyeSave()">Kaydet</button></div>'+
+    '<div style="overflow:auto"><table class="gtbl"><thead><tr><th>Personel</th><th>Yevmiye</th><th>Birim</th><th>Ay gün</th><th>Aylık maaş</th><th>Top. gün</th><th>Toplam</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';
+}
+function rapPersMaas(){
+  var ym=(typeof RAPDAY!=='undefined'&&RAPDAY)?RAPDAY.slice(0,7):dToday().slice(0,7);
+  var act=(TEAM||[]).filter(function(p){return p.aktif||pjMonthDays(p.id,ym)>0;});
+  if(!act.length)return '';
+  var totAZN=0;
+  var rows=act.map(function(p){var w=wageOf(p.id),cur=wageCur(p.id),ayGun=pjMonthDays(p.id,ym),topGun=gPersDays(p.id);var aylik=ayGun*w,toplam=topGun*w;totAZN+=toAZN(toplam,cur);
+    return '<tr><td>'+esc(p.ad)+'<br><small style="color:#8a93a3">'+esc(p.gorev||'')+'</small></td>'+
+      '<td class="m">'+fmtN(w)+' '+curSym(cur)+'</td>'+
+      '<td class="m">'+fmtN(ayGun)+'</td>'+
+      '<td class="m"><b>'+fmtN(aylik)+'</b> '+curSym(cur)+'</td>'+
+      '<td class="m">'+fmtN(topGun)+'</td>'+
+      '<td class="m">'+fmtN(toplam)+' '+curSym(cur)+'</td></tr>';}).join('');
+  return '<h3 class="raph">👷 Personel maaş (yevmiye × puantaj) — '+ym+'</h3>'+
+    '<div class="hint" style="margin:-2px 0 8px">Günlük maaş = yevmiye · Aylık maaş = ay gün × yevmiye · Toplam = proje başından bugüne. Yevmiye personel sekmesinden girilir.</div>'+
+    '<table class="mtab raptbl"><thead><tr><th>Personel</th><th>Yevmiye</th><th>Ay gün</th><th>Aylık maaş</th><th>Top. gün</th><th>Toplam</th></tr></thead><tbody>'+rows+
+    '<tr class="eptot"><td colspan="5">TOPLAM (≈AZN)</td><td class="m"><b>'+gMoney(totAZN)+'</b></td></tr></tbody></table>';
+}
 function gWageSave(){WAGE._c=WAGE._c||{};(TEAM||[]).forEach(function(p){var e=document.getElementById('wg_'+p.id);if(e)WAGE[p.id]=(e.value===''?'':(+e.value||0));var c=document.getElementById('wgc_'+p.id);if(c)WAGE._c[p.id]=c.value||'AZN';});var d=document.getElementById('wg__def');if(d)WAGE._def=+d.value||0;var wp=document.getElementById('wg__wpb');if(wp)WAGE._wpb=wp.value||'AZN';sset('wage',WAGE);toast('Yevmiye kaydedildi');renderGider();}
 function renderGider(){
   var el=document.getElementById('gider');if(!el)return;
@@ -3511,7 +3581,7 @@ function rapBody(day,forPrint){const A=rapAgg(day);
   </div>`;
 
   if(!A.logs.length)h+='<div class="hint" style="margin:6px 0 0">Seçili güne ait saha kaydı bulunamadı.</div>';
-  h+=genelDurum();h+=rapGunGun(day);h+=rapAracOzet();h+='<h3 class="raph">İş kalemleri — ilerleme kartları</h3>';
+  h+=genelDurum();h+=rapGunGun(day);h+=rapAracOzet();h+=rapPersMaas();h+='<h3 class="raph">İş kalemleri — ilerleme kartları</h3>';
   h+='<div class="hint" style="margin:-2px 0 8px">Her kalem: tamamlanma oranı · «yapıldı / hedef / kalan» · seçili günün katkısı · son günlerin grafiği. Tüm değerler saha kayıtlarından (log) türetilir.</div>';
   h+=itemReportCards(day);
   h+='<h3 class="raph">Günlük × kümülatif matris</h3>';
@@ -4051,7 +4121,7 @@ function renderPersonel(){const el=document.getElementById('personel');if(!el)re
   el.innerHTML=
    pjPanel()+
    delReqPanel()+
-   '<h2 style="margin:14px 0 10px">Ekip / Personel</h2>'+teamForm()+teamCards()+
+   '<h2 style="margin:14px 0 10px">Ekip / Personel</h2>'+teamForm()+teamCards()+yevmiyePanel()+
    '<h2 style="margin:16px 0 10px">Araç parkı</h2>'+aracPanel()+
    pjaPanel()+
    '<h2 style="margin:18px 0 10px">🚛 Proje araçları (günlük temin)</h2>'+paracPanel()+pjpPanel()+
@@ -4172,7 +4242,8 @@ function renderBilgi(){const el=document.getElementById('bilgi');if(!el)return;
     if(p[0]==='foot'){long?longFoot(+p[1]):cycleFoot(+p[1]);}
     else if(p[0]==='konst'){long?longKonst(p[1]):toggle(p[1]);}
     else if(p[0]==='kiris'){cycleKiris(+p[1]);}
-    else if(p[0]==='asik'){cycleAsik(+p[1]);}}
+    else if(p[0]==='asik'){cycleAsik(+p[1]);}
+    else if(p[0]==='hex'){cycleHex(+p[1]);}}
   function start(e){var b=e.target.closest&&e.target.closest('[data-lp]');if(!b)return;
     lpFired=false;moved=false;sx=e.clientX;sy=e.clientY;
     clearTimeout(lpTimer);lpTimer=setTimeout(function(){if(moved)return;lpFired=true;fire(b,true);},LP_MS);}
