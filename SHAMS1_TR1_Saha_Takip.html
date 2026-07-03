@@ -723,7 +723,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 137 · Puantaj iş-kalemi bazlı + günlüğe bağlı</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 138 · Puantaj iş-kalemi bazlı + günlüğe bağlı</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -748,7 +748,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 137 · Puantaj·iş kalemi · 20.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 138 · Puantaj·iş kalemi · 20.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -1257,6 +1257,7 @@ function renderPlan(){
     r+=`<rect class="t${SEL===t.i?' sel':''}" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${rw.toFixed(1)}" height="${rh.toFixed(1)}" rx="1.4" fill="${baseFill}" onclick="openEd(${t.i})"></rect>`;
     if(SHOWFEET){const ft=footOf(t.i),fk=footkOf(t.i),kr=kirisOf(t.i),fw=Math.max(1,rw*0.045),fh=Math.max(1.4,rh*0.26);
       {const _cy0=y+rh*0.18+fh/2,_cy1=y+rh*0.56+fh/2;for(let c=0;c<7;c++){const _cx=x+(c+0.5)*(rw/7);r+=`<line x1="${_cx.toFixed(1)}" y1="${_cy0.toFixed(1)}" x2="${_cx.toFixed(1)}" y2="${_cy1.toFixed(1)}" stroke="${kr[c]>=1?'#1f9d8f':'#d2d7df'}" stroke-width="${(kr[c]>=1?rw*0.026:rw*0.012).toFixed(2)}" pointer-events="none"/>`;}}
+      {const _asD=!!(PLAN[t.i]&&PLAN[t.i].asik),_ac=_asD?'#d97706':'#c7b299',_aw=Math.max(0.8,rh*0.05),_ag=rw*0.015,_ar=[0.30,0.45,0.60,0.75];for(let _ri=0;_ri<4;_ri++){const _ay=y+rh*_ar[_ri];for(let _sg=0;_sg<3;_sg++){r+=`<line x1="${(x+_sg*(rw/3)+_ag).toFixed(1)}" y1="${_ay.toFixed(1)}" x2="${(x+(_sg+1)*(rw/3)-_ag).toFixed(1)}" y2="${_ay.toFixed(1)}" stroke="${_ac}" stroke-width="${_aw.toFixed(2)}" stroke-linecap="round" pointer-events="none"/>`;}}}
       for(let c=0;c<7;c++)for(let row=0;row<2;row++){const idx=row*7+c,v=ft[idx];
         const fx=x+(c+0.5)*(rw/7)-fw/2, fy=y+(row?rh*0.56:rh*0.18);
         r+=`<rect x="${fx.toFixed(1)}" y="${fy.toFixed(1)}" width="${fw.toFixed(1)}" height="${fh.toFixed(1)}" rx=".5" fill="${fk[idx]?'#E5484D':footColor(v)}" pointer-events="none"/>`;}}
@@ -1576,6 +1577,7 @@ function renderKonstPlan(){const el=document.getElementById('plan2');if(!el)retu
     r+='<rect'+dim+' class="t'+(selc?' sel':'')+'" x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+S.rw.toFixed(1)+'" height="'+S.rh.toFixed(1)+'" rx="1.3" fill="'+fill+'" stroke="'+(selc?'#16161A':invColor(inv))+'" stroke-width="'+(selc?2.2:1.1)+'" onclick="openEd('+t.i+')"></rect>';
     if(SHOWFEET){const ft=footOf(t.i),fk=footkOf(t.i),kr=kirisOf(t.i),fw=Math.max(0.8,S.rw*0.05),fh=Math.max(1.2,S.rh*0.30);
       {const _cy0=y+S.rh*0.16+fh/2,_cy1=y+S.rh*0.55+fh/2;for(let c=0;c<7;c++){const _cx=x+(c+0.5)*(S.rw/7);r+='<line'+dim+' x1="'+_cx.toFixed(1)+'" y1="'+_cy0.toFixed(1)+'" x2="'+_cx.toFixed(1)+'" y2="'+_cy1.toFixed(1)+'" stroke="'+(kr[c]>=1?'#1f9d8f':'#d2d7df')+'" stroke-width="'+(kr[c]>=1?S.rw*0.03:S.rw*0.013).toFixed(2)+'" pointer-events="none"></line>';}}
+      {const _asD=!!(PLAN[t.i]&&PLAN[t.i].asik),_ac=_asD?'#d97706':'#c7b299',_aw=Math.max(0.6,S.rh*0.05),_ag=S.rw*0.015,_ar=[0.30,0.45,0.60,0.75];for(let _ri=0;_ri<4;_ri++){const _ay=y+S.rh*_ar[_ri];for(let _sg=0;_sg<3;_sg++){r+='<line'+dim+' x1="'+(x+_sg*(S.rw/3)+_ag).toFixed(1)+'" y1="'+_ay.toFixed(1)+'" x2="'+(x+(_sg+1)*(S.rw/3)-_ag).toFixed(1)+'" y2="'+_ay.toFixed(1)+'" stroke="'+_ac+'" stroke-width="'+_aw.toFixed(2)+'" stroke-linecap="round" pointer-events="none"></line>';}}}
       for(let c=0;c<7;c++)for(let row=0;row<2;row++){const idx=row*7+c,v=ft[idx];
         const fx=x+(c+0.5)*(S.rw/7)-fw/2, fy=y+(row?S.rh*0.55:S.rh*0.16);
         r+='<rect'+dim+' x="'+fx.toFixed(1)+'" y="'+fy.toFixed(1)+'" width="'+fw.toFixed(1)+'" height="'+fh.toFixed(1)+'" rx=".4" fill="'+(fk[idx]?'#E5484D':footColor(v))+'" pointer-events="none"></rect>';}}
@@ -1629,7 +1631,7 @@ function kontrolBanner(){const kc=kontrolCount();if(!kc.toplam)return '';
 function konstStats(){const wrap=document.getElementById('kbars');if(!wrap)return;
   const kr=sumKiris(),as=cntK('asik'),cp=cntK('capraz'),pan=sumP('k7');
   const frac=(kr/2646+as/378+cp/378+pan/9828)/4;const ov=frac*100;
-  let html=kontrolBanner()+'<div class="pr"><div class="nm">Üst montaj + panel — genel<small>Mek · kiriş+aşık+çapraz+panel</small></div>'+
+  let html=kontrolBanner()+'<div class="pr"><div class="nm">Üst montaj + panel — genel<small>Mek · kiriş+hegzagonal+aşık+çapraz+panel</small></div>'+
     '<div class="track"><div class="fill fMEK" style="width:'+ov+'%"></div></div>'+
     '<div style="text-align:right"><div class="pct" style="color:'+(ov>=100?'var(--gnd)':'var(--solar)')+'">%'+ov.toFixed(0)+'</div></div></div>';
   const rows=[['Kiriş (P3)',kr,2646],['Aşık (P4)',as,378],['Çapraz (P6)',cp,378],['Panel',pan,9828]];
@@ -1661,16 +1663,17 @@ function phaseUnits(p,s){s=s||{};
   if(p==='rok')return {d:Math.min(14,+s.a2||0),t:14};
   if(p==='kolon')return {d:Math.min(14,+s.a4||0),t:14};
   if(p==='kiris'){const a=s.kiris;return {d:Array.isArray(a)?a.filter(x=>x>=1).length:0,t:7};}
+  if(p==='hegzagonal'){const a=s.kiris;return {d:Array.isArray(a)?a.filter(x=>x>=1).length:0,t:7};}/* hegzagonal = M12×30, kiriş montajıyla birebir */
   if(p==='asik')return {d:s.asik?1:0,t:1};
   if(p==='capraz')return {d:s.capraz?1:0,t:1};
   if(p==='panel')return {d:Math.min(26,+s.k7||0),t:26};
   return {d:0,t:1};}
 function phaseFracOf(p,s){const u=phaseUnits(p,s);return u.t?Math.min(1,u.d/u.t):0;}
 function phaseFrac(s){if(!s)return 0;if(CURPHASE==='all')return konstFrac(s);return phaseFracOf(CURPHASE,s);}
-const PHASE_ORDER=['harita','rok','kolon','kiris','asik','capraz','panel'];
-const STAGE_COL={harita:'#a78bfa',rok:'#E8833A',kolon:'#3f7cc0',kiris:'#1f9d8f',asik:'#d97706',capraz:'#b45309',panel:'#2e9e5b'};
-const STAGE_NM={harita:'Harita',rok:'Rok',kolon:'Kolon/Ayak',kiris:'Kiriş',asik:'Aşık',capraz:'Çapraz',panel:'Panel'};
-const PHASE_UNIT={harita:'ayak işaretlendi',rok:'ayak delindi',kolon:'ayak monte',kiris:'kiriş',asik:'aşık',capraz:'çapraz',panel:'panel'};
+const PHASE_ORDER=['harita','rok','kolon','kiris','hegzagonal','asik','capraz','panel'];
+const STAGE_COL={harita:'#a78bfa',rok:'#E8833A',kolon:'#3f7cc0',kiris:'#1f9d8f',hegzagonal:'#64748b',asik:'#d97706',capraz:'#b45309',panel:'#2e9e5b'};
+const STAGE_NM={harita:'Harita',rok:'Rok',kolon:'Kolon/Ayak',kiris:'Kiriş',hegzagonal:'Hegzagonal',asik:'Aşık',capraz:'Çapraz',panel:'Panel'};
+const PHASE_UNIT={harita:'ayak işaretlendi',rok:'ayak delindi',kolon:'ayak monte',kiris:'kiriş',hegzagonal:'hegzagonal (M12×30)',asik:'aşık',capraz:'çapraz',panel:'panel'};
 /* sıra zorunlu: bir masanın ilk tamamlanmamış fazı = bulunduğu aşama */
 function masaStage(s){if(!s)return {phase:'none',frac:0,started:false};
   for(const p of PHASE_ORDER){const f=phaseFracOf(p,s);if(f<1)return {phase:p,frac:f,started:f>0};}
@@ -1680,7 +1683,7 @@ function stageFill(i){const st=masaStage(PLAN[i]);
   if(st.phase==='none'||(st.phase==='harita'&&!st.started))return 'var(--slate)';
   return STAGE_COL[st.phase];}
 function phaseStats(p,zone){let d=0,t=0;for(const tb of LAYOUT.tables){if(zone&&invOf(tb)!==zone)continue;const u=phaseUnits(p,PLAN[tb.i]||{});d+=u.d;t+=u.t;}return {d,t};}
-const PHASES=[['all','Tümü'],['harita','Harita'],['rok','Rok'],['kolon','Kolon'],['kiris','Kiriş'],['asik','Aşık'],['capraz','Çapraz'],['panel','Panel']];
+const PHASES=[['all','Tümü'],['harita','Harita'],['rok','Rok'],['kolon','Kolon'],['kiris','Kiriş'],['hegzagonal','Hegzagonal'],['asik','Aşık'],['capraz','Çapraz'],['panel','Panel']];
 function renderPhaseChips(){const w=document.getElementById('phasechips');if(!w)return;
   w.innerHTML=PHASES.map(([k,n])=>'<button class="subtab'+(CURPHASE===k?' on':'')+'" onclick="setPhase(\''+k+'\')">'+n+'</button>').join('');
   renderPhaseInfo();}
@@ -2203,6 +2206,7 @@ const MATKESIF=[
  {id:'k_p1',    kisim:'Konstrüksiyon', ad:'P1 Ön kolon/ayak (S355JR · 7/masa)', birim:'adet', mik:2646, mont:'k1', pt:7},
  {id:'k_p2',    kisim:'Konstrüksiyon', ad:'P2 Arka kolon/ayak (S355JR · 7/masa)', birim:'adet', mik:2646, mont:'k2', pt:7},
  {id:'k_p3',    kisim:'Konstrüksiyon', ad:'P3 Kiriş (S350GD · 7/masa)', birim:'adet', mik:2646, mont:'kiris', pt:7},
+ {id:'k_hex',   kisim:'Konstrüksiyon', ad:'M12×30 hegzagonal cıvata (kiriş bağlantı · 4/kiriş)', birim:'adet', mik:10584, mont:'kiris', pt:4},
  {id:'k_p41',   kisim:'Konstrüksiyon', ad:'P4-1 Aşık-1 (S350GD · 4/masa)', birim:'adet', mik:1512, mont:'asik', pt:4},
  {id:'k_p42',   kisim:'Konstrüksiyon', ad:'P4-2 Aşık-2 (S350GD · 4/masa)', birim:'adet', mik:1512, mont:'asik', pt:4},
  {id:'k_p43',   kisim:'Konstrüksiyon', ad:'P4-3 Aşık-3 (S350GD · 4/masa)', birim:'adet', mik:1512, mont:'asik', pt:4},
@@ -2242,6 +2246,7 @@ function kullanilanOf(id){const it=matItem(id);if(!it)return +(MATUSE[id]||0);
   if(id==='b_rok')return Math.round((typeof sumP==='function'?sumP('a4'):0)*(212/5292));/* beton dökülen = atılan ayak(a4)×birim(212/5292); Kalan=Gelen−Dökülen = sahadaki gerçek beton */
   if(id==='k_p1')return footMonRow(false);/* P1 ön ayak = ön sıra j7-13 (saha düzeltmesi s82) *//* P1 ön ayak = ayak montajından (footk≥3 · j0-6) */
   if(id==='k_p2')return footMonRow(true);/* P2 arka ayak = arka sıra j0-6 (saha düzeltmesi s82) *//* P2 arka ayak = ayak montajından (footk≥3 · j7-13) */
+  if(id==='k_hex')return sumKiris()*4;/* M12×30 hegzagonal: kiriş başına 4 (4×2646=10584) */
   if(it.mont==='kiris')return sumKiris();/* kiriş: eleman bazlı (7/masa, toplam 2646) */
   if(id==='k_m12'){const fr=(sumKiris()/2646+cntK('asik')/378+cntK('capraz')/378)/3;return Math.round(fr*(it.mik||52920));}/* M12 civata seti: ust montaj (kiris+asik+capraz) ortalamasina orantili tuketilir */
   const dm=(typeof dcMeters==='function'?dcMeters():0), sp=(typeof sumP==='function'?sumP('k7'):0);
