@@ -660,6 +660,7 @@
    .fhdr.fh-on{background:#2e9e5b;color:#fff}
    .fhdr.fh-arka{background:#15314e;color:#fff}
 .fh-kiris{background:#1f9d8f;color:#fff}
+.fh-asik{background:#d97706;color:#fff}
    .fgnote{font-size:11.5px;color:#a32a2e;background:#fdecec;border:1px solid #E5484D;border-radius:7px;padding:4px 9px;margin:6px 0 4px}
    .pjpstep{display:flex;align-items:center;gap:8px;padding:8px 2px;justify-content:center}
    .pjpstep span{font-size:13px;color:#15314e}
@@ -723,7 +724,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 138 · Puantaj iş-kalemi bazlı + günlüğe bağlı</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 139 · Puantaj iş-kalemi bazlı + günlüğe bağlı</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -748,7 +749,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 138 · Puantaj·iş kalemi · 20.06.2026</div>
+<div id="verbadge" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9">SHAMS-1 · sürüm 139 · Puantaj·iş kalemi · 20.06.2026</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -1244,7 +1245,7 @@ function renderLog(){const lw=document.getElementById('logwrap');if(!lw)return;i
   lw.innerHTML=`<table><thead><tr><th>Tarih</th><th>Kalem</th><th>Miktar</th><th>Kişi</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;}
 
 /* ---- PLAN ---- */
-function tStatus(s){if(!s)return 0;if((s.k7||0)>=26)return 4;const _a=s.kiris;if((Array.isArray(_a)&&_a.some(x=>x>=1))||s.asik||s.capraz)return 3;
+function tStatus(s){if(!s)return 0;if((s.k7||0)>=26)return 4;const _a=s.kiris;if((Array.isArray(_a)&&_a.some(x=>x>=1))||asik12Cnt(s)>0||s.capraz)return 3;
   if((s.a3||0)+(s.a4||0)+(s.a5||0)>0)return 2;if((s.a2||0)>0||(s.a1||0)>0)return 1;return 0;}
 const STC=['var(--slate)','var(--mv)','var(--solar)','var(--ac)','var(--gnd)'];
 function renderPlan(){
@@ -1257,7 +1258,7 @@ function renderPlan(){
     r+=`<rect class="t${SEL===t.i?' sel':''}" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${rw.toFixed(1)}" height="${rh.toFixed(1)}" rx="1.4" fill="${baseFill}" onclick="openEd(${t.i})"></rect>`;
     if(SHOWFEET){const ft=footOf(t.i),fk=footkOf(t.i),kr=kirisOf(t.i),fw=Math.max(1,rw*0.045),fh=Math.max(1.4,rh*0.26);
       {const _cy0=y+rh*0.18+fh/2,_cy1=y+rh*0.56+fh/2;for(let c=0;c<7;c++){const _cx=x+(c+0.5)*(rw/7);r+=`<line x1="${_cx.toFixed(1)}" y1="${_cy0.toFixed(1)}" x2="${_cx.toFixed(1)}" y2="${_cy1.toFixed(1)}" stroke="${kr[c]>=1?'#1f9d8f':'#d2d7df'}" stroke-width="${(kr[c]>=1?rw*0.026:rw*0.012).toFixed(2)}" pointer-events="none"/>`;}}
-      {const _asD=!!(PLAN[t.i]&&PLAN[t.i].asik),_ac=_asD?'#d97706':'#c7b299',_aw=Math.max(0.8,rh*0.05),_ag=rw*0.015,_ar=[0.30,0.45,0.60,0.75];for(let _ri=0;_ri<4;_ri++){const _ay=y+rh*_ar[_ri];for(let _sg=0;_sg<3;_sg++){r+=`<line x1="${(x+_sg*(rw/3)+_ag).toFixed(1)}" y1="${_ay.toFixed(1)}" x2="${(x+(_sg+1)*(rw/3)-_ag).toFixed(1)}" y2="${_ay.toFixed(1)}" stroke="${_ac}" stroke-width="${_aw.toFixed(2)}" stroke-linecap="round" pointer-events="none"/>`;}}}
+      {const _av=(typeof asik12Of==='function')?asik12Of(t.i):[],_aw=Math.max(0.8,rh*0.05),_ag=rw*0.015,_ar=[0.30,0.45,0.60,0.75];for(let _ri=0;_ri<4;_ri++){const _ay=y+rh*_ar[_ri];for(let _sg=0;_sg<3;_sg++){const _aj=_ri*3+_sg,_ac=(_av[_aj]>=1)?'#2e9e5b':'#c7b299';r+=`<line x1="${(x+_sg*(rw/3)+_ag).toFixed(1)}" y1="${_ay.toFixed(1)}" x2="${(x+(_sg+1)*(rw/3)-_ag).toFixed(1)}" y2="${_ay.toFixed(1)}" stroke="${_ac}" stroke-width="${_aw.toFixed(2)}" stroke-linecap="round" pointer-events="none"/>`;}}}
       for(let c=0;c<7;c++)for(let row=0;row<2;row++){const idx=row*7+c,v=ft[idx];
         const fx=x+(c+0.5)*(rw/7)-fw/2, fy=y+(row?rh*0.56:rh*0.18);
         r+=`<rect x="${fx.toFixed(1)}" y="${fy.toFixed(1)}" width="${fw.toFixed(1)}" height="${fh.toFixed(1)}" rx=".5" fill="${fk[idx]?'#E5484D':footColor(v)}" pointer-events="none"/>`;}}
@@ -1278,7 +1279,7 @@ function renderPlanSummary(){
 function schematic(s){
   s=s||{};const W=480,H=430;
   const colA=['#D8DCE2','#B9C0CC','var(--mv)','var(--solar)','var(--conc)','var(--gnd)'];
-  const _kall=Array.isArray(s.kiris)&&s.kiris.filter(Boolean).length===7,_ayd=(+s.a4||0)>=14;const k=f=>(f==='k1'||f==='k2'||f==='k6')?_ayd:(f==='k4')?_kall:(f==='k5')?!!s.asik:(f==='k3')?!!s.capraz:!!s[f];const on=(c,a)=>a?c:'#C9CCD6';
+  const _kall=Array.isArray(s.kiris)&&s.kiris.filter(Boolean).length===7,_ayd=(+s.a4||0)>=14;const k=f=>(f==='k1'||f==='k2'||f==='k6')?_ayd:(f==='k4')?_kall:(f==='k5')?(asik12Cnt(s)>0):(f==='k3')?!!s.capraz:!!s[f];const on=(c,a)=>a?c:'#C9CCD6';
   let ay=0;for(const a of ['a1','a2','a3','a4','a5']){if((s[a]||0)>=14)ay++;else break;}
   const k7=Math.max(0,Math.min(26,s.k7||0)),pf=k7/26;
   const F=(n)=>n.toFixed(1);
@@ -1354,14 +1355,16 @@ async function openEd(i){SEL=i;const t=tbl(i),s=PLAN[i]||{};
     return h;})();
   // konstrüksiyon (kısa dokun: yapıldı/yapılmadı · uzun bas: kontrol)
   let kh='';
-  kh+=`<div class="stp"><div class="nm">Aşık montajı (P4)</div><button class="tg ${s.asik?'act':''}" id="t_asik" onclick="toggleMont('asik')">${s.asik?'Yapıldı ✓':'Yapılmadı'}</button></div>`;
+  kh+=`<div class="ayakgrp" style="margin-top:2px">Aşık (P4) montajı — kirişe dik, 4 sıra × 3 = 12 segment <i style="font-weight:400">(kısa dokun: monte / geri al)</i></div>
+   <div id="ed_asikgrid" class="footgrid"></div>
+   <div class="footbtns"><button class="tg" onclick="asikAll(1)">Tümü monte</button><button class="tg" onclick="asikAll(0)">Sıfırla</button></div>`;
   kh+=`<div class="stp"><div class="nm">Çapraz montajı (P6)</div><button class="tg ${s.capraz?'act':''}" id="t_capraz" onclick="toggleMont('capraz')">${s.capraz?'Yapıldı ✓':'Yapılmadı'}</button></div>`;
   kh+=`<div class="stp"><div class="nm">Panel montaj</div><div class="stepper"><button onclick="bump('k7',-1,26)">−</button>
     <input class="num" id="i_k7" type="number" min="0" max="26" value="${s.k7||0}" onchange="setv('k7',this.value,26)">
     <button onclick="bump('k7',1,26)">+</button><button class="tg" style="min-width:70px" onclick="setv('k7',26,26)">Tümü 26</button>
     <button class="tg ${s.k7c?'ktrl':''}" id="t_k7c" style="min-width:90px" onclick="toggleKtrl('k7c')">${s.k7c?'⚠ Kontrol':'Kontrol?'}</button></div></div>`;
   document.getElementById('ed_konst').innerHTML=kh;
-  drawSchem();drawFootGrid();drawKirisGrid();
+  drawSchem();drawFootGrid();drawKirisGrid();drawAsikGrid();
   // media yükle
   MEDIA[i]=await sget('tr1m:'+i)||[];renderMedia();
   document.getElementById('editor').classList.add('on');document.getElementById('backdrop').classList.add('on');document.body.classList.add('edopen');renderPlan();refreshKonst();
@@ -1415,6 +1418,11 @@ function footkOf(i){const s=PLAN[i]||{};
 function footColor(v){return v>=3?'#2e9e5b':v>=2?'#E8833A':v>=1?'#7c5cff':'#cdd2da';}
 function kirisOf(i){const s=PLAN[i]||{};return (Array.isArray(s.kiris)&&s.kiris.length===7)?s.kiris.slice():Array(7).fill(0);}
 function kirisArr(){return kirisOf(SEL).slice();}
+function asik12Of(i){const s=PLAN[i]||{};const a=s.asik12;if(Array.isArray(a)&&a.length===12)return a.slice();return Array(12).fill((s.asik===true||s.asik===1)?1:0);}/* geriye dönük: eski boolean asik → 12'si de dolu */
+function asik12Arr(){return asik12Of(SEL);}
+function asik12Cnt(s){if(!s)return 0;const a=s.asik12;if(Array.isArray(a))return a.filter(x=>x>=1).length;return (s.asik===true||s.asik===1)?12:0;}
+function sumAsik12(){let t=0;for(const k in PLAN)t+=asik12Cnt(PLAN[k]);return t;}
+function syncAsik12(a){const s=PLAN[SEL]||(PLAN[SEL]={});s.asik12=a.slice();s.asik=(a.filter(x=>x>=1).length===12)?1:0;}/* s.asik(boolean) = tam 12 → hakediş/cntK korunur */
 function syncKiris(a){const s=PLAN[SEL]||(PLAN[SEL]={});s.kiris=a.slice();}
 function footArr(){return footOf(SEL).slice();}
 function footkArr(){return footkOf(SEL).slice();}
@@ -1490,6 +1498,35 @@ async function kirisAll(v){if(SEL==null)return;if(roBlock())return;
   var _pk=kirisArr().filter(x=>x>=1).length;syncKiris(Array(7).fill(v));await saveTbl(PLAN[SEL]);
   var _dk=(v?7:0)-_pk;await logAct('Kiriş (toplu)','Masa #'+SEL+' · [kiris] '+(_dk>=0?'+':'')+_dk);
   drawKirisGrid();renderProgress();drawSchem();renderKonstPlan();}
+function drawAsikGrid(){const el=document.getElementById('ed_asikgrid');if(!el)return;const a=asik12Arr();
+  var _W=300,vis='<svg viewBox="0 0 '+_W+' 96" style="width:100%;max-width:300px;display:block;margin:2px auto 4px">';
+  vis+='<text x="2" y="10" font-size="8" fill="#7a5b12" font-family="monospace">4 sıra × 3 = 12 aşık (kirişe dik)</text>';
+  for(var _ri=0;_ri<4;_ri++){var _y=24+_ri*18;
+    for(var _sg=0;_sg<3;_sg++){var _j=_ri*3+_sg,_on=a[_j]>=1,_col=_on?'#2e9e5b':'#ccd2da';
+      var _x1=10+_sg*((_W-20)/3)+5,_x2=10+(_sg+1)*((_W-20)/3)-5;
+      vis+='<line x1="'+_x1+'" y1="'+_y+'" x2="'+_x2+'" y2="'+_y+'" stroke="'+_col+'" stroke-width="'+(_on?6:3)+'" stroke-linecap="round"/>';
+      vis+='<text x="'+((_x1+_x2)/2)+'" y="'+(_y-4)+'" font-size="8" fill="'+(_on?'#2e9e5b':'#9aa0a6')+'" text-anchor="middle" font-family="monospace">'+(_j+1)+'</text>';}}
+  vis+='</svg>';
+  const cell=j=>{const tip='Aşık '+(j+1)+' · '+(a[j]?'monte ✓':'monte değil');return '<button class="foot '+(a[j]?'f3':'f0')+'" data-lp="asik:'+j+'" title="'+tip+'">'+(j+1)+'</button>';};
+  let h='<div class="fgnote">Kiriş üstüne <b>dik</b> · 4 sıra × 3 segment · her segment ayrı işaretlenir</div>'+vis+'<div class="footrow"><span class="fhdr fh-asik">AŞIK</span>';
+  for(let j=0;j<12;j++){h+=cell(j);if(j===5)h+='</div><div class="footrow"><span class="fhdr fh-asik">&nbsp;</span>';}
+  h+='</div>';
+  const mon=a.filter(x=>x>=1).length,pct=Math.round(mon/12*100);
+  h+='<div class="footsum"><span class="fdot f3"></span>Aşık <b>'+mon+'/12</b> · <b style="color:'+(mon===12?'var(--gnd)':'var(--solar)')+'">%'+pct+'</b>'+(mon===12?' · tam ✓':'')+'</div>';
+  h+='<div class="foothint">Kısa dokun: aşık montajını işaretle / geri al</div>';
+  el.innerHTML=h;}
+async function cycleAsik(j){if(SEL==null)return;if(roBlock())return;
+  if(ROLE!=='admin'){const ld=masaLastDay(SEL);
+    if(ld&&ld!==dToday()){const a0=asik12Arr();await reqChange({tip:'asik',masa:SEL,j,to:a0[j]?0:1},'Masa #'+SEL+' · aşık '+(j+1)+' ('+ld+' verisi)');toast('Geçmiş veri — yönetici onayına gönderildi');return;}}
+  const a=asik12Arr();a[j]=a[j]?0:1;syncAsik12(a);await saveTbl(PLAN[SEL]);
+  await logAct('Aşık montajı','Masa #'+SEL+' · [asik] '+(a[j]?'+1':'-1')+' (sıra '+(j+1)+')');
+  drawAsikGrid();renderProgress();drawSchem();renderKonstPlan();}
+async function asikAll(v){if(SEL==null)return;if(roBlock())return;
+  if(ROLE!=='admin'){const ld=masaLastDay(SEL);
+    if(ld&&ld!==dToday()){await reqChange({tip:'asikAll',masa:SEL,v},'Masa #'+SEL+' · aşık toplu '+(v?'monte':'sıfırla')+' ('+ld+' verisi)');toast('Geçmiş veri — yönetici onayına gönderildi');return;}}
+  var _pa=asik12Arr().filter(x=>x>=1).length;syncAsik12(Array(12).fill(v));await saveTbl(PLAN[SEL]);
+  var _da=(v?12:0)-_pa;await logAct('Aşık (toplu)','Masa #'+SEL+' · [asik] '+(_da>=0?'+':'')+_da);
+  drawAsikGrid();renderProgress();drawSchem();renderKonstPlan();}
 async function toggleMont(f){if(SEL==null)return;if(roBlock())return;const s=PLAN[SEL]||(PLAN[SEL]={});s[f]=s[f]?0:1;await saveTbl(PLAN[SEL]);
   const b=document.getElementById('t_'+f);if(b){b.classList.toggle('act',!!s[f]);b.textContent=s[f]?'Yapıldı ✓':'Yapılmadı';}
   await logAct(f==='asik'?'Aşık montajı':'Çapraz montajı','Masa #'+SEL+' · ['+f+'] '+(s[f]?'+1':'-1'));
@@ -1525,7 +1562,7 @@ let KFIND=null, ZONE=0, MAXINV=0;
 function syncUsta(el){const u=document.getElementById('usta');if(u)u.value=el.value;}
 function invOf(t){const m=(t.adr||t.adrf||'').match(/INV(\d+)/);return m?+m[1]:0;}
 function invColor(n){const h=(n*53)%360;return 'hsl('+h+',62%,58%)';}
-function konstFrac(s){if(!s)return 0;const a=s.kiris;const kr=Array.isArray(a)?a.filter(x=>x>=1).length/7:0;const d=kr+(s.asik?1:0)+(s.capraz?1:0)+(((s.k7||0)>=26)?1:0);return d/4;}
+function konstFrac(s){if(!s)return 0;const a=s.kiris;const kr=Array.isArray(a)?a.filter(x=>x>=1).length/7:0;const d=kr+(asik12Cnt(s)/12)+(s.capraz?1:0)+(((s.k7||0)>=26)?1:0);return d/4;}
 function konstFill(f){if(f<=0)return 'var(--slate)';if(f>=1)return 'var(--gnd)';
   const a=[244,178,62],b=[143,210,122],c=a.map((v,i)=>Math.round(v+(b[i]-v)*f));return 'rgb('+c[0]+','+c[1]+','+c[2]+')';}
 function konstScale(){const W=1000,dx=LAYOUT.maxx-LAYOUT.minx,dy=LAYOUT.maxy-LAYOUT.miny,H=Math.round(W*dy/dx);
@@ -1577,7 +1614,7 @@ function renderKonstPlan(){const el=document.getElementById('plan2');if(!el)retu
     r+='<rect'+dim+' class="t'+(selc?' sel':'')+'" x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+S.rw.toFixed(1)+'" height="'+S.rh.toFixed(1)+'" rx="1.3" fill="'+fill+'" stroke="'+(selc?'#16161A':invColor(inv))+'" stroke-width="'+(selc?2.2:1.1)+'" onclick="openEd('+t.i+')"></rect>';
     if(SHOWFEET){const ft=footOf(t.i),fk=footkOf(t.i),kr=kirisOf(t.i),fw=Math.max(0.8,S.rw*0.05),fh=Math.max(1.2,S.rh*0.30);
       {const _cy0=y+S.rh*0.16+fh/2,_cy1=y+S.rh*0.55+fh/2;for(let c=0;c<7;c++){const _cx=x+(c+0.5)*(S.rw/7);r+='<line'+dim+' x1="'+_cx.toFixed(1)+'" y1="'+_cy0.toFixed(1)+'" x2="'+_cx.toFixed(1)+'" y2="'+_cy1.toFixed(1)+'" stroke="'+(kr[c]>=1?'#1f9d8f':'#d2d7df')+'" stroke-width="'+(kr[c]>=1?S.rw*0.03:S.rw*0.013).toFixed(2)+'" pointer-events="none"></line>';}}
-      {const _asD=!!(PLAN[t.i]&&PLAN[t.i].asik),_ac=_asD?'#d97706':'#c7b299',_aw=Math.max(0.6,S.rh*0.05),_ag=S.rw*0.015,_ar=[0.30,0.45,0.60,0.75];for(let _ri=0;_ri<4;_ri++){const _ay=y+S.rh*_ar[_ri];for(let _sg=0;_sg<3;_sg++){r+='<line'+dim+' x1="'+(x+_sg*(S.rw/3)+_ag).toFixed(1)+'" y1="'+_ay.toFixed(1)+'" x2="'+(x+(_sg+1)*(S.rw/3)-_ag).toFixed(1)+'" y2="'+_ay.toFixed(1)+'" stroke="'+_ac+'" stroke-width="'+_aw.toFixed(2)+'" stroke-linecap="round" pointer-events="none"></line>';}}}
+      {const _av=(typeof asik12Of==='function')?asik12Of(t.i):[],_aw=Math.max(0.6,S.rh*0.05),_ag=S.rw*0.015,_ar=[0.30,0.45,0.60,0.75];for(let _ri=0;_ri<4;_ri++){const _ay=y+S.rh*_ar[_ri];for(let _sg=0;_sg<3;_sg++){const _aj=_ri*3+_sg,_ac=(_av[_aj]>=1)?'#2e9e5b':'#c7b299';r+='<line'+dim+' x1="'+(x+_sg*(S.rw/3)+_ag).toFixed(1)+'" y1="'+_ay.toFixed(1)+'" x2="'+(x+(_sg+1)*(S.rw/3)-_ag).toFixed(1)+'" y2="'+_ay.toFixed(1)+'" stroke="'+_ac+'" stroke-width="'+_aw.toFixed(2)+'" stroke-linecap="round" pointer-events="none"></line>';}}}
       for(let c=0;c<7;c++)for(let row=0;row<2;row++){const idx=row*7+c,v=ft[idx];
         const fx=x+(c+0.5)*(S.rw/7)-fw/2, fy=y+(row?S.rh*0.55:S.rh*0.16);
         r+='<rect'+dim+' x="'+fx.toFixed(1)+'" y="'+fy.toFixed(1)+'" width="'+fw.toFixed(1)+'" height="'+fh.toFixed(1)+'" rx=".4" fill="'+(fk[idx]?'#E5484D':footColor(v))+'" pointer-events="none"></rect>';}}
@@ -1664,7 +1701,7 @@ function phaseUnits(p,s){s=s||{};
   if(p==='kolon')return {d:Math.min(14,+s.a4||0),t:14};
   if(p==='kiris'){const a=s.kiris;return {d:Array.isArray(a)?a.filter(x=>x>=1).length:0,t:7};}
   if(p==='hegzagonal'){const a=s.kiris;return {d:Array.isArray(a)?a.filter(x=>x>=1).length:0,t:7};}/* hegzagonal = M12×30, kiriş montajıyla birebir */
-  if(p==='asik')return {d:s.asik?1:0,t:1};
+  if(p==='asik')return {d:asik12Cnt(s),t:12};/* aşık = 12 segment (parça bazlı ilerleme) */
   if(p==='capraz')return {d:s.capraz?1:0,t:1};
   if(p==='panel')return {d:Math.min(26,+s.k7||0),t:26};
   return {d:0,t:1};}
@@ -1938,6 +1975,10 @@ async function applyChange(p){
     if(p.tip==='kiris'){const a=kirisArr();a[p.j]=p.to;syncKiris(a);}else{syncKiris(Array(7).fill(p.v));}
     await saveTbl(PLAN[p.masa]);SEL=oldSEL;
     await logAct('Kiriş (onaylı)','Masa #'+p.masa+(p.tip==='kiris'?(' · kiriş '+(p.j+1)):' · toplu'));}
+  else if(p.tip==='asik'||p.tip==='asikAll'){const oldSEL=SEL;SEL=p.masa;
+    if(p.tip==='asik'){const a=asik12Arr();a[p.j]=p.to;syncAsik12(a);}else{syncAsik12(Array(12).fill(p.v));}
+    await saveTbl(PLAN[p.masa]);SEL=oldSEL;
+    await logAct('Aşık (onaylı)','Masa #'+p.masa+(p.tip==='asik'?(' · aşık '+(p.j+1)):' · toplu'));}
   else if(p.tip==='entry-del'){await sdel(p.key);}
 }
 async function approveDel(ts){if(roBlock())return;const r=DREQ.find(x=>x.ts===ts);if(!r)return;
@@ -4130,7 +4171,8 @@ function renderBilgi(){const el=document.getElementById('bilgi');if(!el)return;
   function fire(b,long){var p=(b.getAttribute('data-lp')||'').split(':');
     if(p[0]==='foot'){long?longFoot(+p[1]):cycleFoot(+p[1]);}
     else if(p[0]==='konst'){long?longKonst(p[1]):toggle(p[1]);}
-    else if(p[0]==='kiris'){cycleKiris(+p[1]);}}
+    else if(p[0]==='kiris'){cycleKiris(+p[1]);}
+    else if(p[0]==='asik'){cycleAsik(+p[1]);}}
   function start(e){var b=e.target.closest&&e.target.closest('[data-lp]');if(!b)return;
     lpFired=false;moved=false;sx=e.clientX;sy=e.clientY;
     clearTimeout(lpTimer);lpTimer=setTimeout(function(){if(moved)return;lpFired=true;fire(b,true);},LP_MS);}
