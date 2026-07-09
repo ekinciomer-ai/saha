@@ -728,7 +728,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 148 · Gider sekmesi ustaya açıldı</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 149 · Puantaj görev sıfırlanma düzeltmesi</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -753,7 +753,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 148 · dokun→güncelle</div>
+<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 149 · dokun→güncelle</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -1940,7 +1940,7 @@ async function pjCycle(pid,day){if(roBlock())return;const ym=PJ_YM;if(!PJ[ym])PJ
   const cur=PJ[ym][pid][day]||'';const ni=(PJORDER.indexOf(cur)+1)%PJORDER.length;const nx=PJORDER[ni];
   if(nx)PJ[ym][pid][day]=nx;else delete PJ[ym][pid][day];
   if(Object.keys(PJ[ym][pid]).length===0)delete PJ[ym][pid];
-  await sset('pj:'+ym,PJ[ym]);renderPJ();}
+  if(BACKEND==='fb'){if(nx)await sset('pj:'+ym+':'+pid+':'+day,nx);else await sdel('pj:'+ym+':'+pid+':'+day);}else{await sset('pj:'+ym,PJ[ym]);}renderPJ();}
 let PJLP=null,PJLPfired=false;
 function pjDown(ev,pid,day){PJLPfired=false;clearTimeout(PJLP);PJLP=setTimeout(function(){PJLPfired=true;try{if(navigator.vibrate)navigator.vibrate(15);}catch(e){}pjGorevPick(pid,day);},460);}
 function pjUp(ev,pid,day){clearTimeout(PJLP);if(PJLPfired){PJLPfired=false;return;}pjCycle(pid,day);}
@@ -1957,7 +1957,7 @@ async function pjSetGorev(pid,day,gid){const ym=PJ_YM;if(!PJG[ym])PJG[ym]={};if(
   if(gid)PJG[ym][pid][day]=gid;else delete PJG[ym][pid][day];
   if(Object.keys(PJG[ym][pid]).length===0)delete PJG[ym][pid];
   var o=document.getElementById('pjgov');if(o)o.remove();
-  await sset('pjg:'+ym,PJG[ym]||{});
+  if(BACKEND==='fb'){if(gid)await sset('pjg:'+ym+':'+pid+':'+day,gid);else await sdel('pjg:'+ym+':'+pid+':'+day);}else{await sset('pjg:'+ym,PJG[ym]||{});}
   const g=gid?pjgOf(gid):null;const p=(TEAM||[]).find(function(x){return x.id===pid;});
   await logAct('Görev',(p?p.ad:pid)+' · '+day+'. gün → '+(g?g.l:'temizlendi'));
   renderPJ();}
@@ -4001,7 +4001,7 @@ async function pjaCycle(aid,day){if(roBlock())return;var ym=PJ_YM;if(!PJA[ym])PJ
   var cur=PJA[ym][aid][day]||'';var ni=(PJAORDER.indexOf(cur)+1)%PJAORDER.length;var nx=PJAORDER[ni];
   if(nx)PJA[ym][aid][day]=nx;else delete PJA[ym][aid][day];
   if(Object.keys(PJA[ym][aid]).length===0)delete PJA[ym][aid];
-  await sset('pja:'+ym,PJA[ym]||{});renderPJA();}
+  if(BACKEND==='fb'){if(nx)await sset('pja:'+ym+':'+aid+':'+day,nx);else await sdel('pja:'+ym+':'+aid+':'+day);}else{await sset('pja:'+ym,PJA[ym]||{});}renderPJA();}
 function pjaGorevPick(aid,day){if(roBlock())return;var ym=PJ_YM;var a=(ARAC||[]).find(function(x){return x.id===aid;});if(!a)return;
   var cur=(PJAG[ym]&&PJAG[ym][aid]&&PJAG[ym][aid][day])||'';
   var ov=document.getElementById('pjgov');if(ov)ov.remove();
@@ -4013,7 +4013,7 @@ async function pjaSetGorev(aid,day,gid){var ym=PJ_YM;if(!PJAG[ym])PJAG[ym]={};if
   if(gid)PJAG[ym][aid][day]=gid;else delete PJAG[ym][aid][day];
   if(Object.keys(PJAG[ym][aid]).length===0)delete PJAG[ym][aid];
   var o=document.getElementById('pjgov');if(o)o.remove();
-  await sset('pjag:'+ym,PJAG[ym]||{});
+  if(BACKEND==='fb'){if(gid)await sset('pjag:'+ym+':'+aid+':'+day,gid);else await sdel('pjag:'+ym+':'+aid+':'+day);}else{await sset('pjag:'+ym,PJAG[ym]||{});}
   var a=(ARAC||[]).find(function(x){return x.id===aid;});var g=gid?pjagOf(gid):null;
   try{await logAct('Araç görev',(a?a.ad:aid)+' · '+day+'. gün → '+(g?g.l:'temizlendi'));}catch(e){}
   renderPJA();}
@@ -4086,11 +4086,11 @@ function pjpUp(ev,vid,day){clearTimeout(PJPLP);if(PJPLPfired){PJPLPfired=false;r
 function pjpPCancel(){clearTimeout(PJPLP);}
 async function pjpInc(vid,day){if(roBlock())return;var ym=PJ_YM;if(!PJP[ym])PJP[ym]={};if(!PJP[ym][vid])PJP[ym][vid]={};
   PJP[ym][vid][day]=(+PJP[ym][vid][day]||0)+1;
-  await sset('pjp:'+ym,PJP[ym]||{});renderPJP();}
+  if(BACKEND==='fb'){await sset('pjp:'+ym+':'+vid+':'+day,PJP[ym][vid][day]);}else{await sset('pjp:'+ym,PJP[ym]||{});}renderPJP();}
 async function pjpSetCount(vid,day,n){if(roBlock())return;var ym=PJ_YM;if(!PJP[ym])PJP[ym]={};if(!PJP[ym][vid])PJP[ym][vid]={};
   n=Math.max(0,+n||0);if(n)PJP[ym][vid][day]=n;else delete PJP[ym][vid][day];
   if(Object.keys(PJP[ym][vid]).length===0)delete PJP[ym][vid];
-  await sset('pjp:'+ym,PJP[ym]||{});var o=document.getElementById('pjgov');if(o)o.remove();renderPJP();}
+  if(BACKEND==='fb'){if(n)await sset('pjp:'+ym+':'+vid+':'+day,n);else await sdel('pjp:'+ym+':'+vid+':'+day);}else{await sset('pjp:'+ym,PJP[ym]||{});}var o=document.getElementById('pjgov');if(o)o.remove();renderPJP();}
 function pjpGorevPick(vid,day){if(roBlock())return;var ym=PJ_YM;var a=(PARAC||[]).find(function(x){return x.id===vid;});if(!a)return;
   var cur=(PJPG[ym]&&PJPG[ym][vid]&&PJPG[ym][vid][day])||'';
   var rawv=(PJP[ym]&&PJP[ym][vid]&&PJP[ym][vid][day]);var cnt=+rawv||0;var isA=rawv==='A',isT=rawv==='T';
@@ -4103,12 +4103,12 @@ function pjpGorevPick(vid,day){if(roBlock())return;var ym=PJ_YM;var a=(PARAC||[]
 async function pjpSetStatus(vid,day,st){if(roBlock())return;var ym=PJ_YM;if(!PJP[ym])PJP[ym]={};if(!PJP[ym][vid])PJP[ym][vid]={};
   if(st==='A'||st==='T')PJP[ym][vid][day]=st;else delete PJP[ym][vid][day];
   if(Object.keys(PJP[ym][vid]).length===0)delete PJP[ym][vid];
-  await sset('pjp:'+ym,PJP[ym]||{});var o=document.getElementById('pjgov');if(o)o.remove();renderPJP();}
+  if(BACKEND==='fb'){if(st==='A'||st==='T')await sset('pjp:'+ym+':'+vid+':'+day,st);else await sdel('pjp:'+ym+':'+vid+':'+day);}else{await sset('pjp:'+ym,PJP[ym]||{});}var o=document.getElementById('pjgov');if(o)o.remove();renderPJP();}
 async function pjpSetGorev(vid,day,gid){var ym=PJ_YM;if(!PJPG[ym])PJPG[ym]={};if(!PJPG[ym][vid])PJPG[ym][vid]={};
   if(gid)PJPG[ym][vid][day]=gid;else delete PJPG[ym][vid][day];
   if(Object.keys(PJPG[ym][vid]).length===0)delete PJPG[ym][vid];
   var o=document.getElementById('pjgov');if(o)o.remove();
-  await sset('pjpg:'+ym,PJPG[ym]||{});renderPJP();}
+  if(BACKEND==='fb'){if(gid)await sset('pjpg:'+ym+':'+vid+':'+day,gid);else await sdel('pjpg:'+ym+':'+vid+':'+day);}else{await sset('pjpg:'+ym,PJPG[ym]||{});}renderPJP();}
 function paracPanel(){
   var form='<div class="tk2"><div class="sub">Proje için günlük/periyodik temin edilen dış araçlar (vinç, beton mikseri, beton pompası, kamyon, lowbed…).</div>'+
     '<div class="frow"><label>Araç türü<input id="pa_ad" placeholder="ör. Beton mikseri"></label></div>'+
