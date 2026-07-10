@@ -728,7 +728,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 154 · açılış sadeleştirme (donma tanısı)</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 155 · açılış sadeleştirme (donma tanısı)</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -754,7 +754,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 154 · dokun→güncelle</div>
+<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 155 · dokun→güncelle</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -1198,7 +1198,6 @@ async function reloadAll(silent){
   renderHCbanner();
   if(st)st.textContent=persistLabel()+' · '+nowt();
   renderMemWarn(); if(!silent) renderAll();
-  if(!silent && !_heavyLoaded){ setTimeout(function(){ ensureHeavy().then(function(){ try{renderAll();}catch(e){} }); }, 1200); }
   /* s153: açılış migrasyonları devre dışı (donma tanısı) */
   }finally{RELOADINGNOW=false;}
 }
@@ -1215,9 +1214,9 @@ async function delEntry(k){if(roBlock())return;const e=ENTRIES.find(x=>x._key===
 async function setTarget(id,v){v=parseFloat(v);if(!(v>0))return;TARGETS[id]=v;await sset('targets',TARGETS);renderAll();syncUnit();}
 
 function doneGen(id){return ENTRIES.filter(e=>e.id===id).reduce((s,e)=>s+(+e.qty||0),0);}
-function sumP(f){let s=0;for(const k in PLAN)s+=(+PLAN[k][f]||0);return s;}
-function sumMon(){let s=0;for(const k in PLAN){const p=PLAN[k];s+=Math.min(+p.a3||0,+p.a4||0,+p.a5||0);}return s;}
-function cntK(f){let c=0;for(const k in PLAN)if(PLAN[k][f])c++;return c;}
+function sumP(f){let s=0;for(const k in PLAN){const p=PLAN[k];if(p)s+=(+p[f]||0);}return s;}
+function sumMon(){let s=0;for(const k in PLAN){const p=PLAN[k];if(p)s+=Math.min(+p.a3||0,+p.a4||0,+p.a5||0);}return s;}
+function cntK(f){let c=0;for(const k in PLAN){const p=PLAN[k];if(p&&p[f])c++;}return c;}
 function sumKiris(){let s=0;for(const k in PLAN){const a=PLAN[k]&&PLAN[k].kiris;if(Array.isArray(a))s+=a.filter(x=>x>=1).length;}return s;}
 
 // mekanik kalemler (plandan)
@@ -1233,7 +1232,9 @@ function mechItems(){
    {id:'panel',ad:'Panel Montajı',dis:'MEK',pur:0.27,birim:'panel',done:sumP('k7'),hedef:9828,plan:1},
   ];
 }
-function renderAll(){renderProgress();renderProje();if(document.getElementById('pane1').classList.contains('on'))mShow();
+let _rafRender=null;
+function renderAll(){if(_rafRender)return;_rafRender=requestAnimationFrame(function(){_rafRender=null;try{_renderAllCore();}catch(e){}});}
+function _renderAllCore(){renderProgress();renderProje();if(document.getElementById('pane1').classList.contains('on'))mShow();
   const pp=document.getElementById('pane5');if(pp&&pp.classList.contains('on')){try{renderPersonel();}catch(e){}}
   renderDReqBanner();}
 
@@ -3209,7 +3210,9 @@ function pozDates(z){const st=dadd(ISB,z.s),en=dadd(ISB,z.s+Math.max(1,z.g)-1);l
 let RAPDAY=(function(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})();
 function dstr(ts){const d=new Date(ts);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function setRapDay(v){if(v)RAPDAY=v;renderRapor();}
-function dayLogs(day){return ALOG.filter(r=>dstr(r.ts)===day).slice().sort((a,b)=>a.ts-b.ts);}
+let _dlCache=null,_dlLen=-1;
+function _buildDL(){_dlCache={};for(let i=0;i<ALOG.length;i++){const r=ALOG[i];const d=dstr(r.ts);(_dlCache[d]||(_dlCache[d]=[])).push(r);}for(const d in _dlCache)_dlCache[d].sort((a,b)=>a.ts-b.ts);_dlLen=ALOG.length;}
+function dayLogs(day){if(_dlCache===null||_dlLen!==ALOG.length)_buildDL();return _dlCache[day]||[];}
 function genProgress(){const items=[...mechItems(),...GEN.map(g=>({...g,plan:0}))];
   let mek=0,mekW=0,elk=0,elkW=0,rows=[];
   for(const it of items){const pct=itemPct(it);if(it.dis==='MEK'){mek+=it.pur*pct;mekW+=it.pur;}else{elk+=it.pur*pct;elkW+=it.pur;}
@@ -3292,7 +3295,9 @@ function barN(lbl,val,max,cls){const w=max?Math.max(0,Math.min(100,val/max*100))
 /* ---- EPİAŞ tarzı günlük & kümülatif iş tablosu ---- */
 let RAP_SHOWPERS=false;
 function toggleRapPers(){RAP_SHOWPERS=!RAP_SHOWPERS;renderRapor();}
-function klogSum(f,upto){let s=0;ALOG.forEach(r=>{if(upto&&dstr(r.ts)>upto)return;const m=(r.detail||'').match(/\[(\w+)\]\s*([+-]?\d+)/);if(m&&m[1]===f)s+=(+m[2]||0);});return Math.max(0,s);}
+let _ksCache=null,_ksLen=-1;
+function _buildKS(){_ksCache={};for(let i=0;i<ALOG.length;i++){const r=ALOG[i];const m=(r.detail||'').match(/\[(\w+)\]\s*([+-]?\d+)/);if(m){const f=m[1],v=(+m[2]||0),d=dstr(r.ts);(_ksCache[f]||(_ksCache[f]={}));_ksCache[f][d]=(_ksCache[f][d]||0)+v;}}_ksLen=ALOG.length;}
+function klogSum(f,upto){if(_ksCache===null||_ksLen!==ALOG.length)_buildKS();const days=_ksCache[f];if(!days)return 0;let s=0;for(const d in days){if(upto&&d>upto)continue;s+=days[d];}return Math.max(0,s);}
 function doneGenUpto(id,upto){return ENTRIES.filter(e=>e.id===id&&(!upto||(e.date||dstr(e.ts))<=upto)).reduce((s,e)=>s+(+e.qty||0),0);}
 function repItems(day){
   return [
