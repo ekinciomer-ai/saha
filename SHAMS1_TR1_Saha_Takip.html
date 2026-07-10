@@ -728,7 +728,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 155 · açılış sadeleştirme (donma tanısı)</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 157 · açılış sadeleştirme (donma tanısı)</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -754,7 +754,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 155 · dokun→güncelle</div>
+<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 157 · dokun→güncelle</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -807,6 +807,8 @@
       <button class="subtab" onclick="mTo(5,this)">İnverter · SCADA</button>
       <button class="subtab" onclick="mTo(6,this)">Test · Devreye Alma</button>
     </div>
+
+    <div id="isgunbar2" class="isgunbar" style="margin:8px 12px"></div>
 
     <!-- Konstrüksiyon -->
     <div class="mpane on" id="mpane0">
@@ -1121,7 +1123,7 @@ function tabTo(n,el){document.querySelectorAll('.tabs .tab').forEach(t=>t.classL
   if(n===9)renderGunluk();if(n===10)ensureHeavyThen(renderVerim);if(n===11)ensureHeavyThen(renderGider);}
 function mTo(n,el){MCUR=n;document.querySelectorAll('#msub .subtab').forEach(t=>t.classList.remove('on'));el.classList.add('on');
   for(let i=0;i<7;i++)document.getElementById('mpane'+i).classList.toggle('on',i===n);mShow();}
-function mShow(){if(MCUR===0){renderPhaseChips();renderZoneChips();renderMinimap();renderZoneMasa();renderKonstPlan();konstStats();renderKonstTek();}
+function mShow(){try{renderIsgunBar();}catch(e){}if(MCUR===0){renderPhaseChips();renderZoneChips();renderMinimap();renderZoneMasa();renderKonstPlan();konstStats();renderKonstTek();}
   else renderMontajScope(MCUR);}
 function syncUnit(){if(!document.getElementById('f_item'))return;const it=GEN.find(x=>x.id===document.getElementById('f_item').value);
   document.getElementById('f_unit').textContent='birim: '+it.birim+(it.birim!=='%'?' · hedef '+tr(TARGETS[it.id]??it.hedef):'');}
@@ -1979,6 +1981,28 @@ async function pjSetGorev(pid,day,gid){const ym=PJ_YM;if(!PJG[ym])PJG[ym]={};if(
   await logAct('Görev',(p?p.ad:pid)+' · '+day+'. gün → '+(g?g.l:'temizlendi'));
   renderPJ();}
 
+async function recoverGorevFromLog(){if(roBlock())return;
+  if(!confirm('Puantaj görevleri, işlem günlüğündeki GERÇEK kayıtlardan yeniden yazılacak.\n\nEksik görevler geri gelir, mevcut olanlar korunur. Günlükte hiç kaydı olmayan gün/kişiler boş kalır (uydurma yapılmaz).\n\nDevam edilsin mi?'))return;
+  const host=document.getElementById('pjgrid');if(host)host.innerHTML='<div class="empty">Günlük okunuyor, görevler onarılıyor… (ilk sefer biraz sürebilir)</div>';
+  try{await ensureHeavy();}catch(e){}
+  const pat=/^(.*?) · (\d+)\. gün → (.*)$/;
+  const LAB2ID={};PJGOREV.forEach(function(g){LAB2ID[g.l]=g.id;});
+  const ad2id={};(TEAM||[]).forEach(function(p){if(p&&p.ad)ad2id[p.ad]=p.id;});
+  const logs=(ALOG||[]).filter(function(r){return r&&r.act==='Görev';}).slice().sort(function(a,b){return (a.ts||0)-(b.ts||0);});
+  const rec={};let applied=0,noname=0;
+  logs.forEach(function(r){const m=pat.exec(r.detail||'');if(!m)return;
+    const ad=m[1],N=+m[2],lab=m[3];const pid=ad2id[ad];if(!pid){noname++;return;}
+    const dt=new Date(r.ts);const ym=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0');
+    rec[ym]=rec[ym]||{};rec[ym][pid]=rec[ym][pid]||{};
+    if(lab==='temizlendi'){delete rec[ym][pid][N];}
+    else{const gid=LAB2ID[lab];if(!gid)return;rec[ym][pid][N]=gid;}applied++;});
+  let cells=0;const months=[];
+  for(const ym in rec){PJG[ym]=PJG[ym]||{};
+    for(const pid in rec[ym]){PJG[ym][pid]=PJG[ym][pid]||{};
+      for(const dd in rec[ym][pid]){PJG[ym][pid][dd]=rec[ym][pid][dd];cells++;}}
+    try{await sset('pjg:'+ym,PJG[ym]);}catch(e){}months.push(ym);}
+  try{renderPJ();}catch(e){}try{renderAll();}catch(e){}
+  alert('Görev onarımı tamam.\n'+applied+' günlük kaydı işlendi · '+cells+' görev hücresi yazıldı.\nAylar: '+months.join(', ')+(noname?'\n('+noname+' kayıt: isim eşleşmedi, atlandı)':'')+'\n\nNot: Günlükte kaydı olmayan gün/kişiler boş kalır — onları elle girmelisin.');}
 function pjNav(d){const[y,m]=PJ_YM.split('-').map(Number);const dt=new Date(y,m-1+d,1);
   PJ_YM=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0');renderPJ();try{renderPJA();}catch(e){}try{renderPJP();}catch(e){}}
 
@@ -2006,6 +2030,7 @@ function renderPJ(){const host=document.getElementById('pjgrid');if(!host)return
   foot+='<td class="pjtot">'+(grand?pjFmt(grand):'')+'</td></tr>';
   host.innerHTML='<div class="pjnav"><button class="btn ghost sm" onclick="pjNav(-1)">‹</button>'+
     '<b>'+MN[M-1]+' '+Y+'</b><button class="btn ghost sm" onclick="pjNav(1)">›</button>'+
+    ((typeof ROLE!=='undefined'&&ROLE==='admin')?'<button class="btn ghost sm" onclick="recoverGorevFromLog()" title="Puantaj görevlerini işlem günlüğünden geri yaz" style="margin-left:8px">🔧 Görev onar</button>':'')+
     '<span class="pjlegend"><i style="background:#16a34a"></i>tam<i style="background:#d97706"></i>yarım<i style="background:#e5e7eb"></i>yok<i style="background:#2563eb"></i>izin<i style="background:#7c3aed"></i>rapor</span></div>'+
     '<div class="pjscroll"><table class="pjtab"><thead>'+head+'</thead><tbody>'+body+foot+'</tbody></table></div>';}
 
@@ -2376,12 +2401,12 @@ async function _mergeGunluk(legacy){
   arr.sort(function(a,b){return (b.ts||0)-(a.ts||0);});
   return arr;
 }
-function renderIsgunBar(){var el=document.getElementById('isgunbar');if(!el)return;
+function renderIsgunBar(){
   if(!ISGUN)ISGUN=dToday();
   var past=ISGUN!==dToday();
-  el.className='isgunbar'+(past?' past':'');
-  el.innerHTML='<label>📅 İş günü <input type="date" value="'+ISGUN+'" max="'+dToday()+'" onchange="setIsgun(this.value)"></label>'+
+  var html='<label>📅 İş günü <input type="date" value="'+ISGUN+'" max="'+dToday()+'" onchange="setIsgun(this.value)"></label>'+
     (past?'<span class="isgunw">⚠ İşaretlemeler <b>'+dtr(ISGUN)+'</b> gününe yazılıyor</span>':'<span class="isgunok">bugüne yazılıyor</span>');
+  ['isgunbar','isgunbar2'].forEach(function(id){var el=document.getElementById(id);if(el){el.className='isgunbar'+(past?' past':'');el.innerHTML=html;}});
 }
 function setIsgun(v){ISGUN=v||dToday();renderIsgunBar();if(typeof toast==='function')toast('İş günü: '+dtr(ISGUN));}
 async function addGunluk(){
