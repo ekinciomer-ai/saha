@@ -728,7 +728,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 160 · açılış sadeleştirme (donma tanısı)</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 161 · açılış sadeleştirme (donma tanısı)</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -754,7 +754,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 160 · dokun→güncelle</div>
+<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 161 · dokun→güncelle</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -794,7 +794,7 @@
   <!-- ===== PROJE ===== -->
   <div class="pane on" id="pane0"><div id="proje"></div></div>
   <div class="pane" id="pane10"><div id="verim"></div></div>
-  <div class="pane" id="pane11"><div id="gider"></div></div>
+  <div class="pane" id="pane11"><div id="arican"></div><div id="gider"></div></div>
 
   <!-- ===== MONTAJ ===== -->
   <div class="pane" id="pane1">
@@ -1137,6 +1137,7 @@ async function ensureHeavy(force){
   _heavyLoading=true;
   try{const als=await sgetAll('al:');const a=[];for(const k in als)if(als[k])a.push(als[k]);a.sort((x,y)=>(y.ts||0)-(x.ts||0));ALOG=a;}catch(e){}
   try{const gd=await sgetAll('gd:');GIDER=Object.values(gd||{}).filter(Boolean).sort((x,y)=>(y.ts||0)-(x.ts||0));}catch(e){}
+  try{const ar=await sgetAll('arpay:');ARPAY=Object.values(ar||{}).filter(Boolean).sort((x,y)=>(y.ts||0)-(x.ts||0));}catch(e){}
   _heavyLoaded=true;_heavyLoading=false;
 }
 async function ensureHeavyThen(fn){try{await ensureHeavy();}catch(e){}try{if(typeof fn==='function')fn();}catch(e){}}
@@ -2481,6 +2482,43 @@ async function addGider(){
   toast('Gider eklendi');renderGider();
 }
 async function delGider(id){if(!confirm('Gider kaydı silinsin mi?'))return;GIDER=GIDER.filter(function(r){return r.id!==id;});try{var all=await sgetAll('gd:');for(var k in all){if(all[k]&&all[k].id===id)await sdel(k);}}catch(e){}renderGider();}
+/* ---- Arıcan Enerji ödemeleri ---- */
+let ARPAY=[],AR_FOTO='',_ARSEQ=0;
+function _wkISO(iso){var d=new Date(iso+'T00:00:00');var dow=(d.getDay()+6)%7;d.setDate(d.getDate()-dow);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function arPhoto(inp){var f=inp.files&&inp.files[0];if(!f)return;resizeImg(f,900,function(d){AR_FOTO=d||'';var pv=document.getElementById('ar_foto_pv');if(pv)pv.innerHTML=AR_FOTO?'<img src="'+AR_FOTO+'" style="max-height:90px;border-radius:8px;border:1px solid #cbd5e1">':'';});}
+async function addArpay(){
+  var tarih=fval('ar_tarih')||dToday(),tutar=+fval('ar_tutar')||0,pb=fval('ar_pb')||'USD',acik=fval('ar_acik');
+  if(!tutar&&!AR_FOTO){toast('Tutar veya dekont gerekli');return;}
+  var rec={id:'ar'+Date.now(),tarih:tarih,tutar:tutar,pb:pb,aciklama:acik,foto:AR_FOTO||'',by:(typeof ROLE!=='undefined'?ROLE:'')||'?',ts:Date.now()};
+  ARPAY.unshift(rec);_ARSEQ=(_ARSEQ||0)+1;await sset('arpay:'+rec.id+'_'+_ARSEQ,rec);
+  AR_FOTO='';['ar_tutar','ar_acik'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});var pv=document.getElementById('ar_foto_pv');if(pv)pv.innerHTML='';
+  toast('Arıcan ödemesi eklendi');renderArican();
+}
+async function delArpay(id){if(!confirm('Ödeme kaydı silinsin mi?'))return;ARPAY=ARPAY.filter(function(r){return r.id!==id;});try{var all=await sgetAll('arpay:');for(var k in all){if(all[k]&&all[k].id===id)await sdel(k);}}catch(e){}renderArican();}
+function arShowFoto(id){var r=(ARPAY||[]).find(function(x){return x.id===id;});if(r&&r.foto)modalShow('Dekont','<img src="'+r.foto+'" style="width:100%;border-radius:10px">');}
+function renderArican(){
+  var el=document.getElementById('arican');if(!el)return;
+  var sym={AZN:'₼',TRY:'₺',USD:'$'};
+  var totAZN=0;(ARPAY||[]).forEach(function(r){totAZN+=toAZN(r.tutar,r.pb||'USD');});
+  var wk={};
+  (ARPAY||[]).forEach(function(r){if(!r.tarih)return;var w=_wkISO(r.tarih);(wk[w]||(wk[w]={ar:0,gd:0})).ar+=toAZN(r.tutar,r.pb||'USD');});
+  (GIDER||[]).forEach(function(g){if(!g.tarih)return;var w=_wkISO(g.tarih);(wk[w]||(wk[w]={ar:0,gd:0})).gd+=toAZN(g.tutar,g.pb||'AZN');});
+  var wks=Object.keys(wk).sort().reverse();
+  var wkRows=wks.map(function(w){var e=wk[w];return '<tr><td>'+dtr(w)+' – '+dtr(dadd(w,6))+'</td><td class="num">'+(e.ar?arbStr(e.ar):'—')+'</td><td class="num">'+(e.gd?arbStr(e.gd):'—')+'</td></tr>';}).join('');
+  var wkTbl=wks.length?'<div class="tk2"><h3>📅 Haftalık — Arıcan ödeme &amp; harcama</h3><table class="mtab"><thead><tr><th>Hafta</th><th>Arıcan ödeme</th><th>Harcama</th></tr></thead><tbody>'+wkRows+'</tbody></table></div>':'';
+  var recRows=(ARPAY||[]).map(function(r){return '<tr><td>'+dtr(r.tarih)+'</td><td class="num"><b>'+fmtN(r.tutar)+' '+(sym[r.pb||'USD'])+'</b></td><td>'+(esc(r.aciklama||'')||'—')+'</td><td>'+(r.foto?'<button class="btn ghost sm" onclick="arShowFoto(\''+r.id+'\')">📄</button>':'—')+'</td><td><button class="btn ghost sm" onclick="delArpay(\''+r.id+'\')">🗑</button></td></tr>';}).join('');
+  var recTbl=(ARPAY&&ARPAY.length)?'<div class="tk2"><h3>Ödeme kayıtları ('+ARPAY.length+')</h3><table class="mtab"><thead><tr><th>Tarih</th><th>Tutar</th><th>Açıklama</th><th>Dekont</th><th></th></tr></thead><tbody>'+recRows+'</tbody></table></div>':'';
+  var form='<div class="tk2"><h3>🏗️ Arıcan Enerji — ödeme / dekont ekle</h3><div class="gdform">'+
+    '<label>Tarih<input type="date" id="ar_tarih" value="'+dToday()+'" max="'+dToday()+'"></label>'+
+    '<label>Tutar<input type="number" id="ar_tutar" inputmode="decimal" placeholder="0"></label>'+
+    '<label>Birim<select id="ar_pb">'+curOpts('USD')+'</select></label>'+
+    '<label class="gdwide">Açıklama<input type="text" id="ar_acik" placeholder="hakediş / avans / dekont no"></label>'+
+    '<label class="gdwide">📄 Dekont fotoğrafı<input type="file" accept="image/*" capture="environment" onchange="arPhoto(this)"></label>'+
+    '<div id="ar_foto_pv" class="gdpv"></div>'+
+    '<button class="btn" onclick="addArpay()">+ Ödeme ekle</button></div></div>';
+  var sum='<div class="gsum"><div class="gscard money"><span>Arıcan\'a toplam ödenen</span><b>'+arbStr(totAZN)+'</b></div></div>';
+  el.innerHTML='<h2 style="margin:6px 12px 0">🏗️ Arıcan Enerji Ödemeleri</h2>'+form+sum+wkTbl+recTbl;
+}
 function gdShowFoto(id){var r=(GIDER||[]).find(function(x){return x.id===id;});if(r&&r.foto)modalShow('Belge','<img src="'+r.foto+'" style="width:100%;border-radius:10px">');}
 function pjMonthDays(pid,ym){ym=ym||PJ_YM||dToday().slice(0,7);var t=0;var mp=(PJ[ym]&&PJ[ym][pid])||{};for(var d in mp)t+=pjMeta(mp[d]).v;return t;}
 function yevmiyeSave(){WAGE._c=WAGE._c||{};(TEAM||[]).forEach(function(p){var e=document.getElementById('yv_'+p.id);if(e)WAGE[p.id]=(e.value===''?'':(+e.value||0));var c=document.getElementById('yvc_'+p.id);if(c)WAGE._c[p.id]=c.value||'AZN';});var d=document.getElementById('yv__def');if(d)WAGE._def=+d.value||0;var wp=document.getElementById('yv__wpb');if(wp)WAGE._wpb=wp.value||'AZN';sset('wage',WAGE);toast('Yevmiye kaydedildi');try{renderPersonel();}catch(e){}}
@@ -2577,6 +2615,7 @@ function renderGider(){
   var recTbl='<div class="tk2"><h3>Gider kayıtları ('+(GIDER||[]).length+')</h3><table class="gtbl"><thead><tr><th>Tarih</th><th>Kategori</th><th>Tutar</th><th>Açıklama</th><th>Belge</th><th></th></tr></thead><tbody>'+(recRows||'<tr><td colspan=6>Kayıt yok</td></tr>')+'</tbody></table></div>';
   if(!FX.usdazn&&!_FXTRIED){_FXTRIED=true;gFxAuto();}
   el.innerHTML=form+fxPanel+sum+katTbl+gunTbl+wkTbl+wgTbl+recTbl;
+  try{renderArican();}catch(e){}
 }
 function wmoTr(c){if(c==null)return null;if(c===0)return{e:'☀️',t:'Açık'};if(c===1)return{e:'🌤️',t:'Az bulutlu'};if(c===2)return{e:'⛅',t:'Parçalı bulutlu'};if(c===3)return{e:'☁️',t:'Kapalı'};if(c===45||c===48)return{e:'🌫️',t:'Sisli'};if(c>=51&&c<=57)return{e:'🌦️',t:'Çiseleme'};if(c>=61&&c<=67)return{e:'🌧️',t:'Yağmurlu'};if(c>=71&&c<=77)return{e:'❄️',t:'Kar'};if(c>=80&&c<=82)return{e:'🌧️',t:'Sağanak'};if(c>=85&&c<=86)return{e:'❄️',t:'Kar sağanağı'};if(c>=95)return{e:'⛈️',t:'Gök gürültülü fırtına'};return{e:'🌡️',t:'—'};}function wxSlot(o){if(!o)return '';var m=wmoTr(o.c);var x=(m?m.e+' ':'')+(o.t!=null?Math.round(o.t)+'°':'');if(o.p!=null&&o.p>=0.2)x+=' yağış '+(Math.round(o.p*10)/10)+'mm';if(o.w!=null&&o.w>=20)x+=' rüzgar '+Math.round(o.w)+'km/s';return x.trim();}function wxStr(iso){if(typeof WX==='undefined'||!WX[iso])return '';var w=WX[iso];var seg=[];if(w.morn)seg.push('Sabah '+wxSlot(w.morn));if(w.noon)seg.push('Öğle '+wxSlot(w.noon));if(w.eve)seg.push('Akşam '+wxSlot(w.eve));var line=seg.join('   ·   ');var sfx=[];if(w.mx!=null&&w.mn!=null)sfx.push('gün '+Math.round(w.mn)+'–'+Math.round(w.mx)+'°');else if(!seg.length)return '';if(w.psum!=null&&w.psum>0)sfx.push('toplam yağış '+(Math.round(w.psum*10)/10)+' mm');if(sfx.length)line+=(line?'  ':'')+'('+sfx.join(' · ')+')';return esc(line);}function wxShort(iso){if(typeof WX==='undefined'||!WX[iso])return '';var w=WX[iso];var c=(w.noon&&w.noon.c!=null)?w.noon.c:((w.morn&&w.morn.c!=null)?w.morn.c:((w.eve&&w.eve.c!=null)?w.eve.c:null));var m=(c!=null)?wmoTr(c):null;var parts=[];if(m)parts.push(m.e+' '+m.t);if(w.mx!=null&&w.mn!=null)parts.push(Math.round(w.mn)+'–'+Math.round(w.mx)+'°');if(w.psum!=null&&w.psum>0)parts.push('yağış '+(Math.round(w.psum*10)/10)+'mm');return parts.length?esc(parts.join(' · ')):'';}async function gWxAuto(){try{var u='https://api.open-meteo.com/v1/forecast?latitude='+SITE_LAT+'&longitude='+SITE_LON+'&hourly=temperature_2m,weathercode,precipitation,windspeed_10m'+'&daily=temperature_2m_max,temperature_2m_min,precipitation_sum'+'&timezone=Asia%2FBaku&past_days=14&forecast_days=16';var res=await fetch(u);var j=await res.json();var w2={};if(j&&j.daily&&j.daily.time){var dt=j.daily.time,dmx=j.daily.temperature_2m_max||[],dmn=j.daily.temperature_2m_min||[],dps=j.daily.precipitation_sum||[];for(var i=0;i<dt.length;i++){w2[dt[i]]={mx:dmx[i],mn:dmn[i],psum:dps[i]};}}if(j&&j.hourly&&j.hourly.time){var ht=j.hourly.time,hte=j.hourly.temperature_2m||[],hc=j.hourly.weathercode||[],hp=j.hourly.precipitation||[],hw=j.hourly.windspeed_10m||[];for(var k=0;k<ht.length;k++){var iso=ht[k].slice(0,10),hh=parseInt(ht[k].slice(11,13),10);if(!w2[iso])w2[iso]={};var slot=(hh===8?'morn':(hh===13?'noon':(hh===18?'eve':null)));if(slot)w2[iso][slot]={t:hte[k],c:hc[k],p:hp[k],w:hw[k]};}}if(Object.keys(w2).length){w2._t=new Date().toISOString();w2._src='open-meteo.com';WX=w2;try{await sset('wx',WX);}catch(e){}if(typeof renderGunluk==='function'&&document.getElementById('gunluk'))renderGunluk();if(typeof renderRapor==='function'&&document.getElementById('rapor'))renderRapor();}}catch(e){}}
 function gunlukDiary(){
@@ -3140,7 +3179,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s160</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s161</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -3713,8 +3752,8 @@ function tanIsGiris(){
 
 async function backupAll(){try{
   if(typeof toast==='function')toast('Yedek hazırlanıyor…');
-  const dump={_app:'SHAMS1-TR1',_ver:'s160',_ts:Date.now(),data:{}};
-  const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pja:','pjag:','pjp:','pjpg:','hc:','g:','gd:'];
+  const dump={_app:'SHAMS1-TR1',_ver:'s161',_ts:Date.now(),data:{}};
+  const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pja:','pjag:','pjp:','pjpg:','hc:','g:','gd:','arpay:'];
   for(const pre of pref){try{const o=await sgetAll(pre);for(const k in o){if(o[k]!=null)dump.data[k]=o[k];}}catch(e){}}
   const single=['wage','fx','targets','mpct','cab:dc','cab:ac','cab:og','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','zimmet','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
   for(const k of single){try{const v=await sget(k);if(v!=null)dump.data[k]=v;}catch(e){}}
