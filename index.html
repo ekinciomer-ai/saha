@@ -728,7 +728,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 161 · açılış sadeleştirme (donma tanısı)</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 162 · açılış sadeleştirme (donma tanısı)</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -754,7 +754,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 161 · dokun→güncelle</div>
+<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 162 · dokun→güncelle</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -897,7 +897,7 @@
 
   <div class="seg">Foto / Video / Açıklama</div>
   <div class="mediabtns">
-    <label class="fbtn">📷 Foto<input type="file" accept="image/*" capture="environment" style="display:none" onchange="addPhoto(this)"></label>
+    <label class="fbtn">📷 Foto<input type="file" accept="image/*" style="display:none" onchange="addPhoto(this)"></label>
     <button class="fbtn" onclick="addVideo()">🎥 Video linki</button>
     <button class="fbtn" onclick="addNote()">📝 Açıklama</button>
   </div>
@@ -2472,7 +2472,9 @@ function gDays(){var today=dToday(),start=(typeof ISB!=='undefined'?ISB:today);(
 function gPersDays(pid){var t=0;gDays().forEach(function(iso){t+=gPjv(pid,iso);});return t;}
 function gWeekKey(iso){var p=iso.split('-').map(Number);var d=new Date(p[0],p[1]-1,p[2]);var day=(d.getDay()+6)%7;d.setDate(d.getDate()-day);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 var GD_FOTO='';
-function gdPhoto(inp){var f=inp.files&&inp.files[0];if(!f)return;resizeImg(f,720,function(d){GD_FOTO=d||'';var pv=document.getElementById('gd_foto_pv');if(pv)pv.innerHTML=GD_FOTO?'<img src="'+GD_FOTO+'" style="max-height:80px;border-radius:8px;border:1px solid #cbd5e1">':'';});}
+function _pickDoc(inp,setCb,pvId){var f=inp.files&&inp.files[0];if(!f)return;var pv=document.getElementById(pvId);if(f.size>4*1024*1024){toast('Dosya büyük ('+Math.round(f.size/1024/1024)+' MB) — yükleme yavaş olabilir');}if(f.type==='application/pdf'){var rd=new FileReader();rd.onload=function(e){setCb(e.target.result);if(pv)pv.innerHTML='<span style="display:inline-block;padding:6px 10px;background:#eef2ff;border-radius:8px;font-size:13px">📄 PDF · '+Math.round(f.size/1024)+' KB</span>';};rd.readAsDataURL(f);return;}resizeImg(f,900,function(d){setCb(d||'');if(pv)pv.innerHTML=d?'<img src="'+d+'" style="max-height:90px;border-radius:8px;border:1px solid #cbd5e1">':'';});}
+function _showDoc(title,data){if(!data)return;if(String(data).indexOf('application/pdf')>=0){modalShow(title,'<iframe src="'+data+'" style="width:100%;height:70vh;border:0;border-radius:10px"></iframe><div style="margin-top:8px;text-align:center"><a class="btn ghost sm" href="'+data+'" download="belge.pdf">⬇ İndir / aç</a></div>');}else{modalShow(title,'<img src="'+data+'" style="width:100%;border-radius:10px">');}}
+function gdPhoto(inp){_pickDoc(inp,function(d){GD_FOTO=d||'';},'gd_foto_pv');}
 async function addGider(){
   var kat=fval('gd_kat'),tarih=fval('gd_tarih')||dToday(),tutar=+fval('gd_tutar')||0,acik=fval('gd_acik'),pb=fval('gd_pb')||'AZN';
   if(!tutar&&!GD_FOTO){toast('Tutar veya belge fotoğrafı gerekli');return;}
@@ -2485,7 +2487,7 @@ async function delGider(id){if(!confirm('Gider kaydı silinsin mi?'))return;GIDE
 /* ---- Arıcan Enerji ödemeleri ---- */
 let ARPAY=[],AR_FOTO='',_ARSEQ=0;
 function _wkISO(iso){var d=new Date(iso+'T00:00:00');var dow=(d.getDay()+6)%7;d.setDate(d.getDate()-dow);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
-function arPhoto(inp){var f=inp.files&&inp.files[0];if(!f)return;resizeImg(f,900,function(d){AR_FOTO=d||'';var pv=document.getElementById('ar_foto_pv');if(pv)pv.innerHTML=AR_FOTO?'<img src="'+AR_FOTO+'" style="max-height:90px;border-radius:8px;border:1px solid #cbd5e1">':'';});}
+function arPhoto(inp){_pickDoc(inp,function(d){AR_FOTO=d||'';},'ar_foto_pv');}
 async function addArpay(){
   var tarih=fval('ar_tarih')||dToday(),tutar=+fval('ar_tutar')||0,pb=fval('ar_pb')||'USD',acik=fval('ar_acik');
   if(!tutar&&!AR_FOTO){toast('Tutar veya dekont gerekli');return;}
@@ -2495,7 +2497,7 @@ async function addArpay(){
   toast('Arıcan ödemesi eklendi');renderArican();
 }
 async function delArpay(id){if(!confirm('Ödeme kaydı silinsin mi?'))return;ARPAY=ARPAY.filter(function(r){return r.id!==id;});try{var all=await sgetAll('arpay:');for(var k in all){if(all[k]&&all[k].id===id)await sdel(k);}}catch(e){}renderArican();}
-function arShowFoto(id){var r=(ARPAY||[]).find(function(x){return x.id===id;});if(r&&r.foto)modalShow('Dekont','<img src="'+r.foto+'" style="width:100%;border-radius:10px">');}
+function arShowFoto(id){var r=(ARPAY||[]).find(function(x){return x.id===id;});if(r&&r.foto)_showDoc('Dekont',r.foto);}
 function renderArican(){
   var el=document.getElementById('arican');if(!el)return;
   var sym={AZN:'₼',TRY:'₺',USD:'$'};
@@ -2513,13 +2515,13 @@ function renderArican(){
     '<label>Tutar<input type="number" id="ar_tutar" inputmode="decimal" placeholder="0"></label>'+
     '<label>Birim<select id="ar_pb">'+curOpts('USD')+'</select></label>'+
     '<label class="gdwide">Açıklama<input type="text" id="ar_acik" placeholder="hakediş / avans / dekont no"></label>'+
-    '<label class="gdwide">📄 Dekont fotoğrafı<input type="file" accept="image/*" capture="environment" onchange="arPhoto(this)"></label>'+
+    '<label class="gdwide">📄 Dekont (foto veya PDF)<input type="file" accept="image/*,application/pdf" onchange="arPhoto(this)"></label>'+
     '<div id="ar_foto_pv" class="gdpv"></div>'+
     '<button class="btn" onclick="addArpay()">+ Ödeme ekle</button></div></div>';
   var sum='<div class="gsum"><div class="gscard money"><span>Arıcan\'a toplam ödenen</span><b>'+arbStr(totAZN)+'</b></div></div>';
   el.innerHTML='<h2 style="margin:6px 12px 0">🏗️ Arıcan Enerji Ödemeleri</h2>'+form+sum+wkTbl+recTbl;
 }
-function gdShowFoto(id){var r=(GIDER||[]).find(function(x){return x.id===id;});if(r&&r.foto)modalShow('Belge','<img src="'+r.foto+'" style="width:100%;border-radius:10px">');}
+function gdShowFoto(id){var r=(GIDER||[]).find(function(x){return x.id===id;});if(r&&r.foto)_showDoc('Belge',r.foto);}
 function pjMonthDays(pid,ym){ym=ym||PJ_YM||dToday().slice(0,7);var t=0;var mp=(PJ[ym]&&PJ[ym][pid])||{};for(var d in mp)t+=pjMeta(mp[d]).v;return t;}
 function yevmiyeSave(){WAGE._c=WAGE._c||{};(TEAM||[]).forEach(function(p){var e=document.getElementById('yv_'+p.id);if(e)WAGE[p.id]=(e.value===''?'':(+e.value||0));var c=document.getElementById('yvc_'+p.id);if(c)WAGE._c[p.id]=c.value||'AZN';});var d=document.getElementById('yv__def');if(d)WAGE._def=+d.value||0;var wp=document.getElementById('yv__wpb');if(wp)WAGE._wpb=wp.value||'AZN';sset('wage',WAGE);toast('Yevmiye kaydedildi');try{renderPersonel();}catch(e){}}
 function yevmiyePanel(){
@@ -2588,7 +2590,7 @@ function renderGider(){
     '<label>Tutar<input type="number" id="gd_tutar" inputmode="decimal" placeholder="0"></label>'+
     '<label>Birim<select id="gd_pb">'+curOpts('AZN')+'</select></label>'+
     '<label class="gdwide">Açıklama<input type="text" id="gd_acik" placeholder="fatura no / detay"></label>'+
-    '<label class="gdwide">📷 Fatura / fiş / irsaliye<input type="file" accept="image/*" capture="environment" onchange="gdPhoto(this)"></label>'+
+    '<label class="gdwide">📄 Fatura / fiş (foto veya PDF)<input type="file" accept="image/*,application/pdf" onchange="gdPhoto(this)"></label>'+
     '<div id="gd_foto_pv" class="gdpv"></div>'+
     '<button class="btn" onclick="addGider()">+ Ekle</button></div></div>';
   var sum='<div class="gsum">'+
@@ -3179,7 +3181,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s161</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s162</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -3752,7 +3754,7 @@ function tanIsGiris(){
 
 async function backupAll(){try{
   if(typeof toast==='function')toast('Yedek hazırlanıyor…');
-  const dump={_app:'SHAMS1-TR1',_ver:'s161',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1-TR1',_ver:'s162',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pja:','pjag:','pjp:','pjpg:','hc:','g:','gd:','arpay:'];
   for(const pre of pref){try{const o=await sgetAll(pre);for(const k in o){if(o[k]!=null)dump.data[k]=o[k];}}catch(e){}}
   const single=['wage','fx','targets','mpct','cab:dc','cab:ac','cab:og','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','zimmet','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
