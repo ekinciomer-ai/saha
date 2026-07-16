@@ -764,7 +764,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 181 · Uyruk alanı + TR vatandaşı pazar yevmiye ×2</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 182 · Uyruk alanı + TR vatandaşı pazar yevmiye ×2</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -792,7 +792,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 181 · dokun→güncelle</div>
+<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 182 · dokun→güncelle</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -3516,7 +3516,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s181</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s182</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -3962,6 +3962,24 @@ function rapGunGun(day){
     '<tr class="eptot"><td>TOPLAM<br><span style="font-weight:400;font-size:11px;color:#64748b">kümülatif · tüm aylar</span></td><td></td><td class="m"><b>'+tp+' adam-gün</b></td><td class="m"><b>'+ta+' araç-gün</b></td><td colspan="2">Çalışılan gün sayısı: <b>'+gun+'</b></td></tr>'+
     '</tbody></table>';
 }
+function rapPersOzet(){
+  var ym=(typeof RAPDAY!=='undefined'&&RAPDAY)?RAPDAY.slice(0,7):dToday().slice(0,7);
+  var pjm=PJ[ym];
+  if(!pjm)return '<h3 class="raph">\u{1F477} Personel \u00e7al\u0131\u015fma \u00f6zeti \u2014 '+ym+'</h3><div class="hint">Bu ay i\u00e7in puantaj giri\u015fi yok.</div>';
+  var pgm=PJG[ym]||{};var days={};
+  for(var pid in pjm){var dd=pjm[pid];for(var d in dd){if(pjMeta(dd[d]).v>0){if(!days[d])days[d]={count:0,gorev:{}};days[d].count++;var gid=(pgm[pid]&&pgm[pid][d])||'';var g=gid?pjgOf(gid):null;var lbl=g?g.l:'belirtilmemi\u015f';days[d].gorev[lbl]=(days[d].gorev[lbl]||0)+1;}}}
+  var dnums=Object.keys(days).map(Number).sort(function(a,b){return a-b;});
+  if(!dnums.length)return '<h3 class="raph">\u{1F477} Personel \u00e7al\u0131\u015fma \u00f6zeti \u2014 '+ym+'</h3><div class="hint">Bu ay i\u00e7in \u00e7al\u0131\u015fma kayd\u0131 yok.</div>';
+  var totAdamGun=0,rows='';
+  dnums.forEach(function(d){var o=days[d];totAdamGun+=o.count;var isler=Object.keys(o.gorev).sort(function(a,b){return o.gorev[b]-o.gorev[a];}).map(function(l){return esc(l)+': '+o.gorev[l];}).join(' \u00b7 ');var ds=ym+'-'+String(d).padStart(2,'0');rows+='<tr><td>'+dtr(ds)+'</td><td class="m"><b>'+o.count+'</b></td><td>'+isler+'</td></tr>';});
+  var ort=Math.round(totAdamGun/dnums.length*10)/10;
+  return '<h3 class="raph">\u{1F477} Personel \u00e7al\u0131\u015fma \u00f6zeti \u2014 '+ym+'</h3>'+
+    '<div class="hint" style="margin:-2px 0 8px">Hangi g\u00fcn ka\u00e7 personel, hangi i\u015fte \u00e7al\u0131\u015ft\u0131. \u0130sim ve \u00fccret bu raporda g\u00f6sterilmez.<br><b>Bu tablo yaln\u0131zca '+ym+' ay\u0131n\u0131 kapsar (ayl\u0131k).</b></div>'+
+    '<div class="rapcards"><div class="rapcard"><div class="rc-n">'+dnums.length+'</div><div class="rc-l">\u00e7al\u0131\u015fma g\u00fcn\u00fc</div></div>'+
+    '<div class="rapcard"><div class="rc-n">'+totAdamGun+'</div><div class="rc-l">toplam adam-g\u00fcn</div></div>'+
+    '<div class="rapcard"><div class="rc-n">'+ort+'</div><div class="rc-l">ort. personel/g\u00fcn</div></div></div>'+
+    '<table class="mtab raptbl"><thead><tr><th>G\u00fcn</th><th>\u00c7al\u0131\u015fan</th><th>\u0130\u015fler (g\u00f6rev \u00b7 ki\u015fi)</th></tr></thead><tbody>'+rows+'</tbody></table>';
+}
 function rapAracOzet(){
   var own=(ARAC||[]).map(function(a){var c=0,y=0,ar=0;for(var ym in PJA){var m=PJA[ym][a.id];if(!m)continue;for(var d in m){var mt=pjaMeta(m[d]);if(mt.c==='V')c++;else if(mt.c==='Y')y++;else if(mt.c==='A')ar++;}}return {ad:a.ad,plaka:a.plaka||'',cal:c,yar:y,ariza:ar,tatil:0,proj:false};});
   var proj=(typeof PARAC!=='undefined'?PARAC:[]).map(function(a){var g=0,ar=0,t=0;for(var ym in PJP){var m=PJP[ym][a.id];if(!m)continue;for(var d in m){var v=m[d];if(v==='A')ar++;else if(v==='T')t++;else if(+v>0)g++;}}return {ad:a.ad,plaka:'',cal:g,yar:0,ariza:ar,tatil:t,proj:true};});
@@ -4089,7 +4107,7 @@ function tanIsGiris(){
 
 async function backupAll(){try{
   if(typeof toast==='function')toast('Yedek hazırlanıyor…');
-  const dump={_app:'SHAMS1',_ver:'s181',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1',_ver:'s182',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pjz:','pja:','pjag:','pjp:','pjpg:','hc:','g:','gd:','arpay:','ppay:'];
   for(const pre of pref){try{const o=await sgetAll(pre);for(const k in o){if(o[k]!=null)dump.data[k]=o[k];}}catch(e){}}
   const single=['wage','fx','targets','mpct','cab:dc','cab:ac','cab:og','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','zimmet','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
