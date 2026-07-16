@@ -764,7 +764,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 180 · Maaşlar tablosu düz tablo + TOPLAM satırı</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 181 · Uyruk alanı + TR vatandaşı pazar yevmiye ×2</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -792,7 +792,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 180 · dokun→güncelle</div>
+<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 181 · dokun→güncelle</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -2021,7 +2021,7 @@ function pickPhoto(which,inp){const f=inp.files&&inp.files[0];if(!f)return;resiz
 async function saveTeam(){await sset('team',TEAM);}
 function teamGet(id){return TEAM.find(p=>p.id===id);}
 async function addPerson(){if(roBlock())return;const ad=fval('tp_ad');if(!ad){toast('Ad-soyad girin');return;}
-  const p={id:uid(),ad,gorev:fval('tp_gorev')||'Ara eleman',tel:fval('tp_tel'),kimlikno:fval('tp_kno'),
+  const p={id:uid(),ad,gorev:fval('tp_gorev')||'Ara eleman',tel:fval('tp_tel'),kimlikno:fval('tp_kno'),uyruk:fval('tp_uyruk')||'Azerbaycan',
     giris:fval('tp_giris')||dToday(),cikis:'',aktif:true,foto:TP_FOTO,kimlik:TP_KIMLIK};
   TEAM.push(p);TP_FOTO='';TP_KIMLIK='';await saveTeam();await logAct('personel-ekle',ad+' ('+p.gorev+')');renderPersonel();}
 async function setActive(id,act){if(roBlock())return;const p=teamGet(id);if(!p)return;p.aktif=act;p.cikis=act?'':(p.cikis||dToday());
@@ -2035,6 +2035,7 @@ function teamForm(){return '<div class="tk2"><h3>Personel ekle</h3>'+
    '<label>Ad-soyad<input id="tp_ad" placeholder="Ad Soyad"></label>'+
    '<label>Görev<select id="tp_gorev">'+TROLES.map(r=>'<option>'+r+'</option>').join('')+'</select></label>'+
    '<label>Telefon<input id="tp_tel" placeholder="+994 / 05.."></label>'+
+   '<label>Uyruk<select id="tp_uyruk"><option value="Azerbaycan">Azerbaycan</option><option value="Türkiye">Türkiye</option><option value="Diğer">Diğer</option></select></label>'+
    '<label>Kimlik no<input id="tp_kno" placeholder="(ops.)"></label>'+
    '<label>İşe giriş<input id="tp_giris" type="date" value="'+dToday()+'"></label>'+
   '</div>'+
@@ -2049,7 +2050,7 @@ function teamCards(){if(!TEAM.length)return '<div class="empty">Henüz personel 
   const sorted=TEAM.slice().sort((a,b)=>(a.aktif===b.aktif?0:a.aktif?-1:1)||TROLES.indexOf(a.gorev)-TROLES.indexOf(b.gorev));
   return '<div class="tcards tcards-acc">'+sorted.map(p=>{
    const sum='<span class="tsum">'+(p.foto?'<img class="tav" src="'+p.foto+'">':'<span class="tav ph">'+esc((p.ad[0]||'?'))+'</span>')+
-     '<span class="tsumtxt"><b>'+esc(p.ad)+'</b><small>'+esc(p.gorev)+(p.aktif?'':' · PASİF')+'</small></span></span>';
+     '<span class="tsumtxt"><b>'+esc(p.ad)+'</b><small>'+esc(p.gorev)+(p.uyruk&&p.uyruk!=='Azerbaycan'?' · 🌍 '+esc(p.uyruk):'')+(p.aktif?'':' · PASİF')+'</small></span></span>';
    const body='<div class="tinfo">'+
      (p.tel?'<a class="ttel" href="tel:'+esc(p.tel)+'">'+esc(p.tel)+'</a>':'')+
      '<small>giriş '+esc(p.giris||'—')+(p.cikis?' · çıkış '+esc(p.cikis):'')+'</small>'+
@@ -2657,13 +2658,17 @@ function mesaiSaatToplam(pid){var t=0;for(var ym in MESAI){var mp=MESAI[ym][pid]
 function mesaiTut(pid,ym){var w=wageOf(pid);return (w/9)*1.5*mesaiSaat(pid,ym);}
 function mesaiTutToplam(pid){var w=wageOf(pid);return (w/9)*1.5*mesaiSaatToplam(pid);}
 function tazmOf(pid){return +((TAZM&&TAZM[pid])||0)||0;}
+function isTRCitizen(pid){var p=teamGet(pid);return !!(p&&p.uyruk==='Türkiye');}
+function payMult(pid,iso){if(!isTRCitizen(pid))return 1;return (new Date(iso+'T00:00:00').getDay()===0)?2:1;}
+function gPersDaysPaid(pid){var t=0;gDays().forEach(function(iso){var v=gPjv(pid,iso);if(v)t+=v*payMult(pid,iso);});return t;}
+function persAyGunPaid(pid,ym){var pd=(PJ[ym]&&PJ[ym][pid])||{};var t=0;for(var d in pd){var v=pjMeta(pd[d]).v;if(!v)continue;var dd=(''+d).length<2?('0'+d):(''+d);t+=v*payMult(pid,ym+'-'+dd);}return t;}
 async function setMesaiAy(pid,ym,saat){MESAI[ym]=MESAI[ym]||{};MESAI[ym][pid]={'_ay':+saat||0};if(!(+saat))delete MESAI[ym][pid];await sset('mesai',MESAI);try{renderPersonel();}catch(e){}}
 async function setMesai(pid,ym,day,saat){MESAI[ym]=MESAI[ym]||{};MESAI[ym][pid]=MESAI[ym][pid]||{};var v=+saat||0;if(v)MESAI[ym][pid][day]=v;else delete MESAI[ym][pid][day];await sset('mesai',MESAI);}
 async function setTazm(pid,val){TAZM=TAZM||{};var v=+val||0;if(v)TAZM[pid]=v;else delete TAZM[pid];await sset('tazm',TAZM);}
 function wageOf(pid){var w=(WAGE&&WAGE[pid]!=null&&WAGE[pid]!=='')?WAGE[pid]:((WAGE&&WAGE._def)||0);return +w||0;}
 function gPjv(pid,iso){var ym=iso.slice(0,7),d=+iso.slice(8,10);return pjMeta((PJ[ym]&&PJ[ym][pid]&&PJ[ym][pid][d])||'').v;}
 function wageCur(pid){return (WAGE&&WAGE._c&&WAGE._c[pid])||(WAGE&&WAGE._wpb)||'AZN';}
-function gPersCostDay(iso){var t=0;(TEAM||[]).forEach(function(p){t+=toAZN(gPjv(p.id,iso)*wageOf(p.id),wageCur(p.id));});return t;}
+function gPersCostDay(iso){var t=0;(TEAM||[]).forEach(function(p){t+=toAZN(gPjv(p.id,iso)*payMult(p.id,iso)*wageOf(p.id),wageCur(p.id));});return t;}
 function gGiderDay(iso){var o={};(GIDER||[]).forEach(function(g){if(g.tarih===iso)o[g.kat]=(o[g.kat]||0)+toAZN(g.tutar,g.pb||'AZN');});return o;}
 function gDays(){var today=dToday(),start=(typeof ISB!=='undefined'?ISB:today);(GIDER||[]).forEach(function(g){if(g.tarih&&g.tarih<start)start=g.tarih;});var out=[],iso=start,n=0;while(iso<=today&&n<500){out.push(iso);iso=dadd(iso,1);n++;}return out;}
 function gPersDays(pid){var t=0;gDays().forEach(function(iso){t+=gPjv(pid,iso);});return t;}
@@ -2826,8 +2831,8 @@ function pjMonthDays(pid,ym){ym=ym||PJ_YM||dToday().slice(0,7);var t=0;var mp=(P
 function yevmiyeSave(){WAGE._c=WAGE._c||{};(TEAM||[]).forEach(function(p){var e=document.getElementById('yv_'+p.id);if(e)WAGE[p.id]=(e.value===''?'':(+e.value||0));var c=document.getElementById('yvc_'+p.id);if(c)WAGE._c[p.id]=c.value||'AZN';});var d=document.getElementById('yv__def');if(d)WAGE._def=+d.value||0;var wp=document.getElementById('yv__wpb');if(wp)WAGE._wpb=wp.value||'AZN';sset('wage',WAGE);toast('Yevmiye kaydedildi');try{renderPersonel();}catch(e){}}
 function persHire(p){return (p&&p.hire)||(typeof ISB!=='undefined'?ISB:'2026-06-16');}
 async function setHire(id,v){var p=(TEAM||[]).find(function(x){return x.id===id;});if(!p)return;p.hire=v||'';await saveTeam();try{renderPersonel();}catch(e){}}
-function persMaasTop(pid){var w=wageOf(pid);var gun=gPersDays(pid);var mesai=(w/9)*1.5*mesaiSaatToplam(pid);var tazm=tazmOf(pid);return {yevmiye:gun*w,mesai:mesai,tazm:tazm,toplam:gun*w+mesai+tazm,gun:gun};}
-function persMaasTop(pid){var w=wageOf(pid);var gun=gPersDays(pid);var mesai=(w/9)*1.5*mesaiSaatToplam(pid);var tazm=tazmOf(pid);return {yevmiye:gun*w,mesai:mesai,tazm:tazm,toplam:gun*w+mesai+tazm,gun:gun};}
+function persMaasTop(pid){var w=wageOf(pid);var gun=gPersDays(pid);var gunPaid=gPersDaysPaid(pid);var mesai=(w/9)*1.5*mesaiSaatToplam(pid);var tazm=tazmOf(pid);return {yevmiye:gunPaid*w,mesai:mesai,tazm:tazm,toplam:gunPaid*w+mesai+tazm,gun:gun};}
+function persMaasTop(pid){var w=wageOf(pid);var gun=gPersDays(pid);var gunPaid=gPersDaysPaid(pid);var mesai=(w/9)*1.5*mesaiSaatToplam(pid);var tazm=tazmOf(pid);return {yevmiye:gunPaid*w,mesai:mesai,tazm:tazm,toplam:gunPaid*w+mesai+tazm,gun:gun};}
 function persOdenen(pid){var t=0;(PPAY||[]).forEach(function(r){if(r.pid===pid)t+=toAZN(r.tutar,r.pb||'AZN');});return t;}
 function yevmiyePanel(){
   var act=(TEAM||[]).filter(function(p){return p.aktif||gPersDays(p.id)>0;});
@@ -2887,12 +2892,12 @@ function renderMaasAylik(){
     var tGun=0,tMaas=0,tMesGun=0,tMesTut=0,tTop=0,tOd=0;
     var rows=act.map(function(p){
       var w=wageOf(p.id),cur=wageCur(p.id);
-      var gun=persAyGun(p.id,ym),maas=gun*w,mesGun=persAyMesaiGun(p.id,ym),mesSaat=persAyMesaiSaat(p.id,ym),mesTut=(w/9)*1.5*mesSaat,top=maas+mesTut,od=persAyOdenen(p.id,ym);
+      var gun=persAyGun(p.id,ym),gunPaid=persAyGunPaid(p.id,ym),maas=gunPaid*w,mesGun=persAyMesaiGun(p.id,ym),mesSaat=persAyMesaiSaat(p.id,ym),mesTut=(w/9)*1.5*mesSaat,top=maas+mesTut,od=persAyOdenen(p.id,ym);
       if(!gun&&!mesGun&&!od)return '';
       tGun+=gun;tMaas+=(typeof toAZN==='function'?toAZN(maas,cur):maas);tMesGun+=mesGun;tMesTut+=(typeof toAZN==='function'?toAZN(mesTut,cur):mesTut);tTop+=(typeof toAZN==='function'?toAZN(top,cur):top);tOd+=od;
       return '<tr><td>'+esc(p.ad)+'<br><small style="color:#8a93a3">'+esc(p.gorev||'')+'</small></td>'+
         '<td class="num">'+fmtN(gun)+'</td>'+
-        '<td class="num">'+fmtN(maas)+' '+curSym(cur)+'</td>'+
+        '<td class="num">'+fmtN(maas)+' '+curSym(cur)+(gunPaid>gun?' <small style="color:#0E9E97">(pazar×2)</small>':'')+'</td>'+
         '<td class="num">'+(mesGun||'—')+'</td>'+
         '<td class="num">'+(mesTut?fmtN(mesTut)+' '+curSym(cur):'—')+'</td>'+
         '<td class="num"><b>'+fmtN(top)+' '+curSym(cur)+'</b></td>'+
@@ -3511,7 +3516,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s180</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s181</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -4084,7 +4089,7 @@ function tanIsGiris(){
 
 async function backupAll(){try{
   if(typeof toast==='function')toast('Yedek hazırlanıyor…');
-  const dump={_app:'SHAMS1',_ver:'s180',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1',_ver:'s181',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pjz:','pja:','pjag:','pjp:','pjpg:','hc:','g:','gd:','arpay:','ppay:'];
   for(const pre of pref){try{const o=await sgetAll(pre);for(const k in o){if(o[k]!=null)dump.data[k]=o[k];}}catch(e){}}
   const single=['wage','fx','targets','mpct','cab:dc','cab:ac','cab:og','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','zimmet','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
@@ -4580,13 +4585,14 @@ function editPerson(id){const p=teamGet(id);if(!p)return;
    '<label>Ad-soyad<input id="ep_ad" value="'+esc(p.ad||'')+'"></label>'+
    '<label>Görev<select id="ep_gorev">'+TROLES.map(r=>'<option'+(r===p.gorev?' selected':'')+'>'+r+'</option>').join('')+'</select></label>'+
    '<label>Telefon<input id="ep_tel" value="'+esc(p.tel||'')+'"></label>'+
+   '<label>Uyruk<select id="ep_uyruk">'+['Azerbaycan','Türkiye','Diğer'].map(function(u){return '<option'+(u===(p.uyruk||'Azerbaycan')?' selected':'')+'>'+u+'</option>';}).join('')+'</select></label>'+
    '<label>Kimlik no<input id="ep_kno" value="'+esc(p.kimlikno||'')+'"></label>'+
    '<label>İşe giriş<input id="ep_giris" type="date" value="'+esc(p.giris||'')+'"></label>'+
    '<label>Çıkış<input id="ep_cikis" type="date" value="'+esc(p.cikis||'')+'"></label>'+
    '</div><div class="drow" style="margin-top:10px"><button class="btn sm" onclick="savePersonEdit(\''+id+'\')">Kaydet</button> <button class="btn ghost sm" onclick="closeDetay()">İptal</button></div>');}
 async function savePersonEdit(id){const p=teamGet(id);if(!p)return;
   const ad=fval('ep_ad');if(!ad){toast('Ad-soyad boş olamaz');return;}
-  p.ad=ad;p.gorev=fval('ep_gorev')||p.gorev;p.tel=fval('ep_tel');p.kimlikno=fval('ep_kno');p.giris=fval('ep_giris')||p.giris;p.cikis=fval('ep_cikis')||'';if(p.cikis)p.aktif=false;
+  p.ad=ad;p.gorev=fval('ep_gorev')||p.gorev;p.tel=fval('ep_tel');p.uyruk=fval('ep_uyruk')||p.uyruk||'Azerbaycan';p.kimlikno=fval('ep_kno');p.giris=fval('ep_giris')||p.giris;p.cikis=fval('ep_cikis')||'';if(p.cikis)p.aktif=false;
   await saveTeam();await logAct('personel-düzenle',p.ad);closeDetay();renderPersonel();}
 
 function cezaRow(d,c){return '<tr><td>'+d+'</td><td>'+c+'</td></tr>';}
