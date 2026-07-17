@@ -764,7 +764,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 193 · Uyruk alanı + TR vatandaşı pazar yevmiye ×2</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 182 · Puantaj görev eklerken scroll pozisyonu korunuyor</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -792,7 +792,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 193 · dokun→güncelle</div>
+<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 182 · dokun→güncelle</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -1291,6 +1291,7 @@ async function migShared(){
   try{ await FBDB.ref('shams1ortak/_migdone').set(Date.now()); }catch(e){}
 }
 async function ensureHeavy(force){
+  if(BACKEND!=='fb'){_heavyLoaded=true;return;}
   if((_heavyLoaded&&!force)||_heavyLoading)return;
   _heavyLoading=true;
   try{const als=await sgetAll('al:');const a=[];for(const k in als)if(als[k])a.push(als[k]);a.sort((x,y)=>(y.ts||0)-(x.ts||0));ALOG=a;}catch(e){}
@@ -2197,6 +2198,7 @@ function pjNav(d){const[y,m]=PJ_YM.split('-').map(Number);const dt=new Date(y,m-
   PJ_YM=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0');renderPJ();try{renderPJA();}catch(e){}try{renderPJP();}catch(e){}}
 
 function renderPJ(){const host=document.getElementById('pjgrid');if(!host)return;
+  const _oldScroll=host.querySelector('.pjscroll');const _st=_oldScroll?_oldScroll.scrollTop:0,_sl=_oldScroll?_oldScroll.scrollLeft:0;
   if(!PJ_YM)PJ_YM=dToday().slice(0,7);
   const ym=PJ_YM,[Y,M]=ym.split('-').map(Number),nd=new Date(Y,M,0).getDate();const ld=(ym===dToday().slice(0,7)?Math.min(+dToday().slice(8,10),nd):nd);
   const data=PJ[ym]||{};const WK=['Pz','Pt','Sa','Ça','Pe','Cu','Ct'];
@@ -2223,7 +2225,8 @@ function renderPJ(){const host=document.getElementById('pjgrid');if(!host)return
     '<b>'+MN[M-1]+' '+Y+'</b><button class="btn ghost sm" onclick="pjNav(1)">›</button>'+'<span class="pill" style="margin-left:8px;background:#e0e7ff;color:#3730a3;padding:3px 9px;border-radius:99px;font-size:12px;font-weight:700">📍 '+ZLBL[TRZ]+' sahası</span>'+
     ((typeof ROLE!=='undefined'&&ROLE==='admin')?'<button class="btn ghost sm" onclick="recoverGorevFromLog()" title="Puantaj görevlerini işlem günlüğünden geri yaz" style="margin-left:8px">🔧 Görev onar</button>':'')+
     '<span class="pjlegend"><i style="background:#16a34a"></i>tam<i style="background:#d97706"></i>yarım<i style="background:#e5e7eb"></i>yok<i style="background:#2563eb"></i>izin<i style="background:#7c3aed"></i>rapor</span></div>'+
-    '<div class="pjscroll"><table class="pjtab"><thead>'+head+'</thead><tbody>'+body+foot+'</tbody></table></div>';}
+    '<div class="pjscroll"><table class="pjtab"><thead>'+head+'</thead><tbody>'+body+foot+'</tbody></table></div>';
+  const _newScroll=host.querySelector('.pjscroll');if(_newScroll&&(_st||_sl)){_newScroll.scrollTop=_st;_newScroll.scrollLeft=_sl;}}
 
 /* ---- SİLME ONAYI / LOG ---- */
 async function reqDelete(key,label){const ts=Date.now();const r={ts,tip:'sil',key,label,by:CURUSER||ROLE||'?'};DREQ.push(r);await sset('dr:'+ts,r);await logAct('silme-talep',label);renderDReqBanner();}
@@ -2645,11 +2648,6 @@ function fmtN(n){n=+n||0;return n.toLocaleString('tr-TR',{maximumFractionDigits:
 function gMoney(n){return fmtN(n)+' ₼';}
 function gRate(){return {usdazn:+(FX&&FX.usdazn)||0,usdtry:+(FX&&FX.usdtry)||0};}
 function toAZN(amt,pb){amt=+amt||0;var r=gRate();if(pb==='USD')return amt*r.usdazn;if(pb==='TRY')return r.usdtry?amt*(r.usdazn/r.usdtry):0;return amt;}
-// herhangi bir para biriminden herhangi birine (USD üzerinden arbitraj)
-function fxToUSD(amt,pb){amt=+amt||0;var r=gRate();if(pb==='USD')return amt;if(pb==='AZN')return r.usdazn?amt/r.usdazn:0;if(pb==='TRY')return r.usdtry?amt/r.usdtry:0;return amt;}
-function fxConv(amt,from,to){amt=+amt||0;from=from||'AZN';to=to||'AZN';if(from===to)return amt;var r=gRate();var usd=fxToUSD(amt,from);if(to==='USD')return usd;if(to==='AZN')return usd*r.usdazn;if(to==='TRY')return usd*r.usdtry;return amt;}
-// kur var mı? (çevrim güvenli mi)
-function fxReady(from,to){if(from===to)return true;var r=gRate();if((from==='USD'||to==='USD')){if(from==='AZN'||to==='AZN')return r.usdazn>0;if(from==='TRY'||to==='TRY')return r.usdtry>0;return true;}return r.usdazn>0&&r.usdtry>0;}
 function curSym(k){return ({AZN:'₼',TRY:'₺',USD:'$'}[k])||k;}
 function curOpts(sel){return ['AZN','TRY','USD'].map(function(k){return '<option value="'+k+'"'+(sel===k?' selected':'')+'>'+({AZN:'₼ Manat',TRY:'₺ TL',USD:'$ USD'}[k])+'</option>';}).join('');}
 function arbStr(azn){var r=gRate();var o=fmtN(azn)+' ₼';if(r.usdazn){o+=' · '+fmtN(azn/r.usdazn)+' $';if(r.usdtry)o+=' · '+fmtN(azn*r.usdtry/r.usdazn)+' ₺';}return o;}
@@ -2731,7 +2729,7 @@ function odemeTo(pid){try{var t=[...document.querySelectorAll('.tabs .tab')].fin
 function gTo(which,btn){
   ['gider','odeme','maas','arican'].forEach(function(w){var p=document.getElementById('gpane_'+w);if(p)p.style.display=(w===which)?'':'none';});
   if(btn){var bs=document.querySelectorAll('#gsub .subtab');bs.forEach(function(b){b.classList.remove('on');});btn.classList.add('on');}
-  try{if(which==='gider')renderGider();else if(which==='odeme')renderOdeme();else if(which==='maas')ensureHeavyThen(renderMaasAylik);else if(which==='arican')renderArican();}catch(e){}
+  try{if(which==='gider')renderGider();else if(which==='odeme')renderOdeme();else if(which==='maas')renderMaasAylik();else if(which==='arican')renderArican();}catch(e){}
 }
 var OD_FOTO='';
 function mesaiBreakdown(pid){var w=wageOf(pid),cur=wageCur(pid);var rows=[];
@@ -2747,11 +2745,8 @@ function odSel(){
   var pid=fval('od_pid');var info=document.getElementById('od_info');if(!info)return;
   if(!pid){info.innerHTML='';return;}
   var gun=gPersDays(pid),w=wageOf(pid),cur=wageCur(pid),mes=mesaiSaatToplam(pid);
-  var M=persMaasTop(pid),odBy=persOdenenBy(pid);
-  var cur=wageCur(pid);
-  var OW=persOdenenInWage(pid); // yevmiye birimine çevrilmiş ödenen
-  var kalan=M.toplam-OW.tut;
-  var kalanText=fmtN(kalan)+' '+curSym(cur)+(OW.eksik?' <span style="color:#b91c1c">⚠ kur eksik</span>':'');
+  var M=persMaasTop(pid),od=persOdenen(pid);
+  var kalan=(typeof toAZN==='function'?toAZN(M.toplam,cur):M.toplam)-od;
   info.innerHTML='<div class="odinfo">'+
     '<span>Çalıştığı gün: <b>'+fmtN(gun)+'</b></span>'+
     '<span>Yevmiye: <b>'+fmtN(w)+' '+curSym(cur)+'</b></span>'+
@@ -2759,12 +2754,11 @@ function odSel(){
     '<span style="color:#9a3412">⏱ Fazla mesai: <b>'+fmtN(mes)+' saat</b> → hak ettiği <b>'+fmtN(M.mesai)+' '+curSym(cur)+'</b></span>'+
     (tazmOf(pid)?'<span>Tazminat: <b>'+fmtN(tazmOf(pid))+' '+curSym(cur)+'</b></span>':'')+
     '<span>Toplam hak: <b>'+fmtN(M.toplam)+' '+curSym(cur)+'</b></span>'+
-    '<span style="color:#059669">Ödenen: <b>'+fmtN(OW.tut)+' '+curSym(cur)+'</b></span>'+
-    '<span style="color:'+(kalan>0.5?'#b45309':'#059669')+'">Kalan: <b>'+kalanText+'</b></span>'+
+    '<span style="color:#059669">Ödenen: <b>'+gMoney(od)+'</b></span>'+
+    '<span style="color:'+(kalan>0.5?'#b45309':'#059669')+'">Kalan: <b>'+gMoney(kalan)+'</b></span>'+
     '</div>'+
     (mes>0?'<div class="mesbrk">'+mesaiBreakdown(pid)+'</div>':'');
   var pb=document.getElementById('od_pb');if(pb)pb.value=cur;
-  try{var ot=document.getElementById('od_toplam');if(ot)ot.innerHTML=odToplamHTML();}catch(e){}
 }
 function odPhoto(inp){_pickDoc(inp,function(d){OD_FOTO=d||'';},'od_foto_pv');}
 async function addOdeme(){
@@ -2778,46 +2772,10 @@ async function addOdeme(){
   PPAY.unshift(rec);_PPSEQ=(_PPSEQ||0)+1;await sset('ppay:'+rec.id+'_'+_PPSEQ,rec);
   OD_FOTO='';['od_tutar','od_not','od_saat'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
   var pv=document.getElementById('od_foto_pv');if(pv)pv.innerHTML='';
-  toast('Ödeme kaydedildi · kalan güncellendi');renderOdeme();
-  var sel=document.getElementById('od_pid');if(sel){sel.value=pid;odSel();}
-  try{if(document.getElementById('gider')&&document.querySelector('.mtbl'))renderPersonel();}catch(e){}
+  toast('Ödeme kaydedildi');renderOdeme();
 }
-function odToplamHTML(){
-  var pid=fval('od_pid');
-  // kişi seçili DEĞİLSE: genel toplam (her para cinsi ayrı)
-  if(!pid){
-    var totBy={};(PPAY||[]).forEach(function(r){var c=r.pb||'AZN';totBy[c]=(totBy[c]||0)+(+r.tutar||0);});
-    var cards=Object.keys(totBy).filter(function(c){return Math.abs(totBy[c])>0.001;}).map(function(c){
-      return '<div class="gscard money"><span>Toplam ödenen ('+curSym(c)+')</span><b>'+fmtN(totBy[c])+' '+curSym(c)+'</b></div>';}).join('');
-    if(!cards)cards='<div class="gscard money"><span>Personele toplam ödenen</span><b>0</b></div>';
-    return '<div class="gsum">'+cards+'</div>';
-  }
-  // kişi SEÇİLİYSE: o kişinin AY AY dökümü (ne hak etti · ne ödendi · ne kaldı)
-  var p=(TEAM||[]).find(function(x){return x.id===pid;});var cur=wageCur(pid);
-  var months=(typeof persAylar==='function')?persAylar(pid):[];
-  // ödeme yapılmış ama puantajsız aylar da dahil
-  var pmSet={};months.forEach(function(m){pmSet[m]=1;});
-  (PPAY||[]).forEach(function(r){if(r.pid===pid&&r.tarih)pmSet[r.tarih.slice(0,7)]=1;});
-  var allM=Object.keys(pmSet).sort();
-  if(!allM.length)return '<div class="gsum"><div class="gscard money"><span>'+esc(p?p.ad:'')+' — kayıt yok</span><b>—</b></div></div>';
-  var tHak=0,tOd=0,rows='';
-  allM.forEach(function(ym){
-    var R=persAyRow(pid,ym);
-    var hakCur=R.top; // yevmiye biriminde ay hakedişi
-    var odCur=persAyOdenen(pid,ym); // yevmiye biriminde ödenen
-    var kalCur=hakCur-odCur;
-    tHak+=hakCur;tOd+=odCur;
-    rows+='<tr><td>'+ayLabel(ym)+'</td><td class="num">'+fmtN(R.gun)+'</td><td class="num">'+fmtN(hakCur)+' '+curSym(cur)+'</td><td class="num" style="color:#059669">'+(odCur?fmtN(odCur)+' '+curSym(cur):'—')+'</td><td class="num" style="color:'+(kalCur>0.5?'#b45309':'#059669')+'"><b>'+fmtN(kalCur)+' '+curSym(cur)+'</b></td></tr>';
-  });
-  var tKal=tHak-tOd;
-  var foot='<tr class="eptot"><td>TOPLAM</td><td></td><td class="num"><b>'+fmtN(tHak)+' '+curSym(cur)+'</b></td><td class="num" style="color:#059669"><b>'+fmtN(tOd)+' '+curSym(cur)+'</b></td><td class="num"><b>'+fmtN(tKal)+' '+curSym(cur)+'</b></td></tr>';
-  return '<div class="tk2" style="margin-top:8px"><h3>📅 '+esc(p?p.ad:'')+' — ay ay ödeme durumu</h3>'+
-    '<div style="overflow:auto"><table class="gtbl"><thead><tr><th>Ay</th><th>Gün</th><th>Hakediş</th><th>Ödenen</th><th>Kalan</th></tr></thead><tbody>'+rows+foot+'</tbody></table></div>'+
-    '<div class="hint" style="margin-top:4px">Tüm tutarlar '+esc(p?p.ad:'')+' kişisinin yevmiye biriminde ('+curSym(cur)+'). Farklı birimde ödeme kur ile çevrilir.</div></div>';
-}
-async function renderOdeme(){
+function renderOdeme(){
   var el=document.getElementById('odeme');if(!el)return;
-  try{if(!_heavyLoaded)await ensureHeavy();}catch(e){}
   var opts='<option value="">— personel seç —</option>'+(TEAM||[]).filter(function(p){return p.aktif||gPersDays(p.id)>0;})
     .sort(function(a,b){return (a.ad||'').localeCompare(b.ad||'','tr');})
     .map(function(p){return '<option value="'+p.id+'">'+esc(p.ad)+'</option>';}).join('');
@@ -2834,7 +2792,9 @@ async function renderOdeme(){
     '<label class="gdwide">📄 Dekont / imza (foto veya PDF)<input type="file" accept="image/*,application/pdf" onchange="odPhoto(this)"></label>'+
     '<div id="od_foto_pv" class="gdpv"></div>'+
     '<button class="btn" onclick="addOdeme()">+ Ödemeyi kaydet</button></div></div>';
-  var sum='<div id="od_toplam">'+odToplamHTML()+'</div>';
+  // toplam ödenen
+  var tot=0;(PPAY||[]).forEach(function(r){tot+=toAZN(r.tutar,r.pb||'AZN');});
+  var sum='<div class="gsum"><div class="gscard money"><span>Personele toplam ödenen</span><b>'+gMoney(tot)+'</b></div></div>';
   // kayıt listesi (accordion, çarşaf değil)
   var byp={};(TEAM||[]).forEach(function(p){byp[p.id]=p.ad;});
   var TUR={maas:'Maaş',tazminat:'Tazminat',mesai:'Fazla mesai',avans:'Avans',diger:'Diğer'};
@@ -2876,13 +2836,6 @@ async function setHire(id,v){var p=(TEAM||[]).find(function(x){return x.id===id;
 function persMaasTop(pid){var w=wageOf(pid);var gun=gPersDays(pid);var gunPaid=gPersDaysPaid(pid);var mesai=(w/9)*1.5*mesaiSaatToplam(pid);var tazm=tazmOf(pid);return {yevmiye:gunPaid*w,mesai:mesai,tazm:tazm,toplam:gunPaid*w+mesai+tazm,gun:gun};}
 function persMaasTop(pid){var w=wageOf(pid);var gun=gPersDays(pid);var gunPaid=gPersDaysPaid(pid);var mesai=(w/9)*1.5*mesaiSaatToplam(pid);var tazm=tazmOf(pid);return {yevmiye:gunPaid*w,mesai:mesai,tazm:tazm,toplam:gunPaid*w+mesai+tazm,gun:gun};}
 function persOdenen(pid){var t=0;(PPAY||[]).forEach(function(r){if(r.pid===pid)t+=toAZN(r.tutar,r.pb||'AZN');});return t;}
-// kişinin YEVMİYE birimine çevrilmiş toplam ödenen (arbitraj) + çevrilemeyen (kur eksik) uyarısı
-function persOdenenInWage(pid){var cur=wageCur(pid);var t=0,eksik=false,byRaw={};
-  (PPAY||[]).forEach(function(r){if(r.pid!==pid)return;var pb=r.pb||'AZN';byRaw[pb]=(byRaw[pb]||0)+(+r.tutar||0);
-    if(fxReady(pb,cur))t+=fxConv(r.tutar,pb,cur);else{t+=(+r.tutar||0);eksik=true;}});
-  return {tut:t,cur:cur,eksik:eksik,byRaw:byRaw};}
-function persOdenenBy(pid){var by={};(PPAY||[]).forEach(function(r){if(r.pid===pid){var c=r.pb||'AZN';by[c]=(by[c]||0)+(+r.tutar||0);}});return by;}
-function byStr(by){var ks=Object.keys(by).filter(function(c){return Math.abs(by[c])>0.001;});if(!ks.length)return '0';return ks.map(function(c){return fmtN(by[c])+' '+curSym(c);}).join(' + ');}
 function yevmiyePanel(){
   var act=(TEAM||[]).filter(function(p){return p.aktif||gPersDays(p.id)>0;});
   if(!act.length)return '';
@@ -2925,48 +2878,32 @@ function ayLabel(ym){var p=(ym||'').split('-');return (AYAD[p[1]]||p[1])+' '+p[0
 function maasMonths(){var set={};for(var ym in PJ)set[ym]=1;for(var ym2 in MESAI)set[ym2]=1;(PPAY||[]).forEach(function(r){if(r.tarih)set[r.tarih.slice(0,7)]=1;});return Object.keys(set).sort();}
 function persAyGun(pid,ym){var pd=(PJ[ym]&&PJ[ym][pid])||{};var t=0;for(var d in pd)t+=pjMeta(pd[d]).v;return t;}
 function persAyMesaiSaat(pid,ym){var mp=(MESAI[ym]&&MESAI[ym][pid])||{};var t=0;for(var d in mp)t+=(+mp[d]||0);return t;}
-function persAyOdenen(pid,ym){var cur=wageCur(pid);var t=0;(PPAY||[]).forEach(function(r){if(r.pid===pid&&r.tarih&&r.tarih.slice(0,7)===ym){var pb=r.pb||'AZN';t+=(fxReady(pb,cur)?fxConv(r.tutar,pb,cur):(+r.tutar||0));}});return t;}
-function persAyOdenenEksik(pid,ym){var cur=wageCur(pid);var eksik=false;(PPAY||[]).forEach(function(r){if(r.pid===pid&&r.tarih&&r.tarih.slice(0,7)===ym){var pb=r.pb||'AZN';if(!fxReady(pb,cur))eksik=true;}});return eksik;}
+function persAyOdenen(pid,ym){var t=0;(PPAY||[]).forEach(function(r){if(r.pid===pid&&r.tarih&&r.tarih.slice(0,7)===ym)t+=toAZN(r.tutar,r.pb||'AZN');});return t;}
 function persAyRow(pid,ym){var w=wageOf(pid),cur=wageCur(pid);var gun=persAyGun(pid,ym);var yev=gun*w;var saat=persAyMesaiSaat(pid,ym);var mes=(w/9)*1.5*saat;var top=yev+mes;var od=persAyOdenen(pid,ym);var topAZN=(typeof toAZN==='function'?toAZN(top,cur):top);var kal=topAZN-od;return {gun:gun,yev:yev,saat:saat,mes:mes,top:top,od:od,kal:kal,cur:cur};}
 function persAyMesaiGun(pid,ym){var mp=(MESAI[ym]&&MESAI[ym][pid])||{};var t=0;for(var d in mp)if(+mp[d]>0)t++;return t;}
-async function renderMaasAylik(){
+function renderMaasAylik(){
   var el=document.getElementById('maas');if(!el)return;
-  try{if(!_heavyLoaded)await ensureHeavy();}catch(e){}
   var act=(TEAM||[]).filter(function(p){return p.aktif||gPersDays(p.id)>0;});
   if(!act.length){el.innerHTML='<div class="empty">Personel yok.</div>';return;}
   var months=maasMonths();
   if(!months.length){el.innerHTML='<div class="empty">Puantaj kaydı yok.</div>';return;}
   var genTop=0,genOd=0;
-  var byTop={},byOd={}; // para birimine göre ayrı toplam
-  act.forEach(function(p){var M=persMaasTop(p.id),cur=wageCur(p.id);
-    var topAZN=(typeof toAZN==='function'?toAZN(M.toplam,cur):M.toplam);genTop+=topAZN;genOd+=persOdenen(p.id);
-    byTop[cur]=(byTop[cur]||0)+M.toplam;
-    var OW=persOdenenInWage(p.id);byOd[cur]=(byOd[cur]||0)+OW.tut;
-  });
-  // her para birimi için kart üret
-  function curCards(byObj,renk){var ks=Object.keys(byObj).filter(function(c){return Math.abs(byObj[c])>0.001;});
-    if(!ks.length)return '<div class="gscard money"><span>—</span><b>0</b></div>';
-    return ks.map(function(c){return '<div class="gscard money"><span>'+curSym(c)+' cinsinden</span><b'+(renk?' style="color:'+renk+'"':'')+'>'+fmtN(byObj[c])+' '+curSym(c)+'</b></div>';}).join('');}
-  var byKal={};Object.keys(byTop).forEach(function(c){byKal[c]=(byTop[c]||0)-(byOd[c]||0);});
-  var ozet='<div class="gsum" style="margin:8px 0"><div class="gscard"><span>Toplam çalışan</span><b>'+act.length+'</b></div></div>'+
-    '<div class="tk2" style="margin:6px 0"><h3 style="margin:2px 0 6px">💰 Genel hakediş (para birimine göre)</h3><div class="gsum">'+curCards(byTop)+'</div>'+
-    '<h3 style="margin:8px 0 6px">✅ Ödenen (para birimine göre)</h3><div class="gsum">'+curCards(byOd,'#059669')+'</div>'+
-    '<h3 style="margin:8px 0 6px">⏳ Kalan (para birimine göre)</h3><div class="gsum">'+curCards(byKal,'#b45309')+'</div>'+
-    '<div class="hint" style="margin-top:6px">Her personelin yevmiye biriminde toplanmıştır — TL yevmiyeliler ₺, Manat yevmiyeliler ₼ altında. Çevrim yapılmaz, karışmaz.</div></div>';
+  act.forEach(function(p){var M=persMaasTop(p.id),cur=wageCur(p.id);var topAZN=(typeof toAZN==='function'?toAZN(M.toplam,cur):M.toplam);genTop+=topAZN;genOd+=persOdenen(p.id);});
+  var ozet='<div class="gsum" style="margin:8px 0"><div class="gscard"><span>Toplam çalışan</span><b>'+act.length+'</b></div><div class="gscard money"><span>Genel toplam hakediş (≈AZN, tazminat dahil)</span><b>'+gMoney(genTop)+'</b></div><div class="gscard money"><span>Ödenen</span><b style="color:#059669">'+gMoney(genOd)+'</b></div><div class="gscard money"><span>Kalan</span><b>'+gMoney(genTop-genOd)+'</b></div></div>';
   var tables=months.map(function(ym){
     var tGun=0,tMaas=0,tMesGun=0,tMesTut=0,tTop=0,tOd=0;
     var rows=act.map(function(p){
       var w=wageOf(p.id),cur=wageCur(p.id);
       var gun=persAyGun(p.id,ym),gunPaid=persAyGunPaid(p.id,ym),maas=gunPaid*w,mesGun=persAyMesaiGun(p.id,ym),mesSaat=persAyMesaiSaat(p.id,ym),mesTut=(w/9)*1.5*mesSaat,top=maas+mesTut,od=persAyOdenen(p.id,ym);
       if(!gun&&!mesGun&&!od)return '';
-      tGun+=gun;tMaas+=(typeof toAZN==='function'?toAZN(maas,cur):maas);tMesGun+=mesGun;tMesTut+=(typeof toAZN==='function'?toAZN(mesTut,cur):mesTut);tTop+=(typeof toAZN==='function'?toAZN(top,cur):top);tOd+=(fxReady(cur,'AZN')?fxConv(od,cur,'AZN'):0);
+      tGun+=gun;tMaas+=(typeof toAZN==='function'?toAZN(maas,cur):maas);tMesGun+=mesGun;tMesTut+=(typeof toAZN==='function'?toAZN(mesTut,cur):mesTut);tTop+=(typeof toAZN==='function'?toAZN(top,cur):top);tOd+=od;
       return '<tr><td>'+esc(p.ad)+'<br><small style="color:#8a93a3">'+esc(p.gorev||'')+'</small></td>'+
         '<td class="num">'+fmtN(gun)+'</td>'+
         '<td class="num">'+fmtN(maas)+' '+curSym(cur)+(gunPaid>gun?' <small style="color:#0E9E97">(pazar×2)</small>':'')+'</td>'+
         '<td class="num">'+(mesGun||'—')+'</td>'+
         '<td class="num">'+(mesTut?fmtN(mesTut)+' '+curSym(cur):'—')+'</td>'+
         '<td class="num"><b>'+fmtN(top)+' '+curSym(cur)+'</b></td>'+
-        '<td class="num" style="color:#059669">'+(od?fmtN(od)+' '+curSym(cur):'—')+'</td></tr>';
+        '<td class="num" style="color:#059669">'+gMoney(od)+'</td></tr>';
     }).join('');
     if(!rows)return '';
     var foot='<tr class="eptot"><td>TOPLAM</td><td class="num"><b>'+fmtN(tGun)+'</b></td><td class="num"><b>'+gMoney(tMaas)+'</b></td><td class="num"><b>'+fmtN(tMesGun)+'</b></td><td class="num"><b>'+gMoney(tMesTut)+'</b></td><td class="num"><b>'+gMoney(tTop)+'</b></td><td class="num" style="color:#059669"><b>'+gMoney(tOd)+'</b></td></tr>';
@@ -3581,7 +3518,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s193</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s182</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -4027,24 +3964,6 @@ function rapGunGun(day){
     '<tr class="eptot"><td>TOPLAM<br><span style="font-weight:400;font-size:11px;color:#64748b">kümülatif · tüm aylar</span></td><td></td><td class="m"><b>'+tp+' adam-gün</b></td><td class="m"><b>'+ta+' araç-gün</b></td><td colspan="2">Çalışılan gün sayısı: <b>'+gun+'</b></td></tr>'+
     '</tbody></table>';
 }
-function rapPersOzet(){
-  var ym=(typeof RAPDAY!=='undefined'&&RAPDAY)?RAPDAY.slice(0,7):dToday().slice(0,7);
-  var pjm=PJ[ym];
-  if(!pjm)return '<h3 class="raph">\u{1F477} Personel \u00e7al\u0131\u015fma \u00f6zeti \u2014 '+ym+'</h3><div class="hint">Bu ay i\u00e7in puantaj giri\u015fi yok.</div>';
-  var pgm=PJG[ym]||{};var days={};
-  for(var pid in pjm){var dd=pjm[pid];for(var d in dd){if(pjMeta(dd[d]).v>0){if(!days[d])days[d]={count:0,gorev:{}};days[d].count++;var gid=(pgm[pid]&&pgm[pid][d])||'';var g=gid?pjgOf(gid):null;var lbl=g?g.l:'belirtilmemi\u015f';days[d].gorev[lbl]=(days[d].gorev[lbl]||0)+1;}}}
-  var dnums=Object.keys(days).map(Number).sort(function(a,b){return a-b;});
-  if(!dnums.length)return '<h3 class="raph">\u{1F477} Personel \u00e7al\u0131\u015fma \u00f6zeti \u2014 '+ym+'</h3><div class="hint">Bu ay i\u00e7in \u00e7al\u0131\u015fma kayd\u0131 yok.</div>';
-  var totAdamGun=0,rows='';
-  dnums.forEach(function(d){var o=days[d];totAdamGun+=o.count;var isler=Object.keys(o.gorev).sort(function(a,b){return o.gorev[b]-o.gorev[a];}).map(function(l){return esc(l)+': '+o.gorev[l];}).join(' \u00b7 ');var ds=ym+'-'+String(d).padStart(2,'0');rows+='<tr><td>'+dtr(ds)+'</td><td class="m"><b>'+o.count+'</b></td><td>'+isler+'</td></tr>';});
-  var ort=Math.round(totAdamGun/dnums.length*10)/10;
-  return '<h3 class="raph">\u{1F477} Personel \u00e7al\u0131\u015fma \u00f6zeti \u2014 '+ym+'</h3>'+
-    '<div class="hint" style="margin:-2px 0 8px">Hangi g\u00fcn ka\u00e7 personel, hangi i\u015fte \u00e7al\u0131\u015ft\u0131. \u0130sim ve \u00fccret bu raporda g\u00f6sterilmez.<br><b>Bu tablo yaln\u0131zca '+ym+' ay\u0131n\u0131 kapsar (ayl\u0131k).</b></div>'+
-    '<div class="rapcards"><div class="rapcard"><div class="rc-n">'+dnums.length+'</div><div class="rc-l">\u00e7al\u0131\u015fma g\u00fcn\u00fc</div></div>'+
-    '<div class="rapcard"><div class="rc-n">'+totAdamGun+'</div><div class="rc-l">toplam adam-g\u00fcn</div></div>'+
-    '<div class="rapcard"><div class="rc-n">'+ort+'</div><div class="rc-l">ort. personel/g\u00fcn</div></div></div>'+
-    '<table class="mtab raptbl"><thead><tr><th>G\u00fcn</th><th>\u00c7al\u0131\u015fan</th><th>\u0130\u015fler (g\u00f6rev \u00b7 ki\u015fi)</th></tr></thead><tbody>'+rows+'</tbody></table>';
-}
 function rapAracOzet(){
   var own=(ARAC||[]).map(function(a){var c=0,y=0,ar=0;for(var ym in PJA){var m=PJA[ym][a.id];if(!m)continue;for(var d in m){var mt=pjaMeta(m[d]);if(mt.c==='V')c++;else if(mt.c==='Y')y++;else if(mt.c==='A')ar++;}}return {ad:a.ad,plaka:a.plaka||'',cal:c,yar:y,ariza:ar,tatil:0,proj:false};});
   var proj=(typeof PARAC!=='undefined'?PARAC:[]).map(function(a){var g=0,ar=0,t=0;for(var ym in PJP){var m=PJP[ym][a.id];if(!m)continue;for(var d in m){var v=m[d];if(v==='A')ar++;else if(v==='T')t++;else if(+v>0)g++;}}return {ad:a.ad,plaka:'',cal:g,yar:0,ariza:ar,tatil:t,proj:true};});
@@ -4172,7 +4091,7 @@ function tanIsGiris(){
 
 async function backupAll(){try{
   if(typeof toast==='function')toast('Yedek hazırlanıyor…');
-  const dump={_app:'SHAMS1',_ver:'s193',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1',_ver:'s182',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pjz:','pja:','pjag:','pjp:','pjpg:','hc:','g:','gd:','arpay:','ppay:'];
   for(const pre of pref){try{const o=await sgetAll(pre);for(const k in o){if(o[k]!=null)dump.data[k]=o[k];}}catch(e){}}
   const single=['wage','fx','targets','mpct','cab:dc','cab:ac','cab:og','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','zimmet','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
@@ -4496,6 +4415,7 @@ const PJAGOREV=ARAC_GOREV.map(function(g,i){return {id:'ag'+i,l:g,c:_agp[i%_agp.
 function pjagOf(id){return PJAGOREV.find(function(g){return g.id===id;});}
 function pjaPanel(){return '<div class="tk2"><h3>Araç / iş makinesi puantajı — '+(PJ_YM||dToday().slice(0,7))+'</h3><div class="sub">Hangi makine hangi gün çalıştı? Dokun → durum (● çalıştı · ½ yarım · ⚠ arıza · — yok). <b>Uzun bas → hangi işte kullanıldı (görev).</b></div><div id="pjagrid"></div></div>';}
 function renderPJA(){var host=document.getElementById('pjagrid');if(!host)return;
+  var _oldScroll=host.querySelector('.pjscroll');var _st=_oldScroll?_oldScroll.scrollTop:0,_sl=_oldScroll?_oldScroll.scrollLeft:0;
   if(!PJ_YM)PJ_YM=dToday().slice(0,7);
   var ym=PJ_YM,sp=ym.split('-'),Y=+sp[0],M=+sp[1],nd=new Date(Y,M,0).getDate();
   var ld=(ym===dToday().slice(0,7)?Math.min(+dToday().slice(8,10),nd):nd);
@@ -4517,7 +4437,8 @@ function renderPJA(){var host=document.getElementById('pjagrid');if(!host)return
   var foot='<tr class="pjfoot"><td class="pjname">Günlük toplam</td>';
   for(var d=ld;d>=1;d--)foot+='<td class="'+(we(d)?'we':'')+'">'+(dayTot[d]?pjFmt(dayTot[d]):'')+'</td>';
   foot+='<td class="pjtot">'+(grand?pjFmt(grand):'')+'</td></tr>';
-  host.innerHTML='<div class="pjnav"><span class="pjlegend"><i style="background:#0e7490"></i>çalıştı<i style="background:#0891b2"></i>yarım<i style="background:#b91c1c"></i>arıza<i style="background:#e5e7eb"></i>yok</span></div><div class="pjscroll"><table class="pjtab"><thead>'+head+'</thead><tbody>'+body+foot+'</tbody></table></div>';}
+  host.innerHTML='<div class="pjnav"><span class="pjlegend"><i style="background:#0e7490"></i>çalıştı<i style="background:#0891b2"></i>yarım<i style="background:#b91c1c"></i>arıza<i style="background:#e5e7eb"></i>yok</span></div><div class="pjscroll"><table class="pjtab"><thead>'+head+'</thead><tbody>'+body+foot+'</tbody></table></div>';
+  var _newScroll=host.querySelector('.pjscroll');if(_newScroll&&(_st||_sl)){_newScroll.scrollTop=_st;_newScroll.scrollLeft=_sl;}}
 let PJALP=null,PJALPfired=false;
 function pjaDown(ev,aid,day){PJALPfired=false;clearTimeout(PJALP);PJALP=setTimeout(function(){PJALPfired=true;try{if(navigator.vibrate)navigator.vibrate(15);}catch(e){}pjaGorevPick(aid,day);},460);}
 function pjaUp(ev,aid,day){clearTimeout(PJALP);if(PJALPfired){PJALPfired=false;return;}pjaCycle(aid,day);}
@@ -4580,6 +4501,7 @@ const PJPGOREV=PARAC_GOREV.map(function(g,i){return {id:'pg'+i,l:g,c:_agp[i%_agp
 function pjpgOf(id){return PJPGOREV.find(function(g){return g.id===id;});}
 function pjpPanel(){return '<div class="tk2"><h3>Proje aracı puantajı — '+(PJ_YM||dToday().slice(0,7))+'</h3><div class="sub">Günlük temin edilen dış araçlar. Hücreye <b>dokun → o gün +1 geliş</b> (örn. 5 mikser = 5 dokun). <b>Uzun bas → görev seç / sayıyı düzelt.</b></div><div id="pjpgrid"></div></div>';}
 function renderPJP(){var host=document.getElementById('pjpgrid');if(!host)return;
+  var _oldScroll=host.querySelector('.pjscroll');var _st=_oldScroll?_oldScroll.scrollTop:0,_sl=_oldScroll?_oldScroll.scrollLeft:0;
   if(!PJ_YM)PJ_YM=dToday().slice(0,7);
   var ym=PJ_YM,sp=ym.split('-'),Y=+sp[0],M=+sp[1],nd=new Date(Y,M,0).getDate();
   var ld=(ym===dToday().slice(0,7)?Math.min(+dToday().slice(8,10),nd):nd);
@@ -4603,7 +4525,8 @@ function renderPJP(){var host=document.getElementById('pjpgrid');if(!host)return
   var foot='<tr class="pjfoot"><td class="pjname">Günlük toplam geliş</td>';
   for(var d=ld;d>=1;d--)foot+='<td class="'+(we(d)?'we':'')+'">'+(dayTot[d]||'')+'</td>';
   foot+='<td class="pjtot">'+(grand||'')+'</td></tr>';
-  host.innerHTML='<div class="pjnav"><span class="pjlegend"><i style="background:#0e7490"></i>geliş · dokun +1<i style="background:#b91c1c"></i>arıza<i style="background:#94a3b8"></i>tatil · uzun bas: görev/durum</span></div><div style="overflow:auto"><table class="pjtab"><thead>'+head+'</thead><tbody>'+body+foot+'</tbody></table></div>';
+  host.innerHTML='<div class="pjnav"><span class="pjlegend"><i style="background:#0e7490"></i>geliş · dokun +1<i style="background:#b91c1c"></i>arıza<i style="background:#94a3b8"></i>tatil · uzun bas: görev/durum</span></div><div class="pjscroll" style="overflow:auto"><table class="pjtab"><thead>'+head+'</thead><tbody>'+body+foot+'</tbody></table></div>';
+  var _newScroll=host.querySelector('.pjscroll');if(_newScroll&&(_st||_sl)){_newScroll.scrollTop=_st;_newScroll.scrollLeft=_sl;}
 }
 let PJPLP=null,PJPLPfired=false;
 function pjpDown(ev,vid,day){PJPLPfired=false;clearTimeout(PJPLP);PJPLP=setTimeout(function(){PJPLPfired=true;try{if(navigator.vibrate)navigator.vibrate(15);}catch(e){}pjpGorevPick(vid,day);},460);}
