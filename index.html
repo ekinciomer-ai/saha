@@ -424,7 +424,7 @@
   .gtick:first-child{transform:none}.gtick:last-child{transform:translateX(-100%)}
   .ayakgrp{font-size:11px;font-weight:700;color:#15314e;margin:9px 0 3px;padding:3px 9px;background:#eef1f5;border-left:3px solid #E8833A;border-radius:3px}
   .footgrid{margin:4px 0}
-  .footrow{display:flex;align-items:center;gap:5px;margin:4px 0}
+  .footrow{display:flex;align-items:center;gap:5px;margin:4px 0;flex-wrap:wrap}
   .fhdr{flex:0 0 40px;font-size:12px;color:#999}
   .foot{position:relative;width:36px;height:32px;border-radius:7px;border:1px solid #d8d8de;font-size:13px;font-weight:700;cursor:pointer;color:#999;background:#ececed;transition:.1s;touch-action:manipulation;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
   .foot.f1{background:#7c5cff;color:#fff;border-color:#6a49f0}
@@ -699,6 +699,8 @@
 .fh-asik{background:#d97706;color:#fff}
 .fh-hex{background:#64748b;color:#fff}
 .fh-panel{background:#2e9e5b;color:#fff}
+.phbox{border-radius:12px;padding:10px 12px 12px;margin:10px 0;border:1px solid rgba(0,0,0,.06)}
+.phbox .ayakgrp{margin-top:0!important}
    .fgnote{font-size:11.5px;color:#a32a2e;background:#fdecec;border:1px solid #E5484D;border-radius:7px;padding:4px 9px;margin:6px 0 4px}
    .pjpstep{display:flex;align-items:center;gap:8px;padding:8px 2px;justify-content:center}
    .pjpstep span{font-size:13px;color:#15314e}
@@ -765,7 +767,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 197 · Panel montajı görsel ızgara oldu (26 panel)</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 198 · Montaj sayfası kutulu/renkli düzen + taşma düzeltmesi</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -793,7 +795,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 197 · dokun→güncelle</div>
+<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 198 · dokun→güncelle</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -1548,30 +1550,33 @@ async function openEd(i){SEL=i;const t=tbl(i),s=PLAN[i]||{};
   // ayak adımları
   document.getElementById('ed_ayak').innerHTML=(()=>{
     let h='';
-    h+=`<div class="ayakgrp">Ayaklar — Harita · Delme · Montaj <i style="font-weight:400">(kısa dokun: boş → harita → delindi(rok) → monte (beton+terazi) · <b style="color:#E5484D">uzun bas: kontrol</b> · rok delgi İşveren)</i></div>
+    h+=`<div class="phbox" style="background:#f4f2ff;border-left:4px solid #a78bfa"><div class="ayakgrp">Ayaklar — Harita · Delme · Montaj <i style="font-weight:400">(kısa dokun: boş → harita → delindi(rok) → monte (beton+terazi) · <b style="color:#E5484D">uzun bas: kontrol</b> · rok delgi İşveren)</i></div>
      <div id="ed_footgrid" class="footgrid"></div>
      <div class="footbtns"><button class="tg" onclick="footAll(1)">Tümü harita</button>
       <button class="tg" onclick="footAll(2)">Tümü delindi</button>
       <button class="tg" onclick="footAll(3)">Tümü monte</button>
-      <button class="tg" onclick="footAll(0)">Sıfırla</button></div>`;
-    h+=`<div class="ayakgrp" style="margin-top:12px">Kiriş (P3) montajı — ön+arka ayağı bağlar · 7 eksen <i style="font-weight:400">(kısa dokun: monte / geri al)</i></div>
+      <button class="tg" onclick="footAll(0)">Sıfırla</button></div></div>`;
+    h+=`<div class="phbox" style="background:#eafbf8;border-left:4px solid #1f9d8f"><div class="ayakgrp">Kiriş (P3) montajı — ön+arka ayağı bağlar · 7 eksen <i style="font-weight:400">(kısa dokun: monte / geri al)</i></div>
      <div id="ed_kirisgrid" class="footgrid"></div>
-     <div class="footbtns"><button class="tg" onclick="kirisAll(1)">Tümü monte</button><button class="tg" onclick="kirisAll(0)">Sıfırla</button></div>`;
-    h+=`<div class="ayakgrp" style="margin-top:12px">Hegzagonal (M12×30) montajı — kiriş bağlantı · her kiriş 4 · 7×4 = 28 <i style="font-weight:400">(kısa dokun: sıkıldı / geri al)</i></div>
+     <div class="footbtns"><button class="tg" onclick="kirisAll(1)">Tümü monte</button><button class="tg" onclick="kirisAll(0)">Sıfırla</button></div></div>`;
+    h+=`<div class="phbox" style="background:#f1f5f9;border-left:4px solid #64748b"><div class="ayakgrp">Hegzagonal (M12×30) montajı — kiriş bağlantı · her kiriş 4 · 7×4 = 28 <i style="font-weight:400">(kısa dokun: sıkıldı / geri al)</i></div>
      <div id="ed_hexgrid" class="footgrid"></div>
-     <div class="footbtns"><button class="tg" onclick="hexAll(1)">Tümü sıkıldı</button><button class="tg" onclick="hexAll(0)">Sıfırla</button></div>`;
+     <div class="footbtns"><button class="tg" onclick="hexAll(1)">Tümü sıkıldı</button><button class="tg" onclick="hexAll(0)">Sıfırla</button></div></div>`;
     h+=`<details class="montdet" style="margin:8px 0;border:1px solid #e3e3e8;border-radius:10px;padding:4px 10px;background:#fafafb"><summary style="cursor:pointer;font-weight:700;padding:6px 2px;color:#1f2d3d">📋 Montaj detayı (şartname) — &quot;monte&quot; ne demek?</summary><div style="font-size:12px;line-height:1.5;color:#444;padding:4px 2px 8px"><b>Ayak = ön (P1) + arka (P2) kolon.</b> Ø200 rok deliğine dikilir, etrafı beton ile doldurulur.<br><b style="color:#2e9e5b">&quot;Monte&quot; = ayak dikildi + beton atıldı + teraziye alındı.</b> (ön ~1,2 m / arka ~1,3–1,4 m gömme)<br><br><b>Şartname montaj kuralları:</b><ul style="margin:4px 0;padding-left:18px"><li>Tüm ayaklar aplikasyon projesine uygun, RTK + lazer nivo ile işaretlenir.</li><li>İşveren kontrolünde koordinatı kayan ayak kabul edilmez → sökülüp tekrar yapılır; zayi malzeme hakedişten düşülür.</li><li>Yan yana sehpalarda kot kazığı + ip ile sehpa başı-sonu kot farkı sıfırlanır; gölgeleme yapılmaz, panel-zemin mesafe toleransı korunur (yol geçişleri dahil).</li><li>Ölçü/açı toleransı dışı ayaklar sökülür, bilabedel tekrar imal edilir.</li><li>Konstrüksiyon profilleri kesilmez/delinmez; formu bozulan değiştirilir.</li><li>Cıvata/pul/rondela/somun projeye uygun. Montaj bitince yüklenici onayı → nezaretinde tork kontrolü → tork boyası (silinmez).</li><li>Temel: çakma kazık/beton, TS500 + Azerbaycan Deprem Yön.; bağlantı için çekme/basınç/eğilme testleri müşteri onaylı.</li></ul><span style="color:#8a93a3">Kaynak: Ek-5 Teknik Şartname (5.4.7/5.4.8) + Mekanik Sorumluluk Matrisi imalat detayları.</span></div></details>`;
     return h;})();
   // konstrüksiyon (kısa dokun: yapıldı/yapılmadı · uzun bas: kontrol)
   let kh='';
-  kh+=`<div class="ayakgrp" style="margin-top:2px">Aşık (P4) montajı — kirişe dik, 4 sıra × ~5 = 19 segment <i style="font-weight:400">(kısa dokun: monte / geri al)</i></div>
+  kh+=`<div class="phbox" style="background:#fff8ec;border-left:4px solid #d97706;margin-top:2px"><div class="ayakgrp">Aşık (P4) montajı — kirişe dik, 4 sıra × ~5 = 19 segment <i style="font-weight:400">(kısa dokun: monte / geri al)</i></div>
    <div id="ed_asikgrid" class="footgrid"></div>
-   <div class="footbtns"><button class="tg" onclick="asikAll(1)">Tümü monte</button><button class="tg" onclick="asikAll(0)">Sıfırla</button></div>`;
-  kh+=`<div class="stp"><div class="nm">Çapraz montajı (P6)</div><button class="tg ${s.capraz?'act':''}" id="t_capraz" onclick="toggleMont('capraz')">${s.capraz?'Yapıldı ✓':'Yapılmadı'}</button></div>`;
-  kh+=`<div class="ayakgrp" style="margin-top:12px">Panel montajı — 2 sıra × 13 = 26 panel <i style="font-weight:400">(kısa dokun: monte / geri al)</i></div>
+   <div class="footbtns"><button class="tg" onclick="asikAll(1)">Tümü monte</button><button class="tg" onclick="asikAll(0)">Sıfırla</button></div></div>`;
+  kh+=`<div class="phbox" style="background:#fdf3ec;border-left:4px solid #b45309"><div class="ayakgrp">Çapraz montajı (P6) — masa köşegen bağlantısı</div>
+   <div style="display:flex;align-items:center;gap:12px;margin-top:4px">
+   <svg width="44" height="44" viewBox="0 0 44 44"><rect id="capraz_ic" x="2" y="2" width="40" height="40" rx="6" fill="${s.capraz?'#2e9e5b':'#e2dcd2'}"/><line x1="9" y1="9" x2="35" y2="35" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/><line x1="35" y1="9" x2="9" y2="35" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/></svg>
+   <button class="tg ${s.capraz?'act':''}" id="t_capraz" onclick="toggleMont('capraz')">${s.capraz?'Yapıldı ✓':'Yapılmadı'}</button></div></div>`;
+  kh+=`<div class="phbox" style="background:#eefbf3;border-left:4px solid #2e9e5b"><div class="ayakgrp">Panel montajı — 2 sıra × 13 = 26 panel <i style="font-weight:400">(kısa dokun: monte / geri al)</i></div>
    <div id="ed_panelgrid" class="footgrid"></div>
    <div class="footbtns"><button class="tg" onclick="panelAll(1)">Tümü 26</button><button class="tg" onclick="panelAll(0)">Sıfırla</button>
-    <button class="tg ${s.k7c?'ktrl':''}" id="t_k7c" style="min-width:90px" onclick="toggleKtrl('k7c')">${s.k7c?'⚠ Kontrol':'Kontrol?'}</button></div>`;
+    <button class="tg ${s.k7c?'ktrl':''}" id="t_k7c" style="min-width:90px" onclick="toggleKtrl('k7c')">${s.k7c?'⚠ Kontrol':'Kontrol?'}</button></div></div>`;
   document.getElementById('ed_konst').innerHTML=kh;
   drawSchem();drawFootGrid();drawKirisGrid();drawHexGrid();drawAsikGrid();drawPanelGrid();
   // media yükle
@@ -1806,6 +1811,7 @@ async function panelAll(v){if(SEL==null)return;if(roBlock())return;
   drawPanelGrid();drawSchem();schedHeavy();}
 async function toggleMont(f){if(SEL==null)return;if(roBlock())return;const s=PLAN[SEL]||(PLAN[SEL]={});s[f]=s[f]?0:1;await saveTbl(PLAN[SEL]);
   const b=document.getElementById('t_'+f);if(b){b.classList.toggle('act',!!s[f]);b.textContent=s[f]?'Yapıldı ✓':'Yapılmadı';}
+  if(f==='capraz'){const ic=document.getElementById('capraz_ic');if(ic)ic.setAttribute('fill',s[f]?'#2e9e5b':'#e2dcd2');}
   await logAct(f==='asik'?'Aşık montajı':'Çapraz montajı','Masa #'+SEL+' · ['+f+'] '+(s[f]?'+1':'-1'));
   drawSchem();schedHeavy();}
 async function saveTbl(s){s.by=CURUSER||document.getElementById('usta').value.trim()||'—';s.at=Date.now();PLAN[SEL]=s;
@@ -3739,7 +3745,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s197</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s198</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -4333,7 +4339,7 @@ function tanIsGiris(){
 
 async function backupAll(){try{
   if(typeof toast==='function')toast('Yedek hazırlanıyor…');
-  const dump={_app:'SHAMS1',_ver:'s197',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1',_ver:'s198',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pjz:','pja:','pjag:','pjp:','pjpg:','hc:','g:','gd:','arpay:','ppay:','hktah:'];
   for(const pre of pref){try{const o=await sgetAll(pre);for(const k in o){if(o[k]!=null)dump.data[k]=o[k];}}catch(e){}}
   const single=['wage','fx','fxlog','targets','mpct','cab:dc','cab:ac','cab:og','cab:kanal','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','zimmet','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
