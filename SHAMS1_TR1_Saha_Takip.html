@@ -764,7 +764,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 193 · Tablo taşma/kesilme düzeltmeleri (mobil)</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 196 · Kanal açma+kablo montajı ayrıldı, toplu çapraz, aşık malzeme</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -792,7 +792,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 193 · dokun→güncelle</div>
+<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 196 · dokun→güncelle</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -1031,8 +1031,8 @@ async function fbInit(){if(!FBCONFIG||!FBCONFIG.databaseURL)return false;if(FBDB
     firebase.initializeApp(FBCONFIG);
     try{if(firebase.auth&&!firebase.auth().currentUser){await firebase.auth().signInAnonymously();}}catch(e){console.warn('Firebase anonim oturum açılamadı (Authentication > Anonymous kapalı olabilir) — açık kuralla devam:',e&&(e.code||e.message));}
     FBDB=firebase.database();return true;}catch(e){return false;}}
-const TGT_TR1={masa:378,ayak:5292,kiris:2646,asik:4536,panel:9828,capraz:378,inv:19};
-const TGT_TR3={masa:378,ayak:5292,kiris:2646,asik:4536,panel:9828,capraz:378,inv:19};
+const TGT_TR1={masa:378,ayak:5292,kiris:2646,asik:7182,panel:9828,capraz:378,inv:19};
+const TGT_TR3={masa:378,ayak:5292,kiris:2646,asik:7182,panel:9828,capraz:378,inv:19};
 let TGT=TGT_TR1;
 let TRZ=(function(){try{return localStorage.getItem('shams1:trz')||'tr1';}catch(e){return 'tr1';}})();
 const ZLBL={tr1:'TR-1',tr3:'TR-3'};
@@ -1193,7 +1193,7 @@ async function zoneMechAgg(z){
       ayakmont+=Math.min(+p.a3||0,+p.a4||0,+p.a5||0);
       if(Array.isArray(p.kiris))kiris+=p.kiris.filter(function(x){return x>=1;}).length;
       var a12=Array.isArray(p.asik12)?p.asik12:null;
-      if(a12)asik+=a12.filter(function(x){return x>=1;}).length;else if(p.asik===true||p.asik===1)asik+=12;
+      if(a12){var _n=a12.filter(function(x){return x>=1;}).length;asik+=(a12.length===12)?Math.round(_n/12*19):_n;}else if(p.asik===true||p.asik===1)asik+=19;
       if(p.capraz)capraz++;
       panel+=(+p.k7||0);}
     return {a1:a1,a2:a2,ayakmont:ayakmont,kiris:kiris,asik:asik,capraz:capraz,panel:panel};
@@ -1325,9 +1325,9 @@ async function reloadAll(silent){
   else if(BACKEND==='mem'){if(st)st.textContent='⚠ GEÇİCİ — kayıt YOK! (GitHub bağlayın)';renderMemWarn();renderAll();return;}
   if(st)st.textContent='senkron…';
   if(typeof bootStatus==='function')bootStatus('Veriler buluttan yükleniyor…');
-  const [targets,mpct,logs,gks,cabdc,cabac,cabog,dcstr,ogb,matin,matuse,matkov,matcustom,isbasi,upc,uplast,cinsdc,cinsac,cinsog,team,team_del,hcs,pjs,drs,gunlukRaw,wageRaw,mesaiRaw,tazmRaw,fxRaw,fxlogRaw,wxRaw,matlinkRaw,zimmetRaw,paracRaw,pgAll,paAll,pagAll,ppAll,ppgAll,pzAll]=await Promise.all([
+  const [targets,mpct,logs,gks,cabdc,cabac,cabog,cabkanal,dcstr,ogb,matin,matuse,matkov,matcustom,isbasi,upc,uplast,cinsdc,cinsac,cinsog,team,team_del,hcs,pjs,drs,gunlukRaw,wageRaw,mesaiRaw,tazmRaw,fxRaw,fxlogRaw,wxRaw,matlinkRaw,zimmetRaw,paracRaw,pgAll,paAll,pagAll,ppAll,ppgAll,pzAll]=await Promise.all([
     sget('targets'),sget('mpct'),sgetAll('log:'),sgetAll('tr1g:'),
-    sget('cab:dc'),sget('cab:ac'),sget('cab:og'),sget('dcstr'),sget('ogb'),
+    sget('cab:dc'),sget('cab:ac'),sget('cab:og'),sget('cab:kanal'),sget('dcstr'),sget('ogb'),
     sget('matin'),sget('matuse'),sget('matkov'),sget('matcustom'),sget('isbasi'),sget('upc'),sget('uplast'),
     sget('cins:dc'),sget('cins:ac'),sget('cins:og'),sget('team'),sget('team_del'),
     sgetAll('hc:'),sgetAll('pj:'),sgetAll('dr:'),
@@ -1337,7 +1337,7 @@ async function reloadAll(silent){
   {const arr=[];for(const k in logs){const e=logs[k];if(e){e._key=k;arr.push(e);}}arr.sort((a,b)=>b.ts-a.ts);ENTRIES=arr;}
   PLAN={};for(const k in gks){if(gks[k])Object.assign(PLAN,gks[k]);}
   for(const mk in PLAN)migrateKontrol(PLAN[mk]);
-  CAB={dc:cabdc||{},ac:cabac||{},og:cabog||{}};
+  CAB={dc:cabdc||{},ac:cabac||{},og:cabog||{},kanal:cabkanal||{}};
   DCDONE=new Set(dcstr||[]); OGB=ogb||0;
   MATIN=matin||[];MATIN.forEach(function(r){if(r&&!r.items)r.items={};});
   /* === Kolon sevkiyatı seed v2 · foto + ağırlık === */
@@ -1463,7 +1463,7 @@ function renderPlan(){
     r+=`<rect class="t${SEL===t.i?' sel':''}" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${rw.toFixed(1)}" height="${rh.toFixed(1)}" rx="1.4" fill="${baseFill}" onclick="openEd(${t.i})"></rect>`;
     if(SHOWFEET){const ft=footOf(t.i),fk=footkOf(t.i),kr=kirisOf(t.i),fw=Math.max(1,rw*0.045),fh=Math.max(1.4,rh*0.26);
       if(['kiris','hegzagonal','asik','capraz','panel'].indexOf(CURPHASE)>=0){const _cy0=y+rh*0.18+fh/2,_cy1=y+rh*0.56+fh/2;for(let c=0;c<7;c++){const _cx=x+(c+0.5)*(rw/7);r+=`<line x1="${_cx.toFixed(1)}" y1="${_cy0.toFixed(1)}" x2="${_cx.toFixed(1)}" y2="${_cy1.toFixed(1)}" stroke="${kr[c]>=1?'#1f9d8f':'#d2d7df'}" stroke-width="${(kr[c]>=1?rw*0.026:rw*0.012).toFixed(2)}" pointer-events="none"/>`;}}
-      if(['asik','capraz','panel'].indexOf(CURPHASE)>=0){const _av=(typeof asik12Of==='function')?asik12Of(t.i):[],_aw=Math.max(0.8,rh*0.05),_ag=rw*0.015,_ar=[0.30,0.45,0.60,0.75];for(let _ri=0;_ri<4;_ri++){const _ay=y+rh*_ar[_ri];for(let _sg=0;_sg<3;_sg++){const _aj=_ri*3+_sg,_ac=(_av[_aj]>=1)?'#2e9e5b':'#c7b299';r+=`<line x1="${(x+_sg*(rw/3)+_ag).toFixed(1)}" y1="${_ay.toFixed(1)}" x2="${(x+(_sg+1)*(rw/3)-_ag).toFixed(1)}" y2="${_ay.toFixed(1)}" stroke="${_ac}" stroke-width="${_aw.toFixed(2)}" stroke-linecap="round" pointer-events="none"/>`;}}}
+      if(['asik','capraz','panel'].indexOf(CURPHASE)>=0){const _av=(typeof asik12Of==='function')?asik12Of(t.i):[],_aw=Math.max(0.8,rh*0.05),_ag=rw*0.015,_ar=[0.30,0.45,0.60,0.75];for(let _ri=0;_ri<4;_ri++){const _ay=y+rh*_ar[_ri];for(let _sg=0;_sg<5;_sg++){const _aj=_ri*5+_sg,_ac=(_av[_aj]>=1)?'#2e9e5b':'#c7b299';r+=`<line x1="${(x+_sg*(rw/5)+_ag).toFixed(1)}" y1="${_ay.toFixed(1)}" x2="${(x+(_sg+1)*(rw/5)-_ag).toFixed(1)}" y2="${_ay.toFixed(1)}" stroke="${_ac}" stroke-width="${_aw.toFixed(2)}" stroke-linecap="round" pointer-events="none"/>`;}}}
       for(let c=0;c<7;c++)for(let row=0;row<2;row++){const idx=row*7+c,v=ft[idx];
         const fx=x+(c+0.5)*(rw/7)-fw/2, fy=y+(row?rh*0.56:rh*0.18);
         r+=`<rect x="${fx.toFixed(1)}" y="${fy.toFixed(1)}" width="${fw.toFixed(1)}" height="${fh.toFixed(1)}" rx=".5" fill="${fk[idx]?'#E5484D':footColor(v)}" pointer-events="none"/>`;}}
@@ -1610,6 +1610,13 @@ function migrateKontrol(s){if(!s)return s;
   }
   /* konstrüksiyon: eski 2(kontrol) → 1(yapıldı) + kontrol bayrağı kXc */
   for(const k of ['k1','k2','k3','k4','k5','k6'])if(s[k]===2){s[k]=1;s[k+'c']=1;}
+  /* aşık: gerçek sayı 12 değil 19 imiş (masa başı) — eski 12'lik diziyi kayıp olmadan oranlı 19'a taşı */
+  if(Array.isArray(s.asik12)&&s.asik12.length===12){
+    const _oldN=s.asik12.filter(x=>x>=1).length;
+    const _newN=Math.round(_oldN/12*19);
+    const _na=Array(19).fill(0);for(let _i=0;_i<_newN;_i++)_na[_i]=1;
+    s.asik12=_na;
+  }
   return s;}
 function footOf(i){const s=PLAN[i]||{};
   if(Array.isArray(s.foot)&&s.foot.length===14){
@@ -1626,11 +1633,11 @@ function footkOf(i){const s=PLAN[i]||{};
 function footColor(v){return v>=3?'#2e9e5b':v>=2?'#E8833A':v>=1?'#7c5cff':'#cdd2da';}
 function kirisOf(i){const s=PLAN[i]||{};return (Array.isArray(s.kiris)&&s.kiris.length===7)?s.kiris.slice():Array(7).fill(0);}
 function kirisArr(){return kirisOf(SEL).slice();}
-function asik12Of(i){const s=PLAN[i]||{};const a=s.asik12;if(Array.isArray(a)&&a.length===12)return a.slice();return Array(12).fill((s.asik===true||s.asik===1)?1:0);}/* geriye dönük: eski boolean asik → 12'si de dolu */
+function asik12Of(i){const s=PLAN[i]||{};const a=s.asik12;if(Array.isArray(a)&&a.length===19)return a.slice();return Array(19).fill((s.asik===true||s.asik===1)?1:0);}/* geriye dönük: eski boolean asik → 19'u da dolu */
 function asik12Arr(){return asik12Of(SEL);}
-function asik12Cnt(s){if(!s)return 0;const a=s.asik12;if(Array.isArray(a))return a.filter(x=>x>=1).length;return (s.asik===true||s.asik===1)?12:0;}
+function asik12Cnt(s){if(!s)return 0;const a=s.asik12;if(Array.isArray(a))return a.filter(x=>x>=1).length;return (s.asik===true||s.asik===1)?19:0;}
 function sumAsik12(){let t=0;for(const k in PLAN)t+=asik12Cnt(PLAN[k]);return t;}
-function syncAsik12(a){const s=PLAN[SEL]||(PLAN[SEL]={});s.asik12=a.slice();s.asik=(a.filter(x=>x>=1).length===12)?1:0;}/* s.asik(boolean) = tam 12 → hakediş/cntK korunur */
+function syncAsik12(a){const s=PLAN[SEL]||(PLAN[SEL]={});s.asik12=a.slice();s.asik=(a.filter(x=>x>=1).length===19)?1:0;}/* s.asik(boolean) = tam 19 → hakediş/cntK korunur */
 function hex28Of(i){const s=PLAN[i]||{};const a=s.hex28;if(Array.isArray(a)&&a.length===28)return a.slice();const kr=(Array.isArray(s.kiris)&&s.kiris.length===7)?s.kiris:Array(7).fill(0);const out=Array(28).fill(0);for(let j=0;j<28;j++)out[j]=(kr[Math.floor(j/4)]>=1)?1:0;return out;}/* geriye dönük: kiriş montajından türet (her kiriş 4 hegzagonal) */
 function hex28Arr(){return hex28Of(SEL);}
 function hex28Cnt(s){if(!s)return 0;const a=s.hex28;if(Array.isArray(a))return a.filter(x=>x>=1).length;const kr=Array.isArray(s.kiris)?s.kiris.filter(x=>x>=1).length:0;return kr*4;}
@@ -1734,19 +1741,20 @@ async function hexAll(v){if(SEL==null)return;if(roBlock())return;
   drawHexGrid();drawSchem();schedHeavy();}
 function drawAsikGrid(){const el=document.getElementById('ed_asikgrid');if(!el)return;const a=asik12Arr();
   var _W=300,vis='<svg viewBox="0 0 '+_W+' 96" style="width:100%;max-width:300px;display:block;margin:2px auto 4px">';
-  vis+='<text x="2" y="10" font-size="8" fill="#7a5b12" font-family="monospace">4 sıra × 3 = 12 aşık (kirişe dik)</text>';
-  for(var _ri=0;_ri<4;_ri++){var _y=24+_ri*18;
-    for(var _sg=0;_sg<3;_sg++){var _j=_ri*3+_sg,_on=a[_j]>=1,_col=_on?'#2e9e5b':'#ccd2da';
-      var _x1=10+_sg*((_W-20)/3)+5,_x2=10+(_sg+1)*((_W-20)/3)-5;
+  vis+='<text x="2" y="10" font-size="8" fill="#7a5b12" font-family="monospace">4 sıra × ~5 = 19 aşık (kirişe dik)</text>';
+  var _rows=[5,5,5,4],_j=0;
+  for(var _ri=0;_ri<4;_ri++){var _y=24+_ri*18,_cols=_rows[_ri];
+    for(var _sg=0;_sg<_cols;_sg++,_j++){var _on=a[_j]>=1,_col=_on?'#2e9e5b':'#ccd2da';
+      var _x1=10+_sg*((_W-20)/_cols)+3,_x2=10+(_sg+1)*((_W-20)/_cols)-3;
       vis+='<line x1="'+_x1+'" y1="'+_y+'" x2="'+_x2+'" y2="'+_y+'" stroke="'+_col+'" stroke-width="'+(_on?6:3)+'" stroke-linecap="round"/>';
-      vis+='<text x="'+((_x1+_x2)/2)+'" y="'+(_y-4)+'" font-size="8" fill="'+(_on?'#2e9e5b':'#9aa0a6')+'" text-anchor="middle" font-family="monospace">'+(_j+1)+'</text>';}}
+      vis+='<text x="'+((_x1+_x2)/2)+'" y="'+(_y-4)+'" font-size="7" fill="'+(_on?'#2e9e5b':'#9aa0a6')+'" text-anchor="middle" font-family="monospace">'+(_j+1)+'</text>';}}
   vis+='</svg>';
   const cell=j=>{const tip='Aşık '+(j+1)+' · '+(a[j]?'monte ✓':'monte değil');return '<button class="foot '+(a[j]?'f3':'f0')+'" data-lp="asik:'+j+'" title="'+tip+'">'+(j+1)+'</button>';};
-  let h='<div class="fgnote">Kiriş üstüne <b>dik</b> · 4 sıra × 3 segment · her segment ayrı işaretlenir</div>'+vis+'<div class="footrow"><span class="fhdr fh-asik">AŞIK</span>';
-  for(let j=0;j<12;j++){h+=cell(j);if(j===5)h+='</div><div class="footrow"><span class="fhdr fh-asik">&nbsp;</span>';}
+  let h='<div class="fgnote">Kiriş üstüne <b>dik</b> · 19 segment · her segment ayrı işaretlenir</div>'+vis+'<div class="footrow"><span class="fhdr fh-asik">AŞIK</span>';
+  for(let j=0;j<19;j++){h+=cell(j);if(j===4||j===9||j===14)h+='</div><div class="footrow"><span class="fhdr fh-asik">&nbsp;</span>';}
   h+='</div>';
-  const mon=a.filter(x=>x>=1).length,pct=Math.round(mon/12*100);
-  h+='<div class="footsum"><span class="fdot f3"></span>Aşık <b>'+mon+'/12</b> · <b style="color:'+(mon===12?'var(--gnd)':'var(--solar)')+'">%'+pct+'</b>'+(mon===12?' · tam ✓':'')+'</div>';
+  const mon=a.filter(x=>x>=1).length,pct=Math.round(mon/19*100);
+  h+='<div class="footsum"><span class="fdot f3"></span>Aşık <b>'+mon+'/19</b> · <b style="color:'+(mon===19?'var(--gnd)':'var(--solar)')+'">%'+pct+'</b>'+(mon===19?' · tam ✓':'')+'</div>';
   h+='<div class="foothint">Kısa dokun: aşık montajını işaretle / geri al</div>';
   el.innerHTML=h;}
 async function cycleAsik(j){if(SEL==null)return;if(roBlock())return;
@@ -1758,8 +1766,8 @@ async function cycleAsik(j){if(SEL==null)return;if(roBlock())return;
 async function asikAll(v){if(SEL==null)return;if(roBlock())return;
   if(ROLE!=='admin'){const ld=masaLastDay(SEL);
     if(ld&&ld!==dToday()){await reqChange({tip:'asikAll',masa:SEL,v},'Masa #'+SEL+' · aşık toplu '+(v?'monte':'sıfırla')+' ('+ld+' verisi)');toast('Geçmiş veri — yönetici onayına gönderildi');return;}}
-  var _pa=asik12Arr().filter(x=>x>=1).length;syncAsik12(Array(12).fill(v));await saveTbl(PLAN[SEL]);
-  var _da=(v?12:0)-_pa;await logAct('Aşık (toplu)','Masa #'+SEL+' · [asik] '+(_da>=0?'+':'')+_da);
+  var _pa=asik12Arr().filter(x=>x>=1).length;syncAsik12(Array(19).fill(v));await saveTbl(PLAN[SEL]);
+  var _da=(v?19:0)-_pa;await logAct('Aşık (toplu)','Masa #'+SEL+' · [asik] '+(_da>=0?'+':'')+_da);
   drawAsikGrid();drawSchem();schedHeavy();}
 async function toggleMont(f){if(SEL==null)return;if(roBlock())return;const s=PLAN[SEL]||(PLAN[SEL]={});s[f]=s[f]?0:1;await saveTbl(PLAN[SEL]);
   const b=document.getElementById('t_'+f);if(b){b.classList.toggle('act',!!s[f]);b.textContent=s[f]?'Yapıldı ✓':'Yapılmadı';}
@@ -1796,7 +1804,7 @@ let KFIND=null, ZONE=0, MAXINV=0;
 function syncUsta(el){const u=document.getElementById('usta');if(u)u.value=el.value;}
 function invOf(t){const m=(t.adr||t.adrf||'').match(/INV(\d+)/);return m?+m[1]:0;}
 function invColor(n){const h=(n*53)%360;return 'hsl('+h+',62%,58%)';}
-function konstFrac(s){if(!s)return 0;const a=s.kiris;const kr=Array.isArray(a)?a.filter(x=>x>=1).length/7:0;const d=kr+(hex28Cnt(s)/28)+(asik12Cnt(s)/12)+(s.capraz?1:0)+(((s.k7||0)>=26)?1:0);return d/5;}
+function konstFrac(s){if(!s)return 0;const a=s.kiris;const kr=Array.isArray(a)?a.filter(x=>x>=1).length/7:0;const d=kr+(hex28Cnt(s)/28)+(asik12Cnt(s)/19)+(s.capraz?1:0)+(((s.k7||0)>=26)?1:0);return d/5;}
 function konstFill(f){if(f<=0)return 'var(--slate)';if(f>=1)return 'var(--gnd)';
   const a=[244,178,62],b=[143,210,122],c=a.map((v,i)=>Math.round(v+(b[i]-v)*f));return 'rgb('+c[0]+','+c[1]+','+c[2]+')';}
 function konstScale(){const W=1000,dx=LAYOUT.maxx-LAYOUT.minx,dy=LAYOUT.maxy-LAYOUT.miny,H=Math.round(W*dy/dx);
@@ -1848,7 +1856,7 @@ function renderKonstPlan(){const el=document.getElementById('plan2');if(!el)retu
     r+='<rect'+dim+' class="t'+(selc?' sel':'')+'" x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+S.rw.toFixed(1)+'" height="'+S.rh.toFixed(1)+'" rx="1.3" fill="'+fill+'" stroke="'+(selc?'#16161A':invColor(inv))+'" stroke-width="'+(selc?2.2:1.1)+'" onclick="openEd('+t.i+')"></rect>';
     if(SHOWFEET){const ft=footOf(t.i),fk=footkOf(t.i),kr=kirisOf(t.i),fw=Math.max(0.8,S.rw*0.05),fh=Math.max(1.2,S.rh*0.30);
       if(['kiris','hegzagonal','asik','capraz','panel'].indexOf(CURPHASE)>=0){const _cy0=y+S.rh*0.16+fh/2,_cy1=y+S.rh*0.55+fh/2;for(let c=0;c<7;c++){const _cx=x+(c+0.5)*(S.rw/7);r+='<line'+dim+' x1="'+_cx.toFixed(1)+'" y1="'+_cy0.toFixed(1)+'" x2="'+_cx.toFixed(1)+'" y2="'+_cy1.toFixed(1)+'" stroke="'+(kr[c]>=1?'#1f9d8f':'#d2d7df')+'" stroke-width="'+(kr[c]>=1?S.rw*0.03:S.rw*0.013).toFixed(2)+'" pointer-events="none"></line>';}}
-      if(['asik','capraz','panel'].indexOf(CURPHASE)>=0){const _av=(typeof asik12Of==='function')?asik12Of(t.i):[],_aw=Math.max(0.6,S.rh*0.05),_ag=S.rw*0.015,_ar=[0.30,0.45,0.60,0.75];for(let _ri=0;_ri<4;_ri++){const _ay=y+S.rh*_ar[_ri];for(let _sg=0;_sg<3;_sg++){const _aj=_ri*3+_sg,_ac=(_av[_aj]>=1)?'#2e9e5b':'#c7b299';r+='<line'+dim+' x1="'+(x+_sg*(S.rw/3)+_ag).toFixed(1)+'" y1="'+_ay.toFixed(1)+'" x2="'+(x+(_sg+1)*(S.rw/3)-_ag).toFixed(1)+'" y2="'+_ay.toFixed(1)+'" stroke="'+_ac+'" stroke-width="'+_aw.toFixed(2)+'" stroke-linecap="round" pointer-events="none"></line>';}}}
+      if(['asik','capraz','panel'].indexOf(CURPHASE)>=0){const _av=(typeof asik12Of==='function')?asik12Of(t.i):[],_aw=Math.max(0.6,S.rh*0.05),_ag=S.rw*0.015,_ar=[0.30,0.45,0.60,0.75];for(let _ri=0;_ri<4;_ri++){const _ay=y+S.rh*_ar[_ri];for(let _sg=0;_sg<5;_sg++){const _aj=_ri*5+_sg,_ac=(_av[_aj]>=1)?'#2e9e5b':'#c7b299';r+='<line'+dim+' x1="'+(x+_sg*(S.rw/5)+_ag).toFixed(1)+'" y1="'+_ay.toFixed(1)+'" x2="'+(x+(_sg+1)*(S.rw/5)-_ag).toFixed(1)+'" y2="'+_ay.toFixed(1)+'" stroke="'+_ac+'" stroke-width="'+_aw.toFixed(2)+'" stroke-linecap="round" pointer-events="none"></line>';}}}
       for(let c=0;c<7;c++)for(let row=0;row<2;row++){const idx=row*7+c,v=ft[idx];
         const fx=x+(c+0.5)*(S.rw/7)-fw/2, fy=y+(row?S.rh*0.55:S.rh*0.16);
         r+='<rect'+dim+' x="'+fx.toFixed(1)+'" y="'+fy.toFixed(1)+'" width="'+fw.toFixed(1)+'" height="'+fh.toFixed(1)+'" rx=".4" fill="'+(fk[idx]?'#E5484D':footColor(v))+'" pointer-events="none"></rect>';}}
@@ -1860,7 +1868,7 @@ function renderKonstPlan(){const el=document.getElementById('plan2');if(!el)retu
   r+='</svg>';el.innerHTML=r;pzApply('k2');pzAttach('k2',el);}
 
 function maxInv(){if(!MAXINV)MAXINV=LAYOUT.tables.reduce((m,t)=>Math.max(m,invOf(t)),0);return MAXINV;}
-function renderZoneChips(){const w=document.getElementById('zonechips');if(!w)return;let h='<button class="zchip'+(ZONE===0?' on':'')+'" onclick="focusZone(0)">Tümü · TR-1</button>';
+function renderZoneChips(){const w=document.getElementById('zonechips');if(!w)return;let h='<button class="zchip'+(ZONE===0?' on':'')+'" onclick="focusZone(0)">Tümü · '+(ZLBL[TRZ]||'TR-1')+'</button>';
   for(let i=1;i<=maxInv();i++)h+='<button class="zchip'+(ZONE===i?' on':'')+'" onclick="focusZone('+i+')">INV'+i+'</button>';
   w.innerHTML=h;}
 function focusZone(inv){const S=konstScale();pzInit('k2','plan2',S.W,S.H);ZONE=inv||0;KFIND=null;
@@ -1935,7 +1943,7 @@ function phaseUnits(p,s){s=s||{};
   if(p==='kolon')return {d:Math.min(14,+s.a4||0),t:14};
   if(p==='kiris'){const a=s.kiris;return {d:Array.isArray(a)?a.filter(x=>x>=1).length:0,t:7};}
   if(p==='hegzagonal')return {d:hex28Cnt(s),t:28};/* hegzagonal = 28 M12×30 (7 kiriş × 4), parça bazlı */
-  if(p==='asik')return {d:asik12Cnt(s),t:12};/* aşık = 12 segment (parça bazlı ilerleme) */
+  if(p==='asik')return {d:asik12Cnt(s),t:19};/* aşık = 19 segment (parça bazlı ilerleme) */
   if(p==='capraz')return {d:s.capraz?1:0,t:1};
   if(p==='panel')return {d:Math.min(26,+s.k7||0),t:26};
   return {d:0,t:1};}
@@ -1964,7 +1972,21 @@ function renderPhaseInfo(){const c=document.getElementById('phasecount');if(!c)r
     c.innerHTML='<span class="phstg-h">Aşama ('+zlbl+'):</span> '+PHASE_ORDER.map((p,i)=>'<span class="phstg"><span class="phdot" style="background:'+STAGE_COL[p]+'"></span>'+(i+1)+' '+STAGE_NM[p]+'</span>').join('')+' <span class="phstg"><span class="phdot" style="background:var(--gnd)"></span>bitti</span>';
     return;}
   const s=phaseStats(CURPHASE,z);const pct=s.t?Math.round(s.d/s.t*100):0;
-  c.innerHTML='<b>'+zlbl+'</b> · '+tr(s.d)+' / '+tr(s.t)+' '+(PHASE_UNIT[CURPHASE]||'')+' · <b style="color:var(--solar)">%'+pct+'</b>';}
+  c.innerHTML='<b>'+zlbl+'</b> · '+tr(s.d)+' / '+tr(s.t)+' '+(PHASE_UNIT[CURPHASE]||'')+' · <b style="color:var(--solar)">%'+pct+'</b>'+
+    (CURPHASE==='capraz'?' <button class="btn ghost sm" style="margin-left:8px" onclick="bulkCapraz(1)">✓ Tüm masalar — Çapraz yapıldı</button><button class="btn ghost sm" onclick="bulkCapraz(0)">↺ Tümünü sıfırla</button>':'');}
+async function bulkCapraz(v){if(roBlock())return;
+  if(!confirm((v?'TÜM masaların çaprazı "yapıldı" olarak işaretlensin mi?':'TÜM masaların çaprazı sıfırlansın mı?')+'\n\nBu toplu bir işlemdir, tek tek elle geri almak gerekir.'))return;
+  const groups={};
+  for(const t of LAYOUT.tables){const g=grpOf(t.i);(groups[g]||(groups[g]=[])).push(t.i);}
+  let changed=0;
+  for(const g in groups){
+    const obj={};
+    for(const i of groups[g]){const s=PLAN[i]||(PLAN[i]={});if(!!s.capraz!==!!v)changed++;s.capraz=v?1:0;s.by=CURUSER||(document.getElementById('usta')&&document.getElementById('usta').value.trim())||'—';s.at=Date.now();PLAN[i]=s;obj[i]=s;}
+    await sset('tr1g:'+g,obj);
+  }
+  await logAct('Çapraz (toplu)',(v?'Tüm masalar YAPILDI':'Tüm masalar sıfırlandı')+' · '+changed+' masa değişti');
+  toast('Toplu çapraz: '+changed+' masa güncellendi');
+  try{renderKonstPlan();}catch(e){}try{renderZoneMasa();}catch(e){}try{renderPhaseInfo();}catch(e){}schedHeavy();}
 function setPhase(p){CURPHASE=p;const lbl=document.getElementById('phaselbl');
   const nm={all:'Tüm konstrüksiyon · aşama renkleri',harita:'1. Harita işaretleme',rok:'2. Rok delme (İşveren)',kolon:'3. Ayak/kolon montajı',kiris:'4. Kiriş montajı',asik:'5. Aşık montajı',capraz:'6. Çapraz montajı',panel:'7. Panel montajı'};
   if(lbl)lbl.textContent=nm[p]||p;renderPhaseChips();renderKonstPlan();renderZoneMasa();}
@@ -2267,7 +2289,7 @@ async function applyChange(p){
     await saveTbl(PLAN[p.masa]);SEL=oldSEL;
     await logAct('Hegzagonal (onaylı)','Masa #'+p.masa+(p.tip==='hex'?(' · cıvata '+(p.j+1)):' · toplu'));}
   else if(p.tip==='asik'||p.tip==='asikAll'){const oldSEL=SEL;SEL=p.masa;
-    if(p.tip==='asik'){const a=asik12Arr();a[p.j]=p.to;syncAsik12(a);}else{syncAsik12(Array(12).fill(p.v));}
+    if(p.tip==='asik'){const a=asik12Arr();a[p.j]=p.to;syncAsik12(a);}else{syncAsik12(Array(19).fill(p.v));}
     await saveTbl(PLAN[p.masa]);SEL=oldSEL;
     await logAct('Aşık (onaylı)','Masa #'+p.masa+(p.tip==='asik'?(' · aşık '+(p.j+1)):' · toplu'));}
   else if(p.tip==='entry-del'){await sdel(p.key);}
@@ -2364,7 +2386,7 @@ function setFont(d){FS=Math.max(80,Math.min(150,FS+d));try{localStorage.setItem(
 function loadFont(){try{const v=parseInt(localStorage.getItem('fs'));if(v>=80&&v<=150)FS=v;}catch(e){}applyFont();}
 
 /* ===== KABLO GÜZERGAHI (DC / AC / OG) — saha işaretleme → hakediş ===== */
-let CAB={dc:{},ac:{},og:{}}, CINS={dc:{},ac:{},og:{}};
+let CAB={dc:{},ac:{},og:{},kanal:{}}, CINS={dc:{},ac:{},og:{}};
 let DCDONE=new Set(), OGB=0;
 const CABMAP={dc:'solar',ac:'kanal',og:'ogbas'};      // hangi hakediş kalemini besler
 const CABNAME={dc:'DC — Solar string',ac:'AC — Alçak gerilim',og:'OG — Orta gerilim'};
@@ -2422,9 +2444,10 @@ function cabSVG(type){
   }else if(type==='ac'){
     g+='<line x1="'+PX(rxR(yTR))+'" y1="'+PY(yTR)+'" x2="'+PX(rxR(yBR))+'" y2="'+PY(yBR)+'" stroke="#9FB4DA" stroke-width="2" opacity=".5"/>';
     g+='<line x1="'+PX(rxL(yTL))+'" y1="'+PY(yTL)+'" x2="'+PX(rxL(yBL))+'" y2="'+PY(yBL)+'" stroke="#9FB4DA" stroke-width="2" opacity=".5"/>';
-    for(const [a,b] of agSegs()){const pa=inv[a-1],pb=inv[b-1],k=segKey(a,b),on=!!CAB.ac[k];
+    for(const [a,b] of agSegs()){const pa=inv[a-1],pb=inv[b-1],k=segKey(a,b),on=!!CAB.ac[k],kanalOn=!!CAB.kanal[k];
       const x1=PX(rxFor(a,pa.y)),y1=PY(pa.y),x2=PX(rxFor(b,pb.y)),y2=PY(pb.y);
-      g+='<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="'+(on?'#2D6BE0':'#C9CFD9')+'" stroke-width="'+(on?3:2)+'" stroke-linecap="round"/>';
+      const segCol=on?'#2D6BE0':(kanalOn?'#E8833A':'#C9CFD9');
+      g+='<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="'+segCol+'" stroke-width="'+(on||kanalOn?3:2)+'" stroke-linecap="round"/>';
       g+='<line class="seghit" x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="transparent" stroke-width="13" onclick="openSeg('+a+','+b+')"/>';}
     for(let n=1;n<=inv.length;n++){const p=inv[n-1];if(p)g+=node(PX(rxFor(n,p.y)),PY(p.y),n,!!CAB.ac['inv'+n],'#2D6BE0','openInvConn('+n+')');}
     g+=kosk('AG PANO');
@@ -2467,13 +2490,19 @@ function openDCInv(n,keep){CUR_DC=n;const idxs=invStrIdx(n);let done=0,m=0,dm=0;
 /* ---- AG segment modal ---- */
 function openSeg(a,b){const key=Math.min(a,b)+'-'+Math.max(a,b),det=SEG2DETAY[key]||1;
   const pa=INVDEV[a-1],pb=INVDEV[b-1],seglen=Math.round(Math.hypot(pa.x-pb.x,pa.y-pb.y));
+  const kOn=!!CAB.kanal[key],cOn=!!CAB.ac[key];
   modalShow('INV'+a+'–INV'+b+' arası kanal · DETAY-'+det,
    '<div class="dcables"><div><span class="dk ac">AG</span> '+det+' × 3×300/150 mm² NA2XY (bu kesitte '+det+' inverter beslemesi geçer)</div>'+
    '<div><span class="dk dc">DC</span> SOLAR 1×6 + KORUGE boru</div>'+
    '<div class="hint">Kanal ~'+seglen+' m · köşke doğru DETAY no artar (besleme birikir).</div></div>'+
    '<div class="dnote">Projeden — DETAY-'+det+' kanal kesiti:</div>'+
    '<div class="dcell" style="'+dcellOf(String(det),tw_())+'"></div>'+
-   '<div class="drow"><button class="btn '+(CAB.ac[key]?'':'ghost ')+'sm" onclick="toggleSeg(\''+key+'\')">'+(CAB.ac[key]?'✓ yapıldı':'yapıldı işaretle')+'</button><button class="btn ghost sm" onclick="dFull()">Tüm tablo</button></div>');}
+   '<div class="drow"><button class="btn '+(kOn?'':'ghost ')+'sm" style="'+(kOn?'background:#E8833A;border-color:#E8833A':'')+'" onclick="toggleKanalSeg(\''+key+'\')">'+(kOn?'✓ kanal açıldı':'1) kanal açıldı işaretle')+'</button></div>'+
+   '<div class="drow"><button class="btn '+(cOn?'':'ghost ')+'sm" onclick="toggleSeg(\''+key+'\')" '+(kOn?'':'title="Önce kanal açılmalı"')+'>'+(cOn?'✓ kablo montajı yapıldı':'2) kablo montajı işaretle')+'</button><button class="btn ghost sm" onclick="dFull()">Tüm tablo</button></div>');}
+async function toggleKanalSeg(key){CAB.kanal[key]=!CAB.kanal[key];await sset('cab:kanal',CAB.kanal);
+  const segs=agSegs();const done=segs.filter(s=>CAB.kanal[segKey(s[0],s[1])]).length;
+  await logAct('Kablo Kanalı Açıldı',key+' segmenti · [kanalac] '+(CAB.kanal[key]?'+1':'-1')+' · toplam '+done+'/'+segs.length);
+  const a=+key.split('-')[0],b=+key.split('-')[1];openSeg(a,b);renderMontajScope(1);}
 async function toggleSeg(key){CAB.ac[key]=!CAB.ac[key];await sset('cab:ac',CAB.ac);
   const segs=agSegs();const done=segs.filter(s=>CAB.ac[segKey(s[0],s[1])]).length;
   await setMpct('kanal',Math.round(done/segs.length*100));const a=+key.split('-')[0],b=+key.split('-')[1];openSeg(a,b);renderMontajScope(1);}
@@ -2504,8 +2533,11 @@ function cableSection(type){
   let prog='';
   if(type==='dc'){const dm=dcMeters(),pct=Math.round(dm/45052*100),dn=DCDONE.size;
     prog='<div class="cabbar"><div class="cabprog"><b>'+dn+'/413</b> string · <b>'+Math.round(dm)+' m</b> / 45.052 m · %'+pct+'</div><div class="track" style="flex:1"><div class="fill fELK" style="width:'+pct+'%"></div></div></div>';}
-  else if(type==='ac'){const segs=agSegs(),done=segs.filter(s=>CAB.ac[segKey(s[0],s[1])]).length,pct=Math.round(done/segs.length*100);
-    prog='<div class="cabbar"><div class="cabprog"><b>'+done+'/'+segs.length+'</b> kanal segmenti · %'+pct+'</div><div class="track" style="flex:1"><div class="fill fELK" style="width:'+pct+'%"></div></div></div>';}
+  else if(type==='ac'){const segs=agSegs(),done=segs.filter(s=>CAB.ac[segKey(s[0],s[1])]).length,kdone=segs.filter(s=>CAB.kanal[segKey(s[0],s[1])]).length,pct=Math.round(done/segs.length*100),kpct=Math.round(kdone/segs.length*100);
+    prog='<div class="cabbar" style="flex-direction:column;align-items:stretch;gap:6px">'+
+      '<div class="cabprog"><span style="color:#E8833A">●</span> Kanal açılan: <b>'+kdone+'/'+segs.length+'</b> · %'+kpct+'</div><div class="track"><div class="fill" style="width:'+kpct+'%;background:#E8833A"></div></div>'+
+      '<div class="cabprog"><span style="color:#2D6BE0">●</span> Kablo Montajı: <b>'+done+'/'+segs.length+'</b> segmenti · %'+pct+'</div><div class="track"><div class="fill fELK" style="width:'+pct+'%"></div></div>'+
+      '</div>';}
   else{const pct=Math.round((OGB||0)/6*100);prog='<div class="cabbar"><div class="cabprog"><b>'+(OGB||0)+'/6</b> OG başlık · %'+pct+'</div><div class="track" style="flex:1"><div class="fill fELK" style="width:'+pct+'%"></div></div></div>';}
   return '<div class="tk2"><h3>'+CABNAME[type]+' kablo güzergahı</h3>'+
     '<div class="hint" style="margin:2px 0 8px">'+guz+'</div>'+
@@ -2540,9 +2572,9 @@ const MATKESIF=[
  {id:'k_p2',    kisim:'Konstrüksiyon', ad:'P2 Arka kolon/ayak (S355JR · 7/masa)', birim:'adet', mik:2646, mont:'k2', pt:7},
  {id:'k_p3',    kisim:'Konstrüksiyon', ad:'P3 Kiriş (S350GD · 7/masa)', birim:'adet', mik:2646, mont:'kiris', pt:7},
  {id:'k_hex',   kisim:'Konstrüksiyon', ad:'M12×30 hegzagonal cıvata (kiriş bağlantı · 4/kiriş)', birim:'adet', mik:10584, mont:'kiris', pt:4},
- {id:'k_p41',   kisim:'Konstrüksiyon', ad:'P4-1 Aşık-1 (S350GD · 4/masa)', birim:'adet', mik:1512, mont:'asik', pt:4},
- {id:'k_p42',   kisim:'Konstrüksiyon', ad:'P4-2 Aşık-2 (S350GD · 4/masa)', birim:'adet', mik:1512, mont:'asik', pt:4},
- {id:'k_p43',   kisim:'Konstrüksiyon', ad:'P4-3 Aşık-3 (S350GD · 4/masa)', birim:'adet', mik:1512, mont:'asik', pt:4},
+ {id:'k_p41',   kisim:'Konstrüksiyon', ad:'P4-1 Aşık-1 (S350GD · 7/masa)', birim:'adet', mik:2646, mont:'asik', pt:7},
+ {id:'k_p42',   kisim:'Konstrüksiyon', ad:'P4-2 Aşık-2 (S350GD · 6/masa)', birim:'adet', mik:2268, mont:'asik', pt:6},
+ {id:'k_p43',   kisim:'Konstrüksiyon', ad:'P4-3 Aşık-3 (S350GD · 6/masa)', birim:'adet', mik:2268, mont:'asik', pt:6},
  {id:'k_p5',    kisim:'Konstrüksiyon', ad:'P5 Payanda (S350GD · 7/masa)', birim:'adet', mik:2646, mont:'asik', pt:7},
  {id:'k_p6',    kisim:'Konstrüksiyon', ad:'P6 Çapraz (S350GD · 12/masa)', birim:'adet', mik:4536, mont:'capraz', pt:12},
  {id:'k_p7',    kisim:'Konstrüksiyon', ad:'P7 Aşık birleştirme (S350GD · 8/masa)', birim:'adet', mik:3024, mont:'asik', pt:8},
@@ -2581,8 +2613,8 @@ function kullanilanOf(id){const it=matItem(id);if(!it)return +(MATUSE[id]||0);
   if(id==='k_p2')return footMonRow(true);/* P2 arka ayak = arka sıra j0-6 (saha düzeltmesi s82) *//* P2 arka ayak = ayak montajından (footk≥3 · j7-13) */
   if(id==='k_hex')return sumHex28();/* M12×30 hegzagonal: gerçek monte (28/masa); eski kiriş verisi otomatik türer */
   if(it.mont==='kiris')return sumKiris();/* kiriş: eleman bazlı (7/masa, toplam 2646) */
-  if(it.mont==='asik')return Math.round((typeof sumAsik12==='function'?sumAsik12():0)/12*(it.pt||1));/* aşık malzemesi = işaretlenen 12 segmentle orantılı düşer (kısmi masa dahil) */
-  if(id==='k_m12'){const fr=(sumKiris()/2646+(typeof sumAsik12==='function'?sumAsik12():0)/4536+cntK('capraz')/378)/3;return Math.round(fr*(it.mik||52920));}/* M12 civata seti: ust montaj (kiris+asik+capraz) ortalamasina orantili tuketilir */
+  if(it.mont==='asik')return Math.round((typeof sumAsik12==='function'?sumAsik12():0)/19*(it.pt||1));/* aşık malzemesi = işaretlenen 19 segmentle orantılı düşer (kısmi masa dahil) */
+  if(id==='k_m12'){const fr=(sumKiris()/2646+(typeof sumAsik12==='function'?sumAsik12():0)/7182+cntK('capraz')/378)/3;return Math.round(fr*(it.mik||52920));}/* M12 civata seti: ust montaj (kiris+asik+capraz) ortalamasina orantili tuketilir */
   const dm=(typeof dcMeters==='function'?dcMeters():0), sp=(typeof sumP==='function'?sumP('k7'):0);
   if(it.auto==='dc')return Math.round(dm);
   if(it.mont==='pp')return Math.round(sp/9828*it.mik);
@@ -3668,7 +3700,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s193</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s196</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -3855,7 +3887,7 @@ function rapAgg(day){const logs=dayLogs(day);const persons={},masas={};let del=0
     const d=r.detail||'';
     if(/tümü delindi/.test(d))del+=14;else if(/→ delindi/.test(d))del++;
     if(/tümü monte/.test(d))mon+=14;else if(/→ monte/.test(d))mon++;
-    if(/Konst|Panel|Yapıldı/.test(r.act||''))konst++;});
+    if(/Konst|Panel|Yapıldı|Kablo Kanalı/.test(r.act||''))konst++;});
   return {logs,persons,masas,del,mon,konst};}
 function rapMap(masas){const W=620,dx=LAYOUT.maxx-LAYOUT.minx,dy=LAYOUT.maxy-LAYOUT.miny,H=Math.round(W*dy/dx);
   const rw=17.2/dx*W,rh=Math.max(4.34/dx*W,2.4),sx=x=>(x-LAYOUT.minx)/dx*W,sy=y=>(LAYOUT.maxy-y)/dy*H;
@@ -3881,6 +3913,7 @@ function repItems(day){
   {id:'asik',     ad:'Aşık montajı (P4)',   birim:'adet',  cum:sumAsik12(),   hedef:TGT.asik,  dis:'MEK', pur:0.31/3},
   {id:'capraz',   ad:'Çapraz montajı (P6)', birim:'masa',  cum:cntK('capraz'), hedef:378,  dis:'MEK', pur:0.31/3},
   {id:'panel',    ad:'Panel montajı',      birim:'panel', cum:sumP('k7'),  hedef:TGT.panel, dis:'MEK', pur:0.27},
+  {id:'kanalac',  ad:'Kablo Kanalı Açılması (AG segment)', birim:'segment', cum:(typeof agSegs==='function'?agSegs().filter(s=>CAB.kanal[segKey(s[0],s[1])]).length:0), hedef:(typeof agSegs==='function'?agSegs().length:0), dis:'ELK', pur:0},
   ...GEN.map(g=>({id:g.id,ad:g.ad,birim:g.birim,cum:doneGen(g.id),hedef:g.hedef,dis:'ELK',pur:g.pur||0}))
 ];}
 /* o güne ait, her iş kalemi için yapılan ADET:
@@ -3888,7 +3921,7 @@ function repItems(day){
    - harita/üst montaj/panel: ALOG 'Üretim' delta logları (undo-duyarlı net)
    - elektrik (GEN): ENTRIES üretim kayıtları (o günün tarihi) */
 function dayItemQty(day){
-  const q={harita:0,ayakdelme:0,ayakmont:0,kiris:0,asik:0,capraz:0,panel:0};
+  const q={harita:0,ayakdelme:0,ayakmont:0,kiris:0,asik:0,capraz:0,panel:0,kanalac:0};
   /* rok & montaj: o güne kadar net durum farkı (telescoping) → günlük toplamı kümülatifi asla aşmaz */
   const cur=footCumUpto(day),pre=footCumUpto(dadd(day,-1));
   q.ayakdelme=Math.max(0,cur.del-pre.del);
@@ -3902,6 +3935,7 @@ function dayItemQty(day){
   q.asik=_cl('asik',(typeof sumAsik12==='function'?sumAsik12():0));
   q.capraz=_cl('capraz',(typeof cntK==='function'?cntK('capraz'):0));
   q.panel=_cl('k7',(typeof sumP==='function'?sumP('k7'):0));
+  q.kanalac=_cl('kanalac',(typeof agSegs==='function'?agSegs().filter(s=>CAB.kanal[segKey(s[0],s[1])]).length:0));
   if(q.harita<0)q.harita=0;
   ENTRIES.forEach(e=>{const ed=e.date||dstr(e.ts);if(ed===day)q[e.id]=(q[e.id]||0)+(+e.qty||0);});
   return q;
@@ -3909,7 +3943,7 @@ function dayItemQty(day){
 /* o günün NET değişimi (clamp YOK → silme/iptal eksi görünür). Matris ve kart "bugün" değeri buradan.
    rok/montaj = footCumUpto farkı (mutlak 'gürültülü' sayı DEĞİL, sadece gün farkı). harita = yalnız işaretleme aksiyonları. */
 function dayNet(day){
-  const q={harita:0,ayakdelme:0,ayakmont:0,kiris:0,asik:0,capraz:0,panel:0};
+  const q={harita:0,ayakdelme:0,ayakmont:0,kiris:0,asik:0,capraz:0,panel:0,kanalac:0};
   const cur=footCumUpto(day),pre=footCumUpto(dadd(day,-1));
   q.ayakdelme=Math.max(0,cur.del-pre.del);
   q.ayakmont=Math.max(0,cur.mon-pre.mon);
@@ -3921,6 +3955,7 @@ function dayNet(day){
   q.asik=_cl('asik',(typeof sumAsik12==='function'?sumAsik12():0));
   q.capraz=_cl('capraz',(typeof cntK==='function'?cntK('capraz'):0));
   q.panel=_cl('k7',(typeof sumP==='function'?sumP('k7'):0));
+  q.kanalac=_cl('kanalac',(typeof agSegs==='function'?agSegs().filter(s=>CAB.kanal[segKey(s[0],s[1])]).length:0));
   ENTRIES.forEach(e=>{const ed=e.date||dstr(e.ts);if(ed===day)q[e.id]=(q[e.id]||0)+(+e.qty||0);});
   return q;
 }
@@ -3960,7 +3995,7 @@ function renderItemMatrix(forPrint){
   const items=repItems(RAPDAY);
   const allDays=repDays();
   const dn={};allDays.forEach(d=>dn[d]=dayNet(d));
-  const active=d=>{const n=dn[d];return ['harita','ayakdelme','ayakmont','kiris','asik','capraz','panel'].some(k=>Math.abs(n[k]||0)>0)||GEN.some(g=>Math.abs(n[g.id]||0)>0);};
+  const active=d=>{const n=dn[d];return ['harita','ayakdelme','ayakmont','kiris','asik','capraz','panel','kanalac'].some(k=>Math.abs(n[k]||0)>0)||GEN.some(g=>Math.abs(n[g.id]||0)>0);};
   let cols=allDays.filter(active);
   if(cols.indexOf(RAPDAY)<0)cols.push(RAPDAY);
   cols=[...new Set(cols)].sort();
@@ -4259,10 +4294,10 @@ function tanIsGiris(){
 
 async function backupAll(){try{
   if(typeof toast==='function')toast('Yedek hazırlanıyor…');
-  const dump={_app:'SHAMS1',_ver:'s193',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1',_ver:'s196',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pjz:','pja:','pjag:','pjp:','pjpg:','hc:','g:','gd:','arpay:','ppay:','hktah:'];
   for(const pre of pref){try{const o=await sgetAll(pre);for(const k in o){if(o[k]!=null)dump.data[k]=o[k];}}catch(e){}}
-  const single=['wage','fx','fxlog','targets','mpct','cab:dc','cab:ac','cab:og','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','zimmet','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
+  const single=['wage','fx','fxlog','targets','mpct','cab:dc','cab:ac','cab:og','cab:kanal','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','zimmet','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
   for(const k of single){try{const v=await sget(k);if(v!=null)dump.data[k]=v;}catch(e){}}
   const _json=JSON.stringify(dump);const _blob=new Blob([_json],{type:'application/json'});const _url=URL.createObjectURL(_blob);const _fname='SHAMS1_yedek_'+RAPDAY+'.json';
   window._bkBlob=_blob;window._bkName=_fname;window._bkUrl=_url;
