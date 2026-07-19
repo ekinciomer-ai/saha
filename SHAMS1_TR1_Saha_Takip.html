@@ -44,6 +44,7 @@
   .summary{display:grid;grid-template-columns:repeat(5,1fr);gap:11px;margin-bottom:16px}
   .sb{border:1px solid var(--line);border-radius:18px;padding:14px;background:var(--card);box-shadow:var(--shadow)}
   .sb .s{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--label);font-weight:700}
+  .sb .s2z{font-size:11px;color:var(--faint,#9a9aa5);margin-top:4px;font-weight:600}.sb .s2z b{color:var(--mv,#0E9E97)}
   .sb .a{font-family:var(--head);font-size:22px;font-weight:700;margin-top:4px;letter-spacing:-.5px}
   .sb.tot .a{color:var(--gnd)}.sb.cash .a{color:var(--solar)}.sb.rok .a{color:var(--mv)}
   .tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
@@ -768,7 +769,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 220 · Ana sayfa TR-1+TR-3 birleşik gösterim</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 223 · İcmal grafiği Chart.js ile yenilendi</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -796,7 +797,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 220 · dokun→güncelle</div>
+<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 223 · dokun→güncelle</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -809,11 +810,11 @@
   <div id="dreqban" class="dreqban adminonly" style="display:none"></div>
   <div id="demoban" class="demoban">👁 <b>DEMO — salt-okunur.</b> Verileri inceleyebilir, değiştiremezsiniz · parasal &amp; sözleşme bilgileri gizlidir.</div>
   <div class="summary">
-    <div class="sb tot"><div class="s">Toplam İlerleme</div><div class="a" id="s_tot">%0</div></div>
-    <div class="sb cash money"><div class="s">Hakediş Kümülatif</div><div class="a" id="s_usd">0</div></div>
-    <div class="sb"><div class="s">Mekanik</div><div class="a" id="s_mek">%0</div></div>
-    <div class="sb"><div class="s">Elektrik</div><div class="a" id="s_elk">%0</div></div>
-    <div class="sb rok"><div class="s">Rok delinen ayak</div><div class="a" id="s_rok">0</div></div>
+    <div class="sb tot"><div class="s">Toplam İlerleme <small>(TR-1 sözleşmesi)</small></div><div class="a" id="s_tot">%0</div></div>
+    <div class="sb cash money"><div class="s">Hakediş Kümülatif <small>(TR-1)</small></div><div class="a" id="s_usd">0</div></div>
+    <div class="sb"><div class="s">Mekanik</div><div class="a" id="s_mek">%0</div><div class="s2z">TR-3: <b id="s_mek3">—</b></div></div>
+    <div class="sb"><div class="s">Elektrik <small>(TR-1)</small></div><div class="a" id="s_elk">%0</div></div>
+    <div class="sb rok"><div class="s">Rok delinen ayak</div><div class="a" id="s_rok">0</div><div class="s2z">TR-3: <b id="s_rok3">—</b></div></div>
   </div>
 
   <div class="hcbar" id="hcbanner" style="display:none"></div>
@@ -1044,7 +1045,7 @@ let TRZ=(function(){try{return localStorage.getItem('shams1:trz')||'tr1';}catch(
 const ZLBL={tr1:'TR-1',tr3:'TR-3'};
 try{if(TRZ==='tr3'&&!LAYOUT_TR3.tables.length){TRZ='tr1';try{localStorage.setItem('shams1:trz','tr1');}catch(e){}}
 TGT=(TRZ==='tr3')?TGT_TR3:TGT_TR1;applyZoneLayout();}catch(e){}
-const SHARED_KEYS=['team','team_del','wage','fx','wx','parac','pj','pjg','pjz','pj2x','pja','pjag','pjp','pjpg'];
+const SHARED_KEYS=['team','team_del','wage','fx','wx','parac','pj','pjg','pjz','pj2x','pja','pjag','pjp','pjpg','ppay'];
 function _isShared(k){var b=String(k).split(':')[0];return SHARED_KEYS.indexOf(b)>=0;}
 function fbPath(k){var base=_isShared(k)?'shams1tr1/':(TRZ==='tr3'?'shams1tr3/':'shams1tr1/');return base+String(k).replace(/[.#$\[\]]/g,'_').replace(/:/g,'/');}
 function setTRZ(z){if(z!=='tr1'&&z!=='tr3')return;TRZ=z;TGT=(z==='tr3')?TGT_TR3:TGT_TR1;try{applyZoneLayout();}catch(e){}try{localStorage.setItem('shams1:trz',z);}catch(e){}}
@@ -1168,24 +1169,36 @@ async function switchZoneSelect(z){if(z!=='tr1'&&z!=='tr3')return;if(z===TRZ){up
 async function openZone(z){setTRZ(z);await openProject('shams1');updZBadge();}
 /* iki bölgenin ilerlemesi — giriş kartları için hafif okuma */
 async function fillZoneCmp(){try{for(const z of ['tr1','tr3']){var r=await zoneProgress(z);var e=document.getElementById('zc_'+z);if(e)e.textContent=(r&&r.noTarget)?'plan yok':(r?('%'+r.pct):'—');}}catch(e){}}
-async function zoneProgress(z){
-  if(BACKEND!=='fb'||!FBDB)return null;
-  var base=(z==='tr3'?'shams1tr3/':'shams1tr1/');
-  try{ var snap=await FBDB.ref(base+'tr1g').once('value'); var g=snap.val()||{};
-       var masalar={};
-       for(var chunk in g){var arr=g[chunk];if(!arr)continue;for(var i in arr){if(arr[i])masalar[i]=arr[i];}}
-       var ay=0,ki=0,as=0,pa=0,n=0;
-       for(var k in masalar){var m=masalar[k];if(!m)continue;n++;
-         if(m.a2)for(var j in m.a2){if(m.a2[j])ay++;}
-         if(m.kiris)for(var j2 in m.kiris){if(m.kiris[j2])ki++;}
-         if(m.asik)for(var j3 in m.asik){if(m.asik[j3])as++;}
-         if(m.k7)for(var j4 in m.k7){if(m.k7[j4])pa++;}}
-       var T=(z==='tr3')?TGT_TR3:TGT_TR1;
-       if(!T.ayak||!T.panel)return {pct:null,masa:n,noTarget:true};
-       var pct=Math.round(((ay/T.ayak)*0.42+(ki/T.kiris)*(0.31/3)+(as/T.asik)*(0.31/3)+(pa/T.panel)*0.27)/(0.42+0.31/3+0.31/3+0.27)*100);
-       return {pct:Math.max(0,Math.min(100,pct||0)),masa:n};
-  }catch(e){return null;}
+async function zoneMechProgress(z){
+  const T=(z==='tr3')?TGT_TR3:TGT_TR1;
+  if(!T.ayak||!T.panel)return {ok:false,noTarget:true};
+  let ay=0,mo=0,ki=0,as=0,cp=0,pa=0,n=0;
+  if(z===TRZ){
+    ay=sumP('a2');mo=sumMon();ki=sumKiris();as=sumAsik12();cp=sumCapraz19();pa=sumP('k7');n=Object.keys(PLAN).length;
+  }else{
+    if(BACKEND!=='fb'||!FBDB)return {ok:false};
+    try{
+      const base=(z==='tr3'?'shams1tr3/':'shams1tr1/');
+      const snap=await FBDB.ref(base+'tr1g').once('value');const g=snap.val()||{};
+      const masalar={};
+      for(const chunk in g){const arr=g[chunk];if(!arr)continue;for(const i in arr){if(arr[i])masalar[i]=arr[i];}}
+      for(const k in masalar){const m=masalar[k];if(!m)continue;n++;
+        ay+=(+m.a2||0);
+        mo+=Math.min(+m.a3||0,+m.a4||0,+m.a5||0);
+        if(Array.isArray(m.kiris))ki+=m.kiris.filter(x=>x>=1).length;
+        const a12=Array.isArray(m.asik12)?m.asik12:null;
+        as+=a12?a12.filter(x=>x>=1).length:((m.asik===true||m.asik===1)?12:0);
+        const c19=Array.isArray(m.capraz19)?m.capraz19:null;
+        cp+=c19?c19.filter(x=>x>=1).length:((m.capraz===true||m.capraz===1)?19:0);
+        pa+=(+m.k7||0);
+      }
+    }catch(e){return {ok:false};}
+  }
+  const cl=v=>Math.max(0,Math.min(100,v));
+  const mekPct=cl(cl(mo/T.ayak*100)*0.42+cl(ki/T.kiris*100)*(0.31/3)+cl(as/T.asik*100)*(0.31/3)+cl(cp/T.capraz*100)*(0.31/3)+cl(pa/T.panel*100)*0.27);
+  return {ok:true,ay,mo,ki,as,cp,pa,n,mekPct};
 }
+async function zoneProgress(z){const r=await zoneMechProgress(z);if(!r.ok)return r.noTarget?{pct:null,noTarget:true}:null;return {pct:Math.round(r.mekPct),masa:r.n};}
 async function zoneMechAgg(z){
   if(z===TRZ)return {a1:sumP('a1'),a2:sumP('a2'),ayakmont:sumMon(),kiris:sumKiris(),asik:sumAsik12(),capraz:sumCapraz19(),panel:sumP('k7')};
   if(BACKEND!=='fb'||!FBDB)return null;
@@ -1307,11 +1320,14 @@ async function ensureHeavy(force){
   try{const gd1=await sgetAll('gd:');const _curZ=TRZ;TRZ=(_curZ==='tr3')?'tr1':'tr3';let gd2={};try{gd2=await sgetAll('gd:');}catch(e2){}TRZ=_curZ;
     const arr1=Object.values(gd1||{}).filter(Boolean),arr2=Object.values(gd2||{}).filter(Boolean);
     GIDER=arr1.concat(arr2).sort((x,y)=>(y.ts||0)-(x.ts||0));}catch(e){}
-  try{const ar=await sgetAll('arpay:');ARPAY=Object.values(ar||{}).filter(Boolean).sort((x,y)=>(y.ts||0)-(x.ts||0));}catch(e){}
+  try{const ar1=await sgetAll('arpay:');const _curZ1=TRZ;TRZ=(_curZ1==='tr3')?'tr1':'tr3';let ar2={};try{ar2=await sgetAll('arpay:');}catch(e2){}TRZ=_curZ1;
+    ARPAY=Object.values(ar1||{}).filter(Boolean).concat(Object.values(ar2||{}).filter(Boolean)).sort((x,y)=>(y.ts||0)-(x.ts||0));}catch(e){}
   try{const pp=await sgetAll('ppay:');PPAY=Object.values(pp||{}).filter(Boolean).sort((x,y)=>(y.ts||0)-(x.ts||0));}catch(e){}
-  try{const hk=await sgetAll('hktah:');HKTAH=Object.values(hk||{}).filter(Boolean).sort((x,y)=>(x.tarih||'').localeCompare(y.tarih||''));
-    const seeded=await sget('hktah_seed_v1');
-    if(!seeded&&!HKTAH.length){
+  try{const hk1=await sgetAll('hktah:');const _curZ2=TRZ;TRZ=(_curZ2==='tr3')?'tr1':'tr3';let hk2={};let seeded2=false;
+    try{hk2=await sgetAll('hktah:');seeded2=!!(await sget('hktah_seed_v1'));}catch(e2){}TRZ=_curZ2;
+    HKTAH=Object.values(hk1||{}).filter(Boolean).concat(Object.values(hk2||{}).filter(Boolean)).sort((x,y)=>(x.tarih||'').localeCompare(y.tarih||''));
+    const seeded1=await sget('hktah_seed_v1');
+    if(!seeded1&&!seeded2&&!HKTAH.length){
       const seed=[
         {id:'hk'+Date.now(),tip:'avans',tutar:70000,tarih:'2026-06-30',not:'Avans',ts:Date.now()},
         {id:'hk'+(Date.now()+1),tip:'hakedis',tutar:31372.88,tarih:'2026-07-16',not:'1. Hakediş tahsilatı',ts:Date.now()+1}
@@ -1446,12 +1462,24 @@ function renderProgress(){
       <div style="text-align:right"><div class="pct" style="color:${pct>=100?'var(--gnd)':'var(--txt)'}">%${pct.toFixed(0)}</div></div></div>`;
   }
   const pr=document.getElementById('progress');if(pr)pr.innerHTML=html;
-  document.getElementById('s_tot').textContent='%'+(totUsd/SOZBEDEL*100).toFixed(1);
-  document.getElementById('s_usd').textContent=tr(totUsd)+' $';
-  document.getElementById('s_mek').textContent='%'+(mekW?mek/mekW:0).toFixed(0);
-  document.getElementById('s_elk').textContent='%'+(elkW?elk/elkW:0).toFixed(0);
-  document.getElementById('s_rok').textContent=tr(sumP('a2'));
+  document.getElementById('s_tot').textContent=(TRZ==='tr1')?('%'+(totUsd/SOZBEDEL*100).toFixed(1)):'—';
+  document.getElementById('s_usd').textContent=(TRZ==='tr1')?(tr(totUsd)+' $'):'—';
+  document.getElementById('s_elk').textContent=(TRZ==='tr1')?('%'+(elkW?elk/elkW:0).toFixed(0)):'—';
+  try{renderZoneCompare();}catch(e){}
   refreshKonst();
+}
+let _zcmpLastRun=0;
+async function renderZoneCompare(force){
+  const now=Date.now();if(!force&&now-_zcmpLastRun<3000)return;_zcmpLastRun=now;
+  try{
+    const [r1,r3]=await Promise.all([zoneMechProgress('tr1'),zoneMechProgress('tr3')]);
+    const e1=document.getElementById('s_mek'),e3=document.getElementById('s_mek3');
+    if(e1)e1.textContent=(r1&&r1.ok)?('%'+r1.mekPct.toFixed(0)):'—';
+    if(e3)e3.textContent=(r3&&r3.ok)?('%'+r3.mekPct.toFixed(0)):((r3&&r3.noTarget)?'plan yok':'—');
+    const g1=document.getElementById('s_rok'),g3=document.getElementById('s_rok3');
+    if(g1)g1.textContent=(r1&&r1.ok)?tr(r1.ay):'—';
+    if(g3)g3.textContent=(r3&&r3.ok)?tr(r3.ay):((r3&&r3.noTarget)?'plan yok':'—');
+  }catch(e){}
 }
 function renderTargets(){if(!document.getElementById('targets'))return;document.getElementById('targets').innerHTML=GEN.filter(i=>i.birim!=='%').map(i=>{const h=TARGETS[i.id]??i.hedef;
   return `<div class="tgrid"><span style="font-size:12px">${i.ad} <span class="mono" style="color:var(--faint)">(${i.birim})</span></span><input class="num" type="number" value="${h}" onchange="setTarget('${i.id}',this.value)"></div>`;}).join('');}
@@ -2426,16 +2454,16 @@ function renderProje(){const el=document.getElementById('proje');if(!el)return;
   ghCard()+
   '<div class="pcard">'+
     '<h2 style="margin:0 0 2px">SHAMS-1 GES</h2>'+
-    '<div id="zcmp" class="gsum" style="margin:8px 0"><div class="gscard"><span>TR-1 ilerleme</span><b id="zc_tr1">—</b></div><div class="gscard"><span>TR-3 ilerleme</span><b id="zc_tr3">—</b></div></div>'+
+    '<div id="zcmp" class="gsum" style="margin:8px 0"><div class="gscard"><span>TR-1 mekanik ilerleme</span><b id="zc_tr1">—</b></div><div class="gscard"><span>TR-3 mekanik ilerleme</span><b id="zc_tr3">—</b></div></div>'+
     '<div class="hint">Nahçıvan, Azerbaycan · güneş enerjisi santrali · mekanik + elektrik montaj işçiliği</div>'+
     '<div style="margin:12px 0"><a class="maplink" href="https://maps.app.goo.gl/AND9QTghyF3HtezdA" target="_blank" rel="noopener">📍 Saha konumu — haritada aç</a>'+
     '<span class="hint" style="margin-left:10px">39.226317, 45.288885</span></div>'+
     '<div class="kpis">'+
       k('35 MWp','Tüm santral')+
-      k('773','Masa','','TR-1: 378 · TR-3: 395')+
-      k('20.098','Panel','','TR-1: 9.828 · TR-3: 10.270')+
-      k('38','İnverter','','TR-1: 19 · TR-3: 19')+
-      k('10.822','Kazık (ayak)','','TR-1: 5.292 · TR-3: 5.530')+
+      k('378 / 395','Masa','','TR-1 / TR-3')+
+      k('9.828 / 10.270','Panel','','TR-1 / TR-3')+
+      k('19 / 19','İnverter','','TR-1 / TR-3')+
+      k('5.292 / 5.530','Kazık (ayak)','','TR-1 / TR-3')+
       k('258.624 $','Götürü bedel +KDV','money','TR-1 sözleşmesi')+
       k('10.07.2026','Süre / bitiş')+
     '</div>'+
@@ -2852,7 +2880,10 @@ async function addHktah(){
   ['hk_tutar','hk_not'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
   toast('Tahsilat eklendi');renderHakedisKesinti();
 }
-async function delHktah(id){if(!confirm('Tahsilat kaydı silinsin mi?'))return;HKTAH=HKTAH.filter(function(r){return r.id!==id;});try{var all=await sgetAll('hktah:');for(var k in all){if(all[k]&&all[k].id===id)await sdel(k);}}catch(e){}renderHakedisKesinti();}
+async function delHktah(id){if(!confirm('Tahsilat kaydı silinsin mi?'))return;HKTAH=HKTAH.filter(function(r){return r.id!==id;});
+  try{var all=await sgetAll('hktah:');for(var k in all){if(all[k]&&all[k].id===id)await sdel(k);}}catch(e){}
+  try{var _curZ=TRZ;TRZ=(_curZ==='tr3')?'tr1':'tr3';var all2=await sgetAll('hktah:');for(var k2 in all2){if(all2[k2]&&all2[k2].id===id)await sdel(k2);}TRZ=_curZ;}catch(e2){}
+  renderHakedisKesinti();}
 function ppayOpen(pid){PP_CUR=pid;PP_FOTO='';var p=(TEAM||[]).find(function(x){return x.id===pid;});
   var body='<div class="gdform">'+
     '<label>Ödeme günü<input type="date" id="pp_tarih" value="'+dToday()+'" max="'+dToday()+'"></label>'+
@@ -2884,7 +2915,10 @@ async function addArpay(){
   AR_FOTO='';['ar_tutar','ar_acik'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});var pv=document.getElementById('ar_foto_pv');if(pv)pv.innerHTML='';
   toast('Arıcan ödemesi eklendi');renderArican();
 }
-async function delArpay(id){if(!confirm('Ödeme kaydı silinsin mi?'))return;ARPAY=ARPAY.filter(function(r){return r.id!==id;});try{var all=await sgetAll('arpay:');for(var k in all){if(all[k]&&all[k].id===id)await sdel(k);}}catch(e){}renderArican();}
+async function delArpay(id){if(!confirm('Ödeme kaydı silinsin mi?'))return;ARPAY=ARPAY.filter(function(r){return r.id!==id;});
+  try{var all=await sgetAll('arpay:');for(var k in all){if(all[k]&&all[k].id===id)await sdel(k);}}catch(e){}
+  try{var _curZ=TRZ;TRZ=(_curZ==='tr3')?'tr1':'tr3';var all2=await sgetAll('arpay:');for(var k2 in all2){if(all2[k2]&&all2[k2].id===id)await sdel(k2);}TRZ=_curZ;}catch(e2){}
+  renderArican();}
 function arShowFoto(id){var r=(ARPAY||[]).find(function(x){return x.id===id;});if(r&&r.foto)_showDoc('Dekont',r.foto);}
 /* ---- Ödemeler alt-sekmesi ---- */
 function odemeTo(pid){try{var t=[...document.querySelectorAll('.tabs .tab')].find(function(b){return /tabTo\(11/.test(b.getAttribute('onclick')||'');});if(t)tabTo(11,t);}catch(e){}
@@ -3799,7 +3833,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s220</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s223</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -4354,15 +4388,45 @@ function icmalRow(iso){
   const yevAZN=gPersCostDay(iso),mesAZN=gMesaiDay(iso),toplamAZN=harcAZN+yevAZN+mesAZN;
   const hk=gunHakedisUSD(iso),rate=fxRateOnDate(iso),toUSD=v=>rate.usdazn?v/rate.usdazn:0;
   return {iso,isci:gWorkerCountDay(iso),harc:toUSD(harcAZN),yev:toUSD(yevAZN),mes:toUSD(mesAZN),toplam:toUSD(toplamAZN),hk};}
+let _icmalRowsCache=null,_icmalChartInst=null;
 function icmalChart(rows){
-  const n=rows.length;if(!n)return '';
-  const vals=rows.map(r=>r.hk-r.toplam),mx=Math.max(1,...vals.map(Math.abs));
-  const W=Math.max(320,n*14),H=140,zeroY=H/2,slot=W/n,bw=Math.max(2,Math.min(11,slot-2));
-  let s=`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="width:100%;height:${H}px;background:#fafbfc;border-radius:8px;display:block">`;
-  s+=`<line x1="0" y1="${zeroY}" x2="${W}" y2="${zeroY}" stroke="#c7ccd6" stroke-width="1"/>`;
-  rows.forEach((r,i)=>{const v=vals[i],h=Math.abs(v)/mx*(zeroY-8),x=i*slot+(slot-bw)/2,y=v>=0?zeroY-h:zeroY,col=v>=0?'#2e9e5b':'#E5484D';
-    s+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max(0,h).toFixed(1)}" rx="1" fill="${col}"><title>${dtr(r.iso)}: ${(v>=0?'+':'−')+fmtN(Math.abs(v))} $</title></rect>`;});
-  return s+'</svg>';}
+  _icmalRowsCache=rows;
+  return '<canvas id="icmalCanvas" style="width:100%;height:220px;display:block"></canvas>';
+}
+async function drawIcmalChart(){
+  const rows=_icmalRowsCache;if(!rows||!rows.length)return;
+  const canvas=document.getElementById('icmalCanvas');if(!canvas)return;
+  try{
+    if(!window.Chart){await new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s);});}
+  }catch(e){canvas.outerHTML='<div class="hint">Grafik kütüphanesi yüklenemedi — bağlantıyı kontrol edin.</div>';return;}
+  if(!document.getElementById('icmalCanvas'))return;
+  const labels=rows.map(r=>dtr(r.iso));
+  const vals=rows.map(r=>+(r.hk-r.toplam).toFixed(2));
+  const bg=vals.map(v=>v>=0?'rgba(46,158,91,0.82)':'rgba(229,72,77,0.82)');
+  const hoverBg=vals.map(v=>v>=0?'#2e9e5b':'#E5484D');
+  try{if(_icmalChartInst){_icmalChartInst.destroy();_icmalChartInst=null;}}catch(e){}
+  try{
+    _icmalChartInst=new Chart(canvas.getContext('2d'),{
+      type:'bar',
+      data:{labels,datasets:[{data:vals,backgroundColor:bg,hoverBackgroundColor:hoverBg,borderRadius:5,borderSkipped:false,maxBarThickness:24,minBarLength:2}]},
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        animation:{duration:550,easing:'easeOutQuart'},
+        interaction:{mode:'nearest',axis:'x',intersect:false},
+        plugins:{
+          legend:{display:false},
+          tooltip:{backgroundColor:'#15181f',padding:10,cornerRadius:10,displayColors:false,
+            titleFont:{size:12,weight:'700'},bodyFont:{size:12},
+            callbacks:{title:items=>items[0].label,label:item=>{const v=item.raw;return (v>=0?'+':'−')+fmtN(Math.abs(v))+' $ · '+(v>=0?'kârda':'zararda');}}}
+        },
+        scales:{
+          x:{grid:{display:false},border:{display:false},ticks:{autoSkip:true,maxTicksLimit:8,font:{size:10},color:'#9a9aa5'}},
+          y:{grid:{color:'#eef0f4'},border:{display:false},ticks:{font:{size:10},color:'#9a9aa5',callback:v=>fmtN(v)+' $'}}
+        }
+      }
+    });
+  }catch(e){try{console.error('[İcmal chart]',e);}catch(_e){}}
+}
 function renderIcmalGunGun(){
   const days=gDays();const rows=days.map(icmalRow);
   let totH=0,totY=0,totM=0,totT=0,totHk=0;
@@ -4386,7 +4450,8 @@ async function renderIcmalTab(){var el=document.getElementById('icmal');if(!el)r
   el.innerHTML='<h2 style="margin:6px 12px 0">📊 İcmal — gün gün maliyet · hakediş kıyası</h2><div class="hint">Veriler yükleniyor…</div>';
   try{await ensureHeavy();}catch(e){try{console.error('[İcmal] ensureHeavy',e);}catch(_e){}}
   el=document.getElementById('icmal');if(!el)return;
-  el.innerHTML='<h2 style="margin:6px 12px 0">📊 İcmal — gün gün maliyet · hakediş kıyası</h2>'+_repSafe('İcmal',()=>renderIcmalGunGun());}
+  el.innerHTML='<h2 style="margin:6px 12px 0">📊 İcmal — gün gün maliyet · hakediş kıyası</h2>'+_repSafe('İcmal',()=>renderIcmalGunGun());
+  try{await drawIcmalChart();}catch(e){}}
 function rapSubPane(n,day,A,pers,fmtDay){
   if(n===0)return _repSafe('Genel Durum',()=>genelDurum())+_repSafe('Gün-Gün',()=>rapGunGun(day))+_repSafe('Araç Özeti',()=>rapAracOzet())+_repSafe('Personel Özeti',()=>rapPersOzet());
   if(n===1)return '<h3 class="raph">İş kalemleri — ilerleme kartları</h3><div class="hint" style="margin:-2px 0 8px">Her kalem: tamamlanma oranı · «yapıldı / hedef / kalan» · seçili günün katkısı · son günlerin grafiği. Tüm değerler saha kayıtlarından (log) türetilir.</div>'+_repSafe('İş Kalemi Kartları',()=>itemReportCards(day))+'<h3 class="raph">Günlük × kümülatif matris</h3>'+_repSafe('Matris',()=>renderItemMatrix(false));
@@ -4478,7 +4543,7 @@ function tanIsGiris(){
 
 async function backupAll(){try{
   if(typeof toast==='function')toast('Yedek hazırlanıyor…');
-  const dump={_app:'SHAMS1',_ver:'s220',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1',_ver:'s223',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pjz:','pja:','pjag:','pjp:','pjpg:','hc:','g:','gd:','arpay:','ppay:','hktah:'];
   for(const pre of pref){try{const o=await sgetAll(pre);for(const k in o){if(o[k]!=null)dump.data[k]=o[k];}}catch(e){}}
   const single=['wage','fx','fxlog','targets','mpct','cab:dc','cab:ac','cab:og','cab:kanal','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','zimmet','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
