@@ -769,7 +769,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 229 · Personel ödemeleri TR-1/TR-3 birleştirildi</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 230 · Dönemsel yevmiye + detaylı döküm</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -797,7 +797,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 229 · dokun→güncelle</div>
+<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 230 · dokun→güncelle</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -1353,13 +1353,13 @@ async function reloadAll(silent){
   else if(BACKEND==='mem'){if(st)st.textContent='⚠ GEÇİCİ — kayıt YOK! (GitHub bağlayın)';renderMemWarn();renderAll();return;}
   if(st)st.textContent='senkron…';
   if(typeof bootStatus==='function')bootStatus('Veriler buluttan yükleniyor…');
-  const [targets,mpct,logs,gks,cabdc,cabac,cabog,cabkanal,dcstr,ogb,matin,matuse,matkov,matcustom,isbasi,upc,uplast,cinsdc,cinsac,cinsog,team,team_del,hcs,pjs,drs,gunlukRaw,wageRaw,mesaiRaw,tazmRaw,fxRaw,fxlogRaw,wxRaw,matlinkRaw,zimmetRaw,paracRaw,pgAll,paAll,pagAll,ppAll,ppgAll,pzAll,p2xAll]=await Promise.all([
+  const [targets,mpct,logs,gks,cabdc,cabac,cabog,cabkanal,dcstr,ogb,matin,matuse,matkov,matcustom,isbasi,upc,uplast,cinsdc,cinsac,cinsog,team,team_del,hcs,pjs,drs,gunlukRaw,wageRaw,wagehistRaw,mesaiRaw,tazmRaw,fxRaw,fxlogRaw,wxRaw,matlinkRaw,zimmetRaw,paracRaw,pgAll,paAll,pagAll,ppAll,ppgAll,pzAll,p2xAll]=await Promise.all([
     sget('targets'),sget('mpct'),sgetAll('log:'),sgetAll('tr1g:'),
     sget('cab:dc'),sget('cab:ac'),sget('cab:og'),sget('cab:kanal'),sget('dcstr'),sget('ogb'),
     sget('matin'),sget('matuse'),sget('matkov'),sget('matcustom'),sget('isbasi'),sget('upc'),sget('uplast'),
     sget('cins:dc'),sget('cins:ac'),sget('cins:og'),sget('team'),sget('team_del'),
     sgetAll('hc:'),sgetAll('pj:'),sgetAll('dr:'),
-    sget('gunluk'),sget('wage'),sget('mesai'),sget('tazm'),sget('fx'),sget('fxlog'),sget('wx'),sget('matlink'),sget('zimmet'),sget('parac'),
+    sget('gunluk'),sget('wage'),sget('wagehist'),sget('mesai'),sget('tazm'),sget('fx'),sget('fxlog'),sget('wx'),sget('matlink'),sget('zimmet'),sget('parac'),
     sgetAll('pjg:'),sgetAll('pja:'),sgetAll('pjag:'),sgetAll('pjp:'),sgetAll('pjpg:'),sgetAll('pjz:'),sgetAll('pj2x:')]);
   TARGETS=targets||{};MPCT=mpct||{};
   {const arr=[];for(const k in logs){const e=logs[k];if(e){e._key=k;arr.push(e);}}arr.sort((a,b)=>b.ts-a.ts);ENTRIES=arr;}
@@ -1386,7 +1386,7 @@ async function reloadAll(silent){
     if(ch){ try{ sset('matin',MATIN); }catch(e){} }
     try{ localStorage.setItem('seed_pl_kolon_v2','1'); }catch(e){}
   })();
-  GUNLUK=await _mergeGunluk(gunlukRaw||[]); WAGE=wageRaw||{}; MESAI=mesaiRaw||{}; TAZM=tazmRaw||{}; FX=fxRaw||{}; FXLOG=fxlogRaw||{}; WX=wxRaw||{}; if(typeof gWxAuto==='function'&&!_WXTRIED){_WXTRIED=true;gWxAuto();} MATUSE=matuse||{}; MATKOV=matkov||{}; MATCUSTOM=matcustom||[]; MATLINK=matlinkRaw||{}; ZIMMET=zimmetRaw||[]; ISB=isbasi||'2026-06-16'; UPCOUNT=upc||0; UPLAST=uplast||0; if(typeof renderUpBadge==='function')renderUpBadge();
+  GUNLUK=await _mergeGunluk(gunlukRaw||[]); WAGE=wageRaw||{}; WAGEHIST=wagehistRaw||{}; MESAI=mesaiRaw||{}; TAZM=tazmRaw||{}; FX=fxRaw||{}; FXLOG=fxlogRaw||{}; WX=wxRaw||{}; if(typeof gWxAuto==='function'&&!_WXTRIED){_WXTRIED=true;gWxAuto();} MATUSE=matuse||{}; MATKOV=matkov||{}; MATCUSTOM=matcustom||[]; MATLINK=matlinkRaw||{}; ZIMMET=zimmetRaw||[]; ISB=isbasi||'2026-06-16'; UPCOUNT=upc||0; UPLAST=uplast||0; if(typeof renderUpBadge==='function')renderUpBadge();
   CINS={dc:cinsdc||{},ac:cinsac||{},og:cinsog||{}};
   TEAM=team||[];
   TEAM.forEach(p=>{if(p.gorev==='Ara eleman')p.gorev='Yardımcı';});
@@ -2111,7 +2111,7 @@ let PJ2X={};
 let GROSTER=[];
 let PJA={},PJAG={};
 let PARAC=[],PJP={},PJPG={};
-let GIDER=[],WAGE={},FX={},FXLOG={},_GDSEQ=0,WX={},_WXTRIED=false,MESAI={},TAZM={};
+let GIDER=[],WAGE={},WAGEHIST={},FX={},FXLOG={},_GDSEQ=0,WX={},_WXTRIED=false,MESAI={},TAZM={};
 const PJST=[
  {c:'',  l:'—', v:0,   bg:'transparent', fg:'var(--muted,#888)'},
  {c:'V', l:'●', v:1,   bg:'#16a34a',     fg:'#fff'},
@@ -2846,9 +2846,28 @@ async function setMesaiAy(pid,ym,saat){MESAI[ym]=MESAI[ym]||{};MESAI[ym][pid]={'
 async function setMesai(pid,ym,day,saat){MESAI[ym]=MESAI[ym]||{};MESAI[ym][pid]=MESAI[ym][pid]||{};var v=+saat||0;if(v)MESAI[ym][pid][day]=v;else delete MESAI[ym][pid][day];await sset('mesai',MESAI);}
 async function setTazm(pid,val){TAZM=TAZM||{};var v=+val||0;if(v)TAZM[pid]=v;else delete TAZM[pid];await sset('tazm',TAZM);}
 function wageOf(pid){var w=(WAGE&&WAGE[pid]!=null&&WAGE[pid]!=='')?WAGE[pid]:((WAGE&&WAGE._def)||0);return +w||0;}
+function wageOnDate(pid,iso){
+  var hist=WAGEHIST&&WAGEHIST[pid];
+  if(Array.isArray(hist)&&hist.length){
+    var best=null;for(var i=0;i<hist.length;i++){var h=hist[i];if(h.from<=iso&&(!best||h.from>best.from))best=h;}
+    if(best)return +best.rate||0;
+  }
+  return wageOf(pid);
+}
+function wageCurOnDate(pid,iso){
+  var hist=WAGEHIST&&WAGEHIST[pid];
+  if(Array.isArray(hist)&&hist.length){
+    var best=null;for(var i=0;i<hist.length;i++){var h=hist[i];if(h.from<=iso&&(!best||h.from>best.from))best=h;}
+    if(best)return best.cur||wageCur(pid);
+  }
+  return wageCur(pid);
+}
 function gPjv(pid,iso){var ym=iso.slice(0,7),d=+iso.slice(8,10);return pjMeta((PJ[ym]&&PJ[ym][pid]&&PJ[ym][pid][d])||'').v;}
 function wageCur(pid){return (WAGE&&WAGE._c&&WAGE._c[pid])||(WAGE&&WAGE._wpb)||'AZN';}
-function gPersCostDay(iso){var t=0;(TEAM||[]).forEach(function(p){t+=toAZN(gPjv(p.id,iso)*payMult(p.id,iso)*wageOf(p.id),wageCur(p.id),iso);});return t;}
+function gPersYevSumRange(pid,days){var s=0;(days||[]).forEach(function(iso){var v=gPjv(pid,iso);if(v)s+=v*payMult(pid,iso)*wageOnDate(pid,iso);});return s;}
+function gPersMesSumRange(pid,ym){var s=0;var mp=(MESAI[ym]&&MESAI[ym][pid])||{};for(var d in mp){var saat=+mp[d]||0;if(!saat||d==='_ay')continue;var dd=(''+d).length<2?('0'+d):(''+d);var iso=ym+'-'+dd;s+=(wageOnDate(pid,iso)/9)*1.5*saat;}
+  if(mp['_ay']){s+=(wageOnDate(pid,ym+'-15')/9)*1.5*(+mp['_ay']||0);}return s;}
+function gPersCostDay(iso){var t=0;(TEAM||[]).forEach(function(p){t+=toAZN(gPjv(p.id,iso)*payMult(p.id,iso)*wageOnDate(p.id,iso),wageCurOnDate(p.id,iso),iso);});return t;}
 function gGiderDay(iso){var o={};(GIDER||[]).forEach(function(g){if(g.tarih===iso)o[g.kat]=(o[g.kat]||0)+toAZN(g.tutar,g.pb||'AZN',g.tarih);});return o;}
 function gDays(){var today=dToday(),start=(typeof ISB!=='undefined'?ISB:today);(GIDER||[]).forEach(function(g){if(g.tarih&&g.tarih<start)start=g.tarih;});var out=[],iso=start,n=0;while(iso<=today&&n<500){out.push(iso);iso=dadd(iso,1);n++;}return out;}
 function gPersDays(pid){var t=0;gDays().forEach(function(iso){t+=gPjv(pid,iso);});return t;}
@@ -3097,11 +3116,90 @@ function renderArican(){
 function gdShowFoto(id){var r=(GIDER||[]).find(function(x){return x.id===id;});if(r&&r.foto)_showDoc('Belge',r.foto);}
 function pjMonthDays(pid,ym){ym=ym||PJ_YM||dToday().slice(0,7);var t=0;var mp=(PJ[ym]&&PJ[ym][pid])||{};for(var d in mp)t+=pjMeta(mp[d]).v;return t;}
 function yevmiyeSaveOne(pid){WAGE._c=WAGE._c||{};var e=document.getElementById('yv_'+pid);if(e)WAGE[pid]=(e.value===''?'':(+e.value||0));var c=document.getElementById('yvc_'+pid);if(c)WAGE._c[pid]=c.value||'AZN';sset('wage',WAGE);toast('Yevmiye kaydedildi');try{renderPersonel();}catch(e2){}}
+function wageHistPanel(pid){
+  var p=(TEAM||[]).find(function(x){return x.id===pid;});if(!p)return;
+  var hist=(WAGEHIST[pid]||[]).slice().sort(function(a,b){return a.from.localeCompare(b.from);});
+  var rows=hist.map(function(h,i){return '<tr><td>'+dtr(h.from)+'\'ten itibaren</td><td class="num">'+fmtN(h.rate)+' '+curSym(h.cur||'AZN')+'</td><td><button class="btn ghost sm" onclick="delWageHist(\''+pid+'\','+i+')">🗑</button></td></tr>';}).join('');
+  var baseRow='<tr><td><small style="color:#8a93a3">(temel — dönemsel kayıt olmayan tüm tarihler)</small></td><td class="num">'+fmtN(wageOf(pid))+' '+curSym(wageCur(pid))+'</td><td></td></tr>';
+  var old=document.getElementById('wghov');if(old)old.remove();
+  var ov=document.createElement('div');ov.id='wghov';ov.className='pjgov';
+  ov.innerHTML='<div class="pjgsheet"><div class="pjgh"><b>'+esc(p.ad)+'</b><small>Dönemsel yevmiye — hangi tarihten itibaren ne kadar</small></div>'+
+    '<div style="overflow:auto"><table class="mtab"><thead><tr><th>Geçerlilik</th><th>Yevmiye</th><th></th></tr></thead><tbody>'+baseRow+rows+'</tbody></table></div>'+
+    '<div class="hint" style="margin:8px 0 4px">Bir tarihten itibaren yevmiye değiştiyse (örn. Temmuz başından itibaren zam), buradan ekle. O tarihten sonraki tüm hesaplamalar (maliyet + maaş) yeni tutarı kullanır; öncesi eski tutarla hesaplanmaya devam eder.</div>'+
+    '<div class="pjmes"><label>📅 Bu tarihten itibaren</label><input type="date" id="wgh_from" value="'+dToday()+'">'+
+    '<label>Yeni yevmiye</label><input type="number" id="wgh_rate" inputmode="decimal" placeholder="0" style="width:90px">'+
+    '<select id="wgh_cur">'+curOpts(wageCur(pid))+'</select>'+
+    '<button class="btn sm" onclick="addWageHist(\''+pid+'\')">Kaydet</button></div>'+
+    '<button class="pjgx" onclick="var o=document.getElementById(\'wghov\');if(o)o.remove()">Kapat</button></div>';
+  document.body.appendChild(ov);
+}
+async function addWageHist(pid){
+  var fromEl=document.getElementById('wgh_from'),rateEl=document.getElementById('wgh_rate'),curEl=document.getElementById('wgh_cur');
+  var from=fromEl?fromEl.value:'',rate=+((rateEl&&rateEl.value)||0),cur=(curEl&&curEl.value)||'AZN';
+  if(!from||!rate){toast('Tarih ve tutar gerekli');return;}
+  if(!WAGEHIST[pid])WAGEHIST[pid]=[];
+  WAGEHIST[pid]=WAGEHIST[pid].filter(function(h){return h.from!==from;});
+  WAGEHIST[pid].push({from:from,rate:rate,cur:cur});
+  WAGEHIST[pid].sort(function(a,b){return a.from.localeCompare(b.from);});
+  await sset('wagehist',WAGEHIST);
+  toast('Yevmiye dönemi kaydedildi: '+dtr(from)+'\'ten itibaren '+fmtN(rate)+' '+curSym(cur));
+  wageHistPanel(pid);
+  try{renderGider();}catch(e){}try{renderPersonel();}catch(e){}
+}
+async function delWageHist(pid,idx){
+  if(!confirm('Bu dönemsel yevmiye kaydı silinsin mi?'))return;
+  if(WAGEHIST[pid])WAGEHIST[pid].splice(idx,1);
+  await sset('wagehist',WAGEHIST);
+  wageHistPanel(pid);
+  try{renderGider();}catch(e){}try{renderPersonel();}catch(e){}
+}
+function persDetailPanel(pid){
+  var p=(TEAM||[]).find(function(x){return x.id===pid;});if(!p)return;
+  var days=gDays();
+  var dayRows='';
+  days.forEach(function(iso){
+    var ym=iso.slice(0,7),d=+iso.slice(8,10);
+    var code=(PJ[ym]&&PJ[ym][pid]&&PJ[ym][pid][d])||'';
+    var v=gPjv(pid,iso);
+    var saat=(MESAI[ym]&&MESAI[ym][pid]&&MESAI[ym][pid][d])?(+MESAI[ym][pid][d]||0):0;
+    if(!v&&!saat)return;
+    var rate=wageOnDate(pid,iso),cur=wageCurOnDate(pid,iso);
+    var yevVal=v?(v*payMult(pid,iso)*rate):0;
+    var mesVal=saat?((rate/9)*1.5*saat):0;
+    dayRows+='<tr><td>'+dtr(iso)+'</td><td>'+(pjMeta(code).l||'—')+(payMult(pid,iso)>1?' <small style="color:#eab308">×2</small>':'')+'</td><td class="num">'+fmtN(rate)+' '+curSym(cur)+'</td><td class="num">'+(yevVal?fmtN(yevVal)+' '+curSym(cur):'—')+'</td><td class="num">'+(saat||'—')+'</td><td class="num">'+(mesVal?fmtN(mesVal)+' '+curSym(cur):'—')+'</td></tr>';
+  });
+  var M=persMaasTop(pid),cur=wageCur(pid);
+  var pays=(PPAY||[]).filter(function(r){return r.pid===pid;}).sort(function(a,b){return (a.tarih||'').localeCompare(b.tarih||'');});
+  var payRows=pays.map(function(r){return '<tr><td>'+dtr(r.tarih)+'</td><td>'+esc(r.tip||'')+'</td><td class="num">'+fmtN(r.tutar)+' '+curSym(r.pb||'AZN')+'</td><td><small>'+esc(r.not||'')+'</small></td></tr>';}).join('');
+  var odToplam=persOdenen(pid);
+  var toplamAZN=(typeof toAZN==='function')?toAZN(M.toplam,cur):M.toplam;
+  var fark=toplamAZN-odToplam;
+  var uyari='';
+  if(odToplam>toplamAZN+1){
+    uyari='<div class="tk2" style="border-left:4px solid #E5484D;background:#fdecec;margin-bottom:10px"><b style="color:#c0392b">⚠ Fazla ödeme yapılmış olabilir</b><div class="hint" style="margin-top:4px;color:#c0392b">Ödenen toplam ('+gMoney(odToplam)+'), hesaplanan hakedişten ('+gMoney(toplamAZN)+') fazla — '+gMoney(odToplam-toplamAZN)+' fazla. Mükerrer kayıt veya yanlış tutar olabilir, ödeme listesini kontrol edin.</div></div>';
+  }
+  var old=document.getElementById('pdetov');if(old)old.remove();
+  var ov=document.createElement('div');ov.id='pdetov';ov.className='pjgov';
+  ov.innerHTML='<div class="pjgsheet" style="max-width:640px">'+
+    '<div class="pjgh"><b>'+esc(p.ad)+'</b><small>Detaylı hesap dökümü — '+esc(p.gorev||'')+'</small></div>'+
+    uyari+
+    '<div class="hint" style="margin:0 0 10px">Hesap yöntemi: her gün → puantaj değeri (tam/yarım/2x) × o günkü yevmiye (dönemsel değiştiyse o tarihe ait tutar kullanılır). Mesai: o günkü yevmiye÷9×1,5×saat.</div>'+
+    '<h4 style="margin:10px 0 4px">Çalışma günleri ('+fmtN(M.gun)+' gün)</h4>'+
+    '<div style="overflow:auto;max-height:240px"><table class="mtab"><thead><tr><th>Tarih</th><th>Durum</th><th>Yevmiye</th><th>Gün tutarı</th><th>Mesai (sa)</th><th>Mesai tutar</th></tr></thead><tbody>'+
+    (dayRows||'<tr><td colspan="6" class="empty">Kayıt yok</td></tr>')+
+    '</tbody></table></div>'+
+    '<h4 style="margin:14px 0 4px">Ödemeler ('+pays.length+')</h4>'+
+    '<div style="overflow:auto;max-height:200px"><table class="mtab"><thead><tr><th>Tarih</th><th>Tip</th><th>Tutar</th><th>Not</th></tr></thead><tbody>'+
+    (payRows||'<tr><td colspan="4" class="empty">Ödeme yok</td></tr>')+
+    '</tbody></table></div>'+
+    '<div class="hint" style="margin-top:12px;font-size:13px"><b>Toplam hakediş:</b> '+gMoney(toplamAZN)+' &nbsp;·&nbsp; <b>Ödenen:</b> '+gMoney(odToplam)+' &nbsp;·&nbsp; <b>Kalan:</b> '+gMoney(fark)+'</div>'+
+    '<button class="pjgx" onclick="var o=document.getElementById(\'pdetov\');if(o)o.remove()">Kapat</button></div>';
+  document.body.appendChild(ov);
+}
 function yevmiyeSave(){WAGE._c=WAGE._c||{};(TEAM||[]).forEach(function(p){var e=document.getElementById('yv_'+p.id);if(e)WAGE[p.id]=(e.value===''?'':(+e.value||0));var c=document.getElementById('yvc_'+p.id);if(c)WAGE._c[p.id]=c.value||'AZN';});var d=document.getElementById('yv__def');if(d)WAGE._def=+d.value||0;var wp=document.getElementById('yv__wpb');if(wp)WAGE._wpb=wp.value||'AZN';sset('wage',WAGE);toast('Yevmiye kaydedildi');try{renderPersonel();}catch(e){}}
 function persHire(p){return (p&&p.hire)||(typeof ISB!=='undefined'?ISB:'2026-06-16');}
 async function setHire(id,v){var p=(TEAM||[]).find(function(x){return x.id===id;});if(!p)return;p.hire=v||'';await saveTeam();try{renderPersonel();}catch(e){}}
-function persMaasTop(pid){var w=wageOf(pid);var gun=gPersDays(pid);var gunPaid=gPersDaysPaid(pid);var mesai=(w/9)*1.5*mesaiSaatToplam(pid);var tazm=tazmOf(pid);return {yevmiye:gunPaid*w,mesai:mesai,tazm:tazm,toplam:gunPaid*w+mesai+tazm,gun:gun};}
-function persMaasTop(pid){var w=wageOf(pid);var gun=gPersDays(pid);var gunPaid=gPersDaysPaid(pid);var mesai=(w/9)*1.5*mesaiSaatToplam(pid);var tazm=tazmOf(pid);return {yevmiye:gunPaid*w,mesai:mesai,tazm:tazm,toplam:gunPaid*w+mesai+tazm,gun:gun};}
+function persMaasTop(pid){var gun=gPersDays(pid);var yevmiye=gPersYevSumRange(pid,gDays());var mesai=0;for(var ym in MESAI){mesai+=gPersMesSumRange(pid,ym);}var tazm=tazmOf(pid);return {yevmiye:yevmiye,mesai:mesai,tazm:tazm,toplam:yevmiye+mesai+tazm,gun:gun};}
 function persOdenen(pid){var t=0;(PPAY||[]).forEach(function(r){if(r.pid===pid)t+=toAZN(r.tutar,r.pb||'AZN',r.tarih);});return t;}
 function yevmiyePanel(){
   var act=(TEAM||[]).filter(function(p){return p.aktif||gPersDays(p.id)>0;});
@@ -3123,7 +3221,7 @@ function yevmiyePanel(){
       '<label>Ödenen<input value="'+gMoney(od)+'" disabled></label>'+
       '<label>Kalan<input value="'+gMoney(kalan)+'" disabled></label>'+
       '</div><div class="hint" style="margin:6px 0 0">Yevmiye/Birim değiştirdikten sonra <b>Kaydet</b>\'e dokun — Yevmiye×gün ve Toplam ancak kaydedince güncellenir.</div>'+
-      '<div style="display:flex;gap:8px;margin-top:6px"><button class="btn" onclick="yevmiyeSaveOne(\''+p.id+'\')">💾 Kaydet</button><button class="btn ghost sm" onclick="odemeTo(\''+p.id+'\')">+ Ödeme</button></div>';
+      '<div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap"><button class="btn" onclick="yevmiyeSaveOne(\''+p.id+'\')">💾 Kaydet</button><button class="btn ghost sm" onclick="odemeTo(\''+p.id+'\')">+ Ödeme</button><button class="btn ghost sm" onclick="wageHistPanel(\''+p.id+'\')">📅 Dönemsel yevmiye'+(WAGEHIST[p.id]&&WAGEHIST[p.id].length?' ('+WAGEHIST[p.id].length+')':'')+'</button><button class="btn ghost sm" onclick="persDetailPanel(\''+p.id+'\')">📋 Detaylı döküm</button></div>';
     return '<details class="ycard"'+(YCARD_OPEN[p.id]?' open':'')+' ontoggle="YCARD_OPEN[\''+p.id+'\']=this.open"><summary>'+sum+'</summary>'+body+'</details>';}).join('');
   return '<h2 style="margin:16px 0 10px">👷 Personel maaş & ödeme</h2>'+
     '<div class="tk2"><div class="sub">Yevmiye = puantajdaki <b>tüm çalışma günleri</b> (Haziran dahil) × günlük yevmiye. <b>Tazminat</b> işten ayrılırken elle girilir. <b>Toplam = yevmiye + tazminat</b> (mesai ödemesi varsa ödeme olarak ekle). Sağda: <b>ödenen</b> ve <b>kalan</b>. "+ Ödeme" ile aldığı gün, tutar ve dekont/imza fotoğrafı eklenir.</div>'+
@@ -3163,8 +3261,9 @@ function renderMaasAylik(){
   var tables=months.map(function(ym){
     var tGun=0,tMaas=0,tMesGun=0,tMesTut=0,tTop=0,tOd=0,tKal=0,tKisi=0;
     var rows=act.map(function(p){
-      var w=wageOf(p.id),cur=wageCur(p.id);
-      var gun=persAyGun(p.id,ym),gunPaid=persAyGunPaid(p.id,ym),maas=gunPaid*w,mesGun=persAyMesaiGun(p.id,ym),mesSaat=persAyMesaiSaat(p.id,ym),mesTut=(w/9)*1.5*mesSaat,top=maas+mesTut;
+      var cur=wageCur(p.id);
+      var nd=daysInMonthCount(ym),monthDays=[];for(var dd2=1;dd2<=nd;dd2++)monthDays.push(ym+'-'+((dd2<10?'0':'')+dd2));
+      var gun=persAyGun(p.id,ym),gunPaid=persAyGunPaid(p.id,ym),maas=gPersYevSumRange(p.id,monthDays),mesGun=persAyMesaiGun(p.id,ym),mesSaat=persAyMesaiSaat(p.id,ym),mesTut=gPersMesSumRange(p.id,ym),top=maas+mesTut;
       var odCur=persAyOdenenCur(p.id,ym,cur),odAZN=persAyOdenen(p.id,ym);
       var kal=top-odCur;
       if(!gun&&!mesGun&&!odAZN)return '';
@@ -3838,7 +3937,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s229</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s230</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -4380,7 +4479,7 @@ let RAP_SUBTAB=0;
 const RAP_SUBNAMES=['Genel Durum','İş Kalemleri','Malzeme','İnverter','Gün Detayı','Log'];
 function gMesaiDay(iso){const ym=iso.slice(0,7),day=+iso.slice(8,10);let t=0;
   (TEAM||[]).forEach(p=>{const mp=(MESAI[ym]&&MESAI[ym][p.id])||{};const saat=+mp[day]||0;if(!saat)return;
-    const tut=(wageOf(p.id)/9)*1.5*saat;t+=toAZN(tut,wageCur(p.id),iso);});
+    const tut=(wageOnDate(p.id,iso)/9)*1.5*saat;t+=toAZN(tut,wageCurOnDate(p.id,iso),iso);});
   return t;}
 function gWorkerCountDay(iso){let n=0;(TEAM||[]).forEach(p=>{if(gPjv(p.id,iso)>0)n++;});return n;}
 let _zoneRawCache={};
@@ -4593,7 +4692,7 @@ function tanIsGiris(){
 
 async function backupAll(){try{
   if(typeof toast==='function')toast('Yedek hazırlanıyor…');
-  const dump={_app:'SHAMS1',_ver:'s229',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1',_ver:'s230',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pjz:','pja:','pjag:','pjp:','pjpg:','hc:','g:','gd:','arpay:','ppay:','hktah:'];
   for(const pre of pref){try{const o=await sgetAll(pre);for(const k in o){if(o[k]!=null)dump.data[k]=o[k];}}catch(e){}}
   const single=['wage','fx','fxlog','targets','mpct','cab:dc','cab:ac','cab:og','cab:kanal','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','zimmet','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
