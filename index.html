@@ -769,7 +769,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 232 · Hakedişi getir — doğru kalan bakiye önerir</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 234 · Giderler'den yevmiye tablosu kaldırıldı</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -797,7 +797,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 232 · dokun→güncelle</div>
+<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 234 · dokun→güncelle</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -2069,7 +2069,7 @@ function stageFill(i){const st=masaStage(PLAN[i]);
   if(st.phase==='none'||(st.phase==='harita'&&!st.started))return 'var(--slate)';
   return STAGE_COL[st.phase];}
 function phaseStats(p,zone){let d=0,t=0;for(const tb of LAYOUT.tables){if(zone&&invOf(tb)!==zone)continue;const u=phaseUnits(p,PLAN[tb.i]||{});d+=u.d;t+=u.t;}return {d,t};}
-const PHASES=[['all','Tümü'],['harita','Harita'],['rok','Rok'],['kolon','Kolon'],['kiris','Kiriş'],['hegzagonal','Hegzagonal'],['asik','Aşık'],['capraz','Çapraz'],['panel','Panel']];
+const PHASES=[['all','Tümü'],['harita','Harita'],['rok','Rok'],['kolon','Kolon'],['kiris','Kiriş'],['hegzagonal','Hegzagonal'],['asik','Aşık'],['capraz','Çapraz'],['panel','Panel'],['genel','Genel / Diğer (TR-2 vb.)']];
 function renderPhaseChips(){const w=document.getElementById('phasechips');if(!w)return;
   w.innerHTML=PHASES.map(([k,n])=>'<button class="subtab'+(CURPHASE===k?' on':'')+'" onclick="setPhase(\''+k+'\')">'+n+'</button>').join('');
   renderPhaseInfo();}
@@ -2759,7 +2759,13 @@ function gnum(n){return (''+(Math.round((+n||0)*10)/10)).replace('.',',');}
 function gEngelTgl(){var b=document.getElementById('g_engelbox'),c=document.getElementById('g_engel');if(b)b.style.display=(c&&c.checked)?'block':'none';}
 async function _mergeGunluk(legacy){
   var seen={};
-  try{var gk=await sgetAll('g:');for(var kk in gk){var r=gk[kk];if(r&&r.id)seen[r.id]=r;}}catch(e){}
+  try{var gk1=await sgetAll('g:');for(var kk in gk1){var r=gk1[kk];if(r&&r.id)seen[r.id]=r;}}catch(e){}
+  try{
+    var _curZ=TRZ;TRZ=(_curZ==='tr3')?'tr1':'tr3';
+    var gk2=await sgetAll('g:');
+    TRZ=_curZ;
+    for(var kk2 in gk2){var r2=gk2[kk2];if(r2&&r2.id&&!seen[r2.id])seen[r2.id]=r2;}
+  }catch(e2){}
   (legacy||[]).forEach(function(r){if(r&&r.id&&!seen[r.id]){seen[r.id]=r;try{sset('g:'+r.id,r);}catch(e){}}});
   var arr=[];for(var id in seen)arr.push(seen[id]);
   arr.sort(function(a,b){return (b.ts||0)-(a.ts||0);});
@@ -2790,7 +2796,9 @@ async function delGunluk(id){
   if(typeof ROLE!=='undefined'&&ROLE!=='admin')return;
   if(!confirm('Bu günlük kaydı silinsin mi?'))return;
   GUNLUK=GUNLUK.filter(function(r){return r.id!==id;});
-  await sdel('g:'+id);renderGunluk();
+  await sdel('g:'+id);
+  try{var _curZ=TRZ;TRZ=(_curZ==='tr3')?'tr1':'tr3';await sdel('g:'+id);TRZ=_curZ;}catch(e){}
+  renderGunluk();
 }
 function gunIsSatir(iso,persArr,q){
   q=q||((typeof dayItemQty==='function')?dayItemQty(iso):{});
@@ -3372,12 +3380,10 @@ function renderGider(){
   var wk={};days.forEach(function(iso){var key=gWeekKey(iso);var gd=gGiderDay(iso);var dt=0;for(var k in gd)dt+=gd[k];var pc=gPersCostDay(iso);if(!wk[key])wk[key]={harc:0,pers:0,pod:0,arod:0,a:iso,b:iso};wk[key].harc+=dt;wk[key].pers+=pc;if(iso<wk[key].a)wk[key].a=iso;if(iso>wk[key].b)wk[key].b=iso;});(PPAY||[]).forEach(function(r){if(!r.tarih)return;var key=gWeekKey(r.tarih);if(!wk[key])wk[key]={harc:0,pers:0,pod:0,arod:0,a:r.tarih,b:r.tarih};wk[key].pod+=toAZN(r.tutar,r.pb||'AZN',r.tarih);});(ARPAY||[]).forEach(function(r){if(!r.tarih)return;var key=gWeekKey(r.tarih);if(!wk[key])wk[key]={harc:0,pers:0,pod:0,arod:0,a:r.tarih,b:r.tarih};wk[key].arod+=toAZN(r.tutar,r.pb||'USD',r.tarih);});
   var wkRows=Object.keys(wk).sort().reverse().map(function(k){var w=wk[k];if(!(w.harc+w.pers+(w.pod||0)+(w.arod||0)))return '';return '<tr><td>'+dtr(w.a)+' – '+dtr(w.b)+'</td><td class="num">'+gMoney(w.harc)+'</td><td class="num gmoneycol">'+gMoney(w.pers)+'</td><td class="num" style="color:#059669">'+((w.pod||0)?gMoney(w.pod):'—')+'</td><td class="num" style="color:#059669">'+((w.arod||0)?gMoney(w.arod):'—')+'</td><td class="num"><b>'+gMoney(w.harc+w.pers)+'</b></td></tr>';}).join('');
   var wkTbl='<div class="tk2"><h3>🗓 Hafta hafta — harcama, personel maliyeti, ödemeler</h3><table class="gtbl"><thead><tr><th>Hafta</th><th>Harcama</th><th class="gmoneycol">Personel maliyet</th><th>Personel ödenen</th><th>Arıcan ödenen</th><th>Toplam</th></tr></thead><tbody>'+(wkRows||'<tr><td colspan=6>—</td></tr>')+'</tbody></table><div class="hint">Personel maliyet = puantaj × yevmiye (tahakkuk). Ödenen sütunları gerçek nakit çıkışı (dekontlu). Mesai/tazminat ödemeleri de personel ödeme kaydına düşer.</div></div>';
-  var wgRows=(TEAM||[]).map(function(p){var gun=gPersDays(p.id);return '<tr><td>'+esc(p.ad)+'</td><td><input type="number" id="wg_'+p.id+'" value="'+(WAGE[p.id]!=null&&WAGE[p.id]!==''?WAGE[p.id]:'')+'" placeholder="'+(WAGE._def||0)+'" style="width:76px"></td><td><select id="wgc_'+p.id+'">'+curOpts(wageCur(p.id))+'</select></td><td class="num">'+gun+'</td><td class="num">'+fmtN(gun*wageOf(p.id))+' '+curSym(wageCur(p.id))+'</td></tr>';}).join('');
-  var wgTbl='<div class="tk2 money"><h3>👷 Yevmiye / personel maliyeti</h3><div class="gdform"><label>Varsayılan yevmiye<input type="number" id="wg__def" value="'+(WAGE._def||'')+'"></label><label>Varsayılan birim<select id="wg__wpb">'+curOpts((WAGE._wpb||'AZN'))+'</select></label><button class="btn" onclick="gWageSave()">Kaydet</button></div><table class="gtbl"><thead><tr><th>Personel</th><th>Yevmiye</th><th>Birim</th><th>Gün</th><th>Maliyet</th></tr></thead><tbody>'+wgRows+'</tbody></table><div class="gtot2">Toplam personel maliyeti: <b>'+arbStr(persTot)+'</b> · Gün sayıları puantajdan alınır.</div></div>';
   var recRows=(GIDER||[]).slice(0,200).map(function(r){return '<tr><td>'+dtr(r.tarih)+'</td><td>'+gkatAd(r.kat)+(r.tr?' <small style="color:'+(r.tr==='tr3'?'#0E9E97':'#2D6BE0')+';font-weight:700">'+ZLBL[r.tr]+'</small>':'')+'</td><td class="num">'+fmtN(r.tutar)+' '+curSym(r.pb||'AZN')+'</td><td>'+esc(r.aciklama||'')+'</td><td>'+(r.foto?'<button class="btn ghost sm" onclick="gdShowFoto(\''+r.id+'\')">📷</button>':'')+'</td><td>'+((typeof ROLE!=='undefined'&&ROLE==='admin')?'<button class="btn ghost sm" onclick="delGider(\''+r.id+'\')">sil</button>':'')+'</td></tr>';}).join('');
   var recTbl='<div class="tk2"><h3>Gider kayıtları ('+(GIDER||[]).length+')</h3><table class="gtbl"><thead><tr><th>Tarih</th><th>Kategori</th><th>Tutar</th><th>Açıklama</th><th>Belge</th><th></th></tr></thead><tbody>'+(recRows||'<tr><td colspan=6>Kayıt yok</td></tr>')+'</tbody></table></div>';
   if((!FX.usdazn||!FXLOG[dToday()])&&!_FXTRIED){_FXTRIED=true;gFxAuto();}
-  el.innerHTML=form+fxPanel+sum+katTbl+gunTbl+wkTbl+wgTbl+recTbl;
+  el.innerHTML=form+fxPanel+sum+katTbl+gunTbl+wkTbl+recTbl;
   try{renderArican();}catch(e){}
 }
 function wmoTr(c){if(c==null)return null;if(c===0)return{e:'☀️',t:'Açık'};if(c===1)return{e:'🌤️',t:'Az bulutlu'};if(c===2)return{e:'⛅',t:'Parçalı bulutlu'};if(c===3)return{e:'☁️',t:'Kapalı'};if(c===45||c===48)return{e:'🌫️',t:'Sisli'};if(c>=51&&c<=57)return{e:'🌦️',t:'Çiseleme'};if(c>=61&&c<=67)return{e:'🌧️',t:'Yağmurlu'};if(c>=71&&c<=77)return{e:'❄️',t:'Kar'};if(c>=80&&c<=82)return{e:'🌧️',t:'Sağanak'};if(c>=85&&c<=86)return{e:'❄️',t:'Kar sağanağı'};if(c>=95)return{e:'⛈️',t:'Gök gürültülü fırtına'};return{e:'🌡️',t:'—'};}function wxSlot(o){if(!o)return '';var m=wmoTr(o.c);var x=(m?m.e+' ':'')+(o.t!=null?Math.round(o.t)+'°':'');if(o.p!=null&&o.p>=0.2)x+=' yağış '+(Math.round(o.p*10)/10)+'mm';if(o.w!=null&&o.w>=20)x+=' rüzgar '+Math.round(o.w)+'km/s';return x.trim();}function wxStr(iso){if(typeof WX==='undefined'||!WX[iso])return '';var w=WX[iso];var seg=[];if(w.morn)seg.push('Sabah '+wxSlot(w.morn));if(w.noon)seg.push('Öğle '+wxSlot(w.noon));if(w.eve)seg.push('Akşam '+wxSlot(w.eve));var line=seg.join('   ·   ');var sfx=[];if(w.mx!=null&&w.mn!=null)sfx.push('gün '+Math.round(w.mn)+'–'+Math.round(w.mx)+'°');else if(!seg.length)return '';if(w.psum!=null&&w.psum>0)sfx.push('toplam yağış '+(Math.round(w.psum*10)/10)+' mm');if(sfx.length)line+=(line?'  ':'')+'('+sfx.join(' · ')+')';return esc(line);}function wxShort(iso){if(typeof WX==='undefined'||!WX[iso])return '';var w=WX[iso];var c=(w.noon&&w.noon.c!=null)?w.noon.c:((w.morn&&w.morn.c!=null)?w.morn.c:((w.eve&&w.eve.c!=null)?w.eve.c:null));var m=(c!=null)?wmoTr(c):null;var parts=[];if(m)parts.push(m.e+' '+m.t);if(w.mx!=null&&w.mn!=null)parts.push(Math.round(w.mn)+'–'+Math.round(w.mx)+'°');if(w.psum!=null&&w.psum>0)parts.push('yağış '+(Math.round(w.psum*10)/10)+'mm');return parts.length?esc(parts.join(' · ')):'';}async function gWxAuto(){try{var u='https://api.open-meteo.com/v1/forecast?latitude='+SITE_LAT+'&longitude='+SITE_LON+'&hourly=temperature_2m,weathercode,precipitation,windspeed_10m'+'&daily=temperature_2m_max,temperature_2m_min,precipitation_sum'+'&timezone=Asia%2FBaku&past_days=14&forecast_days=16';var res=await fetch(u);var j=await res.json();var w2={};if(j&&j.daily&&j.daily.time){var dt=j.daily.time,dmx=j.daily.temperature_2m_max||[],dmn=j.daily.temperature_2m_min||[],dps=j.daily.precipitation_sum||[];for(var i=0;i<dt.length;i++){w2[dt[i]]={mx:dmx[i],mn:dmn[i],psum:dps[i]};}}if(j&&j.hourly&&j.hourly.time){var ht=j.hourly.time,hte=j.hourly.temperature_2m||[],hc=j.hourly.weathercode||[],hp=j.hourly.precipitation||[],hw=j.hourly.windspeed_10m||[];for(var k=0;k<ht.length;k++){var iso=ht[k].slice(0,10),hh=parseInt(ht[k].slice(11,13),10);if(!w2[iso])w2[iso]={};var slot=(hh===8?'morn':(hh===13?'noon':(hh===18?'eve':null)));if(slot)w2[iso][slot]={t:hte[k],c:hc[k],p:hp[k],w:hw[k]};}}if(Object.keys(w2).length){w2._t=new Date().toISOString();w2._src='open-meteo.com';WX=w2;try{await sset('wx',WX);}catch(e){}if(typeof renderGunluk==='function'&&document.getElementById('gunluk'))renderGunluk();if(typeof renderRapor==='function'&&document.getElementById('rapor'))renderRapor();}}catch(e){}}
@@ -3942,7 +3948,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s232</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s234</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -4697,7 +4703,7 @@ function tanIsGiris(){
 
 async function backupAll(){try{
   if(typeof toast==='function')toast('Yedek hazırlanıyor…');
-  const dump={_app:'SHAMS1',_ver:'s232',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1',_ver:'s234',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pjz:','pja:','pjag:','pjp:','pjpg:','hc:','g:','gd:','arpay:','ppay:','hktah:'];
   for(const pre of pref){try{const o=await sgetAll(pre);for(const k in o){if(o[k]!=null)dump.data[k]=o[k];}}catch(e){}}
   const single=['wage','fx','fxlog','targets','mpct','cab:dc','cab:ac','cab:og','cab:kanal','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','zimmet','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
