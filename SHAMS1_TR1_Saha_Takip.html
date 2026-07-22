@@ -807,7 +807,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 240 · TR-2 sekmesi — notlar + sayılabilir veriler</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 241 · TR-2 gün gün kayıt — Montaj + Günlük'te</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -835,7 +835,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 240 · dokun→güncelle</div>
+<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 241 · dokun→güncelle</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -906,6 +906,7 @@
       <button class="subtab" onclick="mTo(4,this)">CCTV · Aydınlatma</button>
       <button class="subtab" onclick="mTo(5,this)">İnverter · SCADA</button>
       <button class="subtab" onclick="mTo(6,this)">Test · Devreye Alma</button>
+      <button class="subtab" onclick="mTo(7,this)">🗺️ TR-2</button>
     </div>
 
     <div id="isgunbar2" class="isgunbar" style="margin:8px 12px"></div>
@@ -955,6 +956,7 @@
     <div class="mpane" id="mpane4"><div id="m_cctv"></div></div>
     <div class="mpane" id="mpane5"><div id="m_inv"></div></div>
     <div class="mpane" id="mpane6"><div id="m_test"></div></div>
+    <div class="mpane" id="mpane7"><div id="m_tr2"></div></div>
   </div>
 
   <!-- ===== HAKEDİŞ ===== -->
@@ -1087,7 +1089,7 @@ let TRZ=(function(){try{return localStorage.getItem('shams1:trz')||'tr1';}catch(
 const ZLBL={tr1:'TR-1',tr2:'TR-2',tr3:'TR-3'};
 try{if(TRZ==='tr3'&&!LAYOUT_TR3.tables.length){TRZ='tr1';try{localStorage.setItem('shams1:trz','tr1');}catch(e){}}
 TGT=(TRZ==='tr3')?TGT_TR3:TGT_TR1;applyZoneLayout();}catch(e){}
-const SHARED_KEYS=['team','team_del','wage','fx','wx','parac','pj','pjg','pjz','pj2x','pja','pjag','pjp','pjpg','tr2data'];
+const SHARED_KEYS=['team','team_del','wage','fx','wx','parac','pj','pjg','pjz','pj2x','pja','pjag','pjp','pjpg','tr2data','tr2log'];
 function _isShared(k){var b=String(k).split(':')[0];return SHARED_KEYS.indexOf(b)>=0;}
 function fbPath(k){var base=_isShared(k)?'shams1tr1/':(TRZ==='tr3'?'shams1tr3/':'shams1tr1/');return base+String(k).replace(/[.#$\[\]]/g,'_').replace(/:/g,'/');}
 function setTRZ(z){if(z!=='tr1'&&z!=='tr3')return;TRZ=z;TGT=(z==='tr3')?TGT_TR3:TGT_TR1;try{applyZoneLayout();}catch(e){}try{localStorage.setItem('shams1:trz',z);}catch(e){}}
@@ -1330,12 +1332,13 @@ function tabTo(n,el){document.querySelectorAll('.tabs .tab').forEach(t=>t.classL
   if(n===8)ensureHeavyThen(renderRapor);
   if(n===9)renderGunluk();if(n===10)ensureHeavyThen(renderVerim);if(n===11)ensureHeavyThen(renderGider);if(n===12)renderTR2();}
 function mTo(n,el){MCUR=n;document.querySelectorAll('#msub .subtab').forEach(t=>t.classList.remove('on'));el.classList.add('on');
-  for(let i=0;i<7;i++)document.getElementById('mpane'+i).classList.toggle('on',i===n);mShow();}
+  for(let i=0;i<8;i++)document.getElementById('mpane'+i).classList.toggle('on',i===n);mShow();}
 function mShow(){try{renderIsgunBar();}catch(e){}
   try{var wb=document.getElementById('trzwarn');if(!wb){wb=document.createElement('div');wb.id='trzwarn';var ib=document.getElementById('isgunbar2');if(ib&&ib.parentNode)ib.parentNode.insertBefore(wb,ib);}
     if(TRZ==='tr3'&&(!LAYOUT.tables||!LAYOUT.tables.length)){wb.style.cssText='margin:8px 12px;padding:10px 12px;background:#fef3c7;border:1px solid #f59e0b;border-radius:10px;color:#92400e;font-size:13px;font-weight:600';wb.textContent='⚠ TR-3 yerleşim planı ve hedefleri henüz yüklenmedi. TR-3 DWG/DXF dosyasını (masa koordinatları) ilet — plan kurulacak. TR-1 planı TR-3 için kullanılmaz.';}
     else{wb.style.cssText='display:none';wb.textContent='';}
   }catch(e){}if(MCUR===0){renderPhaseChips();renderZoneChips();renderMinimap();renderZoneMasa();renderKonstPlan();konstStats();renderKonstTek();}
+  else if(MCUR===7)renderTR2Log();
   else renderMontajScope(MCUR);}
 function syncUnit(){if(!document.getElementById('f_item'))return;const it=GEN.find(x=>x.id===document.getElementById('f_item').value);
   document.getElementById('f_unit').textContent='birim: '+it.birim+(it.birim!=='%'?' · hedef '+tr(TARGETS[it.id]??it.hedef):'');}
@@ -1429,6 +1432,7 @@ async function reloadAll(silent){
     try{ localStorage.setItem('seed_pl_kolon_v2','1'); }catch(e){}
   })();
   GUNLUK=await _mergeGunluk(gunlukRaw||[]); WAGE=wageRaw||{}; WAGEHIST=wagehistRaw||{}; MESAI=mesaiRaw||{}; TAZM=tazmRaw||{}; FX=fxRaw||{}; FXLOG=fxlogRaw||{}; WX=wxRaw||{}; TR2DATA=tr2dataRaw||{}; if(typeof gWxAuto==='function'&&!_WXTRIED){_WXTRIED=true;gWxAuto();} MATUSE=matuse||{}; MATKOV=matkov||{}; MATCUSTOM=matcustom||[]; MATLINK=matlinkRaw||{}; ZIMMET=zimmetRaw||[]; ISB=isbasi||'2026-06-16'; UPCOUNT=upc||0; UPLAST=uplast||0; if(typeof renderUpBadge==='function')renderUpBadge();
+  try{const tl=await sgetAll('tr2log:');TR2LOG=Object.values(tl||{}).filter(Boolean).sort((x,y)=>(y.tarih||'').localeCompare(x.tarih||''));}catch(e){}
   CINS={dc:cinsdc||{},ac:cinsac||{},og:cinsog||{}};
   TEAM=team||[];
   TEAM.forEach(p=>{if(p.gorev==='Ara eleman')p.gorev='Yardımcı';});
@@ -2153,65 +2157,65 @@ let PJ2X={};
 let GROSTER=[];
 let PJA={},PJAG={};
 let PARAC=[],PJP={},PJPG={};
-let GIDER=[],WAGE={},WAGEHIST={},FX={},FXLOG={},_GDSEQ=0,WX={},_WXTRIED=false,MESAI={},TAZM={},TR2DATA={};
+let GIDER=[],WAGE={},WAGEHIST={},FX={},FXLOG={},_GDSEQ=0,WX={},_WXTRIED=false,MESAI={},TAZM={},TR2DATA={},TR2LOG=[];
+function tr2LogFormHTML(prefix){
+  const today=dToday();
+  return '<div class="tk2"><h3>📝 TR-2 — gün gün giriş</h3>'+
+    '<div class="hint" style="margin:0 0 8px">Masa bazlı değil — o günkü toplam çalışan sayısını ve yapılan iş miktarını gir.</div>'+
+    '<div class="frow"><label>Tarih<input type="date" id="'+prefix+'_tarih" value="'+today+'" max="'+today+'"></label>'+
+    '<label>Çalışan sayısı<input type="number" id="'+prefix+'_calisan" min="0" placeholder="0"></label></div>'+
+    '<div class="frow"><label>Ayak<input type="number" id="'+prefix+'_ayak" min="0" placeholder="0"></label>'+
+    '<label>Kiriş<input type="number" id="'+prefix+'_kiris" min="0" placeholder="0"></label></div>'+
+    '<div class="frow"><label>Aşık<input type="number" id="'+prefix+'_asik" min="0" placeholder="0"></label>'+
+    '<label>Çapraz<input type="number" id="'+prefix+'_capraz" min="0" placeholder="0"></label></div>'+
+    '<div class="frow"><label>Panel<input type="number" id="'+prefix+'_panel" min="0" placeholder="0"></label>'+
+    '<label class="gwide">Not<input type="text" id="'+prefix+'_not" placeholder="o gün yapılan işler, gözlem..."></label></div>'+
+    '<div class="drow"><button class="btn" onclick="addTR2LogEntry(\''+prefix+'\')">+ Kayıt ekle</button></div></div>';
+}
+function tr2LogTableHTML(limit){
+  const rows=(TR2LOG||[]).slice(0,limit||500);
+  let tC=0,tA=0,tK=0,tAs=0,tCp=0,tP=0;
+  const trs=rows.map(function(r){
+    tC+=(+r.calisan||0);tA+=(+r.ayak||0);tK+=(+r.kiris||0);tAs+=(+r.asik||0);tCp+=(+r.capraz||0);tP+=(+r.panel||0);
+    return '<tr><td>'+dtr(r.tarih)+'</td><td class="num">'+(r.calisan||0)+'</td><td class="num">'+(r.ayak||0)+'</td><td class="num">'+(r.kiris||0)+'</td><td class="num">'+(r.asik||0)+'</td><td class="num">'+(r.capraz||0)+'</td><td class="num">'+(r.panel||0)+'</td><td><small>'+esc(r.not||'')+'</small></td><td>'+((typeof ROLE!=='undefined'&&ROLE==='admin')?('<button class="btn ghost sm" onclick="delTR2LogEntry(\''+r.id+'\')">🗑</button>'):'')+'</td></tr>';
+  }).join('');
+  return '<div class="tk2"><h3>📋 TR-2 — gün gün kayıtlar ('+rows.length+')</h3>'+
+    '<div style="overflow:auto"><table class="mtab"><thead><tr><th>Tarih</th><th>Çalışan</th><th>Ayak</th><th>Kiriş</th><th>Aşık</th><th>Çapraz</th><th>Panel</th><th>Not</th><th></th></tr></thead><tbody>'+
+    (trs||'<tr><td colspan="9" class="empty">Kayıt yok</td></tr>')+
+    '</tbody><tfoot><tr style="font-weight:700;border-top:2px solid var(--line)"><td>TOPLAM</td><td class="num">'+tC+'</td><td class="num">'+tA+'</td><td class="num">'+tK+'</td><td class="num">'+tAs+'</td><td class="num">'+tCp+'</td><td class="num">'+tP+'</td><td colspan="2"></td></tr></tfoot></table></div></div>';
+}
+async function addTR2LogEntry(prefix){
+  const tarih=fval(prefix+'_tarih')||dToday();
+  const calisan=+fval(prefix+'_calisan')||0;
+  const ayak=+fval(prefix+'_ayak')||0,kiris=+fval(prefix+'_kiris')||0,asik=+fval(prefix+'_asik')||0,capraz=+fval(prefix+'_capraz')||0,panel=+fval(prefix+'_panel')||0;
+  const not_=fval(prefix+'_not')||'';
+  if(!calisan&&!ayak&&!kiris&&!asik&&!capraz&&!panel&&!not_){toast('En az bir alan doldur');return;}
+  const rec={id:uid(),tarih:tarih,calisan:calisan,ayak:ayak,kiris:kiris,asik:asik,capraz:capraz,panel:panel,not:not_,ts:Date.now()};
+  TR2LOG.unshift(rec);
+  TR2LOG.sort(function(a,b){return (b.tarih||'').localeCompare(a.tarih||'');});
+  await sset('tr2log:'+rec.id,rec);
+  try{await logAct('TR-2 günlük',dtr(tarih)+' · '+calisan+' çalışan'+(not_?(' · '+not_):''));}catch(e){}
+  toast('TR-2 kaydı eklendi');
+  try{renderTR2();}catch(e){}
+  try{renderGunluk();}catch(e){}
+}
+async function delTR2LogEntry(id){
+  if(!confirm('Bu TR-2 kaydı silinsin mi?'))return;
+  TR2LOG=TR2LOG.filter(function(r){return r.id!==id;});
+  await sdel('tr2log:'+id);
+  try{renderTR2();}catch(e){}
+  try{renderGunluk();}catch(e){}
+}
 function renderTR2(){
-  var el=document.getElementById('tr2');if(!el)return;
-  var items=TR2DATA.items||{};
-  var custom=TR2DATA.custom||[];
-  var notlar=TR2DATA.notlar||'';
-  var fixedDefs=[['ayak','Ayak'],['kiris','Kiriş'],['asik','Aşık'],['capraz','Çapraz'],['panel','Panel']];
-  var itemRows=fixedDefs.map(function(it){
-    return '<label>'+it[1]+'<input type="number" id="tr2_'+it[0]+'" value="'+(items[it[0]]||0)+'" min="0"></label>';
-  }).join('');
-  var customRows=custom.map(function(c,i){
-    return '<div style="display:flex;gap:8px;align-items:flex-end;margin-top:8px"><label style="flex:1">'+esc(c.ad)+'<input type="number" id="tr2c_'+i+'" value="'+(c.adet||0)+'" min="0"></label><button class="btn ghost sm" onclick="delTR2Custom('+i+')">🗑</button></div>';
-  }).join('');
+  const el=document.getElementById('tr2');if(!el)return;
   el.innerHTML='<h2 style="margin:6px 12px 0">🗺️ TR-2</h2>'+
-    '<div class="hint" style="margin:0 12px 10px">TR-2\'de henüz masa bazlı bir sistem yok — TR-1/TR-3\'teki gibi tek tek masa/kiriş işaretleme burada yok, sadece genel notlar ve toplam sayılar tutuluyor. İleride TR-2\'nin hedefi/sözleşmesi belirlenince bu sayılar hakediş hesabının altlık verisi olarak kullanılacak.</div>'+
-    '<div class="tk2"><h3>📝 Saha notu</h3><div class="hint" style="margin:0 0 8px">Sözel/metin olarak sahadaki durumu, yapılan işleri yaz — harita/kroki yerine geçer.</div>'+
-    '<textarea id="tr2_not" rows="6" placeholder="TR-2 sahasındaki durumu, yapılan işleri serbest metin olarak yaz..." style="width:100%;box-sizing:border-box;padding:10px;border:1px solid var(--line,#e6e9ef);border-radius:10px;font:14px/1.5 var(--sans,sans-serif)">'+esc(notlar)+'</textarea>'+
-    '<button class="btn" style="margin-top:8px" onclick="saveTR2Not()">💾 Notu kaydet</button></div>'+
-    '<div class="tk2"><h3>🔢 Sayılabilir veriler — toplam yapılan</h3>'+
-    '<div class="hint" style="margin:0 0 10px">Masa bazlı değil — sahada o ana kadar toplam yapılan miktarı gir (örn. 12 aşık, 19 çapraz).</div>'+
-    '<div class="ygrid">'+itemRows+'</div>'+customRows+
-    '<div style="display:flex;gap:8px;margin-top:12px"><input id="tr2_newname" placeholder="Yeni kalem adı (örn. Kanal açma - m)" style="flex:1;padding:8px;border:1px solid var(--line,#e6e9ef);border-radius:8px"><button class="btn ghost sm" onclick="addTR2Custom()">+ Kalem ekle</button></div>'+
-    '<button class="btn" style="margin-top:12px" onclick="saveTR2Items()">💾 Sayıları kaydet</button></div>';
+    '<div class="hint" style="margin:0 12px 10px">TR-2 için masa bazlı sistem yok — gün gün kayıt tutuluyor. Genel toplam sayı + serbest metin girişi için Saha Günlüğü\'ndeki "TR-2 — Saha Durumu" kartını kullan; buradaki gün gün kayıtlar aynı zamanda Montaj → TR-2 sekmesinde ve Saha Günlüğü\'nde de görünür.</div>'+
+    tr2LogFormHTML('tr2')+tr2LogTableHTML();
 }
-async function saveTR2Not(){
-  var e=document.getElementById('tr2_not');
-  if(!TR2DATA||typeof TR2DATA!=='object')TR2DATA={};
-  TR2DATA.notlar=(e&&e.value)||'';
-  await sset('tr2data',TR2DATA);
-  toast('TR-2 notu kaydedildi');
-}
-async function saveTR2Items(){
-  if(!TR2DATA.items)TR2DATA.items={};
-  ['ayak','kiris','asik','capraz','panel'].forEach(function(k){
-    var e=document.getElementById('tr2_'+k);
-    if(e)TR2DATA.items[k]=+e.value||0;
-  });
-  (TR2DATA.custom||[]).forEach(function(c,i){
-    var e=document.getElementById('tr2c_'+i);
-    if(e)c.adet=+e.value||0;
-  });
-  await sset('tr2data',TR2DATA);
-  toast('TR-2 sayıları kaydedildi');
-  renderTR2();
-}
-function addTR2Custom(){
-  var e=document.getElementById('tr2_newname');
-  var name=((e&&e.value)||'').trim();
-  if(!name){toast('Kalem adı gir');return;}
-  if(!TR2DATA.custom)TR2DATA.custom=[];
-  TR2DATA.custom.push({ad:name,adet:0});
-  e.value='';
-  renderTR2();
-}
-async function delTR2Custom(i){
-  if(!confirm('Bu kalem silinsin mi?'))return;
-  if(TR2DATA.custom)TR2DATA.custom.splice(i,1);
-  await sset('tr2data',TR2DATA);
-  renderTR2();
+function renderTR2Log(){
+  const el=document.getElementById('m_tr2');if(!el)return;
+  el.innerHTML='<div class="hint" style="margin:6px 12px 10px">TR-2 için masa bazlı işaretleme yok — gün gün, o güne ait toplam çalışan sayısı ve yapılan iş miktarını gir.</div>'+
+    tr2LogFormHTML('mtr2')+tr2LogTableHTML();
 }
 const PJST=[
  {c:'',  l:'—', v:0,   bg:'transparent', fg:'var(--muted,#888)'},
@@ -3612,7 +3616,8 @@ function renderGunluk(){
     '<label>Panel<input id="t2_panel" type="number" placeholder="0" value="'+(t2.panel!=null?t2.panel:'')+'"></label></div>'+
     '<div class="frow"><label class="gwide">Saha durumu / genel açıklama (serbest metin)<textarea id="t2_metin" rows="3" placeholder="TR-2 sahasında bugüne kadar yapılanlar, genel durum, notlar...">'+esc(t2.metin||'')+'</textarea></label></div>'+
     '<div class="drow"><button class="btn" onclick="saveTr2Data()">TR-2 verisini kaydet</button></div>'+t2Upd+'</div>';
-  el.innerHTML=tr2Card+form+sum+hist;gFillKisi();
+  var tr2LogSection=tr2LogFormHTML('gtr2')+tr2LogTableHTML(30);
+  el.innerHTML=tr2Card+tr2LogSection+form+sum+hist;gFillKisi();
 }
 
 /* ===== PUANTAJ İŞ-KALEMİ KIRILIMI + GÜNLÜK BAĞI ===== */
@@ -4099,7 +4104,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s240</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s241</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -4854,7 +4859,7 @@ function tanIsGiris(){
 
 async function backupAll(){try{
   if(typeof toast==='function')toast('Yedek hazırlanıyor…');
-  const dump={_app:'SHAMS1',_ver:'s240',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1',_ver:'s241',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pjz:','pja:','pjag:','pjp:','pjpg:','hc:','g:','gd:','arpay:','ppay:','hktah:'];
   for(const pre of pref){try{const o=await sgetAll(pre);for(const k in o){if(o[k]!=null)dump.data[k]=o[k];}}catch(e){}}
   const single=['wage','fx','fxlog','targets','mpct','cab:dc','cab:ac','cab:og','cab:kanal','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','zimmet','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
