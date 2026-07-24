@@ -807,7 +807,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 250 · Her günün satırında kişi sayısı + isimler birlikte</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 251 · TR-2 hakediş — çelik 4x, panel 2x, gider/gelir tablosu</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -835,7 +835,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 250 · dokun→güncelle</div>
+<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 251 · dokun→güncelle</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -2299,33 +2299,89 @@ function gPersCostDayZone(iso,zone){
   });
   return {tutar:t,kisi:n};
 }
+function tr1UnitPrice(itemId){
+  let pur=0,hedef=0;
+  if(itemId==='kiris'){pur=0.31/3;hedef=TGT_TR1.kiris;}
+  else if(itemId==='asik'){pur=0.31/3;hedef=TGT_TR1.asik;}
+  else if(itemId==='capraz'){pur=0.31/3;hedef=TGT_TR1.capraz;}
+  else if(itemId==='panel'){pur=0.27;hedef=TGT_TR1.panel;}
+  else return 0;
+  return hedef>0?(MEK*pur)/hedef:0;
+}
+function tr2UnitPrice(itemId){
+  const base=tr1UnitPrice(itemId);
+  return itemId==='panel'?base*2:base*4;
+}
+function tr2HakedisDayUSD(iso){
+  let usd=0;
+  (TR2LOG||[]).forEach(function(r){
+    if(r.tarih!==iso)return;
+    usd+=(+r.kiris||0)*tr2UnitPrice('kiris');
+    usd+=(+r.asik||0)*tr2UnitPrice('asik');
+    usd+=(+r.capraz||0)*tr2UnitPrice('capraz');
+    usd+=(+r.panel||0)*tr2UnitPrice('panel');
+  });
+  return usd;
+}
+let _tr2ChartInst=null,_tr2RowsCache=null;
 function tr2MaliyetHTML(){
   const days=gDays();
-  let totY=0,totH=0,totT=0;
+  let totY=0,totH=0,totT=0,totHk=0;
   const rows=[];
   days.forEach(function(iso){
     const pc=gPersCostDayZone(iso,'tr2');
     const h=gGiderDayZone(iso,'tr2');
-    if(!pc.kisi&&!h)return;
+    const hkAZN=(function(){const usd=tr2HakedisDayUSD(iso);return usd?toAZN(usd,'USD',iso):0;})();
+    if(!pc.kisi&&!h&&!hkAZN)return;
     const top=pc.tutar+h;
-    totY+=pc.tutar;totH+=h;totT+=top;
-    rows.push({iso:iso,kisi:pc.kisi,yev:pc.tutar,har:h,top:top});
+    totY+=pc.tutar;totH+=h;totT+=top;totHk+=hkAZN;
+    rows.push({iso:iso,kisi:pc.kisi,yev:pc.tutar,har:h,top:top,hk:hkAZN});
   });
+  _tr2RowsCache=rows;
   const trs=rows.map(function(r){
-    return '<tr><td class="mcname">'+dtr(r.iso)+'</td><td class="num" data-label="Çalışan">'+r.kisi+'</td><td class="num" data-label="Yevmiye">'+gMoney(r.yev)+'</td><td class="num" data-label="Harcama">'+gMoney(r.har)+'</td><td class="num" data-label="Toplam"><b>'+gMoney(r.top)+'</b></td></tr>';
+    const fark=r.hk-r.top,cls=fark>=0?'color:#2e9e5b':'color:#E5484D';
+    return '<tr><td class="mcname">'+dtr(r.iso)+'</td><td class="num" data-label="Çalışan">'+r.kisi+'</td><td class="num" data-label="Yevmiye">'+gMoney(r.yev)+'</td><td class="num" data-label="Harcama">'+gMoney(r.har)+'</td><td class="num" data-label="Toplam Gider"><b>'+gMoney(r.top)+'</b></td><td class="num" data-label="Hakediş Değeri">'+gMoney(r.hk)+'</td><td class="num" data-label="Fark" style="'+cls+'"><b>'+(fark>=0?'+':'−')+gMoney(Math.abs(fark))+'</b></td></tr>';
   }).join('');
-  return '<div class="tk2"><h3>💰 TR-2 — günlük maliyet</h3>'+
-    '<div class="hint" style="margin:0 0 8px">Puantajda "TR-2" etiketlenmiş kişilerin yevmiyesi + o gün TR-2 etiketiyle girilmiş harcamalar. Sadece hareket olan günler listelenir.</div>'+
-    '<div class="gsum" style="margin:0 0 10px"><div class="gscard money"><span>Toplam yevmiye</span><b>'+gMoney(totY)+'</b></div><div class="gscard money"><span>Toplam harcama</span><b>'+gMoney(totH)+'</b></div><div class="gscard money"><span>Genel toplam</span><b>'+gMoney(totT)+'</b></div></div>'+
-    '<div style="overflow:auto"><table class="maastbl"><thead><tr><th>Tarih</th><th>Çalışan</th><th>Yevmiye</th><th>Harcama</th><th>Toplam</th></tr></thead><tbody>'+
-    (trs||'<tr><td colspan="5" class="empty">TR-2 etiketli puantaj veya harcama kaydı yok</td></tr>')+
-    '</tbody></table></div></div>';
+  const farkTot=totHk-totT,clsTot=farkTot>=0?'color:#2e9e5b':'color:#E5484D';
+  const kirisP=tr2UnitPrice('kiris'),asikP=tr2UnitPrice('asik'),caprazP=tr2UnitPrice('capraz'),panelP=tr2UnitPrice('panel');
+  return '<div class="tk2"><h3>💰 TR-2 — günlük gider · gelir (hakediş)</h3>'+
+    '<div class="hint" style="margin:0 0 8px">Gider: puantajda "TR-2" etiketli kişilerin yevmiyesi + "TR-2" etiketli harcamalar. Gelir (Hakediş Değeri): TR-1 birim fiyatlarının çelik montajda (kiriş/aşık/çapraz) 4 katı, panelde 2 katı ile o gün TR-2\'de yapılan iş miktarı çarpılarak hesaplanır. Fark = Hakediş Değeri − Toplam Gider.</div>'+
+    '<div class="hint" style="margin:0 0 10px"><b>Kullanılan birim fiyatlar (USD):</b> Kiriş '+fmtN(kirisP)+' · Aşık '+fmtN(asikP)+' · Çapraz '+fmtN(caprazP)+' · Panel '+fmtN(panelP)+'</div>'+
+    '<div class="gsum" style="margin:0 0 10px"><div class="gscard money"><span>Toplam gider</span><b>'+gMoney(totT)+'</b></div><div class="gscard money"><span>Toplam hakediş değeri</span><b>'+gMoney(totHk)+'</b></div><div class="gscard money"><span>Fark</span><b style="'+clsTot+'">'+(farkTot>=0?'+':'−')+gMoney(Math.abs(farkTot))+'</b></div></div>'+
+    '<div style="position:relative;height:200px;width:100%;max-height:200px;overflow:hidden;margin-bottom:10px"><canvas id="tr2icmalCanvas"></canvas></div>'+
+    '<div style="overflow:auto"><table class="maastbl"><thead><tr><th>Tarih</th><th>Çalışan</th><th>Yevmiye</th><th>Harcama</th><th>Toplam Gider</th><th>Hakediş Değeri</th><th>Fark</th></tr></thead><tbody>'+
+    (trs||'<tr><td colspan="7" class="empty">TR-2 etiketli puantaj, harcama veya günlük iş kaydı yok</td></tr>')+
+    '</tbody><tfoot><tr class="eptot"><td colspan="4">TOPLAM</td><td class="num" data-label="Toplam Gider"><b>'+gMoney(totT)+'</b></td><td class="num" data-label="Hakediş Değeri"><b>'+gMoney(totHk)+'</b></td><td class="num" data-label="Fark" style="'+clsTot+'"><b>'+(farkTot>=0?'+':'−')+gMoney(Math.abs(farkTot))+'</b></td></tr></tfoot></table></div></div>';
+}
+async function drawTR2Chart(){
+  const rows=_tr2RowsCache;if(!rows||!rows.length)return;
+  const canvas=document.getElementById('tr2icmalCanvas');if(!canvas)return;
+  try{
+    if(!window.Chart){await new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s);});}
+  }catch(e){canvas.outerHTML='<div class="hint">Grafik kütüphanesi yüklenemedi.</div>';return;}
+  if(!document.getElementById('tr2icmalCanvas'))return;
+  const labels=rows.map(function(r){return dtr(r.iso);});
+  const vals=rows.map(function(r){return +(r.hk-r.top).toFixed(2);});
+  const bg=vals.map(function(v){return v>=0?'rgba(46,158,91,0.82)':'rgba(229,72,77,0.82)';});
+  try{if(_tr2ChartInst){_tr2ChartInst.destroy();_tr2ChartInst=null;}}catch(e){}
+  try{
+    _tr2ChartInst=new Chart(canvas.getContext('2d'),{
+      type:'bar',
+      data:{labels:labels,datasets:[{data:vals,backgroundColor:bg,borderRadius:5,borderSkipped:false,maxBarThickness:24,minBarLength:2}]},
+      options:{responsive:true,maintainAspectRatio:false,animation:{duration:450,easing:'easeOutQuart'},
+        plugins:{legend:{display:false},tooltip:{backgroundColor:'#15181f',padding:10,cornerRadius:10,displayColors:false,
+          callbacks:{title:function(items){return items[0].label;},label:function(item){const v=item.raw;return (v>=0?'+':'−')+fmtN(Math.abs(v))+' ₼ · '+(v>=0?'kârda':'zararda');}}}},
+        scales:{x:{grid:{display:false},border:{display:false},ticks:{autoSkip:true,maxTicksLimit:8,font:{size:10},color:'#9a9aa5'}},
+          y:{grid:{color:'#eef0f4'},border:{display:false},ticks:{font:{size:10},color:'#9a9aa5'}}}}
+    });
+  }catch(e){try{console.error('[TR-2 chart]',e);}catch(_e){}}
 }
 function renderTR2(){
   const el=document.getElementById('tr2');if(!el)return;
   el.innerHTML='<h2 style="margin:6px 12px 0">🗺️ TR-2</h2>'+
     '<div class="hint" style="margin:0 12px 10px">TR-2 için masa bazlı sistem yok — gün gün kayıt tutuluyor. Genel toplam sayı + serbest metin girişi için Saha Günlüğü\'ndeki "TR-2 — Saha Durumu" kartını kullan; buradaki gün gün kayıtlar aynı zamanda Montaj → TR-2 sekmesinde ve Saha Günlüğü\'nde de görünür.</div>'+
     tr2LogFormHTML('tr2')+tr2LogTableHTML()+tr2MaliyetHTML();
+  try{drawTR2Chart();}catch(e){}
 }
 function renderTR2Log(){
   const el=document.getElementById('m_tr2');if(!el)return;
@@ -4219,7 +4275,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s250</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s251</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -4974,7 +5030,7 @@ function tanIsGiris(){
 
 async function backupAll(){try{
   if(typeof toast==='function')toast('Yedek hazırlanıyor…');
-  const dump={_app:'SHAMS1',_ver:'s250',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1',_ver:'s251',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pjz:','pja:','pjag:','pjp:','pjpg:','hc:','g:','gd:','arpay:','ppay:','hktah:'];
   for(const pre of pref){try{const o=await sgetAll(pre);for(const k in o){if(o[k]!=null)dump.data[k]=o[k];}}catch(e){}}
   const single=['wage','fx','fxlog','targets','mpct','cab:dc','cab:ac','cab:og','cab:kanal','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','zimmet','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
