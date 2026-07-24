@@ -807,7 +807,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 245 · TR-2'de çalışan sayısı yerine isim seçimi</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 246 · TR-2 çalışanları artık Puantaj'dan otomatik geliyor</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -835,7 +835,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 245 · dokun→güncelle</div>
+<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 246 · dokun→güncelle</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -2158,32 +2158,33 @@ let GROSTER=[];
 let PJA={},PJAG={};
 let PARAC=[],PJP={},PJPG={};
 let GIDER=[],WAGE={},WAGEHIST={},FX={},FXLOG={},_GDSEQ=0,WX={},_WXTRIED=false,MESAI={},TAZM={},TR2DATA={},TR2LOG=[];
-let TR2_SEL={};
-function tr2WorkerPickerHTML(prefix,preselected){
-  TR2_SEL[prefix]=(preselected||[]).slice();
-  const act=(TEAM||[]).filter(function(p){return p.aktif;});
-  const chips=act.map(function(p){
-    const on=TR2_SEL[prefix].indexOf(p.id)>=0;
-    return '<button type="button" id="'+prefix+'_w_'+p.id+'" class="pjgb'+(on?' on':'')+'" style="border-color:#8a5cf6'+(on?';background:#8a5cf6':';color:#8a5cf6')+'" onclick="tr2ToggleWorker(\''+prefix+'\',\''+p.id+'\')">'+esc(p.ad)+'</button>';
-  }).join('');
-  return '<label class="gwide">👷 Çalışanlar — dokunarak seç</label><div class="pjggrid" style="grid-template-columns:repeat(auto-fill,minmax(130px,1fr))">'+(chips||'<div class="hint">Aktif personel yok</div>')+'</div>';
-}
-function tr2ToggleWorker(prefix,pid){
-  if(!TR2_SEL[prefix])TR2_SEL[prefix]=[];
-  const idx=TR2_SEL[prefix].indexOf(pid);
-  if(idx>=0)TR2_SEL[prefix].splice(idx,1);else TR2_SEL[prefix].push(pid);
-  const btn=document.getElementById(prefix+'_w_'+pid);
-  if(btn){const on=TR2_SEL[prefix].indexOf(pid)>=0;btn.classList.toggle('on',on);btn.style.background=on?'#8a5cf6':'';btn.style.color=on?'#fff':'#8a5cf6';}
-}
 function tr2WorkerNames(ids){
   return (ids||[]).map(function(pid){const p=(TEAM||[]).find(function(x){return x.id===pid;});return p?p.ad:'?';}).join(', ');
+}
+function tr2PuantajWorkers(iso){
+  const ym=iso.slice(0,7),d=+iso.slice(8,10);const out=[];
+  (TEAM||[]).forEach(function(p){
+    const z=(PJZ[ym]&&PJZ[ym][p.id]&&PJZ[ym][p.id][d])||'';
+    if(z==='tr2'&&gPjv(p.id,iso)>0)out.push(p.id);
+  });
+  return out;
+}
+function tr2WorkerPreviewInner(iso){
+  const ids=tr2PuantajWorkers(iso);
+  const names=ids.length?tr2WorkerNames(ids):'—';
+  return '<b>TR-2 puantajında işaretli çalışanlar ('+dtr(iso)+'):</b> '+esc(names)+(ids.length?'':' <span style="color:#b45309">— bu tarih için puantajda kimse TR-2 işaretli değil, önce Puantaj\'tan işaretle</span>');
+}
+function tr2DateChanged(prefix){
+  const iso=fval(prefix+'_tarih')||dToday();
+  const el=document.getElementById(prefix+'_wprev');
+  if(el)el.innerHTML=tr2WorkerPreviewInner(iso);
 }
 function tr2LogFormHTML(prefix){
   const today=dToday();
   return '<div class="tk2"><h3>📝 TR-2 — gün gün giriş</h3>'+
-    '<div class="hint" style="margin:0 0 8px">Masa bazlı değil — o gün TR-2\'de çalışan kişileri seç ve yapılan iş miktarını gir.</div>'+
-    '<div class="frow"><label>Tarih<input type="date" id="'+prefix+'_tarih" value="'+today+'" max="'+today+'"></label></div>'+
-    '<div class="frow">'+tr2WorkerPickerHTML(prefix,[])+'</div>'+
+    '<div class="hint" style="margin:0 0 8px">Çalışanlar burada seçilmez — o gün Puantaj\'da "TR-2" olarak işaretlenen kişiler otomatik alınır. Önce Puantaj\'tan işaretle, sonra buradan o günün iş miktarını gir.</div>'+
+    '<div class="frow"><label>Tarih<input type="date" id="'+prefix+'_tarih" value="'+today+'" max="'+today+'" onchange="tr2DateChanged(\''+prefix+'\')"></label></div>'+
+    '<div class="frow"><div class="hint" id="'+prefix+'_wprev" style="margin:0">'+tr2WorkerPreviewInner(today)+'</div></div>'+
     '<div class="frow"><label>Ayak<input type="number" id="'+prefix+'_ayak" min="0" placeholder="0"></label>'+
     '<label>Kiriş<input type="number" id="'+prefix+'_kiris" min="0" placeholder="0"></label></div>'+
     '<div class="frow"><label>Aşık<input type="number" id="'+prefix+'_asik" min="0" placeholder="0"></label>'+
@@ -2211,7 +2212,7 @@ function tr2LogTableHTML(limit){
 }
 async function addTR2LogEntry(prefix){
   const tarih=fval(prefix+'_tarih')||dToday();
-  const calisanlar=(TR2_SEL[prefix]||[]).slice();
+  const calisanlar=tr2PuantajWorkers(tarih);
   const ayak=+fval(prefix+'_ayak')||0,kiris=+fval(prefix+'_kiris')||0,asik=+fval(prefix+'_asik')||0,capraz=+fval(prefix+'_capraz')||0,panel=+fval(prefix+'_panel')||0;
   const civata=+fval(prefix+'_civata')||0,kolon=+fval(prefix+'_kolon')||0,hiza=+fval(prefix+'_hiza')||0;
   const not_=fval(prefix+'_not')||'';
@@ -2220,7 +2221,7 @@ async function addTR2LogEntry(prefix){
   TR2LOG.unshift(rec);
   TR2LOG.sort(function(a,b){return (b.tarih||'').localeCompare(a.tarih||'');});
   await sset('tr2log:'+rec.id,rec);
-  try{await logAct('TR-2 günlük',dtr(tarih)+' · '+calisanlar.length+' çalışan'+(not_?(' · '+not_):''));}catch(e){}
+  try{await logAct('TR-2 günlük',dtr(tarih)+' · '+calisanlar.length+' çalışan (puantajdan)'+(not_?(' · '+not_):''));}catch(e){}
   toast('TR-2 kaydı eklendi');
   try{renderTR2();}catch(e){}
   try{renderTR2Log();}catch(e){}
@@ -2232,8 +2233,8 @@ function editTR2LogEntry(id){
   const old=document.getElementById('tr2edov');if(old)old.remove();
   const ov=document.createElement('div');ov.id='tr2edov';ov.className='pjgov';
   ov.innerHTML='<div class="pjgsheet"><div class="pjgh"><b>TR-2 kaydını düzenle</b><small>'+dtr(r.tarih)+'</small></div>'+
-    '<div class="frow"><label>Tarih<input type="date" id="tr2ed_tarih" value="'+esc(r.tarih||'')+'" max="'+dToday()+'"></label></div>'+
-    '<div class="frow">'+tr2WorkerPickerHTML('tr2ed',Array.isArray(r.calisanlar)?r.calisanlar:[])+'</div>'+
+    '<div class="frow"><label>Tarih<input type="date" id="tr2ed_tarih" value="'+esc(r.tarih||'')+'" max="'+dToday()+'" onchange="tr2DateChanged(\'tr2ed\')"></label></div>'+
+    '<div class="frow"><div class="hint" id="tr2ed_wprev" style="margin:0">'+tr2WorkerPreviewInner(r.tarih||dToday())+'</div></div>'+
     '<div class="frow"><label>Ayak<input type="number" id="tr2ed_ayak" min="0" value="'+(r.ayak||0)+'"></label>'+
     '<label>Kiriş<input type="number" id="tr2ed_kiris" min="0" value="'+(r.kiris||0)+'"></label></div>'+
     '<div class="frow"><label>Aşık<input type="number" id="tr2ed_asik" min="0" value="'+(r.asik||0)+'"></label>'+
@@ -2251,7 +2252,7 @@ async function saveTR2LogEdit(id){
   if(roBlock())return;
   const r=(TR2LOG||[]).find(function(x){return x.id===id;});if(!r)return;
   r.tarih=fval('tr2ed_tarih')||r.tarih;
-  r.calisanlar=(TR2_SEL['tr2ed']||[]).slice();
+  r.calisanlar=tr2PuantajWorkers(r.tarih);
   delete r.calisan;
   r.ayak=+fval('tr2ed_ayak')||0;
   r.kiris=+fval('tr2ed_kiris')||0;
@@ -4209,7 +4210,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s245</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s246</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -4964,7 +4965,7 @@ function tanIsGiris(){
 
 async function backupAll(){try{
   if(typeof toast==='function')toast('Yedek hazırlanıyor…');
-  const dump={_app:'SHAMS1',_ver:'s245',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1',_ver:'s246',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pjz:','pja:','pjag:','pjp:','pjpg:','hc:','g:','gd:','arpay:','ppay:','hktah:'];
   for(const pre of pref){try{const o=await sgetAll(pre);for(const k in o){if(o[k]!=null)dump.data[k]=o[k];}}catch(e){}}
   const single=['wage','fx','fxlog','targets','mpct','cab:dc','cab:ac','cab:og','cab:kanal','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','zimmet','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
