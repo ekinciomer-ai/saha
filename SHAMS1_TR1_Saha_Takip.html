@@ -835,7 +835,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 252 · dokun→güncelle</div>
+<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 253 · dokun→güncelle</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -4278,7 +4278,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s252</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s253</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -4862,13 +4862,35 @@ async function zoneDayHakedisMap(z,days){
   return map;
 }
 let _icmalHkMap=null;
+let _icmalZoneMaps=null;
 async function buildIcmalHkMap(days){
   const m1=await zoneDayHakedisMap('tr1',days);
   const m3=await zoneDayHakedisMap('tr3',days);
+  _icmalZoneMaps={tr1:m1,tr3:m3};
   const combined={};days.forEach(d=>{combined[d]=(m1[d]||0)+(m3[d]||0);});
   _icmalHkMap=combined;return combined;}
 function gunHakedisUSD(day){return _icmalHkMap?(_icmalHkMap[day]||0):0;}
 function _usd$(v){return v==null?'—':(fmtN(v)+' $');}
+function icmalZoneSummaryHTML(days){
+  const zones=[['tr1','TR-1'],['tr2','TR-2'],['tr3','TR-3']];
+  const rows=zones.map(function(zc){
+    const z=zc[0],label=zc[1];
+    let kisi=0,harcUSD=0,yevUSD=0,hkUSD=0;
+    days.forEach(function(iso){
+      const rate=fxRateOnDate(iso),toUSD=function(azn){return rate.usdazn?azn/rate.usdazn:0;};
+      const pc=gPersCostDayZone(iso,z);
+      kisi+=pc.kisi;yevUSD+=toUSD(pc.tutar);
+      harcUSD+=toUSD(gGiderDayZone(iso,z));
+      if(z==='tr2'){hkUSD+=tr2HakedisDayUSD(iso);}
+      else{const m=(_icmalZoneMaps&&_icmalZoneMaps[z])||{};hkUSD+=(m[iso]||0);}
+    });
+    const topUSD=harcUSD+yevUSD,fark=hkUSD-topUSD,cls=fark>=0?'color:#2e9e5b':'color:#E5484D';
+    return '<tr><td class="mcname">'+label+'</td><td class="num" data-label="Çalışan">'+kisi+'</td><td class="num" data-label="Harcama">'+_usd$(harcUSD)+'</td><td class="num" data-label="Yevmiye">'+_usd$(yevUSD)+'</td><td class="num" data-label="Toplam Gider"><b>'+_usd$(topUSD)+'</b></td><td class="num" data-label="Hakediş Değeri">'+_usd$(hkUSD)+'</td><td class="num" data-label="Fark" style="'+cls+'"><b>'+(fark>=0?'+':'−')+_usd$(Math.abs(fark))+'</b></td></tr>';
+  }).join('');
+  return '<div class="tk2"><h3>🗺️ Bölge bazlı özet</h3>'+
+    '<div class="hint" style="margin:0 0 8px">TR-1 / TR-2 / TR-3 — toplam çalışan, harcama, yevmiye ve hakediş değeri karşılaştırması (aynı dönem, tüm tutarlar USD).</div>'+
+    '<div style="overflow:auto"><table class="maastbl"><thead><tr><th>Bölge</th><th>Çalışan</th><th>Harcama</th><th>Yevmiye</th><th>Toplam Gider</th><th>Hakediş Değeri</th><th>Fark</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';
+}
 function icmalRow(iso){
   const gd=gGiderDay(iso);let harcAZN=0;for(const k in gd)harcAZN+=gd[k];
   const yevAZN=gPersCostDay(iso),mesAZN=gMesaiDay(iso),toplamAZN=harcAZN+yevAZN+mesAZN;
@@ -4915,6 +4937,7 @@ async function drawIcmalChart(){
 }
 function renderIcmalGunGun(){
   const days=gDays();const rows=days.map(icmalRow);
+  const zoneSummary=_repSafe('Bölge özeti',()=>icmalZoneSummaryHTML(days));
   let totH=0,totY=0,totM=0,totT=0,totHk=0;
   rows.forEach(r=>{totH+=r.harc;totY+=r.yev;totM+=r.mes;totT+=r.toplam;totHk+=r.hk;});
   const trs=rows.map((r,i)=>{
@@ -4924,7 +4947,7 @@ function renderIcmalGunGun(){
       '<td class="num"><b>'+_usd$(r.toplam)+'</b></td><td class="num">'+_usd$(r.hk)+'</td>'+
       '<td class="num" style="'+cls+'"><b>'+(fark>=0?'+':'−')+_usd$(Math.abs(fark))+'</b><br><small>%'+oran.toFixed(0)+'</small></td></tr>';}).join('');
   const farkTot=totHk-totT,oranTot=totT>0?(totHk/totT*100):0,clsTot=farkTot>=0?'color:#2e9e5b':'color:#E5484D';
-  return '<div class="hint" style="margin:0 0 8px">Gün gün: işçi sayısı · harcama · yevmiye · mesai · toplam gider ve o günün hakediş (yapılan iş) değeri karşılaştırması — <b>TR-1 + TR-3 birleşik</b>. Tüm tutarlar <b>USD</b>. <b>Fark</b> = Hakediş Değeri − Toplam Gider (yeşil: kârda, kırmızı: zararda o gün).</div>'+
+  return zoneSummary+'<div class="hint" style="margin:0 0 8px">Gün gün: işçi sayısı · harcama · yevmiye · mesai · toplam gider ve o günün hakediş (yapılan iş) değeri karşılaştırması — <b>TR-1 + TR-3 birleşik</b>. Tüm tutarlar <b>USD</b>. <b>Fark</b> = Hakediş Değeri − Toplam Gider (yeşil: kârda, kırmızı: zararda o gün).</div>'+
     '<div class="tk2"><h3 style="margin-top:0">Günlük fark (Hakediş − Gider)</h3>'+icmalChart(rows)+
     '<div class="hint" style="margin-top:6px"><span style="color:#2e9e5b">●</span> kârda gün &nbsp; <span style="color:#E5484D">●</span> zararda gün'+(rows.length?' &nbsp; · '+dtr(rows[0].iso)+' – '+dtr(rows[rows.length-1].iso):'')+'</div></div>'+
     '<div style="overflow:auto"><table class="mtab"><thead><tr><th>Gün #</th><th>Tarih</th><th>İşçi</th><th>Harcama</th><th>Yevmiye</th><th>Mesai</th><th>Toplam Gider</th><th>Hakediş Değeri</th><th>Fark / Oran</th></tr></thead><tbody>'+
@@ -5031,7 +5054,7 @@ function tanIsGiris(){
 
 async function backupAll(){try{
   if(typeof toast==='function')toast('Yedek hazırlanıyor…');
-  const dump={_app:'SHAMS1',_ver:'s252',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1',_ver:'s253',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pjz:','pja:','pjag:','pjp:','pjpg:','hc:','g:','gd:','arpay:','ppay:','hktah:'];
   for(const pre of pref){try{const o=await sgetAll(pre);for(const k in o){if(o[k]!=null)dump.data[k]=o[k];}}catch(e){}}
   const single=['wage','fx','fxlog','targets','mpct','cab:dc','cab:ac','cab:og','cab:kanal','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','zimmet','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
