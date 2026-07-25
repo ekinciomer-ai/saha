@@ -807,7 +807,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 252 · İcmal/TR-2 her açılışta otomatik tazeleniyor</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 254 · Hakediş fetch sorunu + çalışan sayısı düzeltildi</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -835,7 +835,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 253 · dokun→güncelle</div>
+<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 254 · dokun→güncelle</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -2290,14 +2290,15 @@ async function delTR2LogEntry(id){
 }
 function gGiderDayZone(iso,zone){let t=0;(GIDER||[]).forEach(function(g){if(g.tarih===iso&&g.tr===zone)t+=toAZN(g.tutar,g.pb||'AZN',g.tarih);});return t;}
 function gPersCostDayZone(iso,zone){
-  const ym=iso.slice(0,7),d=+iso.slice(8,10);let t=0,n=0;
+  const ym=iso.slice(0,7),d=+iso.slice(8,10);let t=0,n=0;const pids=[];
   (TEAM||[]).forEach(function(p){
-    const z=(PJZ[ym]&&PJZ[ym][p.id]&&PJZ[ym][p.id][d])||'';
+    let z=(PJZ[ym]&&PJZ[ym][p.id]&&PJZ[ym][p.id][d])||'';
+    if(!z)z='tr1';
     if(z!==zone)return;
     const v=gPjv(p.id,iso);if(!v)return;
-    n++;t+=toAZN(v*payMult(p.id,iso)*wageOnDate(p.id,iso),wageCurOnDate(p.id,iso),iso);
+    n++;pids.push(p.id);t+=toAZN(v*payMult(p.id,iso)*wageOnDate(p.id,iso),wageCurOnDate(p.id,iso),iso);
   });
-  return {tutar:t,kisi:n};
+  return {tutar:t,kisi:n,pids:pids};
 }
 function tr1UnitPrice(itemId){
   let pur=0,hedef=0;
@@ -4278,7 +4279,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s253</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s254</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -4839,9 +4840,13 @@ async function fetchZoneRaw(z){
 async function zoneDayHakedisMap(z,days){
   const T=(z==='tr3')?TGT_TR3:TGT_TR1;
   if(!T.ayak||!T.panel)return {};
-  const raw=await fetchZoneRaw(z);
-  const _plan=PLAN,_alog=ALOG,_tgt=TGT,_trz=TRZ,_ent=ENTRIES,_ks=_ksCache,_ksl=_ksLen;
-  PLAN=raw.plan;ALOG=raw.alog;TGT=T;TRZ=z;ENTRIES=raw.entries;_ksCache=null;_ksLen=-1;
+  const isLive=(z===TRZ);
+  let _plan,_alog,_tgt,_trz,_ent,_ks,_ksl;
+  if(!isLive){
+    const raw=await fetchZoneRaw(z);
+    _plan=PLAN;_alog=ALOG;_tgt=TGT;_trz=TRZ;_ent=ENTRIES;_ks=_ksCache;_ksl=_ksLen;
+    PLAN=raw.plan;ALOG=raw.alog;TGT=T;TRZ=z;ENTRIES=raw.entries;_ksCache=null;_ksLen=-1;
+  }
   const map={};
   try{
     let items;try{items=repItems(0).filter(it=>it.pur>0);}catch(e0){try{console.error('[İcmal zone] repItems',z,e0);}catch(_e){}items=[];}
@@ -4857,7 +4862,7 @@ async function zoneDayHakedisMap(z,days){
     });
     if(rawSum>0){const scale=trueTotal/rawSum;for(const d in map)map[d]*=scale;}
   }finally{
-    PLAN=_plan;ALOG=_alog;TGT=_tgt;TRZ=_trz;ENTRIES=_ent;_ksCache=_ks;_ksLen=_ksl;
+    if(!isLive){PLAN=_plan;ALOG=_alog;TGT=_tgt;TRZ=_trz;ENTRIES=_ent;_ksCache=_ks;_ksLen=_ksl;}
   }
   return map;
 }
@@ -4875,20 +4880,22 @@ function icmalZoneSummaryHTML(days){
   const zones=[['tr1','TR-1'],['tr2','TR-2'],['tr3','TR-3']];
   const rows=zones.map(function(zc){
     const z=zc[0],label=zc[1];
-    let kisi=0,harcUSD=0,yevUSD=0,hkUSD=0;
+    let harcUSD=0,yevUSD=0,hkUSD=0;const uniq={};
     days.forEach(function(iso){
       const rate=fxRateOnDate(iso),toUSD=function(azn){return rate.usdazn?azn/rate.usdazn:0;};
       const pc=gPersCostDayZone(iso,z);
-      kisi+=pc.kisi;yevUSD+=toUSD(pc.tutar);
+      (pc.pids||[]).forEach(function(pid){uniq[pid]=true;});
+      yevUSD+=toUSD(pc.tutar);
       harcUSD+=toUSD(gGiderDayZone(iso,z));
       if(z==='tr2'){hkUSD+=tr2HakedisDayUSD(iso);}
       else{const m=(_icmalZoneMaps&&_icmalZoneMaps[z])||{};hkUSD+=(m[iso]||0);}
     });
+    const kisi=Object.keys(uniq).length;
     const topUSD=harcUSD+yevUSD,fark=hkUSD-topUSD,cls=fark>=0?'color:#2e9e5b':'color:#E5484D';
     return '<tr><td class="mcname">'+label+'</td><td class="num" data-label="Çalışan">'+kisi+'</td><td class="num" data-label="Harcama">'+_usd$(harcUSD)+'</td><td class="num" data-label="Yevmiye">'+_usd$(yevUSD)+'</td><td class="num" data-label="Toplam Gider"><b>'+_usd$(topUSD)+'</b></td><td class="num" data-label="Hakediş Değeri">'+_usd$(hkUSD)+'</td><td class="num" data-label="Fark" style="'+cls+'"><b>'+(fark>=0?'+':'−')+_usd$(Math.abs(fark))+'</b></td></tr>';
   }).join('');
   return '<div class="tk2"><h3>🗺️ Bölge bazlı özet</h3>'+
-    '<div class="hint" style="margin:0 0 8px">TR-1 / TR-2 / TR-3 — toplam çalışan, harcama, yevmiye ve hakediş değeri karşılaştırması (aynı dönem, tüm tutarlar USD).</div>'+
+    '<div class="hint" style="margin:0 0 8px">TR-1 / TR-2 / TR-3 — farklı çalışan sayısı (kişi, gün değil), toplam harcama, yevmiye ve hakediş değeri karşılaştırması (aynı dönem, tüm tutarlar USD). Puantajda bölge işaretlenmemişse TR-1 sayılır.</div>'+
     '<div style="overflow:auto"><table class="maastbl"><thead><tr><th>Bölge</th><th>Çalışan</th><th>Harcama</th><th>Yevmiye</th><th>Toplam Gider</th><th>Hakediş Değeri</th><th>Fark</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';
 }
 function icmalRow(iso){
@@ -5054,7 +5061,7 @@ function tanIsGiris(){
 
 async function backupAll(){try{
   if(typeof toast==='function')toast('Yedek hazırlanıyor…');
-  const dump={_app:'SHAMS1',_ver:'s253',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1',_ver:'s254',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pjz:','pja:','pjag:','pjp:','pjpg:','hc:','g:','gd:','arpay:','ppay:','hktah:'];
   for(const pre of pref){try{const o=await sgetAll(pre);for(const k in o){if(o[k]!=null)dump.data[k]=o[k];}}catch(e){}}
   const single=['wage','fx','fxlog','targets','mpct','cab:dc','cab:ac','cab:og','cab:kanal','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','zimmet','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
