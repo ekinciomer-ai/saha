@@ -807,7 +807,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 257 · TR-2 fiyatları TR-1 birim fiyatlarına eşitlendi</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 260 · Ödemeler sekmesi — veri yükleme sırası düzeltildi</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -835,7 +835,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 257 · dokun→güncelle</div>
+<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 260 · dokun→güncelle</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -907,6 +907,7 @@
       <button class="subtab" onclick="mTo(5,this)">İnverter · SCADA</button>
       <button class="subtab" onclick="mTo(6,this)">Test · Devreye Alma</button>
       <button class="subtab" onclick="mTo(7,this)">🗺️ TR-2</button>
+      <button class="subtab" onclick="mTo(8,this)">🔢 Adet Girişi</button>
     </div>
 
     <div id="isgunbar2" class="isgunbar" style="margin:8px 12px"></div>
@@ -957,6 +958,7 @@
     <div class="mpane" id="mpane5"><div id="m_inv"></div></div>
     <div class="mpane" id="mpane6"><div id="m_test"></div></div>
     <div class="mpane" id="mpane7"><div id="m_tr2"></div></div>
+    <div class="mpane" id="mpane8"><div id="m_adet"></div></div>
   </div>
 
   <!-- ===== HAKEDİŞ ===== -->
@@ -1089,7 +1091,7 @@ let TRZ=(function(){try{return localStorage.getItem('shams1:trz')||'tr1';}catch(
 const ZLBL={tr1:'TR-1',tr2:'TR-2',tr3:'TR-3'};
 try{if(TRZ==='tr3'&&!LAYOUT_TR3.tables.length){TRZ='tr1';try{localStorage.setItem('shams1:trz','tr1');}catch(e){}}
 TGT=(TRZ==='tr3')?TGT_TR3:TGT_TR1;applyZoneLayout();}catch(e){}
-const SHARED_KEYS=['team','team_del','wage','fx','wx','parac','pj','pjg','pjz','pj2x','pja','pjag','pjp','pjpg','tr2data','tr2log'];
+const SHARED_KEYS=['team','team_del','wage','fx','wx','parac','pj','pjg','pjz','pj2x','pja','pjag','pjp','pjpg','tr2data','tr2log','mqlog'];
 function _isShared(k){var b=String(k).split(':')[0];return SHARED_KEYS.indexOf(b)>=0;}
 function fbPath(k){var base=_isShared(k)?'shams1tr1/':(TRZ==='tr3'?'shams1tr3/':'shams1tr1/');return base+String(k).replace(/[.#$\[\]]/g,'_').replace(/:/g,'/');}
 function setTRZ(z){if(z!=='tr1'&&z!=='tr3')return;TRZ=z;TGT=(z==='tr3')?TGT_TR3:TGT_TR1;try{applyZoneLayout();}catch(e){}try{localStorage.setItem('shams1:trz',z);}catch(e){}}
@@ -1238,6 +1240,8 @@ async function zoneMechProgress(z){
       }
     }catch(e){return {ok:false};}
   }
+  {const mqRecs=(typeof MQLOG!=='undefined'?MQLOG:[]).filter(function(r){return r.zone===z;});
+   mqRecs.forEach(function(r){ki+=(+r.kiris||0);as+=(+r.asik||0);cp+=(+r.capraz||0);pa+=(+r.panel||0);});}
   const cl=v=>Math.max(0,Math.min(100,v));
   const mekPct=cl(cl(mo/T.ayak*100)*0.42+cl(ki/T.kiris*100)*(0.31/3)+cl(as/T.asik*100)*(0.31/3)+cl(cp/T.capraz*100)*(0.31/3)+cl(pa/T.panel*100)*0.27);
   return {ok:true,ay,mo,ki,as,cp,pa,n,mekPct};
@@ -1332,13 +1336,14 @@ function tabTo(n,el){document.querySelectorAll('.tabs .tab').forEach(t=>t.classL
   if(n===8)ensureHeavyThen(renderRapor);
   if(n===9)renderGunluk();if(n===10)ensureHeavyThen(renderVerim);if(n===11)ensureHeavyThen(renderGider);if(n===12)renderTR2();}
 function mTo(n,el){MCUR=n;document.querySelectorAll('#msub .subtab').forEach(t=>t.classList.remove('on'));el.classList.add('on');
-  for(let i=0;i<8;i++)document.getElementById('mpane'+i).classList.toggle('on',i===n);mShow();}
+  for(let i=0;i<9;i++)document.getElementById('mpane'+i).classList.toggle('on',i===n);mShow();}
 function mShow(){try{renderIsgunBar();}catch(e){}
   try{var wb=document.getElementById('trzwarn');if(!wb){wb=document.createElement('div');wb.id='trzwarn';var ib=document.getElementById('isgunbar2');if(ib&&ib.parentNode)ib.parentNode.insertBefore(wb,ib);}
     if(TRZ==='tr3'&&(!LAYOUT.tables||!LAYOUT.tables.length)){wb.style.cssText='margin:8px 12px;padding:10px 12px;background:#fef3c7;border:1px solid #f59e0b;border-radius:10px;color:#92400e;font-size:13px;font-weight:600';wb.textContent='⚠ TR-3 yerleşim planı ve hedefleri henüz yüklenmedi. TR-3 DWG/DXF dosyasını (masa koordinatları) ilet — plan kurulacak. TR-1 planı TR-3 için kullanılmaz.';}
     else{wb.style.cssText='display:none';wb.textContent='';}
   }catch(e){}if(MCUR===0){renderPhaseChips();renderZoneChips();renderMinimap();renderZoneMasa();renderKonstPlan();konstStats();renderKonstTek();}
   else if(MCUR===7)renderTR2Log();
+  else if(MCUR===8)renderMQLog();
   else renderMontajScope(MCUR);}
 function syncUnit(){if(!document.getElementById('f_item'))return;const it=GEN.find(x=>x.id===document.getElementById('f_item').value);
   document.getElementById('f_unit').textContent='birim: '+it.birim+(it.birim!=='%'?' · hedef '+tr(TARGETS[it.id]??it.hedef):'');}
@@ -1433,6 +1438,7 @@ async function reloadAll(silent){
   })();
   GUNLUK=await _mergeGunluk(gunlukRaw||[]); WAGE=wageRaw||{}; WAGEHIST=wagehistRaw||{}; MESAI=mesaiRaw||{}; TAZM=tazmRaw||{}; FX=fxRaw||{}; FXLOG=fxlogRaw||{}; WX=wxRaw||{}; TR2DATA=tr2dataRaw||{}; if(typeof gWxAuto==='function'&&!_WXTRIED){_WXTRIED=true;gWxAuto();} MATUSE=matuse||{}; MATKOV=matkov||{}; MATCUSTOM=matcustom||[]; MATLINK=matlinkRaw||{}; ZIMMET=zimmetRaw||[]; ISB=isbasi||'2026-06-16'; UPCOUNT=upc||0; UPLAST=uplast||0; if(typeof renderUpBadge==='function')renderUpBadge();
   try{const tl=await sgetAll('tr2log:');TR2LOG=Object.values(tl||{}).filter(Boolean).sort((x,y)=>(y.tarih||'').localeCompare(x.tarih||''));}catch(e){}
+  try{const ql=await sgetAll('mqlog:');MQLOG=Object.values(ql||{}).filter(Boolean).sort((x,y)=>(y.tarih||'').localeCompare(x.tarih||''));}catch(e){}
   CINS={dc:cinsdc||{},ac:cinsac||{},og:cinsog||{}};
   TEAM=team||[];
   TEAM.forEach(p=>{if(p.gorev==='Ara eleman')p.gorev='Yardımcı';});
@@ -1479,10 +1485,10 @@ function mechItems(){
    {id:'harita',ad:'Harita Aplikasyon',dis:'MEK',pur:0.00,birim:'ayak',done:sumP('a1'),hedef:TGT.ayak,plan:1},
    {id:'ayakdelme',ad:'Ayak Delme (rok)',dis:'MEK',pur:0.00,birim:'ayak',done:sumP('a2'),hedef:TGT.ayak,plan:1,isv:true},
    {id:'ayakmont',ad:'Ayak Montajı',dis:'MEK',pur:0.42,birim:'ayak',done:sumMon(),hedef:TGT.ayak,plan:1},
-   {id:'kiris',ad:'Kiriş Montajı (P3)',dis:'MEK',pur:0.31/3,birim:'adet',done:sumKiris(),hedef:TGT.kiris,plan:1},
-   {id:'asik',ad:'Aşık Montajı (P4)',dis:'MEK',pur:0.31/3,birim:'adet',done:sumAsik12(),hedef:TGT.asik,plan:1},
-   {id:'capraz',ad:'Çapraz Montajı (P6)',dis:'MEK',pur:0.31/3,birim:'adet',done:sumCapraz19(),hedef:TGT.capraz,plan:1},
-   {id:'panel',ad:'Panel Montajı',dis:'MEK',pur:0.27,birim:'panel',done:sumP('k7'),hedef:TGT.panel,plan:1},
+   {id:'kiris',ad:'Kiriş Montajı (P3)',dis:'MEK',pur:0.31/3,birim:'adet',done:sumKiris()+mqTotal('kiris'),hedef:TGT.kiris,plan:1},
+   {id:'asik',ad:'Aşık Montajı (P4)',dis:'MEK',pur:0.31/3,birim:'adet',done:sumAsik12()+mqTotal('asik'),hedef:TGT.asik,plan:1},
+   {id:'capraz',ad:'Çapraz Montajı (P6)',dis:'MEK',pur:0.31/3,birim:'adet',done:sumCapraz19()+mqTotal('capraz'),hedef:TGT.capraz,plan:1},
+   {id:'panel',ad:'Panel Montajı',dis:'MEK',pur:0.27,birim:'panel',done:sumP('k7')+mqTotal('panel'),hedef:TGT.panel,plan:1},
   ];
 }
 let _rafRender=null;
@@ -2157,7 +2163,7 @@ let PJ2X={};
 let GROSTER=[];
 let PJA={},PJAG={};
 let PARAC=[],PJP={},PJPG={};
-let GIDER=[],WAGE={},WAGEHIST={},FX={},FXLOG={},_GDSEQ=0,WX={},_WXTRIED=false,MESAI={},TAZM={},TR2DATA={},TR2LOG=[];
+let GIDER=[],WAGE={},WAGEHIST={},FX={},FXLOG={},_GDSEQ=0,WX={},_WXTRIED=false,MESAI={},TAZM={},TR2DATA={},TR2LOG=[],MQLOG=[];
 function tr2WorkerNames(ids){
   return (ids||[]).map(function(pid){const p=(TEAM||[]).find(function(x){return x.id===pid;});return p?p.ad:'?';}).join(', ');
 }
@@ -2326,32 +2332,33 @@ function tr2HakedisDayUSD(iso){
 let _tr2ChartInst=null,_tr2RowsCache=null;
 function tr2MaliyetHTML(){
   const days=gDays();
-  let totY=0,totH=0,totT=0,totHk=0;
+  let totY=0,totH=0,totYm=0,totT=0,totHk=0;
   const rows=[];
   days.forEach(function(iso){
     const pc=gPersCostDayZone(iso,'tr2');
     const h=gGiderDayZone(iso,'tr2');
+    const ym=gYemekDayZone(iso,'tr2');
     const hkAZN=(function(){const usd=tr2HakedisDayUSD(iso);return usd?toAZN(usd,'USD',iso):0;})();
     if(!pc.kisi&&!h&&!hkAZN)return;
-    const top=pc.tutar+h;
-    totY+=pc.tutar;totH+=h;totT+=top;totHk+=hkAZN;
-    rows.push({iso:iso,kisi:pc.kisi,yev:pc.tutar,har:h,top:top,hk:hkAZN});
+    const top=pc.tutar+h+ym;
+    totY+=pc.tutar;totH+=h;totYm+=ym;totT+=top;totHk+=hkAZN;
+    rows.push({iso:iso,kisi:pc.kisi,yev:pc.tutar,har:h,yemek:ym,top:top,hk:hkAZN});
   });
   _tr2RowsCache=rows;
   const trs=rows.map(function(r){
     const fark=r.hk-r.top,cls=fark>=0?'color:#2e9e5b':'color:#E5484D';
-    return '<tr><td class="mcname">'+dtr(r.iso)+'</td><td class="num" data-label="Çalışan">'+r.kisi+'</td><td class="num" data-label="Yevmiye">'+gMoney(r.yev)+'</td><td class="num" data-label="Harcama">'+gMoney(r.har)+'</td><td class="num" data-label="Toplam Gider"><b>'+gMoney(r.top)+'</b></td><td class="num" data-label="Hakediş Değeri">'+gMoney(r.hk)+'</td><td class="num" data-label="Fark" style="'+cls+'"><b>'+(fark>=0?'+':'−')+gMoney(Math.abs(fark))+'</b></td></tr>';
+    return '<tr><td class="mcname">'+dtr(r.iso)+'</td><td class="num" data-label="Çalışan">'+r.kisi+'</td><td class="num" data-label="Yevmiye">'+gMoney(r.yev)+'</td><td class="num" data-label="Harcama">'+gMoney(r.har)+'</td><td class="num" data-label="Yemek">'+gMoney(r.yemek)+'</td><td class="num" data-label="Toplam Gider"><b>'+gMoney(r.top)+'</b></td><td class="num" data-label="Hakediş Değeri">'+gMoney(r.hk)+'</td><td class="num" data-label="Fark" style="'+cls+'"><b>'+(fark>=0?'+':'−')+gMoney(Math.abs(fark))+'</b></td></tr>';
   }).join('');
   const farkTot=totHk-totT,clsTot=farkTot>=0?'color:#2e9e5b':'color:#E5484D';
   const kirisP=tr2UnitPrice('kiris'),asikP=tr2UnitPrice('asik'),caprazP=tr2UnitPrice('capraz'),panelP=tr2UnitPrice('panel');
   return '<div class="tk2"><h3>💰 TR-2 — günlük gider · gelir (hakediş)</h3>'+
-    '<div class="hint" style="margin:0 0 8px">Gider: puantajda "TR-2" etiketli kişilerin yevmiyesi + "TR-2" etiketli harcamalar. Gelir (Hakediş Değeri): TR-1\'in birim fiyatları (kiriş/aşık/çapraz/panel) doğrudan, çarpansız kullanılarak o gün TR-2\'de yapılan iş miktarıyla hesaplanır. Fark = Hakediş Değeri − Toplam Gider.</div>'+
+    '<div class="hint" style="margin:0 0 8px">Gider: puantajda "TR-2" etiketli kişilerin yevmiyesi + "TR-2" etiketli harcamalar + yemek (kişi başı 9₼, mesai yapana +6₼). Gelir (Hakediş Değeri): TR-1\'in birim fiyatları (kiriş/aşık/çapraz/panel) doğrudan, çarpansız kullanılarak o gün TR-2\'de yapılan iş miktarıyla hesaplanır. Fark = Hakediş Değeri − Toplam Gider.</div>'+
     '<div class="hint" style="margin:0 0 10px"><b>Kullanılan birim fiyatlar (USD):</b> Kiriş '+fmtN(kirisP)+' · Aşık '+fmtN(asikP)+' · Çapraz '+fmtN(caprazP)+' · Panel '+fmtN(panelP)+'</div>'+
     '<div class="gsum" style="margin:0 0 10px"><div class="gscard money"><span>Toplam gider</span><b>'+gMoney(totT)+'</b></div><div class="gscard money"><span>Toplam hakediş değeri</span><b>'+gMoney(totHk)+'</b></div><div class="gscard money"><span>Fark</span><b style="'+clsTot+'">'+(farkTot>=0?'+':'−')+gMoney(Math.abs(farkTot))+'</b></div></div>'+
     '<div style="position:relative;height:200px;width:100%;max-height:200px;overflow:hidden;margin-bottom:10px"><canvas id="tr2icmalCanvas"></canvas></div>'+
-    '<div style="overflow:auto"><table class="maastbl"><thead><tr><th>Tarih</th><th>Çalışan</th><th>Yevmiye</th><th>Harcama</th><th>Toplam Gider</th><th>Hakediş Değeri</th><th>Fark</th></tr></thead><tbody>'+
-    (trs||'<tr><td colspan="7" class="empty">TR-2 etiketli puantaj, harcama veya günlük iş kaydı yok</td></tr>')+
-    '</tbody><tfoot><tr class="eptot"><td colspan="4">TOPLAM</td><td class="num" data-label="Toplam Gider"><b>'+gMoney(totT)+'</b></td><td class="num" data-label="Hakediş Değeri"><b>'+gMoney(totHk)+'</b></td><td class="num" data-label="Fark" style="'+clsTot+'"><b>'+(farkTot>=0?'+':'−')+gMoney(Math.abs(farkTot))+'</b></td></tr></tfoot></table></div></div>';
+    '<div style="overflow:auto"><table class="maastbl"><thead><tr><th>Tarih</th><th>Çalışan</th><th>Yevmiye</th><th>Harcama</th><th>Yemek</th><th>Toplam Gider</th><th>Hakediş Değeri</th><th>Fark</th></tr></thead><tbody>'+
+    (trs||'<tr><td colspan="8" class="empty">TR-2 etiketli puantaj, harcama veya günlük iş kaydı yok</td></tr>')+
+    '</tbody><tfoot><tr class="eptot"><td colspan="4">TOPLAM</td><td class="num" data-label="Yemek"><b>'+gMoney(totYm)+'</b></td><td class="num" data-label="Toplam Gider"><b>'+gMoney(totT)+'</b></td><td class="num" data-label="Hakediş Değeri"><b>'+gMoney(totHk)+'</b></td><td class="num" data-label="Fark" style="'+clsTot+'"><b>'+(farkTot>=0?'+':'−')+gMoney(Math.abs(farkTot))+'</b></td></tr></tfoot></table></div></div>';
 }
 async function drawTR2Chart(){
   const rows=_tr2RowsCache;if(!rows||!rows.length)return;
@@ -2390,6 +2397,120 @@ function renderTR2Log(){
   const el=document.getElementById('m_tr2');if(!el)return;
   el.innerHTML='<div class="hint" style="margin:6px 12px 10px">TR-2 için masa bazlı işaretleme yok — gün gün, o güne ait toplam çalışan sayısı ve yapılan iş miktarını gir.</div>'+
     tr2LogFormHTML('mtr2')+tr2LogTableHTML();
+}
+function mqPuantajWorkers(iso,zone){
+  const ym=iso.slice(0,7),d=+iso.slice(8,10);const out=[];
+  (TEAM||[]).forEach(function(p){
+    let z=(PJZ[ym]&&PJZ[ym][p.id]&&PJZ[ym][p.id][d])||'';
+    if(!z)z='tr1';
+    if(z===zone&&gPjv(p.id,iso)>0)out.push(p.id);
+  });
+  return out;
+}
+function mqWorkerPreviewInner(iso,zone){
+  const ids=mqPuantajWorkers(iso,zone);
+  const names=ids.length?tr2WorkerNames(ids):'—';
+  return '<b>'+ZLBL[zone]+' puantajında işaretli çalışanlar ('+dtr(iso)+') — '+ids.length+' kişi:</b> '+esc(names)+(ids.length?'':' <span style="color:#b45309">— bu tarih için puantajda kimse '+ZLBL[zone]+' işaretli değil</span>');
+}
+function mqDateChanged(prefix,zone){
+  const iso=fval(prefix+'_tarih')||dToday();
+  const el=document.getElementById(prefix+'_wprev');
+  if(el)el.innerHTML=mqWorkerPreviewInner(iso,zone);
+}
+function mqLogFormHTML(prefix,zone){
+  const today=dToday();
+  return '<div class="tk2"><h3>📝 '+ZLBL[zone]+' — gün gün adet girişi (masa bazlı işaretlemeye ek alternatif)</h3>'+
+    '<div class="hint" style="margin:0 0 8px">Çalışanlar burada seçilmez — o gün Puantaj\'da "'+ZLBL[zone]+'" olarak işaretlenen kişiler otomatik alınır. Buradan girilen adetler, masa bazlı işaretlemeye <b>ek olarak</b> toplama eklenir — masa sisteminin yerine geçmez.</div>'+
+    '<div class="frow"><label>Tarih<input type="date" id="'+prefix+'_tarih" value="'+today+'" max="'+today+'" onchange="mqDateChanged(\''+prefix+'\',\''+zone+'\')"></label></div>'+
+    '<div class="frow"><div class="hint" id="'+prefix+'_wprev" style="margin:0">'+mqWorkerPreviewInner(today,zone)+'</div></div>'+
+    '<div class="frow"><label>Kiriş<input type="number" id="'+prefix+'_kiris" min="0" placeholder="0"></label>'+
+    '<label>Aşık<input type="number" id="'+prefix+'_asik" min="0" placeholder="0"></label></div>'+
+    '<div class="frow"><label>Çapraz<input type="number" id="'+prefix+'_capraz" min="0" placeholder="0"></label>'+
+    '<label>Panel<input type="number" id="'+prefix+'_panel" min="0" placeholder="0"></label></div>'+
+    '<div class="frow"><label class="gwide">Not<input type="text" id="'+prefix+'_not" placeholder="o gün yapılan işler, gözlem..."></label></div>'+
+    '<div class="drow"><button class="btn" onclick="addMQLogEntry(\''+prefix+'\',\''+zone+'\')">+ Kayıt ekle</button></div></div>';
+}
+function mqLogTableHTML(zone,limit){
+  const rows=(MQLOG||[]).filter(function(r){return r.zone===zone;}).slice(0,limit||500);
+  let tK=0,tAs=0,tCp=0,tP=0;
+  const trs=rows.map(function(r){
+    const liveIds=mqPuantajWorkers(r.tarih,zone);
+    tK+=(+r.kiris||0);tAs+=(+r.asik||0);tCp+=(+r.capraz||0);tP+=(+r.panel||0);
+    const isimler=liveIds.length?(liveIds.length+' kişi: '+tr2WorkerNames(liveIds)):'0 kişi';
+    return '<tr><td class="mcname">'+dtr(r.tarih)+'</td><td data-label="Çalışanlar" style="cursor:pointer;text-decoration:underline dotted" onclick="mqShowWorkers(\''+r.tarih+'\',\''+zone+'\')"><small>'+esc(isimler)+'</small></td><td class="num" data-label="Kiriş">'+(r.kiris||0)+'</td><td class="num" data-label="Aşık">'+(r.asik||0)+'</td><td class="num" data-label="Çapraz">'+(r.capraz||0)+'</td><td class="num" data-label="Panel">'+(r.panel||0)+'</td><td data-label="Not"><small>'+esc(r.not||'')+'</small></td><td><button class="btn ghost sm" onclick="editMQLogEntry(\''+r.id+'\')">✏️</button>'+((typeof ROLE!=='undefined'&&ROLE==='admin')?(' <button class="btn ghost sm" onclick="delMQLogEntry(\''+r.id+'\')">🗑</button>'):'')+'</td></tr>';
+  }).join('');
+  return '<div class="tk2"><h3>📋 '+ZLBL[zone]+' — adet girişi kayıtları ('+rows.length+')</h3>'+
+    '<div style="overflow:auto"><table class="maastbl"><thead><tr><th>Tarih</th><th>Çalışanlar</th><th>Kiriş</th><th>Aşık</th><th>Çapraz</th><th>Panel</th><th>Not</th><th></th></tr></thead><tbody>'+
+    (trs||'<tr><td colspan="8" class="empty">Kayıt yok</td></tr>')+
+    '</tbody><tfoot><tr class="eptot"><td colspan="2">TOPLAM</td><td class="num" data-label="Kiriş">'+tK+'</td><td class="num" data-label="Aşık">'+tAs+'</td><td class="num" data-label="Çapraz">'+tCp+'</td><td class="num" data-label="Panel">'+tP+'</td><td colspan="2"></td></tr></tfoot></table></div></div>';
+}
+function mqShowWorkers(iso,zone){
+  const old=document.getElementById('mqwov');if(old)old.remove();
+  const ov=document.createElement('div');ov.id='mqwov';ov.className='pjgov';
+  ov.innerHTML='<div class="pjgsheet" style="max-width:420px"><div class="pjgh"><b>'+ZLBL[zone]+' çalışanları</b><small>'+dtr(iso)+'</small></div>'+
+    '<div class="hint" style="margin:0">'+mqWorkerPreviewInner(iso,zone)+'</div>'+
+    '<button class="pjgx" onclick="var o=document.getElementById(\'mqwov\');if(o)o.remove()">Kapat</button></div>';
+  document.body.appendChild(ov);
+}
+async function addMQLogEntry(prefix,zone){
+  const tarih=fval(prefix+'_tarih')||dToday();
+  const kiris=+fval(prefix+'_kiris')||0,asik=+fval(prefix+'_asik')||0,capraz=+fval(prefix+'_capraz')||0,panel=+fval(prefix+'_panel')||0;
+  const not_=fval(prefix+'_not')||'';
+  if(!kiris&&!asik&&!capraz&&!panel&&!not_){toast('En az bir alan doldur');return;}
+  const rec={id:uid(),zone:zone,tarih:tarih,kiris:kiris,asik:asik,capraz:capraz,panel:panel,not:not_,ts:Date.now()};
+  MQLOG.unshift(rec);
+  MQLOG.sort(function(a,b){return (b.tarih||'').localeCompare(a.tarih||'');});
+  await sset('mqlog:'+rec.id,rec);
+  try{await logAct(ZLBL[zone]+' adet girişi',dtr(tarih)+' · kiriş '+kiris+' · aşık '+asik+' · çapraz '+capraz+' · panel '+panel);}catch(e){}
+  toast(ZLBL[zone]+' kaydı eklendi');
+  try{renderMontajScope(MCUR);}catch(e){}
+  try{mShow();}catch(e){}
+}
+function editMQLogEntry(id){
+  if(roBlock())return;
+  const r=(MQLOG||[]).find(function(x){return x.id===id;});if(!r)return;
+  const old=document.getElementById('mqedov');if(old)old.remove();
+  const ov=document.createElement('div');ov.id='mqedov';ov.className='pjgov';
+  ov.innerHTML='<div class="pjgsheet"><div class="pjgh"><b>'+ZLBL[r.zone]+' kaydını düzenle</b><small>'+dtr(r.tarih)+'</small></div>'+
+    '<div class="frow"><label>Tarih<input type="date" id="mqed_tarih" value="'+esc(r.tarih||'')+'" max="'+dToday()+'"></label></div>'+
+    '<div class="frow"><label>Kiriş<input type="number" id="mqed_kiris" min="0" value="'+(r.kiris||0)+'"></label>'+
+    '<label>Aşık<input type="number" id="mqed_asik" min="0" value="'+(r.asik||0)+'"></label></div>'+
+    '<div class="frow"><label>Çapraz<input type="number" id="mqed_capraz" min="0" value="'+(r.capraz||0)+'"></label>'+
+    '<label>Panel<input type="number" id="mqed_panel" min="0" value="'+(r.panel||0)+'"></label></div>'+
+    '<div class="frow"><label class="gwide">Not<input type="text" id="mqed_not" value="'+esc(r.not||'')+'"></label></div>'+
+    '<div class="drow"><button class="btn" onclick="saveMQLogEdit(\''+id+'\')">💾 Kaydet</button></div>'+
+    '<button class="pjgx" onclick="var o=document.getElementById(\'mqedov\');if(o)o.remove()">Kapat</button></div>';
+  document.body.appendChild(ov);
+}
+async function saveMQLogEdit(id){
+  if(roBlock())return;
+  const r=(MQLOG||[]).find(function(x){return x.id===id;});if(!r)return;
+  r.tarih=fval('mqed_tarih')||r.tarih;
+  r.kiris=+fval('mqed_kiris')||0;
+  r.asik=+fval('mqed_asik')||0;
+  r.capraz=+fval('mqed_capraz')||0;
+  r.panel=+fval('mqed_panel')||0;
+  r.not=fval('mqed_not')||'';
+  MQLOG.sort(function(a,b){return (b.tarih||'').localeCompare(a.tarih||'');});
+  await sset('mqlog:'+id,r);
+  try{await logAct(ZLBL[r.zone]+' adet girişi düzenleme',dtr(r.tarih)+' · kayıt güncellendi');}catch(e){}
+  toast('Kayıt güncellendi');
+  const ov=document.getElementById('mqedov');if(ov)ov.remove();
+  try{renderMontajScope(MCUR);}catch(e){}
+  try{mShow();}catch(e){}
+}
+async function delMQLogEntry(id){
+  if(!confirm('Bu kayıt silinsin mi?'))return;
+  MQLOG=MQLOG.filter(function(r){return r.id!==id;});
+  await sdel('mqlog:'+id);
+  try{renderMontajScope(MCUR);}catch(e){}
+  try{mShow();}catch(e){}
+}
+function renderMQLog(){
+  const el=document.getElementById('m_adet');if(!el)return;
+  const zone=(TRZ==='tr3')?'tr3':'tr1';
+  el.innerHTML='<div class="hint" style="margin:6px 12px 10px">Bu, masa bazlı işaretlemenin <b>yerine değil, ek bir alternatifi</b>. Şu an açık bölge: <b>'+ZLBL[zone]+'</b> (üstteki bölge değiştiriciden değiştirebilirsin). Buradan girilen adetler masa sisteminden gelen sayılara otomatik eklenir, hakediş/İcmal hesaplarına dahildir.</div>'+
+    mqLogFormHTML('mq',zone)+mqLogTableHTML(zone);
 }
 const PJST=[
  {c:'',  l:'—', v:0,   bg:'transparent', fg:'var(--muted,#888)'},
@@ -3167,6 +3288,32 @@ function gPersYevSumRange(pid,days){var s=0;(days||[]).forEach(function(iso){var
 function gPersMesSumRange(pid,ym){var s=0;var mp=(MESAI[ym]&&MESAI[ym][pid])||{};for(var d in mp){var saat=+mp[d]||0;if(!saat||d==='_ay')continue;var dd=(''+d).length<2?('0'+d):(''+d);var iso=ym+'-'+dd;s+=(wageOnDate(pid,iso)/9)*1.5*saat;}
   if(mp['_ay']){s+=(wageOnDate(pid,ym+'-15')/9)*1.5*(+mp['_ay']||0);}return s;}
 function gPersCostDay(iso){var t=0;(TEAM||[]).forEach(function(p){t+=toAZN(gPjv(p.id,iso)*payMult(p.id,iso)*wageOnDate(p.id,iso),wageCurOnDate(p.id,iso),iso);});return t;}
+const YEMEK_BASE=9,YEMEK_MESAI_EK=6;
+function gYemekDay(iso){
+  const ym=iso.slice(0,7),d=+iso.slice(8,10);let t=0;
+  (TEAM||[]).forEach(function(p){
+    const v=gPjv(p.id,iso);if(!v)return;
+    let yemek=YEMEK_BASE;
+    const saat=(MESAI[ym]&&MESAI[ym][p.id]&&MESAI[ym][p.id][d])?(+MESAI[ym][p.id][d]||0):0;
+    if(saat>0)yemek+=YEMEK_MESAI_EK;
+    t+=yemek;
+  });
+  return t;
+}
+function gYemekDayZone(iso,zone){
+  const ym=iso.slice(0,7),d=+iso.slice(8,10);let t=0;
+  (TEAM||[]).forEach(function(p){
+    let z=(PJZ[ym]&&PJZ[ym][p.id]&&PJZ[ym][p.id][d])||'';
+    if(!z)z='tr1';
+    if(z!==zone)return;
+    const v=gPjv(p.id,iso);if(!v)return;
+    let yemek=YEMEK_BASE;
+    const saat=(MESAI[ym]&&MESAI[ym][p.id]&&MESAI[ym][p.id][d])?(+MESAI[ym][p.id][d]||0):0;
+    if(saat>0)yemek+=YEMEK_MESAI_EK;
+    t+=yemek;
+  });
+  return t;
+}
 function gGiderDay(iso){var o={};(GIDER||[]).forEach(function(g){if(g.tarih===iso)o[g.kat]=(o[g.kat]||0)+toAZN(g.tutar,g.pb||'AZN',g.tarih);});return o;}
 function gDays(){var today=dToday(),start=(typeof ISB!=='undefined'?ISB:today);(GIDER||[]).forEach(function(g){if(g.tarih&&g.tarih<start)start=g.tarih;});var out=[],iso=start,n=0;while(iso<=today&&n<500){out.push(iso);iso=dadd(iso,1);n++;}return out;}
 function gPersDays(pid){var t=0;gDays().forEach(function(iso){t+=gPjv(pid,iso);});return t;}
@@ -3249,7 +3396,7 @@ function odemeTo(pid){try{var t=[...document.querySelectorAll('.tabs .tab')].fin
 function gTo(which,btn){
   ['gider','odeme','maas','gunlukdokum','arican','icmal'].forEach(function(w){var p=document.getElementById('gpane_'+w);if(p)p.style.display=(w===which)?'':'none';});
   if(btn){var bs=document.querySelectorAll('#gsub .subtab');bs.forEach(function(b){b.classList.remove('on');});btn.classList.add('on');}
-  try{if(which==='gider')renderGider();else if(which==='odeme')renderOdeme();else if(which==='maas')renderMaasAylik();else if(which==='gunlukdokum')ensureHeavyThen(renderGunlukDokum);else if(which==='arican')renderArican();else if(which==='icmal')renderIcmalTab();}catch(e){}
+  try{if(which==='gider')renderGider();else if(which==='odeme')ensureHeavyThen(renderOdeme);else if(which==='maas')renderMaasAylik();else if(which==='gunlukdokum')ensureHeavyThen(renderGunlukDokum);else if(which==='arican')renderArican();else if(which==='icmal')renderIcmalTab();}catch(e){}
 }
 var OD_FOTO='';
 function mesaiBreakdown(pid){var w=wageOf(pid),cur=wageCur(pid);var rows=[];
@@ -3662,11 +3809,11 @@ function renderGunlukDokum(){
 function renderGider(){
   var el=document.getElementById('gider');if(!el)return;
   var days=gDays();
-  var katTot={},persTot=0,harcTot=0;
+  var katTot={},persTot=0,harcTot=0,yemekTot=0;
   var trTot={tr1:0,tr2:0,tr3:0,none:0};
   (GIDER||[]).forEach(function(g){if(!g.tarih)return;var az=toAZN(g.tutar,g.pb||'AZN',g.tarih);var b=(g.tr==='tr3'||g.tr==='tr2'||g.tr==='tr1')?g.tr:'none';trTot[b]+=az;});
-  days.forEach(function(iso){var gd=gGiderDay(iso);for(var k in gd){katTot[k]=(katTot[k]||0)+gd[k];harcTot+=gd[k];}persTot+=gPersCostDay(iso);});
-  var genel=harcTot+persTot;
+  days.forEach(function(iso){var gd=gGiderDay(iso);for(var k in gd){katTot[k]=(katTot[k]||0)+gd[k];harcTot+=gd[k];}persTot+=gPersCostDay(iso);yemekTot+=gYemekDay(iso);});
+  var genel=harcTot+persTot+yemekTot;
   var katOpts=GKAT.map(function(g){return '<option value="'+g.k+'">'+g.ic+' '+g.ad+'</option>';}).join('');
   var form='<div class="tk2"><h3>💸 Gider ekle</h3><div class="gdform">'+
     '<label>Tarih<input type="date" id="gd_tarih" value="'+dToday()+'" max="'+dToday()+'"></label>'+
@@ -3681,6 +3828,7 @@ function renderGider(){
   var sum='<div class="gsum">'+
     '<div class="gscard"><span>Harcama toplamı</span><b>'+arbStr(harcTot)+'</b></div>'+
     '<div class="gscard money"><span>Personel maliyeti</span><b>'+arbStr(persTot)+'</b></div>'+
+    '<div class="gscard money"><span>Yemek maliyeti</span><b>'+arbStr(yemekTot)+'</b></div>'+
     '<div class="gscard money"><span>GENEL TOPLAM</span><b>'+arbStr(genel)+'</b></div></div>'+
     '<div class="gsum" style="margin:6px 0"><div class="gscard"><span>TR-1 harcama</span><b>'+arbStr(trTot.tr1)+'</b></div><div class="gscard"><span>TR-2 harcama</span><b>'+arbStr(trTot.tr2)+'</b></div><div class="gscard"><span>TR-3 harcama</span><b>'+arbStr(trTot.tr3)+'</b></div>'+(trTot.none>0.5?('<div class="gscard"><span>Bölge belirtilmemiş</span><b>'+arbStr(trTot.none)+'</b></div>'):'')+'</div>';
   var fxPanel='<div class="tk2"><h3>💱 Para birimi &amp; kur</h3><div class="gdform">'+
@@ -4278,7 +4426,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s257</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s260</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -4500,15 +4648,19 @@ let _ksCache=null,_ksLen=-1;
 function _buildKS(){_ksCache={};for(let i=0;i<ALOG.length;i++){const r=ALOG[i];const m=(r.detail||'').match(/\[(\w+)\]\s*([+-]?\d+)/);if(m){const f=m[1],v=(+m[2]||0),d=dstr(r.ts);(_ksCache[f]||(_ksCache[f]={}));_ksCache[f][d]=(_ksCache[f][d]||0)+v;}}_ksLen=ALOG.length;}
 function klogSum(f,upto){if(_ksCache===null||_ksLen!==ALOG.length)_buildKS();const days=_ksCache[f];if(!days)return 0;let s=0;for(const d in days){if(upto&&d>upto)continue;s+=days[d];}return Math.max(0,s);}
 function doneGenUpto(id,upto){return ENTRIES.filter(e=>e.id===id&&(!upto||(e.date||dstr(e.ts))<=upto)).reduce((s,e)=>s+(+e.qty||0),0);}
+function mqTotal(field){
+  var t=0;(typeof MQLOG!=='undefined'?MQLOG:[]).forEach(function(r){if(r.zone===TRZ)t+=(+r[field]||0);});
+  return t;
+}
 function repItems(day){
   return [
   {id:'harita',   ad:'Harita işaretleme', birim:'ayak',  cum:sumP('a1'), hedef:TGT.ayak, dis:'MEK', pur:0.00},
   {id:'ayakdelme',ad:'Ayak delme (rok)',  birim:'ayak',  cum:sumP('a2'), hedef:TGT.ayak, dis:'MEK', pur:0.00, isv:true},
   {id:'ayakmont', ad:'Ayak montajı',       birim:'ayak',  cum:sumMon(),   hedef:TGT.ayak, dis:'MEK', pur:0.42},
-  {id:'kiris',    ad:'Kiriş montajı (P3)',  birim:'adet',  cum:sumKiris(),     hedef:TGT.kiris, dis:'MEK', pur:0.31/3},
-  {id:'asik',     ad:'Aşık montajı (P4)',   birim:'adet',  cum:sumAsik12(),   hedef:TGT.asik,  dis:'MEK', pur:0.31/3},
-  {id:'capraz',   ad:'Çapraz montajı (P6)', birim:'adet',  cum:sumCapraz19(), hedef:TGT.capraz,  dis:'MEK', pur:0.31/3},
-  {id:'panel',    ad:'Panel montajı',      birim:'panel', cum:sumP('k7'),  hedef:TGT.panel, dis:'MEK', pur:0.27},
+  {id:'kiris',    ad:'Kiriş montajı (P3)',  birim:'adet',  cum:sumKiris()+mqTotal('kiris'),     hedef:TGT.kiris, dis:'MEK', pur:0.31/3},
+  {id:'asik',     ad:'Aşık montajı (P4)',   birim:'adet',  cum:sumAsik12()+mqTotal('asik'),   hedef:TGT.asik,  dis:'MEK', pur:0.31/3},
+  {id:'capraz',   ad:'Çapraz montajı (P6)', birim:'adet',  cum:sumCapraz19()+mqTotal('capraz'), hedef:TGT.capraz,  dis:'MEK', pur:0.31/3},
+  {id:'panel',    ad:'Panel montajı',      birim:'panel', cum:sumP('k7')+mqTotal('panel'),  hedef:TGT.panel, dis:'MEK', pur:0.27},
   {id:'kanalac',  ad:'Kablo Kanalı Açılması (AG segment)', birim:'segment', cum:(typeof agSegs==='function'?agSegs().filter(s=>CAB.kanal[segKey(s[0],s[1])]).length:0), hedef:(typeof agSegs==='function'?agSegs().length:0), dis:'ELK', pur:0},
   ...GEN.map(g=>({id:g.id,ad:g.ad,birim:g.birim,cum:doneGen(g.id),hedef:g.hedef,dis:'ELK',pur:g.pur||0}))
 ];}
@@ -4516,6 +4668,15 @@ function repItems(day){
    - rok/montaj: KÜMÜLATİF FARK (footCumUpto(gün)−footCumUpto(öncekiGün)) → günlük asla onaylı toplamı aşmaz, sütun toplamları onaylıyla tutar; önceki gün delinip bugün montajlanan ayak rok'ta tekrar sayılmaz
    - harita/üst montaj/panel: ALOG 'Üretim' delta logları (undo-duyarlı net)
    - elektrik (GEN): ENTRIES üretim kayıtları (o günün tarihi) */
+function mqDayAdd(day){
+  var out={kiris:0,asik:0,capraz:0,panel:0};
+  (typeof MQLOG!=='undefined'?MQLOG:[]).forEach(function(r){
+    if(r.tarih===day&&r.zone===TRZ){
+      out.kiris+=(+r.kiris||0);out.asik+=(+r.asik||0);out.capraz+=(+r.capraz||0);out.panel+=(+r.panel||0);
+    }
+  });
+  return out;
+}
 function dayItemQty(day){
   const q={harita:0,ayakdelme:0,ayakmont:0,kiris:0,asik:0,capraz:0,panel:0,kanalac:0};
   /* rok & montaj: o güne kadar net durum farkı (telescoping) → günlük toplamı kümülatifi asla aşmaz */
@@ -4533,6 +4694,7 @@ function dayItemQty(day){
   q.panel=_cl('k7',(typeof sumP==='function'?sumP('k7'):0));
   q.kanalac=_cl('kanalac',(typeof agSegs==='function'?agSegs().filter(s=>CAB.kanal[segKey(s[0],s[1])]).length:0));
   if(q.harita<0)q.harita=0;
+  {const mq=mqDayAdd(day);q.kiris+=mq.kiris;q.asik+=mq.asik;q.capraz+=mq.capraz;q.panel+=mq.panel;}
   ENTRIES.forEach(e=>{const ed=e.date||dstr(e.ts);if(ed===day)q[e.id]=(q[e.id]||0)+(+e.qty||0);});
   return q;
 }
@@ -4552,6 +4714,7 @@ function dayNet(day){
   q.capraz=_cl('capraz',(typeof sumCapraz19==='function'?sumCapraz19():0));
   q.panel=_cl('k7',(typeof sumP==='function'?sumP('k7'):0));
   q.kanalac=_cl('kanalac',(typeof agSegs==='function'?agSegs().filter(s=>CAB.kanal[segKey(s[0],s[1])]).length:0));
+  {const mq=mqDayAdd(day);q.kiris+=mq.kiris;q.asik+=mq.asik;q.capraz+=mq.capraz;q.panel+=mq.panel;}
   ENTRIES.forEach(e=>{const ed=e.date||dstr(e.ts);if(ed===day)q[e.id]=(q[e.id]||0)+(+e.qty||0);});
   return q;
 }
@@ -4879,28 +5042,29 @@ function icmalZoneSummaryHTML(days){
   const zones=[['tr1','TR-1'],['tr2','TR-2'],['tr3','TR-3']];
   const rows=zones.map(function(zc){
     const z=zc[0],label=zc[1];
-    let harcUSD=0,yevUSD=0,hkUSD=0,adamGun=0;
+    let harcUSD=0,yevUSD=0,yemekUSD=0,hkUSD=0,adamGun=0;
     days.forEach(function(iso){
       const rate=fxRateOnDate(iso),toUSD=function(azn){return rate.usdazn?azn/rate.usdazn:0;};
       const pc=gPersCostDayZone(iso,z);
       adamGun+=pc.kisi;
       yevUSD+=toUSD(pc.tutar);
       harcUSD+=toUSD(gGiderDayZone(iso,z));
+      yemekUSD+=toUSD(gYemekDayZone(iso,z));
       if(z==='tr2'){hkUSD+=tr2HakedisDayUSD(iso);}
       else{const m=(_icmalZoneMaps&&_icmalZoneMaps[z])||{};hkUSD+=(m[iso]||0);}
     });
-    const topUSD=harcUSD+yevUSD,fark=hkUSD-topUSD,cls=fark>=0?'color:#2e9e5b':'color:#E5484D';
-    return '<tr><td class="mcname">'+label+'</td><td class="num" data-label="Adam-gün">'+adamGun+'</td><td class="num" data-label="Harcama">'+_usd$(harcUSD)+'</td><td class="num" data-label="Yevmiye">'+_usd$(yevUSD)+'</td><td class="num" data-label="Toplam Gider"><b>'+_usd$(topUSD)+'</b></td><td class="num" data-label="Hakediş Değeri">'+_usd$(hkUSD)+'</td><td class="num" data-label="Fark" style="'+cls+'"><b>'+(fark>=0?'+':'−')+_usd$(Math.abs(fark))+'</b></td></tr>';
+    const topUSD=harcUSD+yevUSD+yemekUSD,fark=hkUSD-topUSD,cls=fark>=0?'color:#2e9e5b':'color:#E5484D';
+    return '<tr><td class="mcname">'+label+'</td><td class="num" data-label="Adam-gün">'+adamGun+'</td><td class="num" data-label="Harcama">'+_usd$(harcUSD)+'</td><td class="num" data-label="Yevmiye">'+_usd$(yevUSD)+'</td><td class="num" data-label="Yemek">'+_usd$(yemekUSD)+'</td><td class="num" data-label="Toplam Gider"><b>'+_usd$(topUSD)+'</b></td><td class="num" data-label="Hakediş Değeri">'+_usd$(hkUSD)+'</td><td class="num" data-label="Fark" style="'+cls+'"><b>'+(fark>=0?'+':'−')+_usd$(Math.abs(fark))+'</b></td></tr>';
   }).join('');
   return '<div class="tk2"><h3>🗺️ Bölge bazlı özet</h3>'+
-    '<div class="hint" style="margin:0 0 8px">TR-1 / TR-2 / TR-3 — toplam adam-gün (kişi × gün, Yevmiye ile tutarlı), harcama, yevmiye ve hakediş değeri karşılaştırması (aynı dönem, tüm tutarlar USD). Puantajda bölge işaretlenmemişse TR-1 sayılır.</div>'+
-    '<div style="overflow:auto"><table class="maastbl"><thead><tr><th>Bölge</th><th>Adam-gün</th><th>Harcama</th><th>Yevmiye</th><th>Toplam Gider</th><th>Hakediş Değeri</th><th>Fark</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';
+    '<div class="hint" style="margin:0 0 8px">TR-1 / TR-2 / TR-3 — toplam adam-gün (kişi × gün, Yevmiye ile tutarlı), harcama, yevmiye, yemek (kişi başı 9₼, mesai yapana +6₼) ve hakediş değeri karşılaştırması (aynı dönem, tüm tutarlar USD). Puantajda bölge işaretlenmemişse TR-1 sayılır.</div>'+
+    '<div style="overflow:auto"><table class="maastbl"><thead><tr><th>Bölge</th><th>Adam-gün</th><th>Harcama</th><th>Yevmiye</th><th>Yemek</th><th>Toplam Gider</th><th>Hakediş Değeri</th><th>Fark</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';
 }
 function icmalRow(iso){
   const gd=gGiderDay(iso);let harcAZN=0;for(const k in gd)harcAZN+=gd[k];
-  const yevAZN=gPersCostDay(iso),mesAZN=gMesaiDay(iso),toplamAZN=harcAZN+yevAZN+mesAZN;
+  const yevAZN=gPersCostDay(iso),mesAZN=gMesaiDay(iso),yemekAZN=gYemekDay(iso),toplamAZN=harcAZN+yevAZN+mesAZN+yemekAZN;
   const hk=gunHakedisUSD(iso),rate=fxRateOnDate(iso),toUSD=v=>rate.usdazn?v/rate.usdazn:0;
-  return {iso,isci:gWorkerCountDay(iso),harc:toUSD(harcAZN),yev:toUSD(yevAZN),mes:toUSD(mesAZN),toplam:toUSD(toplamAZN),hk};}
+  return {iso,isci:gWorkerCountDay(iso),harc:toUSD(harcAZN),yev:toUSD(yevAZN),mes:toUSD(mesAZN),yemek:toUSD(yemekAZN),toplam:toUSD(toplamAZN),hk};}
 let _icmalRowsCache=null,_icmalChartInst=null;
 function icmalChart(rows){
   _icmalRowsCache=rows;
@@ -4943,21 +5107,21 @@ async function drawIcmalChart(){
 function renderIcmalGunGun(){
   const days=gDays();const rows=days.map(icmalRow);
   const zoneSummary=_repSafe('Bölge özeti',()=>icmalZoneSummaryHTML(days));
-  let totH=0,totY=0,totM=0,totT=0,totHk=0;
-  rows.forEach(r=>{totH+=r.harc;totY+=r.yev;totM+=r.mes;totT+=r.toplam;totHk+=r.hk;});
+  let totH=0,totY=0,totM=0,totYm=0,totT=0,totHk=0;
+  rows.forEach(r=>{totH+=r.harc;totY+=r.yev;totM+=r.mes;totYm+=r.yemek;totT+=r.toplam;totHk+=r.hk;});
   const trs=rows.map((r,i)=>{
     const fark=r.hk-r.toplam,oran=r.toplam>0?(r.hk/r.toplam*100):(r.hk>0?100:0),cls=fark>=0?'color:#2e9e5b':'color:#E5484D';
     return '<tr><td class="m">'+(i+1)+'</td><td>'+dtr(r.iso)+'</td><td class="num">'+r.isci+'</td>'+
-      '<td class="num">'+_usd$(r.harc)+'</td><td class="num">'+_usd$(r.yev)+'</td><td class="num">'+_usd$(r.mes)+'</td>'+
+      '<td class="num">'+_usd$(r.harc)+'</td><td class="num">'+_usd$(r.yev)+'</td><td class="num">'+_usd$(r.mes)+'</td><td class="num">'+_usd$(r.yemek)+'</td>'+
       '<td class="num"><b>'+_usd$(r.toplam)+'</b></td><td class="num">'+_usd$(r.hk)+'</td>'+
       '<td class="num" style="'+cls+'"><b>'+(fark>=0?'+':'−')+_usd$(Math.abs(fark))+'</b><br><small>%'+oran.toFixed(0)+'</small></td></tr>';}).join('');
   const farkTot=totHk-totT,oranTot=totT>0?(totHk/totT*100):0,clsTot=farkTot>=0?'color:#2e9e5b':'color:#E5484D';
-  return zoneSummary+'<div class="hint" style="margin:0 0 8px">Gün gün: işçi sayısı · harcama · yevmiye · mesai · toplam gider ve o günün hakediş (yapılan iş) değeri karşılaştırması — <b>TR-1 + TR-3 birleşik</b>. Tüm tutarlar <b>USD</b>. <b>Fark</b> = Hakediş Değeri − Toplam Gider (yeşil: kârda, kırmızı: zararda o gün).</div>'+
+  return zoneSummary+'<div class="hint" style="margin:0 0 8px">Gün gün: işçi sayısı · harcama · yevmiye · mesai · yemek (kişi başı 9₼, mesai yapana +6₼) · toplam gider ve o günün hakediş (yapılan iş) değeri karşılaştırması — <b>TR-1 + TR-3 birleşik</b>. Tüm tutarlar <b>USD</b>. <b>Fark</b> = Hakediş Değeri − Toplam Gider (yeşil: kârda, kırmızı: zararda o gün).</div>'+
     '<div class="tk2"><h3 style="margin-top:0">Günlük fark (Hakediş − Gider)</h3>'+icmalChart(rows)+
     '<div class="hint" style="margin-top:6px"><span style="color:#2e9e5b">●</span> kârda gün &nbsp; <span style="color:#E5484D">●</span> zararda gün'+(rows.length?' &nbsp; · '+dtr(rows[0].iso)+' – '+dtr(rows[rows.length-1].iso):'')+'</div></div>'+
-    '<div style="overflow:auto"><table class="mtab"><thead><tr><th>Gün #</th><th>Tarih</th><th>İşçi</th><th>Harcama</th><th>Yevmiye</th><th>Mesai</th><th>Toplam Gider</th><th>Hakediş Değeri</th><th>Fark / Oran</th></tr></thead><tbody>'+
+    '<div style="overflow:auto"><table class="mtab"><thead><tr><th>Gün #</th><th>Tarih</th><th>İşçi</th><th>Harcama</th><th>Yevmiye</th><th>Mesai</th><th>Yemek</th><th>Toplam Gider</th><th>Hakediş Değeri</th><th>Fark / Oran</th></tr></thead><tbody>'+
     trs+'</tbody><tfoot><tr style="font-weight:700;border-top:2px solid var(--line)"><td colspan="3">TOPLAM</td>'+
-    '<td class="num">'+_usd$(totH)+'</td><td class="num">'+_usd$(totY)+'</td><td class="num">'+_usd$(totM)+'</td>'+
+    '<td class="num">'+_usd$(totH)+'</td><td class="num">'+_usd$(totY)+'</td><td class="num">'+_usd$(totM)+'</td><td class="num">'+_usd$(totYm)+'</td>'+
     '<td class="num">'+_usd$(totT)+'</td><td class="num">'+_usd$(totHk)+'</td>'+
     '<td class="num" style="'+clsTot+'"><b>'+(farkTot>=0?'+':'−')+_usd$(Math.abs(farkTot))+'</b><br><small>%'+oranTot.toFixed(0)+'</small></td></tr></tfoot></table></div>';}
 async function renderIcmalTab(){var el=document.getElementById('icmal');if(!el)return;
@@ -5059,7 +5223,7 @@ function tanIsGiris(){
 
 async function backupAll(){try{
   if(typeof toast==='function')toast('Yedek hazırlanıyor…');
-  const dump={_app:'SHAMS1',_ver:'s257',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1',_ver:'s260',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pjz:','pja:','pjag:','pjp:','pjpg:','hc:','g:','gd:','arpay:','ppay:','hktah:'];
   for(const pre of pref){try{const o=await sgetAll(pre);for(const k in o){if(o[k]!=null)dump.data[k]=o[k];}}catch(e){}}
   const single=['wage','fx','fxlog','targets','mpct','cab:dc','cab:ac','cab:og','cab:kanal','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','zimmet','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
