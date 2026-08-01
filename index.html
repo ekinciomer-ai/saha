@@ -835,7 +835,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 263 · dokun→güncelle</div>
+<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 264 · dokun→güncelle</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -871,6 +871,7 @@
     <button class="tab adminonly" onclick="tabTo(10,this)">⚡ Verimlilik</button>
     <button class="tab" onclick="tabTo(11,this)">💸 Gider</button>
     <button class="tab" onclick="tabTo(12,this)">🗺️ TR-2</button>
+    <button class="tab" onclick="tabTo(13,this)">🗺️ TR-3</button>
   </div>
 
   <!-- ===== PROJE ===== -->
@@ -895,6 +896,7 @@
 
   <!-- ===== TR-2 ===== -->
   <div class="pane" id="pane12"><div id="tr2"></div></div>
+  <div class="pane" id="pane13"><div id="tr3z"></div></div>
 
   <!-- ===== MONTAJ ===== -->
   <div class="pane" id="pane1">
@@ -907,7 +909,6 @@
       <button class="subtab" onclick="mTo(5,this)">İnverter · SCADA</button>
       <button class="subtab" onclick="mTo(6,this)">Test · Devreye Alma</button>
       <button class="subtab" onclick="mTo(7,this)">🗺️ TR-2</button>
-      <button class="subtab" onclick="mTo(8,this)">🔢 Adet Girişi</button>
     </div>
 
     <div id="isgunbar2" class="isgunbar" style="margin:8px 12px"></div>
@@ -958,7 +959,6 @@
     <div class="mpane" id="mpane5"><div id="m_inv"></div></div>
     <div class="mpane" id="mpane6"><div id="m_test"></div></div>
     <div class="mpane" id="mpane7"><div id="m_tr2"></div></div>
-    <div class="mpane" id="mpane8"><div id="m_adet"></div></div>
   </div>
 
   <!-- ===== HAKEDİŞ ===== -->
@@ -1338,7 +1338,7 @@ function grpOf(i){return Math.floor((i-1)/20);}
 
 let MCUR=0;
 function tabTo(n,el){document.querySelectorAll('.tabs .tab').forEach(t=>t.classList.remove('on'));el.classList.add('on');CURTAB=n;saveSess();
-  for(let i=0;i<13;i++){const pn=document.getElementById('pane'+i);if(pn)pn.classList.toggle('on',i===n);}
+  for(let i=0;i<14;i++){const pn=document.getElementById('pane'+i);if(pn)pn.classList.toggle('on',i===n);}
   if(n===0)renderProje();
   if(n===1)mShow();
   if(n===2){renderProgress();ensureHeavyThen(renderHakedisKesinti);try{renderHakedisCmp();}catch(e){}}
@@ -1348,16 +1348,15 @@ function tabTo(n,el){document.querySelectorAll('.tabs .tab').forEach(t=>t.classL
   if(n===6)ensureHeavyThen(renderSozlesme);
   if(n===7)renderIsProg();
   if(n===8)ensureHeavyThen(renderRapor);
-  if(n===9)renderGunluk();if(n===10)ensureHeavyThen(renderVerim);if(n===11)ensureHeavyThen(renderGider);if(n===12)renderTR2();}
+  if(n===9)renderGunluk();if(n===10)ensureHeavyThen(renderVerim);if(n===11)ensureHeavyThen(renderGider);if(n===12)renderTR2();if(n===13)ensureHeavyThen(renderTR3Zone);}
 function mTo(n,el){MCUR=n;document.querySelectorAll('#msub .subtab').forEach(t=>t.classList.remove('on'));el.classList.add('on');
-  for(let i=0;i<9;i++)document.getElementById('mpane'+i).classList.toggle('on',i===n);mShow();}
+  for(let i=0;i<8;i++)document.getElementById('mpane'+i).classList.toggle('on',i===n);mShow();}
 function mShow(){try{renderIsgunBar();}catch(e){}
   try{var wb=document.getElementById('trzwarn');if(!wb){wb=document.createElement('div');wb.id='trzwarn';var ib=document.getElementById('isgunbar2');if(ib&&ib.parentNode)ib.parentNode.insertBefore(wb,ib);}
     if(TRZ==='tr3'&&(!LAYOUT.tables||!LAYOUT.tables.length)){wb.style.cssText='margin:8px 12px;padding:10px 12px;background:#fef3c7;border:1px solid #f59e0b;border-radius:10px;color:#92400e;font-size:13px;font-weight:600';wb.textContent='⚠ TR-3 yerleşim planı ve hedefleri henüz yüklenmedi. TR-3 DWG/DXF dosyasını (masa koordinatları) ilet — plan kurulacak. TR-1 planı TR-3 için kullanılmaz.';}
     else{wb.style.cssText='display:none';wb.textContent='';}
   }catch(e){}if(MCUR===0){renderPhaseChips();renderZoneChips();renderMinimap();renderZoneMasa();renderKonstPlan();konstStats();renderKonstTek();}
   else if(MCUR===7)renderTR2Log();
-  else if(MCUR===8)renderMQLog();
   else renderMontajScope(MCUR);}
 function syncUnit(){if(!document.getElementById('f_item'))return;const it=GEN.find(x=>x.id===document.getElementById('f_item').value);
   document.getElementById('f_unit').textContent='birim: '+it.birim+(it.birim!=='%'?' · hedef '+tr(TARGETS[it.id]??it.hedef):'');}
@@ -2410,6 +2409,16 @@ async function renderTR2(){
     tr2LogFormHTML('tr2')+tr2LogTableHTML()+tr2MaliyetHTML();
   try{drawTR2Chart();}catch(e){}
 }
+async function renderTR3Zone(){
+  const el=document.getElementById('tr3z');if(!el)return;
+  el.innerHTML='<h2 style="margin:6px 12px 0">🗺️ TR-3</h2><div class="hint">Veriler yükleniyor…</div>';
+  try{await ensureHeavy(true);}catch(e){try{console.error('[TR-3] ensureHeavy',e);}catch(_e){}}
+  try{await buildIcmalHkMap(gDays());}catch(e){try{console.error('[TR-3] hkMap',e);}catch(_e){}}
+  const el2=document.getElementById('tr3z');if(!el2)return;
+  el2.innerHTML='<h2 style="margin:6px 12px 0">🗺️ TR-3</h2>'+
+    '<div class="hint" style="margin:0 12px 10px">TR-3\'ün masa bazlı sistemi (Montaj\'daki) aynen çalışmaya devam ediyor — burası ona <b>ek</b>. Çalışanlar Puantaj\'da "TR-3" işaretli kişilerden otomatik gelir. Gün gün girdiğin adetler masa sayılarına eklenir, gerçek hakediş hesabına (sözleşme birim fiyatlarıyla) dahildir.</div>'+
+    mqLogFormHTML('tr3f','tr3')+mqLogTableHTML('tr3')+mqGiderGelirHTML('tr3');
+}
 function renderTR2Log(){
   const el=document.getElementById('m_tr2');if(!el)return;
   el.innerHTML='<div class="hint" style="margin:6px 12px 10px">TR-2 için masa bazlı işaretleme yok — gün gün, o güne ait toplam çalışan sayısı ve yapılan iş miktarını gir.</div>'+
@@ -2567,17 +2576,6 @@ function mqGiderGelirHTML(zone){
     '<div style="overflow:auto"><table class="maastbl"><thead><tr><th>Tarih</th><th>Çalışan</th><th>Yevmiye</th><th>Harcama</th><th>Yemek</th><th>Toplam Gider</th><th>Hakediş Değeri</th><th>Fark</th></tr></thead><tbody>'+
     (trs||'<tr><td colspan="8" class="empty">'+ZLBL[zone]+' etiketli puantaj, harcama veya adet girişi kaydı yok</td></tr>')+
     '</tbody><tfoot><tr class="eptot"><td colspan="4">TOPLAM</td><td class="num" data-label="Toplam Gider"><b>'+_usd$(totT)+'</b></td><td class="num" data-label="Hakediş Değeri"><b>'+_usd$(totHk)+'</b></td><td class="num" data-label="Fark" style="'+clsTot+'"><b>'+(farkTot>=0?'+':'−')+_usd$(Math.abs(farkTot))+'</b></td></tr></tfoot></table></div></div>';
-}
-async function renderMQLog(){
-  const el=document.getElementById('m_adet');if(!el)return;
-  const zone=(TRZ==='tr3')?'tr3':'tr1';
-  el.innerHTML='<div class="hint" style="margin:6px 12px 10px">Bu, masa bazlı işaretlemenin <b>yerine değil, ek bir alternatifi</b>. Şu an açık bölge: <b>'+ZLBL[zone]+'</b> (üstteki bölge değiştiriciden değiştirebilirsin). Buradan girilen adetler masa sisteminden gelen sayılara otomatik eklenir, hakediş/İcmal hesaplarına dahildir. Ana İcmal sayfasındaki "🗺️ Bölge bazlı özet" bu bölgeyi ayrı ayrı gösterir.</div>'+
-    mqLogFormHTML('mq',zone)+mqLogTableHTML(zone)+'<div class="tk2"><div class="hint">Hakediş verileri yükleniyor…</div></div>';
-  try{await ensureHeavy();}catch(e){}
-  if(!_icmalZoneMaps){try{await buildIcmalHkMap(gDays());}catch(e){try{console.error('[MQLog] hkMap',e);}catch(_e){}}}
-  const el2=document.getElementById('m_adet');if(!el2)return;
-  el2.innerHTML='<div class="hint" style="margin:6px 12px 10px">Bu, masa bazlı işaretlemenin <b>yerine değil, ek bir alternatifi</b>. Şu an açık bölge: <b>'+ZLBL[zone]+'</b> (üstteki bölge değiştiriciden değiştirebilirsin). Buradan girilen adetler masa sisteminden gelen sayılara otomatik eklenir, hakediş/İcmal hesaplarına dahildir. Ana İcmal sayfasındaki "🗺️ Bölge bazlı özet" bu bölgeyi ayrı ayrı gösterir.</div>'+
-    mqLogFormHTML('mq',zone)+mqLogTableHTML(zone)+mqGiderGelirHTML(zone);
 }
 const PJST=[
  {c:'',  l:'—', v:0,   bg:'transparent', fg:'var(--muted,#888)'},
@@ -4493,7 +4491,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s263</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s264</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -5290,7 +5288,7 @@ function tanIsGiris(){
 
 async function backupAll(){try{
   if(typeof toast==='function')toast('Yedek hazırlanıyor…');
-  const dump={_app:'SHAMS1',_ver:'s263',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1',_ver:'s264',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pjz:','pja:','pjag:','pjp:','pjpg:','hc:','g:','gd:','arpay:','ppay:','hktah:'];
   for(const pre of pref){try{const o=await sgetAll(pre);for(const k in o){if(o[k]!=null)dump.data[k]=o[k];}}catch(e){}}
   const single=['wage','fx','fxlog','targets','mpct','cab:dc','cab:ac','cab:og','cab:kanal','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','zimmet','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
