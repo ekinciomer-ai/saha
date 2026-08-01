@@ -835,7 +835,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 266 · dokun→güncelle</div>
+<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 267 · dokun→güncelle</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -1378,7 +1378,7 @@ async function migShared(){
 async function ensureHeavy(force){
   if(BACKEND!=='fb'){_heavyLoaded=true;return;}
   if((_heavyLoaded&&!force)||_heavyLoading)return;
-  if(force){_zoneRawCache={};_icmalHkMap=null;}
+  if(force){_zoneRawCache={};_icmalHkMap=null;_icmalHkMapKey=null;}
   _heavyLoading=true;
   try{const als=await sgetAll('al:');const a=[];for(const k in als)if(als[k])a.push(als[k]);a.sort((x,y)=>(y.ts||0)-(x.ts||0));ALOG=a;}catch(e){}
   try{const gd1=await sgetAll('gd:');const _curZ=TRZ;TRZ=(_curZ==='tr3')?'tr1':'tr3';let gd2={};try{gd2=await sgetAll('gd:');}catch(e2){}TRZ=_curZ;
@@ -2412,7 +2412,7 @@ async function renderTR2(){
 async function renderTR3Zone(){
   const el=document.getElementById('tr3z');if(!el)return;
   el.innerHTML='<h2 style="margin:6px 12px 0">🗺️ TR-3</h2><div class="hint">Veriler yükleniyor…</div>';
-  try{await ensureHeavy(true);}catch(e){try{console.error('[TR-3] ensureHeavy',e);}catch(_e){}}
+  try{await ensureHeavy();}catch(e){try{console.error('[TR-3] ensureHeavy',e);}catch(_e){}}
   try{await buildIcmalHkMap(gDays());}catch(e){try{console.error('[TR-3] hkMap',e);}catch(_e){}}
   const el2=document.getElementById('tr3z');if(!el2)return;
   el2.innerHTML='<h2 style="margin:6px 12px 0">🗺️ TR-3</h2>'+
@@ -2490,6 +2490,7 @@ async function addMQLogEntry(prefix,zone){
   MQLOG.unshift(rec);
   MQLOG.sort(function(a,b){return (b.tarih||'').localeCompare(a.tarih||'');});
   await sset('mqlog:'+rec.id,rec);
+  _icmalHkMap=null;_icmalHkMapKey=null;
   try{await logAct(ZLBL[zone]+' adet girişi',dtr(tarih)+' · ayak '+ayak+' · kiriş '+kiris+' · aşık '+asik+' · çapraz '+capraz+' · panel '+panel);}catch(e){}
   toast(ZLBL[zone]+' kaydı eklendi');
   try{renderMontajScope(MCUR);}catch(e){}
@@ -2526,6 +2527,7 @@ async function saveMQLogEdit(id){
   r.not=fval('mqed_not')||'';
   MQLOG.sort(function(a,b){return (b.tarih||'').localeCompare(a.tarih||'');});
   await sset('mqlog:'+id,r);
+  _icmalHkMap=null;_icmalHkMapKey=null;
   try{await logAct(ZLBL[r.zone]+' adet girişi düzenleme',dtr(r.tarih)+' · kayıt güncellendi');}catch(e){}
   toast('Kayıt güncellendi');
   const ov=document.getElementById('mqedov');if(ov)ov.remove();
@@ -2536,6 +2538,7 @@ async function delMQLogEntry(id){
   if(!confirm('Bu kayıt silinsin mi?'))return;
   MQLOG=MQLOG.filter(function(r){return r.id!==id;});
   await sdel('mqlog:'+id);
+  _icmalHkMap=null;_icmalHkMapKey=null;
   try{renderMontajScope(MCUR);}catch(e){}
   try{mShow();}catch(e){}
 }
@@ -4463,7 +4466,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s266</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s267</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -5067,12 +5070,16 @@ async function zoneDayHakedisMap(z,days){
 }
 let _icmalHkMap=null;
 let _icmalZoneMaps=null;
+let _icmalHkMapKey=null,_icmalHkMapAt=0;
+const ICMAL_HKMAP_TTL=45000; /* 45sn: sekme geçişlerinde tekrar hesaplama yapma, ama uzun süre sonra veya Yenile'de tazele */
 async function buildIcmalHkMap(days){
+  const key=days.length+'|'+days[0]+'|'+days[days.length-1];
+  if(_icmalHkMap&&_icmalHkMapKey===key&&(Date.now()-_icmalHkMapAt)<ICMAL_HKMAP_TTL)return _icmalHkMap;
   const m1=await zoneDayHakedisMap('tr1',days);
   const m3=await zoneDayHakedisMap('tr3',days);
   _icmalZoneMaps={tr1:m1,tr3:m3};
   const combined={};days.forEach(d=>{combined[d]=(m1[d]||0)+(m3[d]||0);});
-  _icmalHkMap=combined;return combined;}
+  _icmalHkMap=combined;_icmalHkMapKey=key;_icmalHkMapAt=Date.now();return combined;}
 function gunHakedisUSD(day){return _icmalHkMap?(_icmalHkMap[day]||0):0;}
 function _usd$(v){return v==null?'—':(fmtN(v)+' $');}
 function icmalZoneSummaryHTML(days){
@@ -5260,7 +5267,7 @@ function tanIsGiris(){
 
 async function backupAll(){try{
   if(typeof toast==='function')toast('Yedek hazırlanıyor…');
-  const dump={_app:'SHAMS1',_ver:'s266',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1',_ver:'s267',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pjz:','pja:','pjag:','pjp:','pjpg:','hc:','g:','gd:','arpay:','ppay:','hktah:'];
   for(const pre of pref){try{const o=await sgetAll(pre);for(const k in o){if(o[k]!=null)dump.data[k]=o[k];}}catch(e){}}
   const single=['wage','fx','fxlog','targets','mpct','cab:dc','cab:ac','cab:og','cab:kanal','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','zimmet','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
