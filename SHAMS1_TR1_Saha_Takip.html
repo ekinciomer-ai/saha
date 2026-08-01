@@ -835,7 +835,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 261 · dokun→güncelle</div>
+<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 263 · dokun→güncelle</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -1255,7 +1255,7 @@ async function zoneMechProgress(z){
     }catch(e){return {ok:false};}
   }
   {const mqRecs=(typeof MQLOG!=='undefined'?MQLOG:[]).filter(function(r){return r.zone===z;});
-   mqRecs.forEach(function(r){ki+=(+r.kiris||0);as+=(+r.asik||0);cp+=(+r.capraz||0);pa+=(+r.panel||0);});}
+   mqRecs.forEach(function(r){mo+=(+r.ayak||0);ki+=(+r.kiris||0);as+=(+r.asik||0);cp+=(+r.capraz||0);pa+=(+r.panel||0);});}
   const cl=v=>Math.max(0,Math.min(100,v));
   const mekPct=cl(cl(mo/T.ayak*100)*0.42+cl(ki/T.kiris*100)*(0.31/3)+cl(as/T.asik*100)*(0.31/3)+cl(cp/T.capraz*100)*(0.31/3)+cl(pa/T.panel*100)*0.27);
   return {ok:true,ay,mo,ki,as,cp,pa,n,mekPct};
@@ -1498,7 +1498,7 @@ function mechItems(){
   return [
    {id:'harita',ad:'Harita Aplikasyon',dis:'MEK',pur:0.00,birim:'ayak',done:sumP('a1'),hedef:TGT.ayak,plan:1},
    {id:'ayakdelme',ad:'Ayak Delme (rok)',dis:'MEK',pur:0.00,birim:'ayak',done:sumP('a2'),hedef:TGT.ayak,plan:1,isv:true},
-   {id:'ayakmont',ad:'Ayak Montajı',dis:'MEK',pur:0.42,birim:'ayak',done:sumMon(),hedef:TGT.ayak,plan:1},
+   {id:'ayakmont',ad:'Ayak Montajı',dis:'MEK',pur:0.42,birim:'ayak',done:sumMon()+mqTotal('ayak'),hedef:TGT.ayak,plan:1},
    {id:'kiris',ad:'Kiriş Montajı (P3)',dis:'MEK',pur:0.31/3,birim:'adet',done:sumKiris()+mqTotal('kiris'),hedef:TGT.kiris,plan:1},
    {id:'asik',ad:'Aşık Montajı (P4)',dis:'MEK',pur:0.31/3,birim:'adet',done:sumAsik12()+mqTotal('asik'),hedef:TGT.asik,plan:1},
    {id:'capraz',ad:'Çapraz Montajı (P6)',dis:'MEK',pur:0.31/3,birim:'adet',done:sumCapraz19()+mqTotal('capraz'),hedef:TGT.capraz,plan:1},
@@ -2213,6 +2213,7 @@ function tr2LogFormHTML(prefix){
     '<label>Delinen civata/somun deliği<input type="number" id="'+prefix+'_civata" min="0" placeholder="0"></label></div>'+
     '<div class="frow"><label>Kesilen kolon<input type="number" id="'+prefix+'_kolon" min="0" placeholder="0"></label>'+
     '<label>Hizaya girilen masa sayısı<input type="number" id="'+prefix+'_hiza" min="0" placeholder="0"></label></div>'+
+    '<div class="frow"><label>Klemp<input type="number" id="'+prefix+'_klemp" min="0" placeholder="0"></label></div>'+
     '<div class="frow"><label class="gwide">Not<input type="text" id="'+prefix+'_not" placeholder="o gün yapılan işler, gözlem..."></label></div>'+
     '<div class="drow"><button class="btn" onclick="addTR2LogEntry(\''+prefix+'\')">+ Kayıt ekle</button></div></div>';
 }
@@ -2226,27 +2227,27 @@ function tr2ShowWorkers(iso){
 }
 function tr2LogTableHTML(limit){
   const rows=(TR2LOG||[]).slice(0,limit||500);
-  let tC=0,tA=0,tK=0,tAs=0,tCp=0,tP=0,tCv=0,tKl=0,tHz=0;
+  let tC=0,tA=0,tK=0,tAs=0,tCp=0,tP=0,tCv=0,tKl=0,tHz=0,tKp=0;
   const trs=rows.map(function(r){
     const liveIds=tr2PuantajWorkers(r.tarih);
-    tC+=liveIds.length;tA+=(+r.ayak||0);tK+=(+r.kiris||0);tAs+=(+r.asik||0);tCp+=(+r.capraz||0);tP+=(+r.panel||0);tCv+=(+r.civata||0);tKl+=(+r.kolon||0);tHz+=(+r.hiza||0);
+    tC+=liveIds.length;tA+=(+r.ayak||0);tK+=(+r.kiris||0);tAs+=(+r.asik||0);tCp+=(+r.capraz||0);tP+=(+r.panel||0);tCv+=(+r.civata||0);tKl+=(+r.kolon||0);tHz+=(+r.hiza||0);tKp+=(+r.klemp||0);
     const isimler=liveIds.length?(liveIds.length+' kişi: '+tr2WorkerNames(liveIds)):'0 kişi';
-    return '<tr><td class="mcname">'+dtr(r.tarih)+'</td><td data-label="Çalışanlar" style="cursor:pointer;text-decoration:underline dotted" onclick="tr2ShowWorkers(\''+r.tarih+'\')"><small>'+esc(isimler)+'</small></td><td class="num" data-label="Ayak">'+(r.ayak||0)+'</td><td class="num" data-label="Kiriş">'+(r.kiris||0)+'</td><td class="num" data-label="Aşık">'+(r.asik||0)+'</td><td class="num" data-label="Çapraz">'+(r.capraz||0)+'</td><td class="num" data-label="Panel">'+(r.panel||0)+'</td><td class="num" data-label="Civata/somun deliği">'+(r.civata||0)+'</td><td class="num" data-label="Kesilen kolon">'+(r.kolon||0)+'</td><td class="num" data-label="Hizaya girilen masa">'+(r.hiza||0)+'</td><td data-label="Not"><small>'+esc(r.not||'')+'</small></td><td><button class="btn ghost sm" onclick="editTR2LogEntry(\''+r.id+'\')">✏️</button>'+((typeof ROLE!=='undefined'&&ROLE==='admin')?(' <button class="btn ghost sm" onclick="delTR2LogEntry(\''+r.id+'\')">🗑</button>'):'')+'</td></tr>';
+    return '<tr><td class="mcname">'+dtr(r.tarih)+'</td><td data-label="Çalışanlar" style="cursor:pointer;text-decoration:underline dotted" onclick="tr2ShowWorkers(\''+r.tarih+'\')"><small>'+esc(isimler)+'</small></td><td class="num" data-label="Ayak">'+(r.ayak||0)+'</td><td class="num" data-label="Kiriş">'+(r.kiris||0)+'</td><td class="num" data-label="Aşık">'+(r.asik||0)+'</td><td class="num" data-label="Çapraz">'+(r.capraz||0)+'</td><td class="num" data-label="Panel">'+(r.panel||0)+'</td><td class="num" data-label="Civata/somun deliği">'+(r.civata||0)+'</td><td class="num" data-label="Kesilen kolon">'+(r.kolon||0)+'</td><td class="num" data-label="Hizaya girilen masa">'+(r.hiza||0)+'</td><td class="num" data-label="Klemp">'+(r.klemp||0)+'</td><td data-label="Not"><small>'+esc(r.not||'')+'</small></td><td><button class="btn ghost sm" onclick="editTR2LogEntry(\''+r.id+'\')">✏️</button>'+((typeof ROLE!=='undefined'&&ROLE==='admin')?(' <button class="btn ghost sm" onclick="delTR2LogEntry(\''+r.id+'\')">🗑</button>'):'')+'</td></tr>';
   }).join('');
   return '<div class="tk2"><h3>📋 TR-2 — gün gün kayıtlar ('+rows.length+')</h3>'+
     '<div class="gsum" style="margin:0 0 10px"><div class="gscard"><span>👷 Toplam çalışan sayısı (çalışan-gün)</span><b style="font-size:20px">'+tC+'</b></div></div>'+
-    '<div style="overflow:auto"><table class="maastbl"><thead><tr><th>Tarih</th><th>Çalışanlar</th><th>Ayak</th><th>Kiriş</th><th>Aşık</th><th>Çapraz</th><th>Panel</th><th>Civata/somun deliği</th><th>Kesilen kolon</th><th>Hizaya girilen masa</th><th>Not</th><th></th></tr></thead><tbody>'+
-    (trs||'<tr><td colspan="12" class="empty">Kayıt yok</td></tr>')+
-    '</tbody><tfoot><tr class="eptot"><td>TOPLAM</td><td class="num" data-label="Çalışan-gün">'+tC+'</td><td class="num" data-label="Ayak">'+tA+'</td><td class="num" data-label="Kiriş">'+tK+'</td><td class="num" data-label="Aşık">'+tAs+'</td><td class="num" data-label="Çapraz">'+tCp+'</td><td class="num" data-label="Panel">'+tP+'</td><td class="num" data-label="Civata/somun deliği">'+tCv+'</td><td class="num" data-label="Kesilen kolon">'+tKl+'</td><td class="num" data-label="Hizaya girilen masa">'+tHz+'</td><td colspan="2"></td></tr></tfoot></table></div></div>';
+    '<div style="overflow:auto"><table class="maastbl"><thead><tr><th>Tarih</th><th>Çalışanlar</th><th>Ayak</th><th>Kiriş</th><th>Aşık</th><th>Çapraz</th><th>Panel</th><th>Civata/somun deliği</th><th>Kesilen kolon</th><th>Hizaya girilen masa</th><th>Klemp</th><th>Not</th><th></th></tr></thead><tbody>'+
+    (trs||'<tr><td colspan="13" class="empty">Kayıt yok</td></tr>')+
+    '</tbody><tfoot><tr class="eptot"><td>TOPLAM</td><td class="num" data-label="Çalışan-gün">'+tC+'</td><td class="num" data-label="Ayak">'+tA+'</td><td class="num" data-label="Kiriş">'+tK+'</td><td class="num" data-label="Aşık">'+tAs+'</td><td class="num" data-label="Çapraz">'+tCp+'</td><td class="num" data-label="Panel">'+tP+'</td><td class="num" data-label="Civata/somun deliği">'+tCv+'</td><td class="num" data-label="Kesilen kolon">'+tKl+'</td><td class="num" data-label="Hizaya girilen masa">'+tHz+'</td><td class="num" data-label="Klemp">'+tKp+'</td><td colspan="2"></td></tr></tfoot></table></div></div>';
 }
 async function addTR2LogEntry(prefix){
   const tarih=fval(prefix+'_tarih')||dToday();
   const calisanlar=tr2PuantajWorkers(tarih);
   const ayak=+fval(prefix+'_ayak')||0,kiris=+fval(prefix+'_kiris')||0,asik=+fval(prefix+'_asik')||0,capraz=+fval(prefix+'_capraz')||0,panel=+fval(prefix+'_panel')||0;
-  const civata=+fval(prefix+'_civata')||0,kolon=+fval(prefix+'_kolon')||0,hiza=+fval(prefix+'_hiza')||0;
+  const civata=+fval(prefix+'_civata')||0,kolon=+fval(prefix+'_kolon')||0,hiza=+fval(prefix+'_hiza')||0,klemp=+fval(prefix+'_klemp')||0;
   const not_=fval(prefix+'_not')||'';
-  if(!calisanlar.length&&!ayak&&!kiris&&!asik&&!capraz&&!panel&&!civata&&!kolon&&!hiza&&!not_){toast('En az bir alan doldur');return;}
-  const rec={id:uid(),tarih:tarih,calisanlar:calisanlar,ayak:ayak,kiris:kiris,asik:asik,capraz:capraz,panel:panel,civata:civata,kolon:kolon,hiza:hiza,not:not_,ts:Date.now()};
+  if(!calisanlar.length&&!ayak&&!kiris&&!asik&&!capraz&&!panel&&!civata&&!kolon&&!hiza&&!klemp&&!not_){toast('En az bir alan doldur');return;}
+  const rec={id:uid(),tarih:tarih,calisanlar:calisanlar,ayak:ayak,kiris:kiris,asik:asik,capraz:capraz,panel:panel,civata:civata,kolon:kolon,hiza:hiza,klemp:klemp,not:not_,ts:Date.now()};
   TR2LOG.unshift(rec);
   TR2LOG.sort(function(a,b){return (b.tarih||'').localeCompare(a.tarih||'');});
   await sset('tr2log:'+rec.id,rec);
@@ -2272,6 +2273,7 @@ function editTR2LogEntry(id){
     '<label>Delinen civata/somun deliği<input type="number" id="tr2ed_civata" min="0" value="'+(r.civata||0)+'"></label></div>'+
     '<div class="frow"><label>Kesilen kolon<input type="number" id="tr2ed_kolon" min="0" value="'+(r.kolon||0)+'"></label>'+
     '<label>Hizaya girilen masa sayısı<input type="number" id="tr2ed_hiza" min="0" value="'+(r.hiza||0)+'"></label></div>'+
+    '<div class="frow"><label>Klemp<input type="number" id="tr2ed_klemp" min="0" value="'+(r.klemp||0)+'"></label></div>'+
     '<div class="frow"><label class="gwide">Not<input type="text" id="tr2ed_not" value="'+esc(r.not||'')+'"></label></div>'+
     '<div class="drow"><button class="btn" onclick="saveTR2LogEdit(\''+id+'\')">💾 Kaydet</button></div>'+
     '<button class="pjgx" onclick="var o=document.getElementById(\'tr2edov\');if(o)o.remove()">Kapat</button></div>';
@@ -2291,6 +2293,7 @@ async function saveTR2LogEdit(id){
   r.civata=+fval('tr2ed_civata')||0;
   r.kolon=+fval('tr2ed_kolon')||0;
   r.hiza=+fval('tr2ed_hiza')||0;
+  r.klemp=+fval('tr2ed_klemp')||0;
   r.not=fval('tr2ed_not')||'';
   TR2LOG.sort(function(a,b){return (b.tarih||'').localeCompare(a.tarih||'');});
   await sset('tr2log:'+id,r);
@@ -2437,26 +2440,31 @@ function mqLogFormHTML(prefix,zone){
     '<div class="hint" style="margin:0 0 8px">Çalışanlar burada seçilmez — o gün Puantaj\'da "'+ZLBL[zone]+'" olarak işaretlenen kişiler otomatik alınır. Buradan girilen adetler, masa bazlı işaretlemeye <b>ek olarak</b> toplama eklenir — masa sisteminin yerine geçmez.</div>'+
     '<div class="frow"><label>Tarih<input type="date" id="'+prefix+'_tarih" value="'+today+'" max="'+today+'" onchange="mqDateChanged(\''+prefix+'\',\''+zone+'\')"></label></div>'+
     '<div class="frow"><div class="hint" id="'+prefix+'_wprev" style="margin:0">'+mqWorkerPreviewInner(today,zone)+'</div></div>'+
-    '<div class="frow"><label>Kiriş<input type="number" id="'+prefix+'_kiris" min="0" placeholder="0"></label>'+
-    '<label>Aşık<input type="number" id="'+prefix+'_asik" min="0" placeholder="0"></label></div>'+
-    '<div class="frow"><label>Çapraz<input type="number" id="'+prefix+'_capraz" min="0" placeholder="0"></label>'+
-    '<label>Panel<input type="number" id="'+prefix+'_panel" min="0" placeholder="0"></label></div>'+
+    '<div class="frow"><label>Ayak<input type="number" id="'+prefix+'_ayak" min="0" placeholder="0"></label>'+
+    '<label>Kiriş<input type="number" id="'+prefix+'_kiris" min="0" placeholder="0"></label></div>'+
+    '<div class="frow"><label>Aşık<input type="number" id="'+prefix+'_asik" min="0" placeholder="0"></label>'+
+    '<label>Çapraz<input type="number" id="'+prefix+'_capraz" min="0" placeholder="0"></label></div>'+
+    '<div class="frow"><label>Panel<input type="number" id="'+prefix+'_panel" min="0" placeholder="0"></label>'+
+    '<label>Delinen civata/somun deliği<input type="number" id="'+prefix+'_civata" min="0" placeholder="0"></label></div>'+
+    '<div class="frow"><label>Kesilen kolon<input type="number" id="'+prefix+'_kolon" min="0" placeholder="0"></label>'+
+    '<label>Hizaya girilen masa sayısı<input type="number" id="'+prefix+'_hiza" min="0" placeholder="0"></label></div>'+
+    '<div class="frow"><label>Klemp<input type="number" id="'+prefix+'_klemp" min="0" placeholder="0"></label></div>'+
     '<div class="frow"><label class="gwide">Not<input type="text" id="'+prefix+'_not" placeholder="o gün yapılan işler, gözlem..."></label></div>'+
     '<div class="drow"><button class="btn" onclick="addMQLogEntry(\''+prefix+'\',\''+zone+'\')">+ Kayıt ekle</button></div></div>';
 }
 function mqLogTableHTML(zone,limit){
   const rows=(MQLOG||[]).filter(function(r){return r.zone===zone;}).slice(0,limit||500);
-  let tK=0,tAs=0,tCp=0,tP=0;
+  let tAy=0,tK=0,tAs=0,tCp=0,tP=0,tCv=0,tKl=0,tHz=0,tKp=0;
   const trs=rows.map(function(r){
     const liveIds=mqPuantajWorkers(r.tarih,zone);
-    tK+=(+r.kiris||0);tAs+=(+r.asik||0);tCp+=(+r.capraz||0);tP+=(+r.panel||0);
+    tAy+=(+r.ayak||0);tK+=(+r.kiris||0);tAs+=(+r.asik||0);tCp+=(+r.capraz||0);tP+=(+r.panel||0);tCv+=(+r.civata||0);tKl+=(+r.kolon||0);tHz+=(+r.hiza||0);tKp+=(+r.klemp||0);
     const isimler=liveIds.length?(liveIds.length+' kişi: '+tr2WorkerNames(liveIds)):'0 kişi';
-    return '<tr><td class="mcname">'+dtr(r.tarih)+'</td><td data-label="Çalışanlar" style="cursor:pointer;text-decoration:underline dotted" onclick="mqShowWorkers(\''+r.tarih+'\',\''+zone+'\')"><small>'+esc(isimler)+'</small></td><td class="num" data-label="Kiriş">'+(r.kiris||0)+'</td><td class="num" data-label="Aşık">'+(r.asik||0)+'</td><td class="num" data-label="Çapraz">'+(r.capraz||0)+'</td><td class="num" data-label="Panel">'+(r.panel||0)+'</td><td data-label="Not"><small>'+esc(r.not||'')+'</small></td><td><button class="btn ghost sm" onclick="editMQLogEntry(\''+r.id+'\')">✏️</button>'+((typeof ROLE!=='undefined'&&ROLE==='admin')?(' <button class="btn ghost sm" onclick="delMQLogEntry(\''+r.id+'\')">🗑</button>'):'')+'</td></tr>';
+    return '<tr><td class="mcname">'+dtr(r.tarih)+'</td><td data-label="Çalışanlar" style="cursor:pointer;text-decoration:underline dotted" onclick="mqShowWorkers(\''+r.tarih+'\',\''+zone+'\')"><small>'+esc(isimler)+'</small></td><td class="num" data-label="Ayak">'+(r.ayak||0)+'</td><td class="num" data-label="Kiriş">'+(r.kiris||0)+'</td><td class="num" data-label="Aşık">'+(r.asik||0)+'</td><td class="num" data-label="Çapraz">'+(r.capraz||0)+'</td><td class="num" data-label="Panel">'+(r.panel||0)+'</td><td class="num" data-label="Civata/somun deliği">'+(r.civata||0)+'</td><td class="num" data-label="Kesilen kolon">'+(r.kolon||0)+'</td><td class="num" data-label="Hizaya girilen masa">'+(r.hiza||0)+'</td><td class="num" data-label="Klemp">'+(r.klemp||0)+'</td><td data-label="Not"><small>'+esc(r.not||'')+'</small></td><td><button class="btn ghost sm" onclick="editMQLogEntry(\''+r.id+'\')">✏️</button>'+((typeof ROLE!=='undefined'&&ROLE==='admin')?(' <button class="btn ghost sm" onclick="delMQLogEntry(\''+r.id+'\')">🗑</button>'):'')+'</td></tr>';
   }).join('');
   return '<div class="tk2"><h3>📋 '+ZLBL[zone]+' — adet girişi kayıtları ('+rows.length+')</h3>'+
-    '<div style="overflow:auto"><table class="maastbl"><thead><tr><th>Tarih</th><th>Çalışanlar</th><th>Kiriş</th><th>Aşık</th><th>Çapraz</th><th>Panel</th><th>Not</th><th></th></tr></thead><tbody>'+
-    (trs||'<tr><td colspan="8" class="empty">Kayıt yok</td></tr>')+
-    '</tbody><tfoot><tr class="eptot"><td colspan="2">TOPLAM</td><td class="num" data-label="Kiriş">'+tK+'</td><td class="num" data-label="Aşık">'+tAs+'</td><td class="num" data-label="Çapraz">'+tCp+'</td><td class="num" data-label="Panel">'+tP+'</td><td colspan="2"></td></tr></tfoot></table></div></div>';
+    '<div style="overflow:auto"><table class="maastbl"><thead><tr><th>Tarih</th><th>Çalışanlar</th><th>Ayak</th><th>Kiriş</th><th>Aşık</th><th>Çapraz</th><th>Panel</th><th>Civata/somun deliği</th><th>Kesilen kolon</th><th>Hizaya girilen masa</th><th>Klemp</th><th>Not</th><th></th></tr></thead><tbody>'+
+    (trs||'<tr><td colspan="13" class="empty">Kayıt yok</td></tr>')+
+    '</tbody><tfoot><tr class="eptot"><td colspan="2">TOPLAM</td><td class="num" data-label="Ayak">'+tAy+'</td><td class="num" data-label="Kiriş">'+tK+'</td><td class="num" data-label="Aşık">'+tAs+'</td><td class="num" data-label="Çapraz">'+tCp+'</td><td class="num" data-label="Panel">'+tP+'</td><td class="num" data-label="Civata/somun deliği">'+tCv+'</td><td class="num" data-label="Kesilen kolon">'+tKl+'</td><td class="num" data-label="Hizaya girilen masa">'+tHz+'</td><td class="num" data-label="Klemp">'+tKp+'</td><td colspan="2"></td></tr></tfoot></table></div></div>';
 }
 function mqShowWorkers(iso,zone){
   const old=document.getElementById('mqwov');if(old)old.remove();
@@ -2468,14 +2476,15 @@ function mqShowWorkers(iso,zone){
 }
 async function addMQLogEntry(prefix,zone){
   const tarih=fval(prefix+'_tarih')||dToday();
-  const kiris=+fval(prefix+'_kiris')||0,asik=+fval(prefix+'_asik')||0,capraz=+fval(prefix+'_capraz')||0,panel=+fval(prefix+'_panel')||0;
+  const ayak=+fval(prefix+'_ayak')||0,kiris=+fval(prefix+'_kiris')||0,asik=+fval(prefix+'_asik')||0,capraz=+fval(prefix+'_capraz')||0,panel=+fval(prefix+'_panel')||0;
+  const civata=+fval(prefix+'_civata')||0,kolon=+fval(prefix+'_kolon')||0,hiza=+fval(prefix+'_hiza')||0,klemp=+fval(prefix+'_klemp')||0;
   const not_=fval(prefix+'_not')||'';
-  if(!kiris&&!asik&&!capraz&&!panel&&!not_){toast('En az bir alan doldur');return;}
-  const rec={id:uid(),zone:zone,tarih:tarih,kiris:kiris,asik:asik,capraz:capraz,panel:panel,not:not_,ts:Date.now()};
+  if(!ayak&&!kiris&&!asik&&!capraz&&!panel&&!civata&&!kolon&&!hiza&&!klemp&&!not_){toast('En az bir alan doldur');return;}
+  const rec={id:uid(),zone:zone,tarih:tarih,ayak:ayak,kiris:kiris,asik:asik,capraz:capraz,panel:panel,civata:civata,kolon:kolon,hiza:hiza,klemp:klemp,not:not_,ts:Date.now()};
   MQLOG.unshift(rec);
   MQLOG.sort(function(a,b){return (b.tarih||'').localeCompare(a.tarih||'');});
   await sset('mqlog:'+rec.id,rec);
-  try{await logAct(ZLBL[zone]+' adet girişi',dtr(tarih)+' · kiriş '+kiris+' · aşık '+asik+' · çapraz '+capraz+' · panel '+panel);}catch(e){}
+  try{await logAct(ZLBL[zone]+' adet girişi',dtr(tarih)+' · ayak '+ayak+' · kiriş '+kiris+' · aşık '+asik+' · çapraz '+capraz+' · panel '+panel);}catch(e){}
   toast(ZLBL[zone]+' kaydı eklendi');
   try{renderMontajScope(MCUR);}catch(e){}
   try{mShow();}catch(e){}
@@ -2487,10 +2496,15 @@ function editMQLogEntry(id){
   const ov=document.createElement('div');ov.id='mqedov';ov.className='pjgov';
   ov.innerHTML='<div class="pjgsheet"><div class="pjgh"><b>'+ZLBL[r.zone]+' kaydını düzenle</b><small>'+dtr(r.tarih)+'</small></div>'+
     '<div class="frow"><label>Tarih<input type="date" id="mqed_tarih" value="'+esc(r.tarih||'')+'" max="'+dToday()+'"></label></div>'+
-    '<div class="frow"><label>Kiriş<input type="number" id="mqed_kiris" min="0" value="'+(r.kiris||0)+'"></label>'+
-    '<label>Aşık<input type="number" id="mqed_asik" min="0" value="'+(r.asik||0)+'"></label></div>'+
-    '<div class="frow"><label>Çapraz<input type="number" id="mqed_capraz" min="0" value="'+(r.capraz||0)+'"></label>'+
-    '<label>Panel<input type="number" id="mqed_panel" min="0" value="'+(r.panel||0)+'"></label></div>'+
+    '<div class="frow"><label>Ayak<input type="number" id="mqed_ayak" min="0" value="'+(r.ayak||0)+'"></label>'+
+    '<label>Kiriş<input type="number" id="mqed_kiris" min="0" value="'+(r.kiris||0)+'"></label></div>'+
+    '<div class="frow"><label>Aşık<input type="number" id="mqed_asik" min="0" value="'+(r.asik||0)+'"></label>'+
+    '<label>Çapraz<input type="number" id="mqed_capraz" min="0" value="'+(r.capraz||0)+'"></label></div>'+
+    '<div class="frow"><label>Panel<input type="number" id="mqed_panel" min="0" value="'+(r.panel||0)+'"></label>'+
+    '<label>Delinen civata/somun deliği<input type="number" id="mqed_civata" min="0" value="'+(r.civata||0)+'"></label></div>'+
+    '<div class="frow"><label>Kesilen kolon<input type="number" id="mqed_kolon" min="0" value="'+(r.kolon||0)+'"></label>'+
+    '<label>Hizaya girilen masa sayısı<input type="number" id="mqed_hiza" min="0" value="'+(r.hiza||0)+'"></label></div>'+
+    '<div class="frow"><label>Klemp<input type="number" id="mqed_klemp" min="0" value="'+(r.klemp||0)+'"></label></div>'+
     '<div class="frow"><label class="gwide">Not<input type="text" id="mqed_not" value="'+esc(r.not||'')+'"></label></div>'+
     '<div class="drow"><button class="btn" onclick="saveMQLogEdit(\''+id+'\')">💾 Kaydet</button></div>'+
     '<button class="pjgx" onclick="var o=document.getElementById(\'mqedov\');if(o)o.remove()">Kapat</button></div>';
@@ -2500,10 +2514,15 @@ async function saveMQLogEdit(id){
   if(roBlock())return;
   const r=(MQLOG||[]).find(function(x){return x.id===id;});if(!r)return;
   r.tarih=fval('mqed_tarih')||r.tarih;
+  r.ayak=+fval('mqed_ayak')||0;
   r.kiris=+fval('mqed_kiris')||0;
   r.asik=+fval('mqed_asik')||0;
   r.capraz=+fval('mqed_capraz')||0;
   r.panel=+fval('mqed_panel')||0;
+  r.civata=+fval('mqed_civata')||0;
+  r.kolon=+fval('mqed_kolon')||0;
+  r.hiza=+fval('mqed_hiza')||0;
+  r.klemp=+fval('mqed_klemp')||0;
   r.not=fval('mqed_not')||'';
   MQLOG.sort(function(a,b){return (b.tarih||'').localeCompare(a.tarih||'');});
   await sset('mqlog:'+id,r);
@@ -2520,11 +2539,45 @@ async function delMQLogEntry(id){
   try{renderMontajScope(MCUR);}catch(e){}
   try{mShow();}catch(e){}
 }
-function renderMQLog(){
+let _mqRowsCache={},_mqChartInst={};
+function mqGiderGelirHTML(zone){
+  const days=gDays();
+  let totY=0,totH=0,totYm=0,totT=0,totHk=0;
+  const rows=[];
+  days.forEach(function(iso){
+    const pc=gPersCostDayZone(iso,zone);
+    const h=gGiderDayZone(iso,zone);
+    const ym=gYemekDayZone(iso,zone);
+    const hkUSD=(_icmalZoneMaps&&_icmalZoneMaps[zone]&&_icmalZoneMaps[zone][iso])||0;
+    if(!pc.kisi&&!h&&!hkUSD)return;
+    const rate=fxRateOnDate(iso),toUSD=function(azn){return rate.usdazn?azn/rate.usdazn:0;};
+    const yevUSD=toUSD(pc.tutar),harUSD=toUSD(h),yemUSD=toUSD(ym),top=yevUSD+harUSD+yemUSD;
+    totY+=yevUSD;totH+=harUSD;totYm+=yemUSD;totT+=top;totHk+=hkUSD;
+    rows.push({iso:iso,kisi:pc.kisi,yev:yevUSD,har:harUSD,yemek:yemUSD,top:top,hk:hkUSD});
+  });
+  _mqRowsCache[zone]=rows;
+  const trs=rows.map(function(r){
+    const fark=r.hk-r.top,cls=fark>=0?'color:#2e9e5b':'color:#E5484D';
+    return '<tr><td class="mcname">'+dtr(r.iso)+'</td><td class="num" data-label="Çalışan">'+r.kisi+'</td><td class="num" data-label="Yevmiye">'+_usd$(r.yev)+'</td><td class="num" data-label="Harcama">'+_usd$(r.har)+'</td><td class="num" data-label="Yemek">'+_usd$(r.yemek)+'</td><td class="num" data-label="Toplam Gider"><b>'+_usd$(r.top)+'</b></td><td class="num" data-label="Hakediş Değeri">'+_usd$(r.hk)+'</td><td class="num" data-label="Fark" style="'+cls+'"><b>'+(fark>=0?'+':'−')+_usd$(Math.abs(fark))+'</b></td></tr>';
+  }).join('');
+  const farkTot=totHk-totT,clsTot=farkTot>=0?'color:#2e9e5b':'color:#E5484D';
+  return '<div class="tk2"><h3>💰 '+ZLBL[zone]+' — günlük gider · gelir (hakediş)</h3>'+
+    '<div class="hint" style="margin:0 0 8px">Gider: puantajda "'+ZLBL[zone]+'" etiketli kişilerin yevmiyesi + harcamalar + yemek. Gelir (Hakediş Değeri): masa bazlı işaretleme + buradaki adet girişinin toplamının, sözleşmedeki gerçek birim fiyatlarla hesaplanmış değeri — <b>ana İcmal ile aynı hesap</b>.</div>'+
+    '<div class="gsum" style="margin:0 0 10px"><div class="gscard money"><span>Toplam gider</span><b>'+_usd$(totT)+'</b></div><div class="gscard money"><span>Toplam hakediş değeri</span><b>'+_usd$(totHk)+'</b></div><div class="gscard money"><span>Fark</span><b style="'+clsTot+'">'+(farkTot>=0?'+':'−')+_usd$(Math.abs(farkTot))+'</b></div></div>'+
+    '<div style="overflow:auto"><table class="maastbl"><thead><tr><th>Tarih</th><th>Çalışan</th><th>Yevmiye</th><th>Harcama</th><th>Yemek</th><th>Toplam Gider</th><th>Hakediş Değeri</th><th>Fark</th></tr></thead><tbody>'+
+    (trs||'<tr><td colspan="8" class="empty">'+ZLBL[zone]+' etiketli puantaj, harcama veya adet girişi kaydı yok</td></tr>')+
+    '</tbody><tfoot><tr class="eptot"><td colspan="4">TOPLAM</td><td class="num" data-label="Toplam Gider"><b>'+_usd$(totT)+'</b></td><td class="num" data-label="Hakediş Değeri"><b>'+_usd$(totHk)+'</b></td><td class="num" data-label="Fark" style="'+clsTot+'"><b>'+(farkTot>=0?'+':'−')+_usd$(Math.abs(farkTot))+'</b></td></tr></tfoot></table></div></div>';
+}
+async function renderMQLog(){
   const el=document.getElementById('m_adet');if(!el)return;
   const zone=(TRZ==='tr3')?'tr3':'tr1';
-  el.innerHTML='<div class="hint" style="margin:6px 12px 10px">Bu, masa bazlı işaretlemenin <b>yerine değil, ek bir alternatifi</b>. Şu an açık bölge: <b>'+ZLBL[zone]+'</b> (üstteki bölge değiştiriciden değiştirebilirsin). Buradan girilen adetler masa sisteminden gelen sayılara otomatik eklenir, hakediş/İcmal hesaplarına dahildir.</div>'+
-    mqLogFormHTML('mq',zone)+mqLogTableHTML(zone);
+  el.innerHTML='<div class="hint" style="margin:6px 12px 10px">Bu, masa bazlı işaretlemenin <b>yerine değil, ek bir alternatifi</b>. Şu an açık bölge: <b>'+ZLBL[zone]+'</b> (üstteki bölge değiştiriciden değiştirebilirsin). Buradan girilen adetler masa sisteminden gelen sayılara otomatik eklenir, hakediş/İcmal hesaplarına dahildir. Ana İcmal sayfasındaki "🗺️ Bölge bazlı özet" bu bölgeyi ayrı ayrı gösterir.</div>'+
+    mqLogFormHTML('mq',zone)+mqLogTableHTML(zone)+'<div class="tk2"><div class="hint">Hakediş verileri yükleniyor…</div></div>';
+  try{await ensureHeavy();}catch(e){}
+  if(!_icmalZoneMaps){try{await buildIcmalHkMap(gDays());}catch(e){try{console.error('[MQLog] hkMap',e);}catch(_e){}}}
+  const el2=document.getElementById('m_adet');if(!el2)return;
+  el2.innerHTML='<div class="hint" style="margin:6px 12px 10px">Bu, masa bazlı işaretlemenin <b>yerine değil, ek bir alternatifi</b>. Şu an açık bölge: <b>'+ZLBL[zone]+'</b> (üstteki bölge değiştiriciden değiştirebilirsin). Buradan girilen adetler masa sisteminden gelen sayılara otomatik eklenir, hakediş/İcmal hesaplarına dahildir. Ana İcmal sayfasındaki "🗺️ Bölge bazlı özet" bu bölgeyi ayrı ayrı gösterir.</div>'+
+    mqLogFormHTML('mq',zone)+mqLogTableHTML(zone)+mqGiderGelirHTML(zone);
 }
 const PJST=[
  {c:'',  l:'—', v:0,   bg:'transparent', fg:'var(--muted,#888)'},
@@ -4440,7 +4493,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s261</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s263</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -4670,7 +4723,7 @@ function repItems(day){
   return [
   {id:'harita',   ad:'Harita işaretleme', birim:'ayak',  cum:sumP('a1'), hedef:TGT.ayak, dis:'MEK', pur:0.00},
   {id:'ayakdelme',ad:'Ayak delme (rok)',  birim:'ayak',  cum:sumP('a2'), hedef:TGT.ayak, dis:'MEK', pur:0.00, isv:true},
-  {id:'ayakmont', ad:'Ayak montajı',       birim:'ayak',  cum:sumMon(),   hedef:TGT.ayak, dis:'MEK', pur:0.42},
+  {id:'ayakmont', ad:'Ayak montajı',       birim:'ayak',  cum:sumMon()+mqTotal('ayak'),   hedef:TGT.ayak, dis:'MEK', pur:0.42},
   {id:'kiris',    ad:'Kiriş montajı (P3)',  birim:'adet',  cum:sumKiris()+mqTotal('kiris'),     hedef:TGT.kiris, dis:'MEK', pur:0.31/3},
   {id:'asik',     ad:'Aşık montajı (P4)',   birim:'adet',  cum:sumAsik12()+mqTotal('asik'),   hedef:TGT.asik,  dis:'MEK', pur:0.31/3},
   {id:'capraz',   ad:'Çapraz montajı (P6)', birim:'adet',  cum:sumCapraz19()+mqTotal('capraz'), hedef:TGT.capraz,  dis:'MEK', pur:0.31/3},
@@ -4683,10 +4736,10 @@ function repItems(day){
    - harita/üst montaj/panel: ALOG 'Üretim' delta logları (undo-duyarlı net)
    - elektrik (GEN): ENTRIES üretim kayıtları (o günün tarihi) */
 function mqDayAdd(day){
-  var out={kiris:0,asik:0,capraz:0,panel:0};
+  var out={ayakmont:0,kiris:0,asik:0,capraz:0,panel:0};
   (typeof MQLOG!=='undefined'?MQLOG:[]).forEach(function(r){
     if(r.tarih===day&&r.zone===TRZ){
-      out.kiris+=(+r.kiris||0);out.asik+=(+r.asik||0);out.capraz+=(+r.capraz||0);out.panel+=(+r.panel||0);
+      out.ayakmont+=(+r.ayak||0);out.kiris+=(+r.kiris||0);out.asik+=(+r.asik||0);out.capraz+=(+r.capraz||0);out.panel+=(+r.panel||0);
     }
   });
   return out;
@@ -4708,7 +4761,7 @@ function dayItemQty(day){
   q.panel=_cl('k7',(typeof sumP==='function'?sumP('k7'):0));
   q.kanalac=_cl('kanalac',(typeof agSegs==='function'?agSegs().filter(s=>CAB.kanal[segKey(s[0],s[1])]).length:0));
   if(q.harita<0)q.harita=0;
-  {const mq=mqDayAdd(day);q.kiris+=mq.kiris;q.asik+=mq.asik;q.capraz+=mq.capraz;q.panel+=mq.panel;}
+  {const mq=mqDayAdd(day);q.ayakmont+=mq.ayakmont;q.kiris+=mq.kiris;q.asik+=mq.asik;q.capraz+=mq.capraz;q.panel+=mq.panel;}
   ENTRIES.forEach(e=>{const ed=e.date||dstr(e.ts);if(ed===day)q[e.id]=(q[e.id]||0)+(+e.qty||0);});
   return q;
 }
@@ -4728,7 +4781,7 @@ function dayNet(day){
   q.capraz=_cl('capraz',(typeof sumCapraz19==='function'?sumCapraz19():0));
   q.panel=_cl('k7',(typeof sumP==='function'?sumP('k7'):0));
   q.kanalac=_cl('kanalac',(typeof agSegs==='function'?agSegs().filter(s=>CAB.kanal[segKey(s[0],s[1])]).length:0));
-  {const mq=mqDayAdd(day);q.kiris+=mq.kiris;q.asik+=mq.asik;q.capraz+=mq.capraz;q.panel+=mq.panel;}
+  {const mq=mqDayAdd(day);q.ayakmont+=mq.ayakmont;q.kiris+=mq.kiris;q.asik+=mq.asik;q.capraz+=mq.capraz;q.panel+=mq.panel;}
   ENTRIES.forEach(e=>{const ed=e.date||dstr(e.ts);if(ed===day)q[e.id]=(q[e.id]||0)+(+e.qty||0);});
   return q;
 }
@@ -5237,7 +5290,7 @@ function tanIsGiris(){
 
 async function backupAll(){try{
   if(typeof toast==='function')toast('Yedek hazırlanıyor…');
-  const dump={_app:'SHAMS1',_ver:'s261',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1',_ver:'s263',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pjz:','pja:','pjag:','pjp:','pjpg:','hc:','g:','gd:','arpay:','ppay:','hktah:'];
   for(const pre of pref){try{const o=await sgetAll(pre);for(const k in o){if(o[k]!=null)dump.data[k]=o[k];}}catch(e){}}
   const single=['wage','fx','fxlog','targets','mpct','cab:dc','cab:ac','cab:og','cab:kanal','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','zimmet','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
