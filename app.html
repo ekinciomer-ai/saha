@@ -807,7 +807,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 276</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 278</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -835,7 +835,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 276 · dokun→güncelle</div>
+<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 278 · dokun→güncelle</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -2615,6 +2615,10 @@ const SEED_TEAM=[
 let TP_FOTO='', TP_KIMLIK='';
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function fval(id){const e=document.getElementById(id);return e?e.value.trim():'';}
+function fnum(id){var s=fval(id);if(!s)return 0;s=String(s).trim();
+  if(s.indexOf(',')>-1&&s.indexOf('.')>-1)s=s.replace(/\./g,'').replace(',','.');
+  else if(s.indexOf(',')>-1)s=s.replace(',','.');
+  s=s.replace(/[^0-9.\-]/g,'');var n=parseFloat(s);return isNaN(n)?0:n;}
 function dToday(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function uid(){return 'p'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
 async function logAct(act,detail){const ts=(typeof ISGUN!=='undefined'&&ISGUN&&typeof dToday==='function'&&ISGUN!==dToday())?(new Date(ISGUN+'T12:00:00').getTime()):Date.now();const by=CURUSER||(document.getElementById('usta')&&document.getElementById('usta').value.trim())||'';const r={act,detail:detail||'',role:ROLE||'?',by:by,ts};ALOG.unshift(r);_ALSEQ=(_ALSEQ||0)+1;await sset('al:'+ts+'_'+_ALSEQ,r);}
@@ -3435,7 +3439,7 @@ function _pickDoc(inp,setCb,pvId){var f=inp.files&&inp.files[0];if(!f)return;var
 function _showDoc(title,data){if(!data)return;if(String(data).indexOf('application/pdf')>=0){modalShow(title,'<iframe src="'+data+'" style="width:100%;height:70vh;border:0;border-radius:10px"></iframe><div style="margin-top:8px;text-align:center"><a class="btn ghost sm" href="'+data+'" download="belge.pdf">⬇ İndir / aç</a></div>');}else{modalShow(title,'<img src="'+data+'" style="width:100%;border-radius:10px">');}}
 function gdPhoto(inp){_pickDoc(inp,function(d){GD_FOTO=d||'';},'gd_foto_pv');}
 async function addGider(){
-  var kat=fval('gd_kat'),tarih=fval('gd_tarih')||dToday(),tutar=+fval('gd_tutar')||0,acik=fval('gd_acik'),pb=fval('gd_pb')||'AZN',tr=fval('gd_tr')||TRZ;
+  var kat=fval('gd_kat'),tarih=fval('gd_tarih')||dToday(),tutar=fnum('gd_tutar'),acik=fval('gd_acik'),pb=fval('gd_pb')||'AZN',tr=fval('gd_tr')||TRZ;
   if(!tutar&&!GD_FOTO){toast('Tutar veya belge fotoğrafı gerekli');return;}
   var rec={id:'gd'+Date.now(),tarih:tarih,kat:kat,tutar:tutar,pb:pb,tr:tr,aciklama:acik,foto:GD_FOTO||'',by:(typeof ROLE!=='undefined'?ROLE:'')||'?',ts:Date.now()};
   GIDER.unshift(rec);_GDSEQ=(_GDSEQ||0)+1;await sset('gd:'+rec.id+'_'+_GDSEQ,rec);
@@ -3451,7 +3455,7 @@ let PPAY=[],PP_FOTO='',_PPSEQ=0,PP_CUR=null;
 let YCARD_OPEN={},TCARD_OPEN={};
 let HKTAH=[],_HKSEQ=0;
 async function addHktah(){
-  var tip=fval('hk_tip')||'hakedis',tutar=+fval('hk_tutar')||0,tarih=fval('hk_tarih')||dToday(),not=fval('hk_not')||'';
+  var tip=fval('hk_tip')||'hakedis',tutar=fnum('hk_tutar'),tarih=fval('hk_tarih')||dToday(),not=fval('hk_not')||'';
   if(!tutar){toast('Tutar girin');return;}
   var rec={id:'hk'+Date.now(),tip:tip,tutar:tutar,tarih:tarih,not:not,ts:Date.now()};
   HKTAH.push(rec);HKTAH.sort((x,y)=>(x.tarih||'').localeCompare(y.tarih||''));_HKSEQ=(_HKSEQ||0)+1;
@@ -3466,7 +3470,7 @@ async function delHktah(id){if(!confirm('Tahsilat kaydı silinsin mi?'))return;H
 function ppayOpen(pid){PP_CUR=pid;PP_FOTO='';var p=(TEAM||[]).find(function(x){return x.id===pid;});
   var body='<div class="gdform">'+
     '<label>Ödeme günü<input type="date" id="pp_tarih" value="'+dToday()+'" max="'+dToday()+'"></label>'+
-    '<label>Verilen tutar<input type="number" id="pp_tutar" inputmode="decimal" placeholder="0"></label>'+
+    '<label>Verilen tutar<input type="text" id="pp_tutar" inputmode="decimal" placeholder="0"></label>'+
     '<label>Birim<select id="pp_pb">'+curOpts(wageCur(pid))+'</select></label>'+
     '<label class="gdwide">Not<input type="text" id="pp_not" placeholder="hakediş / avans / mesai / tazminat"></label>'+
     '<label class="gdwide">📄 Dekont / imza (foto veya PDF)<input type="file" accept="image/*,application/pdf" onchange="ppayPhoto(this)"></label>'+
@@ -3475,7 +3479,7 @@ function ppayOpen(pid){PP_CUR=pid;PP_FOTO='';var p=(TEAM||[]).find(function(x){r
   modalShow('💵 '+((p&&p.ad)||'Personel')+' — ödeme ekle',body);}
 function ppayPhoto(inp){_pickDoc(inp,function(d){PP_FOTO=d||'';},'pp_foto_pv');}
 async function addPpay(){var pid=PP_CUR;if(!pid)return;
-  var tarih=normISO(fval('pp_tarih')||dToday()),tutar=+fval('pp_tutar')||0,pb=fval('pp_pb')||'AZN',not=fval('pp_not');
+  var tarih=normISO(fval('pp_tarih')||dToday()),tutar=fnum('pp_tutar'),pb=fval('pp_pb')||'AZN',not=fval('pp_not');
   if(!tutar&&!PP_FOTO){toast('Tutar veya belge gerekli');return;}
   var rec={id:'pp'+Date.now(),pid:pid,tarih:tarih,tutar:tutar,pb:pb,not:not,foto:PP_FOTO||'',by:(typeof ROLE!=='undefined'?ROLE:'')||'?',ts:Date.now()};
   PPAY.unshift(rec);_PPSEQ=(_PPSEQ||0)+1;
@@ -3592,7 +3596,7 @@ function odHesaplaAralik(){
 async function addOdeme(){
   var pid=fval('od_pid');if(!pid){toast('Personel seç');return;}
   var tur=fval('od_tur')||'maas',tarih=normISO(fval('od_tarih')||dToday()),saat=fval('od_saat')||'',
-      tutar=+fval('od_tutar')||0,pb=fval('od_pb')||'AZN',not=fval('od_not'),bas=fval('od_bas'),son=fval('od_son');
+      tutar=fnum('od_tutar'),pb=fval('od_pb')||'AZN',not=fval('od_not'),bas=fval('od_bas'),son=fval('od_son');
   if(!tutar&&!OD_FOTO){toast('Tutar veya belge gerekli');return;}
   var TUR={maas:'Maaş',tazminat:'Tazminat',mesai:'Fazla mesai',avans:'Avans',diger:'Diğer'};
   var rec={id:'pp'+Date.now(),pid:pid,tur:tur,tarih:tarih,saat:saat,tutar:tutar,pb:pb,
@@ -3637,7 +3641,7 @@ function renderOdeme(){
     '<div id="od_aralik_info" class="gdwide hint"></div>'+
     '<label>Tarih<input type="date" id="od_tarih" value="'+dToday()+'" max="'+dToday()+'"></label>'+
     '<label>Saat<input type="time" id="od_saat"></label>'+
-    '<label>Tutar<input type="number" id="od_tutar" inputmode="decimal" placeholder="0"></label>'+
+    '<label>Tutar<input type="text" id="od_tutar" inputmode="decimal" placeholder="0"></label>'+
     '<label>Birim<select id="od_pb">'+curOpts('AZN')+'</select></label>'+
     '<label class="gdwide">Not<input type="text" id="od_not" placeholder="açıklama (opsiyonel)"></label>'+
     '<label class="gdwide">📄 Dekont / imza (foto veya PDF)<input type="file" accept="image/*,application/pdf" onchange="odPhoto(this)"></label>'+
@@ -3938,7 +3942,7 @@ function renderGider(){
   var form='<div class="tk2"><h3>💸 Gider ekle</h3><div class="gdform">'+
     '<label>Tarih<input type="date" id="gd_tarih" value="'+dToday()+'" max="'+dToday()+'"></label>'+
     '<label>Kategori<select id="gd_kat">'+katOpts+'</select></label>'+
-    '<label>Tutar<input type="number" id="gd_tutar" inputmode="decimal" placeholder="0"></label>'+
+    '<label>Tutar<input type="text" id="gd_tutar" inputmode="decimal" placeholder="0"></label>'+
     '<label>Birim<select id="gd_pb">'+curOpts('AZN')+'</select></label>'+
     '<label>TR Bölgesi<select id="gd_tr"><option value="tr1"'+(TRZ==='tr1'?' selected':'')+'>TR-1</option><option value="tr2"'+(TRZ==='tr2'?' selected':'')+'>TR-2</option><option value="tr3"'+(TRZ==='tr3'?' selected':'')+'>TR-3</option></select></label>'+
     '<label class="gdwide">Açıklama<input type="text" id="gd_acik" placeholder="fatura no / detay"></label>'+
@@ -3972,6 +3976,38 @@ function renderGider(){
   try{renderArican();}catch(e){}
 }
 function wmoTr(c){if(c==null)return null;if(c===0)return{e:'☀️',t:'Açık'};if(c===1)return{e:'🌤️',t:'Az bulutlu'};if(c===2)return{e:'⛅',t:'Parçalı bulutlu'};if(c===3)return{e:'☁️',t:'Kapalı'};if(c===45||c===48)return{e:'🌫️',t:'Sisli'};if(c>=51&&c<=57)return{e:'🌦️',t:'Çiseleme'};if(c>=61&&c<=67)return{e:'🌧️',t:'Yağmurlu'};if(c>=71&&c<=77)return{e:'❄️',t:'Kar'};if(c>=80&&c<=82)return{e:'🌧️',t:'Sağanak'};if(c>=85&&c<=86)return{e:'❄️',t:'Kar sağanağı'};if(c>=95)return{e:'⛈️',t:'Gök gürültülü fırtına'};return{e:'🌡️',t:'—'};}function wxSlot(o){if(!o)return '';var m=wmoTr(o.c);var x=(m?m.e+' ':'')+(o.t!=null?Math.round(o.t)+'°':'');if(o.p!=null&&o.p>=0.2)x+=' yağış '+(Math.round(o.p*10)/10)+'mm';if(o.w!=null&&o.w>=20)x+=' rüzgar '+Math.round(o.w)+'km/s';return x.trim();}function wxStr(iso){if(typeof WX==='undefined'||!WX[iso])return '';var w=WX[iso];var seg=[];if(w.morn)seg.push('Sabah '+wxSlot(w.morn));if(w.noon)seg.push('Öğle '+wxSlot(w.noon));if(w.eve)seg.push('Akşam '+wxSlot(w.eve));var line=seg.join('   ·   ');var sfx=[];if(w.mx!=null&&w.mn!=null)sfx.push('gün '+Math.round(w.mn)+'–'+Math.round(w.mx)+'°');else if(!seg.length)return '';if(w.psum!=null&&w.psum>0)sfx.push('toplam yağış '+(Math.round(w.psum*10)/10)+' mm');if(sfx.length)line+=(line?'  ':'')+'('+sfx.join(' · ')+')';return esc(line);}function wxShort(iso){if(typeof WX==='undefined'||!WX[iso])return '';var w=WX[iso];var c=(w.noon&&w.noon.c!=null)?w.noon.c:((w.morn&&w.morn.c!=null)?w.morn.c:((w.eve&&w.eve.c!=null)?w.eve.c:null));var m=(c!=null)?wmoTr(c):null;var parts=[];if(m)parts.push(m.e+' '+m.t);if(w.mx!=null&&w.mn!=null)parts.push(Math.round(w.mn)+'–'+Math.round(w.mx)+'°');if(w.psum!=null&&w.psum>0)parts.push('yağış '+(Math.round(w.psum*10)/10)+'mm');return parts.length?esc(parts.join(' · ')):'';}async function gWxAuto(){try{var u='https://api.open-meteo.com/v1/forecast?latitude='+SITE_LAT+'&longitude='+SITE_LON+'&hourly=temperature_2m,weathercode,precipitation,windspeed_10m'+'&daily=temperature_2m_max,temperature_2m_min,precipitation_sum'+'&timezone=Asia%2FBaku&past_days=14&forecast_days=16';var res=await fetch(u);var j=await res.json();var w2={};if(j&&j.daily&&j.daily.time){var dt=j.daily.time,dmx=j.daily.temperature_2m_max||[],dmn=j.daily.temperature_2m_min||[],dps=j.daily.precipitation_sum||[];for(var i=0;i<dt.length;i++){w2[dt[i]]={mx:dmx[i],mn:dmn[i],psum:dps[i]};}}if(j&&j.hourly&&j.hourly.time){var ht=j.hourly.time,hte=j.hourly.temperature_2m||[],hc=j.hourly.weathercode||[],hp=j.hourly.precipitation||[],hw=j.hourly.windspeed_10m||[];for(var k=0;k<ht.length;k++){var iso=ht[k].slice(0,10),hh=parseInt(ht[k].slice(11,13),10);if(!w2[iso])w2[iso]={};var slot=(hh===8?'morn':(hh===13?'noon':(hh===18?'eve':null)));if(slot)w2[iso][slot]={t:hte[k],c:hc[k],p:hp[k],w:hw[k]};}}if(Object.keys(w2).length){w2._t=new Date().toISOString();w2._src='open-meteo.com';WX=w2;try{await sset('wx',WX);}catch(e){}if(typeof renderGunluk==='function'&&document.getElementById('gunluk'))renderGunluk();if(typeof renderRapor==='function'&&document.getElementById('rapor'))renderRapor();}}catch(e){}}
+function gunIsTablosuHTML(){
+  var days=gDays().slice().reverse(); /* en yeni gün solda, puantaj ile aynı yön */
+  var WK=['Pz','Pt','Sa','Ça','Pe','Cu','Ct'];
+  var ITEMS=[['ayakmont','Ayak'],['kiris','Kiriş'],['asik','Aşık'],['capraz','Çapraz'],['panel','Panel']];
+  var ZONES=[['tr1','TR-1'],['tr2','TR-2'],['tr3','TR-3']];
+  var data={}; /* data[zone][item][iso]=qty */
+  ZONES.forEach(function(zc){data[zc[0]]={};ITEMS.forEach(function(it){data[zc[0]][it[0]]={};});});
+  days.forEach(function(iso){
+    ZONES.forEach(function(zc){
+      var q=gunZoneWorkItems(iso,zc[0]);
+      ITEMS.forEach(function(it){data[zc[0]][it[0]][iso]=(+q[it[0]]||0);});
+    });
+  });
+  function isWe(iso){var dt=new Date(iso+'T00:00:00');var w=dt.getDay();return w===0||w===6;}
+  var head='<tr><th class="pjname">Bölge / İş kalemi</th>';
+  days.forEach(function(iso){var d=new Date(iso+'T00:00:00');head+='<th class="'+(isWe(iso)?'we':'')+'">'+(+iso.slice(8,10))+'<small>'+WK[d.getDay()]+'</small></th>';});
+  head+='<th class="pjtot">Toplam</th></tr>';
+  var body='';
+  ZONES.forEach(function(zc){
+    body+='<tr><td class="pjname" colspan="'+(days.length+2)+'" style="background:#eef2ff;color:#3730a3;font-weight:800;text-align:left">'+zc[1]+'</td></tr>';
+    ITEMS.forEach(function(it){
+      var rowTot=0,cells='';
+      days.forEach(function(iso){var v=data[zc[0]][it[0]][iso]||0;rowTot+=v;
+        cells+='<td class="'+(isWe(iso)?'we':'')+(v?' style="font-weight:700;color:#1a56db"':'')+'">'+(v||'')+'</td>';});
+      if(rowTot===0)return; /* tamamı sıfır olan satırı gösterme */
+      body+='<tr><td class="pjname">'+it[1]+'</td>'+cells+'<td class="pjtot">'+rowTot+'</td></tr>';
+    });
+  });
+  return '<div class="tk2"><h3>📊 Trafo sahaları — iş kalemleri (gün gün)</h3>'+
+    '<div class="hint" style="margin:0 0 8px">Puantaj tablosu gibi: her satır bir iş kalemi, her sütun bir gün. Hangi gün hangi bölgede ne yapılmış tek bakışta görünür. Tamamı sıfır olan satırlar gizlenir.</div>'+
+    '<div class="pjscroll" style="max-height:50vh"><table class="pjtab"><thead>'+head+'</thead><tbody>'+(body||'<tr><td class="empty">Kayıt yok</td></tr>')+'</tbody></table></div></div>';
+}
 function gunZoneWorkItems(iso,zone,preQ1){
   var out={ayakmont:0,kiris:0,asik:0,capraz:0,panel:0};
   if(zone==='tr1'){
@@ -4083,6 +4119,7 @@ async function renderGunluk(){
   if(engelGun>0)sum+='<div class="ghint">Şu ana dek <b>'+gnum(engelGun)+' gün</b> engel/bekleme kaydı var — bu süre işveren talebine esas olabilir.</div>';
   sum+='</div>';
   var hist='<div class="tk2" id="gz_hist"><h3>📔 Günlük — gün gün (TR-1 + TR-2 + TR-3)</h3><div class="hint">Yükleniyor…</div></div>';
+  var isTablo='<div class="tk2" id="gz_istablo"><h3>📊 Trafo sahaları — iş kalemleri (gün gün)</h3><div class="hint">Yükleniyor…</div></div>';
   var zonePicker='<div class="tk2"><h3>📝 Günlük iş kalemi girişi</h3>'+
     '<div class="sub">Bölge seç, adetleri gir, kaydet — seçili bölgeye ayrı kayıt olarak düşer. Masa bazlı işaretlemeye <b>ek</b>, yerine geçmez.</div>'+
     '<div class="frow"><label>Bölge<select id="gz_zonesel" onchange="gzZoneChange(this.value)">'+
@@ -4095,10 +4132,12 @@ async function renderGunluk(){
     '<button class="subtab'+(GZ_SUBTAB==='diary'?' on':'')+'" onclick="gzSubTo(\'diary\',this)">📔 Saha Günlüğü</button>'+
     '<button class="subtab'+(GZ_SUBTAB==='isler'?' on':'')+'" onclick="gzSubTo(\'isler\',this)">💰 Günlük İşler</button>'+
     '</div>';
-  var paneDiary='<div id="gzpane_diary" style="display:'+(GZ_SUBTAB==='diary'?'':'none')+'">'+zonePicker+form+sum+hist+'</div>';
+  var paneDiary='<div id="gzpane_diary" style="display:'+(GZ_SUBTAB==='diary'?'':'none')+'">'+zonePicker+isTablo+form+sum+hist+'</div>';
   var paneIsler='<div id="gzpane_isler" style="display:'+(GZ_SUBTAB==='isler'?'':'none')+'">'+maliTablo+'</div>';
   el.innerHTML=subtabs+paneDiary+paneIsler;gFillKisi();
   await new Promise(function(r){setTimeout(r,0);});
+  var it=document.getElementById('gz_istablo');
+  if(it)it.outerHTML=_repSafe('İş kalemleri tablosu',function(){return gunIsTablosuHTML();});
   var gh=document.getElementById('gz_hist');
   if(gh)gh.innerHTML=_repSafe('Günlük — gün gün',function(){return '<h3>📔 Günlük — gün gün (TR-1 + TR-2 + TR-3)</h3>'+gunlukDiary();});
   if(GZ_SUBTAB==='isler')await gzLoadMaliTablo();
@@ -4588,7 +4627,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s276</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s278</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -4686,7 +4725,7 @@ function renderHakedisKesinti(){const el=document.getElementById('hkkesinti');if
     '<div class="gscard money"><span>Kalan alacak (kazanılan − alınan)</span><b style="color:'+(kalanAlacak>0.5?'#b45309':'#059669')+'">'+tr(kalanAlacak)+' $</b></div></div>'+
     '<div class="gdform" style="margin-top:8px">'+
     '<label>Tip<select id="hk_tip"><option value="hakedis">Hakediş tahsilatı</option><option value="avans">Avans</option></select></label>'+
-    '<label>Tutar (USD)<input type="number" id="hk_tutar" inputmode="decimal" placeholder="0"></label>'+
+    '<label>Tutar (USD)<input type="text" id="hk_tutar" inputmode="decimal" placeholder="0"></label>'+
     '<label>Tarih<input type="date" id="hk_tarih" value="'+dToday()+'"></label>'+
     '<label class="gdwide">Açıklama<input type="text" id="hk_not" placeholder="1. hakediş / avans vb."></label>'+
     '<button class="btn" onclick="addHktah()">+ Tahsilat ekle</button></div>'+
@@ -5446,7 +5485,7 @@ function tanIsGiris(){
 
 async function backupAll(){try{
   if(typeof toast==='function')toast('Yedek hazırlanıyor…');
-  const dump={_app:'SHAMS1',_ver:'s276',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1',_ver:'s278',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pjz:','pja:','pjag:','pjp:','pjpg:','hc:','g:','gd:','arpay:','ppay:','hktah:'];
   for(const pre of pref){try{const o=await sgetAll(pre);for(const k in o){if(o[k]!=null)dump.data[k]=o[k];}}catch(e){}}
   const single=['wage','fx','fxlog','targets','mpct','cab:dc','cab:ac','cab:og','cab:kanal','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','zimmet','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
