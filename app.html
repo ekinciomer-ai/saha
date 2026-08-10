@@ -807,7 +807,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 285</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 286</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -827,21 +827,19 @@
       <div class="rlabel">Proje seç</div>
       <button class="projcard" onclick="openZone('tr1')">
         <div class="pn">SHAMS-1 GES · TR-1</div><div class="pm">Nahçıvan, Azerbaycan · 6,9 MWp · <span id="pc_tr1">—</span></div></button>
-      <button class="projcard" onclick="openZone('tr3')">
-        <div class="pn">SHAMS-1 GES · TR-3</div><div class="pm">Nahçıvan, Azerbaycan · 6,9 MWp · <span id="pc_tr3">—</span></div></button>
       <div class="projcard disabled" id="projadd"><div class="pn">+ Yeni proje</div><div class="pm">yakında · yalnızca yönetici</div></div>
     </div>
   </div>
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 285 · dokun→güncelle</div>
+<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 286 · dokun→güncelle</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
     <div><div class="ey"><span class="ae-wm" style="font-size:15px"><svg class="ae-bolt" viewBox="0 0 100 100"><defs><linearGradient id="aeBolt" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient></defs><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z" fill="url(#aeBolt)"/></svg><span class="ae-tx"><span class="ae-a">AKSARAY</span><span class="ae-e">ENERJ<span class="diC">I</span></span></span></span><span class="ey-sub">Saha Yönetim Platformu</span></div><h1>SHAMS-1 GES · <b id="hdrz">TR-1</b></h1></div>
     <div style="text-align:right">
-      <div style="display:flex;gap:8px;align-items:center;justify-content:flex-end;margin-bottom:6px"><span class="fsctl"><button class="btn ghost sm" onclick="setFont(-10)">A−</button><span id="fslbl" class="fslbl">%100</span><button class="btn ghost sm" onclick="setFont(10)">A+</button></span><span class="rolebadge" id="rolebadge">—</span><select id="zbadge" class="btn ghost sm" onchange="switchZoneSelect(this.value)" title="Trafo / bölge seç" style="cursor:pointer"><option value="tr1">TR-1</option><option value="tr3">TR-3</option></select><button class="btn ghost sm" onclick="logout()">🔒 Çıkış</button><button class="btn ghost sm" onclick="goHome()">← Projeler</button></div>
+      <div style="display:flex;gap:8px;align-items:center;justify-content:flex-end;margin-bottom:6px"><span class="fsctl"><button class="btn ghost sm" onclick="setFont(-10)">A−</button><span id="fslbl" class="fslbl">%100</span><button class="btn ghost sm" onclick="setFont(10)">A+</button></span><span class="rolebadge" id="rolebadge">—</span><button class="btn ghost sm" onclick="logout()">🔒 Çıkış</button><button class="btn ghost sm" onclick="goHome()">← Projeler</button></div>
       <div class="live"><span class="pulse"></span><span id="status">yükleniyor…</span></div>
       <button class="btn ghost sm" style="margin-top:8px" onclick="reloadAll()">↻ Yenile</button></div>
   </div>
@@ -1081,7 +1079,8 @@ async function fbInit(){if(!FBCONFIG||!FBCONFIG.databaseURL)return false;if(FBDB
 const TGT_TR1={masa:378,ayak:5292,kiris:2646,asik:4536,panel:9828,capraz:7182,inv:19};
 const TGT_TR3={masa:395,ayak:5530,kiris:2765,asik:4740,panel:10270,capraz:7505,inv:19};
 let TGT=TGT_TR1;
-let TRZ=(function(){try{return localStorage.getItem('shams1:trz')||'tr1';}catch(e){return 'tr1';}})();
+let TRZ='tr1'; /* TR-2/TR-3 sekmeleri kaldırıldı — artık tek "canlı" bölge her zaman TR-1. Eski localStorage değeri (geçmişte TR-3'e geçilmiş olabilir) OKUNMAZ; bu tutarsızlık TR-1 hesaplarının TR-3 verisini yanlışlıkla toplamasına sebep oluyordu. */
+try{localStorage.removeItem('shams1:trz');}catch(e){}
 const ZLBL={tr1:'TR-1',tr2:'TR-2',tr3:'TR-3'};
 try{if(TRZ==='tr3'&&!LAYOUT_TR3.tables.length){TRZ='tr1';try{localStorage.setItem('shams1:trz','tr1');}catch(e){}}
 TGT=(TRZ==='tr3')?TGT_TR3:TGT_TR1;applyZoneLayout();}catch(e){}
@@ -1202,7 +1201,7 @@ function saveSess(){if(!SESS_ON)return;try{var prev={};try{prev=JSON.parse(local
 function clearSess(){try{localStorage.removeItem('shams1:sess');}catch(e){}SESS_ON=false;}
 function logout(){clearSess();try{location.reload();}catch(e){goHome();}}
 function activateTab(n){var btns=document.querySelectorAll('.tabs .tab');for(var i=0;i<btns.length;i++){var oc=btns[i].getAttribute('onclick')||'';var mm=oc.match(/tabTo\((\d+)/);if(mm&&+mm[1]===n){if(getComputedStyle(btns[i]).display==='none')return false;tabTo(n,btns[i]);return true;}}return false;}
-function tryAutoLogin(){try{var raw=localStorage.getItem('shams1:sess');if(!raw)return;var sx=JSON.parse(raw);if(!sx||!sx.role||!sx.loginTs)return;if(Date.now()-sx.loginTs>SESS_TTL){clearSess();return;}if(sx.role!=='admin'&&sx.role!=='usta')return;PENDING_ROLE=sx.role;ROLE=sx.role;CURUSER=sx.user||'';SESS_ON=true;if(sx.trz)setTRZ(sx.trz);var pa=document.getElementById('projadd');if(pa)pa.style.display=(ROLE==='admin')?'':'none';var proj=sx.proj||'shams1';var tab=(typeof sx.tab==='number')?sx.tab:0;openProject(proj).then(function(){activateTab(0);}).catch(function(){});}catch(e){}}
+function tryAutoLogin(){try{var raw=localStorage.getItem('shams1:sess');if(!raw)return;var sx=JSON.parse(raw);if(!sx||!sx.role||!sx.loginTs)return;if(Date.now()-sx.loginTs>SESS_TTL){clearSess();return;}if(sx.role!=='admin'&&sx.role!=='usta')return;PENDING_ROLE=sx.role;ROLE=sx.role;CURUSER=sx.user||'';SESS_ON=true;var pa=document.getElementById('projadd');if(pa)pa.style.display=(ROLE==='admin')?'':'none';var proj=sx.proj||'shams1';var tab=(typeof sx.tab==='number')?sx.tab:0;openProject(proj).then(function(){activateTab(0);}).catch(function(){});}catch(e){}}
 window.addEventListener('load',tryAutoLogin);
 function pickRole(r){document.querySelectorAll('.rolebtn').forEach(b=>b.classList.remove('on'));
   const rb=document.getElementById('rb_'+r);if(rb)rb.classList.add('on');
@@ -4729,7 +4728,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s285</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s286</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -5010,7 +5009,7 @@ function repItems(day){
 function mqDayAdd(day){
   var out={ayakmont:0,kiris:0,asik:0,capraz:0,panel:0};
   (typeof MQLOG!=='undefined'?MQLOG:[]).forEach(function(r){
-    if(r.tarih===day&&r.zone==='tr1'){ /* ROOT FIX: TR-1'e özel — global TRZ'ye değil sabit 'tr1'e göre filtrele (aksi halde TRZ başka bölgedeyken TR-1 o bölgenin kayıtlarını yanlışlıkla toplardı) */
+    if(r.tarih===day&&r.zone===TRZ){
       out.ayakmont+=(+r.ayak||0);out.kiris+=(+r.kiris||0);out.asik+=(+r.asik||0);out.capraz+=(+r.capraz||0);out.panel+=(+r.panel||0);
     }
   });
@@ -5623,7 +5622,7 @@ function tanIsGiris(){
 
 async function backupAll(){try{
   if(typeof toast==='function')toast('Yedek hazırlanıyor…');
-  const dump={_app:'SHAMS1',_ver:'s285',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1',_ver:'s286',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pjz:','pja:','pjag:','pjp:','pjpg:','hc:','g:','gd:','arpay:','ppay:','hktah:'];
   for(const pre of pref){try{const o=await sgetAll(pre);for(const k in o){if(o[k]!=null)dump.data[k]=o[k];}}catch(e){}}
   const single=['wage','fx','fxlog','targets','mpct','cab:dc','cab:ac','cab:og','cab:kanal','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','zimmet','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
