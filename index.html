@@ -807,7 +807,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 283</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 285</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -835,7 +835,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 283 · dokun→güncelle</div>
+<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 285 · dokun→güncelle</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -1418,6 +1418,26 @@ async function ensureHeavy(force){
         HKTAH.push(rec2);HKTAH.sort((x,y)=>(x.tarih||'').localeCompare(y.tarih||''));
       }
       await sset('hktah_hak2_v1',true);
+    }
+    /* Hakediş No.1 düzeltmesi — eski tahmini tutar (31372.88) yerine resmi belgedeki net tutar (E-G) */
+    const seededHak1Fix=await sget('hktah_hak1fix_v1');
+    if(!seededHak1Fix){
+      const old1=(HKTAH||[]).find(function(r){return r&&r.tip==='hakedis'&&Math.abs((+r.tutar||0)-31372.88)<0.5;});
+      if(old1){
+        old1.tutar=15030.56;old1.not='Hakediş No.1 (net, Alt Yükleniciye Ödenecek Tutar E-G — brüt 96.197,66$, kesintiler 92.710,82$)';
+        await sset('hktah:'+old1.id,old1);
+      }
+      await sset('hktah_hak1fix_v1',true);
+    }
+    /* Verilen Avans düzeltmesi — eski tahmini tutar (70000) yerine sözleşme belgesindeki resmi tutar */
+    const seededAvansFix=await sget('hktah_avansfix_v1');
+    if(!seededAvansFix){
+      const oldAv=(HKTAH||[]).find(function(r){return r&&r.tip==='avans'&&Math.abs((+r.tutar||0)-70000)<0.5;});
+      if(oldAv){
+        oldAv.tutar=101372.88;oldAv.not='Verilen Avans (sözleşme bedelinin %39,2\'si — resmi belge)';
+        await sset('hktah:'+oldAv.id,oldAv);
+      }
+      await sset('hktah_avansfix_v1',true);
     }
   }catch(e){}
   _heavyLoaded=true;_heavyLoading=false;
@@ -4709,7 +4729,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s283</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s285</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -4813,7 +4833,42 @@ function renderHakedisKesinti(){const el=document.getElementById('hkkesinti');if
     '<button class="btn" onclick="addHktah()">+ Tahsilat ekle</button></div>'+
     '<div style="overflow:auto;margin-top:10px"><table class="gtbl"><thead><tr><th>Tarih</th><th>Tip</th><th>Tutar</th><th>Açıklama</th><th></th></tr></thead><tbody>'+
     ((HKTAH&&HKTAH.length)?HKTAH.map(r=>'<tr><td>'+dtr(r.tarih)+'</td><td>'+(r.tip==='avans'?'Avans':'Hakediş')+'</td><td class="num"><b>'+tr(r.tutar)+' $</b></td><td>'+esc(r.not||'')+'</td><td>'+((typeof ROLE!=="undefined"&&ROLE==="admin")?'<button class="btn ghost sm" onclick="delHktah(\''+r.id+'\')">sil</button>':'')+'</td></tr>').join(''):'<tr><td colspan="5" class="empty">Kayıt yok</td></tr>')+
-    '</tbody></table></div>';}
+    '</tbody></table></div>'+
+    resmiKesintilerHTML();}
+/* Resmi hakediş belgelerindeki (02 Y.ARKA KAPAK sayfası) KESİNTİLER VE MAHSUPLAR dökümü — sabit, imzalı belgeden */
+function resmiKesintilerHTML(){
+  var K=[ // [ad, hak01, hak02]
+    ['Kesin Teminat Kesintisi',0,0],
+    ['Avans Kesintisi',69851.944,13284.696],
+    ['Nakit Teminat Kesintisi',9619.77,3321.17],
+    ['Ceza / Nefaset v.s. Kesintisi',0,0],
+    ['OSGB Hizmetleri',0,0],
+    ['SGK & Maaş Kesintisi',6342.16,0],
+    ['Yemek + Su + Elektrik Kullanım Bedeli',6896.945,3197.561],
+    ['İnşaat All Risk',0,0],
+    ['Stopaj',0,0],
+    ['Damga Vergisi Kesintisi',0,2389.327],
+    ['Diğer',0,0]
+  ];
+  var t1=0,t2=0;K.forEach(function(k){t1+=k[1];t2+=k[2];});
+  var rows=K.filter(function(k){return k[1]>0||k[2]>0;}).map(function(k){
+    return '<tr><td>'+k[0]+'</td><td class="num">'+tr(k[1])+' $</td><td class="num">'+tr(k[2])+' $</td><td class="num"><b>'+tr(k[1]+k[2])+' $</b></td></tr>';
+  }).join('');
+  var brut1=96197.66,brut2=33211.74,fatura1=107741.38,fatura2=37197.15,net1=15030.56,net2=15004.40,verilenAvans=101372.88;
+  return '<h3 style="margin:18px 0 6px">📋 Resmi Kesintiler — Hakediş Belgelerinden</h3>'+
+    '<div class="hint" style="margin:0 0 8px">İmzalı hakediş raporlarındaki (02 Y.Arka Kapak) "Kesintiler ve Mahsuplar" dökümü. Yalnızca sıfır olmayan kalemler gösterilir.</div>'+
+    '<div style="overflow:auto"><table class="gtbl"><thead><tr><th>Kesinti kalemi</th><th>Hakediş No.1</th><th>Hakediş No.2</th><th>Toplam</th></tr></thead><tbody>'+
+    rows+
+    '<tr><td>Brüt hakediş tutarı</td><td class="num">'+tr(brut1)+' $</td><td class="num">'+tr(brut2)+' $</td><td class="num"><b>'+tr(brut1+brut2)+' $</b></td></tr>'+
+    '<tr><td>Yüklenici fatura tutarı</td><td class="num">'+tr(fatura1)+' $</td><td class="num">'+tr(fatura2)+' $</td><td class="num"><b>'+tr(fatura1+fatura2)+' $</b></td></tr>'+
+    '<tr class="eptot"><td>Kesintiler toplamı</td><td class="num">'+tr(t1)+' $</td><td class="num">'+tr(t2)+' $</td><td class="num"><b>'+tr(t1+t2)+' $</b></td></tr>'+
+    '<tr class="eptot"><td>Alt Yükleniciye Ödenecek (net)</td><td class="num" style="color:var(--gnd)"><b>'+tr(net1)+' $</b></td><td class="num" style="color:var(--gnd)"><b>'+tr(net2)+' $</b></td><td class="num" style="color:var(--gnd)"><b>'+tr(net1+net2)+' $</b></td></tr>'+
+    '</tbody></table></div>'+
+    '<h3 style="margin:18px 0 6px">💵 Avans Takibi — Resmi Belgeden</h3>'+
+    '<div class="gsum" style="margin:6px 0"><div class="gscard"><span>Verilen Avans (sözleşmenin %39,2\'si)</span><b>'+tr(verilenAvans)+' $</b></div>'+
+    '<div class="gscard"><span>Avans kesintisi (Hak1+Hak2)</span><b>−'+tr(K[1][1]+K[1][2])+' $</b></div>'+
+    '<div class="gscard money"><span>Kalan avans</span><b style="color:var(--gnd)">'+tr(verilenAvans-(K[1][1]+K[1][2]))+' $</b></div></div>';
+}
 
 /* ===== SEKME 4 — BİLGİ BANKASI ===== */
 function acc(title,inner,open,cls){return '<details class="acc'+(cls?' '+cls:'')+'"'+(open?' open':'')+'><summary>'+title+'</summary><div class="body">'+inner+'</div></details>';}
@@ -5568,7 +5623,7 @@ function tanIsGiris(){
 
 async function backupAll(){try{
   if(typeof toast==='function')toast('Yedek hazırlanıyor…');
-  const dump={_app:'SHAMS1',_ver:'s283',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1',_ver:'s285',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pjz:','pja:','pjag:','pjp:','pjpg:','hc:','g:','gd:','arpay:','ppay:','hktah:'];
   for(const pre of pref){try{const o=await sgetAll(pre);for(const k in o){if(o[k]!=null)dump.data[k]=o[k];}}catch(e){}}
   const single=['wage','fx','fxlog','targets','mpct','cab:dc','cab:ac','cab:og','cab:kanal','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','zimmet','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
