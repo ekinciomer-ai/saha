@@ -807,7 +807,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 280</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 282</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -835,7 +835,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 280 · dokun→güncelle</div>
+<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 282 · dokun→güncelle</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -1408,6 +1408,17 @@ async function ensureHeavy(force){
       await sset('hktah_seed_v1',true);
       HKTAH=seed;
     }
+    /* Hakediş No.2 — resmi belgeden onaylanan net tahsilat (Alt Yükleniciye Ödenecek Tutar, E-G) */
+    const seededHak2=await sget('hktah_hak2_v1');
+    if(!seededHak2){
+      const already=(HKTAH||[]).some(function(r){return r&&r.tip==='hakedis'&&Math.abs((+r.tutar||0)-15004.40)<0.5&&r.tarih==='2026-08-05';});
+      if(!already){
+        const rec2={id:'hk'+(Date.now()+2),tip:'hakedis',tutar:15004.40,tarih:'2026-08-05',not:'Hakediş No.2 (net, Alt Yükleniciye Ödenecek Tutar E-G — brüt 33.211,74$, kesintiler 22.192,75$)',ts:Date.now()+2};
+        await sset('hktah:'+rec2.id,rec2);
+        HKTAH.push(rec2);HKTAH.sort((x,y)=>(x.tarih||'').localeCompare(y.tarih||''));
+      }
+      await sset('hktah_hak2_v1',true);
+    }
   }catch(e){}
   _heavyLoaded=true;_heavyLoading=false;
 }
@@ -1459,6 +1470,7 @@ async function reloadAll(silent){
   GUNLUK=await _mergeGunluk(gunlukRaw||[]); WAGE=wageRaw||{}; WAGEHIST=wagehistRaw||{}; MESAI=mesaiRaw||{}; TAZM=tazmRaw||{}; FX=fxRaw||{}; FXLOG=fxlogRaw||{}; WX=wxRaw||{}; TR2DATA=tr2dataRaw||{}; if(typeof gWxAuto==='function'&&!_WXTRIED){_WXTRIED=true;gWxAuto();} MATUSE=matuse||{}; MATKOV=matkov||{}; MATCUSTOM=matcustom||[]; MATLINK=matlinkRaw||{}; ZIMMET=zimmetRaw||[]; ISB=isbasi||'2026-06-16'; UPCOUNT=upc||0; UPLAST=uplast||0; if(typeof renderUpBadge==='function')renderUpBadge();
   try{const tl=await sgetAll('tr2log:');TR2LOG=Object.values(tl||{}).filter(Boolean).sort((x,y)=>(y.tarih||'').localeCompare(x.tarih||''));}catch(e){}
   try{const ql=await sgetAll('mqlog:');MQLOG=Object.values(ql||{}).filter(Boolean).sort((x,y)=>(y.tarih||'').localeCompare(x.tarih||''));}catch(e){}
+  try{const dz=await sgetAll('duzeltme:');DUZELTME=Object.values(dz||{}).filter(Boolean);}catch(e){}
   CINS={dc:cinsdc||{},ac:cinsac||{},og:cinsog||{}};
   TEAM=team||[];
   TEAM.forEach(p=>{if(p.gorev==='Ara eleman')p.gorev='Yardımcı';});
@@ -3456,6 +3468,36 @@ async function delGider(id){if(!confirm('Gider kaydı silinsin mi?'))return;GIDE
 let PPAY=[],PP_FOTO='',_PPSEQ=0,PP_CUR=null;
 let YCARD_OPEN={},TCARD_OPEN={};
 let HKTAH=[],_HKSEQ=0;
+let DUZELTME=[],_DZSEQ=0; /* gün-bazlı TR-1 iş kalemi düzeltmeleri: {id,tarih,item,deger,not,ts} — masa sistemine dokunmadan raporlanan sayıyı düzeltir */
+async function addDuzeltme(tarih,item,deger,not_){
+  if(roBlock())return;
+  var eski=(DUZELTME||[]).find(function(r){return r&&r.tarih===tarih&&r.item===item;});
+  var rec=eski||{id:'dz'+Date.now(),tarih:tarih,item:item,ts:Date.now()};
+  rec.deger=+deger||0;rec.not=not_||'';rec.ts=Date.now();
+  if(!eski){DUZELTME.push(rec);_DZSEQ=(_DZSEQ||0)+1;}
+  await sset('duzeltme:'+rec.id,rec);
+  _icmalHkMap=null;_icmalHkMapKey=null;
+  try{await logAct('İş kalemi düzeltme',dtr(tarih)+' · '+item+' → '+rec.deger);}catch(e){}
+  toast('Düzeltme kaydedildi');
+  var o=document.getElementById('gcdov');if(o)o.remove();
+  try{renderMontajScope(MCUR);}catch(e){}
+  try{mShow();}catch(e){}
+  try{if(document.getElementById('gunluk'))renderGunluk();}catch(e){}
+  try{renderProgress();}catch(e){}
+}
+async function delDuzeltme(id){
+  if(roBlock())return;
+  if(!confirm('Bu düzeltme silinsin mi? (Sayı, masa sisteminden geldiği haline döner)'))return;
+  DUZELTME=DUZELTME.filter(function(r){return r.id!==id;});
+  await sdel('duzeltme:'+id);
+  _icmalHkMap=null;_icmalHkMapKey=null;
+  toast('Düzeltme silindi');
+  var o=document.getElementById('gcdov');if(o)o.remove();
+  try{renderMontajScope(MCUR);}catch(e){}
+  try{mShow();}catch(e){}
+  try{if(document.getElementById('gunluk'))renderGunluk();}catch(e){}
+  try{renderProgress();}catch(e){}
+}
 async function addHktah(){
   var tip=fval('hk_tip')||'hakedis',tutar=fnum('hk_tutar'),tarih=fval('hk_tarih')||dToday(),not=fval('hk_not')||'';
   if(!tutar){toast('Tutar girin');return;}
@@ -3998,7 +4040,17 @@ function gunCellDuzelt(zone,iso,item){
       ((typeof ROLE!=='undefined'&&ROLE==='admin')?('<button class="btn ghost sm" onclick="document.getElementById(\'gcdov\').remove();delTR2LogEntry(\''+r.id+'\')">🗑</button>'):'')+'</div>';
   });
   if(!rowsHtml){
-    if(zone==='tr1')rowsHtml='<div class="hint">Bu sayı, Saha Günlüğü kaydından değil <b>masa bazlı işaretlemeden</b> (Montaj sekmesi) geliyor. Düzeltmek için Montaj → ilgili masaya gidip işaretlemeyi değiştir.</div>';
+    if(zone==='tr1'){
+      var mevcutDeger=0;try{mevcutDeger=(typeof dayItemQty==='function'?(dayItemQty(iso)[item]||0):0);}catch(e){}
+      var duz=(DUZELTME||[]).find(function(r){return r&&r.tarih===iso&&r.item===item;});
+      rowsHtml='<div class="hint" style="margin-bottom:8px">Bu sayı, tek bir kayıt değil — Montaj\'daki masa işaretlemelerinin o güne kadarki farkından hesaplanıyor. Masa değiştirmeden, sadece bu günün raporlanan sayısını düzeltebilirsin:</div>'+
+        (duz?('<div class="frow" style="align-items:center;gap:8px;background:#fef3c7;padding:6px 8px;border-radius:8px"><span style="flex:1">⚠ Düzeltme uygulanmış: <b>'+duz.deger+'</b>'+(duz.not?(' · '+esc(duz.not)):'')+'</span>'+
+          '<button class="btn ghost sm" onclick="delDuzeltme(\''+duz.id+'\')">🗑 Kaldır</button></div>'):
+          ('<div class="hint" style="margin-bottom:8px">Şu an gösterilen (masa sisteminden): <b>'+mevcutDeger+'</b></div>'))+
+        '<div class="frow"><label>Doğru değer<input type="number" id="dz_deger" min="0" value="'+(duz?duz.deger:mevcutDeger)+'"></label></div>'+
+        '<div class="frow"><label class="gwide">Not (opsiyonel)<input type="text" id="dz_not" value="'+(duz?esc(duz.not||''):'')+'" placeholder="ör. yanlışlıkla işaretlendi"></label></div>'+
+        '<div class="drow"><button class="btn" onclick="addDuzeltme(\''+iso+'\',\''+item+'\',fval(\'dz_deger\'),fval(\'dz_not\'))">💾 Düzeltmeyi kaydet</button></div>';
+    }
     else rowsHtml='<div class="hint">Kayıt bulunamadı (silinmiş olabilir).</div>';
   }
   ov.innerHTML='<div class="pjgsheet"><div class="pjgh"><b>'+ZLBL[zone]+' — '+dtr(iso)+' — '+NM[item]+'</b><small>Bu güne ait kayıtlar, düzeltmek için kaydın yanındaki ✏️</small></div>'+
@@ -4657,7 +4709,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s280</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s282</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -4928,6 +4980,7 @@ function dayItemQty(day){
   if(q.harita<0)q.harita=0;
   {const mq=mqDayAdd(day);q.ayakmont+=mq.ayakmont;q.kiris+=mq.kiris;q.asik+=mq.asik;q.capraz+=mq.capraz;q.panel+=mq.panel;}
   ENTRIES.forEach(e=>{const ed=e.date||dstr(e.ts);if(ed===day)q[e.id]=(q[e.id]||0)+(+e.qty||0);});
+  (DUZELTME||[]).forEach(function(r){if(r&&r.tarih===day&&r.item in q)q[r.item]=+r.deger||0;});
   return q;
 }
 /* o günün NET değişimi (clamp YOK → silme/iptal eksi görünür). Matris ve kart "bugün" değeri buradan.
@@ -5515,7 +5568,7 @@ function tanIsGiris(){
 
 async function backupAll(){try{
   if(typeof toast==='function')toast('Yedek hazırlanıyor…');
-  const dump={_app:'SHAMS1',_ver:'s280',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1',_ver:'s282',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pjz:','pja:','pjag:','pjp:','pjpg:','hc:','g:','gd:','arpay:','ppay:','hktah:'];
   for(const pre of pref){try{const o=await sgetAll(pre);for(const k in o){if(o[k]!=null)dump.data[k]=o[k];}}catch(e){}}
   const single=['wage','fx','fxlog','targets','mpct','cab:dc','cab:ac','cab:og','cab:kanal','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','zimmet','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
