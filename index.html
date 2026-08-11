@@ -807,7 +807,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 286</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 288</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -833,7 +833,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 286 · dokun→güncelle</div>
+<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 288 · dokun→güncelle</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -2362,7 +2362,8 @@ function gPersCostDayZone(iso,zone){
 }
 function tr1UnitPrice(itemId){
   let pur=0,hedef=0;
-  if(itemId==='kiris'){pur=0.31/3;hedef=TGT_TR1.kiris;}
+  if(itemId==='ayakmont'){pur=0.42;hedef=TGT_TR1.ayak;}
+  else if(itemId==='kiris'){pur=0.31/3;hedef=TGT_TR1.kiris;}
   else if(itemId==='asik'){pur=0.31/3;hedef=TGT_TR1.asik;}
   else if(itemId==='capraz'){pur=0.31/3;hedef=TGT_TR1.capraz;}
   else if(itemId==='panel'){pur=0.27;hedef=TGT_TR1.panel;}
@@ -2376,6 +2377,7 @@ function tr2HakedisDayUSD(iso){
   let usd=0;
   (TR2LOG||[]).forEach(function(r){
     if(r.tarih!==iso)return;
+    usd+=(+r.ayak||0)*tr2UnitPrice('ayakmont');
     usd+=(+r.kiris||0)*tr2UnitPrice('kiris');
     usd+=(+r.asik||0)*tr2UnitPrice('asik');
     usd+=(+r.capraz||0)*tr2UnitPrice('capraz');
@@ -2383,6 +2385,24 @@ function tr2HakedisDayUSD(iso){
   });
   (typeof MQLOG!=='undefined'?MQLOG:[]).forEach(function(r){
     if(!r||r.tarih!==iso||r.zone!=='tr2')return;
+    usd+=(+r.ayak||0)*tr2UnitPrice('ayakmont');
+    usd+=(+r.kiris||0)*tr2UnitPrice('kiris');
+    usd+=(+r.asik||0)*tr2UnitPrice('asik');
+    usd+=(+r.capraz||0)*tr2UnitPrice('capraz');
+    usd+=(+r.panel||0)*tr2UnitPrice('panel');
+  });
+  return usd;
+}
+/* TR-3'ün hakediş değeri — ÖNEMLİ: zoneDayHakedisMap/footCumUpto masa-sistemi ÜZERİNDEN HESAPLANMAZ.
+   GitHub ('gh') backend'de bölgeler arasında gerçek veri ayrımı yok (fbPath sadece Firebase'de TRZ'ye göre dallanıyor);
+   masa/ALOG tabanlı hesap TR-3 için çalıştırılırsa aslında TR-1'in verisini TR-3'ün (küçük) hedeflerine bölüp
+   anlamsız/şişirilmiş rakamlar üretir. Bunun yerine TR-2 ile birebir aynı, güvenli yöntem: sadece MQLOG(zone=tr3)
+   kayıtlarından, TR-1'in birim fiyatlarıyla hesapla. */
+function tr3HakedisDayUSD(iso){
+  let usd=0;
+  (typeof MQLOG!=='undefined'?MQLOG:[]).forEach(function(r){
+    if(!r||r.tarih!==iso||r.zone!=='tr3')return;
+    usd+=(+r.ayak||0)*tr2UnitPrice('ayakmont');
     usd+=(+r.kiris||0)*tr2UnitPrice('kiris');
     usd+=(+r.asik||0)*tr2UnitPrice('asik');
     usd+=(+r.capraz||0)*tr2UnitPrice('capraz');
@@ -2540,12 +2560,14 @@ async function addMQLogEntry(prefix,zone){
   const rec={id:uid(),zone:zone,tarih:tarih,ayak:ayak,kiris:kiris,asik:asik,capraz:capraz,panel:panel,klemp:klemp,not:not_,ts:Date.now()};
   MQLOG.unshift(rec);
   MQLOG.sort(function(a,b){return (b.tarih||'').localeCompare(a.tarih||'');});
-  await sset('mqlog:'+rec.id,rec);
+  var ok=await sset('mqlog:'+rec.id,rec);
+  if(ok===false){MQLOG=MQLOG.filter(function(r){return r.id!==rec.id;});toast('⚠ Kaydedilemedi, internet bağlantısını kontrol edip TEKRAR DENE — form silinmedi');return;}
   _icmalHkMap=null;_icmalHkMapKey=null;
   try{await logAct(ZLBL[zone]+' adet girişi',dtr(tarih)+' · ayak '+ayak+' · kiriş '+kiris+' · aşık '+asik+' · çapraz '+capraz+' · panel '+panel);}catch(e){}
   toast(ZLBL[zone]+' kaydı eklendi');
   try{renderMontajScope(MCUR);}catch(e){}
   try{mShow();}catch(e){}
+  try{if(document.getElementById('gunluk'))renderGunluk();}catch(e){}
 }
 function editMQLogEntry(id){
   if(roBlock())return;
@@ -3475,7 +3497,9 @@ async function addGider(){
   var kat=fval('gd_kat'),tarih=fval('gd_tarih')||dToday(),tutar=fnum('gd_tutar'),acik=fval('gd_acik'),pb=fval('gd_pb')||'AZN',tr=fval('gd_tr')||TRZ;
   if(!tutar&&!GD_FOTO){toast('Tutar veya belge fotoğrafı gerekli');return;}
   var rec={id:'gd'+Date.now(),tarih:tarih,kat:kat,tutar:tutar,pb:pb,tr:tr,aciklama:acik,foto:GD_FOTO||'',by:(typeof ROLE!=='undefined'?ROLE:'')||'?',ts:Date.now()};
-  GIDER.unshift(rec);_GDSEQ=(_GDSEQ||0)+1;await sset('gd:'+rec.id+'_'+_GDSEQ,rec);
+  GIDER.unshift(rec);_GDSEQ=(_GDSEQ||0)+1;
+  var ok=await sset('gd:'+rec.id+'_'+_GDSEQ,rec);
+  if(ok===false){GIDER=GIDER.filter(function(r){return r.id!==rec.id;});toast('⚠ Kaydedilemedi, internet bağlantısını kontrol edip TEKRAR DENE — form silinmedi');return;}
   GD_FOTO='';['gd_tutar','gd_acik'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});var pv=document.getElementById('gd_foto_pv');if(pv)pv.innerHTML='';
   toast('Gider eklendi');renderGider();
 }
@@ -3522,7 +3546,8 @@ async function addHktah(){
   if(!tutar){toast('Tutar girin');return;}
   var rec={id:'hk'+Date.now(),tip:tip,tutar:tutar,tarih:tarih,not:not,ts:Date.now()};
   HKTAH.push(rec);HKTAH.sort((x,y)=>(x.tarih||'').localeCompare(y.tarih||''));_HKSEQ=(_HKSEQ||0)+1;
-  await sset('hktah:'+rec.id+'_'+_HKSEQ,rec);
+  var ok=await sset('hktah:'+rec.id+'_'+_HKSEQ,rec);
+  if(ok===false){HKTAH=HKTAH.filter(function(r){return r.id!==rec.id;});toast('⚠ Kaydedilemedi, internet bağlantısını kontrol edip TEKRAR DENE — form silinmedi');return;}
   ['hk_tutar','hk_not'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
   toast('Tahsilat eklendi');renderHakedisKesinti();
 }
@@ -3559,10 +3584,12 @@ let ARPAY=[],AR_FOTO='',_ARSEQ=0;
 function _wkISO(iso){var d=new Date(iso+'T00:00:00');var dow=(d.getDay()+6)%7;d.setDate(d.getDate()-dow);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function arPhoto(inp){_pickDoc(inp,function(d){AR_FOTO=d||'';},'ar_foto_pv');}
 async function addArpay(){
-  var tarih=fval('ar_tarih')||dToday(),tutar=+fval('ar_tutar')||0,pb=fval('ar_pb')||'USD',acik=fval('ar_acik');
+  var tarih=fval('ar_tarih')||dToday(),tutar=fnum('ar_tutar'),pb=fval('ar_pb')||'USD',acik=fval('ar_acik');
   if(!tutar&&!AR_FOTO){toast('Tutar veya dekont gerekli');return;}
   var rec={id:'ar'+Date.now(),tarih:tarih,tutar:tutar,pb:pb,aciklama:acik,foto:AR_FOTO||'',by:(typeof ROLE!=='undefined'?ROLE:'')||'?',ts:Date.now()};
-  ARPAY.unshift(rec);_ARSEQ=(_ARSEQ||0)+1;await sset('arpay:'+rec.id+'_'+_ARSEQ,rec);
+  ARPAY.unshift(rec);_ARSEQ=(_ARSEQ||0)+1;
+  var ok=await sset('arpay:'+rec.id+'_'+_ARSEQ,rec);
+  if(ok===false){ARPAY=ARPAY.filter(function(r){return r.id!==rec.id;});toast('⚠ Kaydedilemedi, internet bağlantısını kontrol edip TEKRAR DENE — form silinmedi');return;}
   AR_FOTO='';['ar_tutar','ar_acik'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});var pv=document.getElementById('ar_foto_pv');if(pv)pv.innerHTML='';
   toast('Arıcan ödemesi eklendi');renderArican();
 }
@@ -3738,7 +3765,7 @@ function renderArican(){
   var recTbl=(ARPAY&&ARPAY.length)?'<div class="tk2"><h3>Ödeme kayıtları — gün gün ('+ARPAY.length+')</h3><div class="hint" style="margin:0 0 8px">Her ödeme kendi tarihindeki kur ile USD\'ye çevrilir. Baz para birimi: <b>USD</b>.</div><div style="overflow:auto"><table class="mtab"><thead><tr><th>Tarih</th><th>Orijinal</th><th>USD (baz)</th><th>Açıklama</th><th>Dekont</th><th></th></tr></thead><tbody>'+recRows+'</tbody></table></div></div>':'';
   var form='<div class="tk2"><h3>🏗️ Arıcan Enerji — ödeme / dekont ekle</h3><div class="gdform">'+
     '<label>Tarih<input type="date" id="ar_tarih" value="'+dToday()+'" max="'+dToday()+'"></label>'+
-    '<label>Tutar<input type="number" id="ar_tutar" inputmode="decimal" placeholder="0"></label>'+
+    '<label>Tutar<input type="text" id="ar_tutar" inputmode="decimal" placeholder="0"></label>'+
     '<label>Birim<select id="ar_pb">'+curOpts('USD')+'</select></label>'+
     '<label class="gdwide">Açıklama<input type="text" id="ar_acik" placeholder="hakediş / avans / dekont no"></label>'+
     '<label class="gdwide">📄 Dekont (foto veya PDF)<input type="file" accept="image/*,application/pdf" onchange="arPhoto(this)"></label>'+
@@ -4728,7 +4755,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s286</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s288</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -5382,8 +5409,8 @@ async function buildIcmalHkMap(days){
   const key=days.length+'|'+days[0]+'|'+days[days.length-1];
   if(_icmalHkMap&&_icmalHkMapKey===key&&(Date.now()-_icmalHkMapAt)<ICMAL_HKMAP_TTL)return _icmalHkMap;
   const m1=await zoneDayHakedisMap('tr1',days);
-  const m3=await zoneDayHakedisMap('tr3',days);
   const m2={};days.forEach(d=>{m2[d]=(typeof tr2HakedisDayUSD==='function')?tr2HakedisDayUSD(d):0;});
+  const m3={};days.forEach(d=>{m3[d]=(typeof tr3HakedisDayUSD==='function')?tr3HakedisDayUSD(d):0;});
   _icmalZoneMaps={tr1:m1,tr2:m2,tr3:m3};
   const combined={};days.forEach(d=>{combined[d]=(m1[d]||0)+(m2[d]||0)+(m3[d]||0);});
   _icmalHkMap=combined;_icmalHkMapKey=key;_icmalHkMapAt=Date.now();return combined;}
@@ -5622,7 +5649,7 @@ function tanIsGiris(){
 
 async function backupAll(){try{
   if(typeof toast==='function')toast('Yedek hazırlanıyor…');
-  const dump={_app:'SHAMS1',_ver:'s286',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1',_ver:'s288',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pjz:','pja:','pjag:','pjp:','pjpg:','hc:','g:','gd:','arpay:','ppay:','hktah:'];
   for(const pre of pref){try{const o=await sgetAll(pre);for(const k in o){if(o[k]!=null)dump.data[k]=o[k];}}catch(e){}}
   const single=['wage','fx','fxlog','targets','mpct','cab:dc','cab:ac','cab:og','cab:kanal','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','zimmet','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
