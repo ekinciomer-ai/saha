@@ -807,7 +807,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 297</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 300</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -833,7 +833,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 297 · dokun→güncelle</div>
+<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 300 · dokun→güncelle</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -1092,7 +1092,7 @@ function setTRZ(z){if(z!=='tr1'&&z!=='tr3')return;TRZ=z;TGT=(z==='tr3')?TGT_TR3:
 const ADMIN_PIN='1453'; // ← (eski) yönetici PIN
 const USERS={
   admin:[{u:'Ömer',p:'1453'},{u:'Adem',p:'Adem'},{u:'Muhasebe',p:'Muhasebe'}],
-  usta:[{u:'Adem',p:'Adem'},{u:'Halit',p:'Halit'}]
+  usta:[{u:'Adem',p:'0571'},{u:'Halit',p:'0571'}]
 };
 let CURUSER='',PENDING_ROLE=null,CURPROJ=null,CURTAB=0,SESS_ON=false;const SESS_TTL=7*24*3600*1000;
 function nowt(){return new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});}
@@ -1438,6 +1438,24 @@ async function ensureHeavy(force){
         await sset('hktah:'+oldAv.id,oldAv);
       }
       await sset('hktah_avansfix_v1',true);
+    }
+    /* Hakediş No.3 + 3. Avans Ödemesi — resmi belgeden onaylanan tahsilatlar */
+    const seededHak3=await sget('hktah_hak3_v1');
+    if(!seededHak3){
+      const already3=(HKTAH||[]).some(function(r){return r&&r.tip==='hakedis'&&Math.abs((+r.tutar||0)-29018.33)<0.5;});
+      if(!already3){
+        const rec3={id:'hk'+(Date.now()+3),tip:'hakedis',tutar:29018.33,tarih:'2026-08-19',not:'Hakediş No.3 (net, Alt Yükleniciye Ödenecek Tutar E-G — brüt 75.072,26$ [İlave İşler dahil], kesintiler 55.062,60$)',ts:Date.now()+3};
+        await sset('hktah:'+rec3.id,rec3);
+        HKTAH.push(rec3);
+      }
+      const already3av=(HKTAH||[]).some(function(r){return r&&r.tip==='avans'&&Math.abs((+r.tutar||0)-20970.60)<0.5;});
+      if(!already3av){
+        const rec3av={id:'hk'+(Date.now()+4),tip:'avans',tutar:20970.60,tarih:'2026-08-14',not:'3. Avans Ödemesi (toplam verilen avans 122.343,48$ — sözleşme kapsamı genişledi)',ts:Date.now()+4};
+        await sset('hktah:'+rec3av.id,rec3av);
+        HKTAH.push(rec3av);
+      }
+      HKTAH.sort((x,y)=>(x.tarih||'').localeCompare(y.tarih||''));
+      await sset('hktah_hak3_v1',true);
     }
   }catch(e){}
   _heavyLoaded=true;_heavyLoading=false;
@@ -2524,7 +2542,12 @@ function mqLogFormHTML(prefix,zone){
     '<label>Çapraz<input type="number" id="'+prefix+'_capraz" min="0" placeholder="0"></label></div>'+
     '<div class="frow"><label>Panel<input type="number" id="'+prefix+'_panel" min="0" placeholder="0"></label>'+
     '<label>Klemp<input type="number" id="'+prefix+'_klemp" min="0" placeholder="0"></label></div>'+
-    '<div class="frow"><label>String (elektrik)<input type="number" id="'+prefix+'_string" min="0" placeholder="0"></label></div>'+
+    '<div class="frow"><label>String (elektrik)<input type="number" id="'+prefix+'_string" min="0" placeholder="0"></label>'+
+    '<label>İnverter (adet)<input type="number" id="'+prefix+'_inv" min="0" placeholder="0"></label></div>'+
+    '<div class="frow"><label>DC kablo metraj (m)<input type="number" id="'+prefix+'_dc" min="0" placeholder="0"></label>'+
+    '<label>AC kablo metraj (m)<input type="number" id="'+prefix+'_ac" min="0" placeholder="0"></label></div>'+
+    '<div class="frow"><label>OG kablo metraj (m)<input type="number" id="'+prefix+'_og" min="0" placeholder="0"></label>'+
+    '<label>OG başlık (adet)<input type="number" id="'+prefix+'_ogb" min="0" placeholder="0"></label></div>'+
     '<div class="frow"><label class="gwide">Not<input type="text" id="'+prefix+'_not" placeholder="o gün yapılan işler, gözlem..."></label></div>'+
     '<div class="drow"><button class="btn" onclick="addMQLogEntry(\''+prefix+'\',\''+zone+'\')">+ Kayıt ekle</button></div></div>';
 }
@@ -2560,15 +2583,16 @@ async function addMQLogEntry(prefix,zone){
   const tarih=fval(prefix+'_tarih')||dToday();
   const ayak=+fval(prefix+'_ayak')||0,kiris=+fval(prefix+'_kiris')||0,asik=+fval(prefix+'_asik')||0,capraz=+fval(prefix+'_capraz')||0,panel=+fval(prefix+'_panel')||0;
   const klemp=+fval(prefix+'_klemp')||0,string_=+fval(prefix+'_string')||0;
+  const inv=+fval(prefix+'_inv')||0,dc=+fval(prefix+'_dc')||0,ac=+fval(prefix+'_ac')||0,og=+fval(prefix+'_og')||0,ogb=+fval(prefix+'_ogb')||0;
   const not_=fval(prefix+'_not')||'';
-  if(!ayak&&!kiris&&!asik&&!capraz&&!panel&&!klemp&&!string_&&!not_){toast('En az bir alan doldur');return;}
-  const rec={id:uid(),zone:zone,tarih:tarih,ayak:ayak,kiris:kiris,asik:asik,capraz:capraz,panel:panel,klemp:klemp,string:string_,not:not_,ts:Date.now()};
+  if(!ayak&&!kiris&&!asik&&!capraz&&!panel&&!klemp&&!string_&&!inv&&!dc&&!ac&&!og&&!ogb&&!not_){toast('En az bir alan doldur');return;}
+  const rec={id:uid(),zone:zone,tarih:tarih,ayak:ayak,kiris:kiris,asik:asik,capraz:capraz,panel:panel,klemp:klemp,string:string_,inv:inv,dc:dc,ac:ac,og:og,ogb:ogb,not:not_,ts:Date.now()};
   MQLOG.unshift(rec);
   MQLOG.sort(function(a,b){return (b.tarih||'').localeCompare(a.tarih||'');});
   var ok=await sset('mqlog:'+rec.id,rec);
   if(ok===false){MQLOG=MQLOG.filter(function(r){return r.id!==rec.id;});toast('⚠ Kaydedilemedi, internet bağlantısını kontrol edip TEKRAR DENE — form silinmedi');return;}
   _icmalHkMap=null;_icmalHkMapKey=null;
-  try{await logAct(ZLBL[zone]+' adet girişi',dtr(tarih)+' · ayak '+ayak+' · kiriş '+kiris+' · aşık '+asik+' · çapraz '+capraz+' · panel '+panel+' · string '+string_);}catch(e){}
+  try{await logAct(ZLBL[zone]+' adet girişi',dtr(tarih)+' · ayak '+ayak+' · kiriş '+kiris+' · aşık '+asik+' · çapraz '+capraz+' · panel '+panel+' · string '+string_+' · inv '+inv+' · dc '+dc+'m · ac '+ac+'m · og '+og+'m · ogb '+ogb);}catch(e){}
   toast(ZLBL[zone]+' kaydı eklendi');
   try{renderMontajScope(MCUR);}catch(e){}
   try{mShow();}catch(e){}
@@ -2587,7 +2611,12 @@ function editMQLogEntry(id){
     '<label>Çapraz<input type="number" id="mqed_capraz" min="0" value="'+(r.capraz||0)+'"></label></div>'+
     '<div class="frow"><label>Panel<input type="number" id="mqed_panel" min="0" value="'+(r.panel||0)+'"></label>'+
     '<label>Klemp<input type="number" id="mqed_klemp" min="0" value="'+(r.klemp||0)+'"></label></div>'+
-    '<div class="frow"><label>String (elektrik)<input type="number" id="mqed_string" min="0" value="'+(r.string||0)+'"></label></div>'+
+    '<div class="frow"><label>String (elektrik)<input type="number" id="mqed_string" min="0" value="'+(r.string||0)+'"></label>'+
+    '<label>İnverter (adet)<input type="number" id="mqed_inv" min="0" value="'+(r.inv||0)+'"></label></div>'+
+    '<div class="frow"><label>DC kablo metraj (m)<input type="number" id="mqed_dc" min="0" value="'+(r.dc||0)+'"></label>'+
+    '<label>AC kablo metraj (m)<input type="number" id="mqed_ac" min="0" value="'+(r.ac||0)+'"></label></div>'+
+    '<div class="frow"><label>OG kablo metraj (m)<input type="number" id="mqed_og" min="0" value="'+(r.og||0)+'"></label>'+
+    '<label>OG başlık (adet)<input type="number" id="mqed_ogb" min="0" value="'+(r.ogb||0)+'"></label></div>'+
     '<div class="frow"><label class="gwide">Not<input type="text" id="mqed_not" value="'+esc(r.not||'')+'"></label></div>'+
     '<div class="drow"><button class="btn" onclick="saveMQLogEdit(\''+id+'\')">💾 Kaydet</button></div>'+
     '<button class="pjgx" onclick="var o=document.getElementById(\'mqedov\');if(o)o.remove()">Kapat</button></div>';
@@ -2604,6 +2633,11 @@ async function saveMQLogEdit(id){
   r.panel=+fval('mqed_panel')||0;
   r.klemp=+fval('mqed_klemp')||0;
   r.string=+fval('mqed_string')||0;
+  r.inv=+fval('mqed_inv')||0;
+  r.dc=+fval('mqed_dc')||0;
+  r.ac=+fval('mqed_ac')||0;
+  r.og=+fval('mqed_og')||0;
+  r.ogb=+fval('mqed_ogb')||0;
   r.not=fval('mqed_not')||'';
   MQLOG.sort(function(a,b){return (b.tarih||'').localeCompare(a.tarih||'');});
   await sset('mqlog:'+id,r);
@@ -3405,7 +3439,8 @@ function isTRCitizen(pid){var p=teamGet(pid);return !!(p&&p.uyruk==='Türkiye');
 function isCiftYevmiye(pid,iso){var ym=iso.slice(0,7),d=+iso.slice(8,10);
   if((PJ[ym]&&PJ[ym][pid]&&PJ[ym][pid][d])==='2')return true;
   return !!(PJ2X[ym]&&PJ2X[ym][pid]&&PJ2X[ym][pid][d]);}
-function payMult(pid,iso){if(isCiftYevmiye(pid,iso))return 2;if(!isTRCitizen(pid))return 1;return (new Date(iso+'T00:00:00').getDay()===0)?2:1;}
+function payMult(pid,iso){if(isCiftYevmiye(pid,iso))return 2;if(!isTRCitizen(pid))return 1;if(iso>='2026-08-01')return 1; /* Ağustos 2026'dan itibaren Pazar otomatik x2 kaldırıldı — artık sadece puantajda manuel işaretlenirse çift yevmiye */
+  return (new Date(iso+'T00:00:00').getDay()===0)?2:1;}
 function gPersDaysPaid(pid){var t=0;gDays().forEach(function(iso){var v=gPjv(pid,iso);if(v)t+=v*payMult(pid,iso);});return t;}
 function persAyGunPaid(pid,ym){var pd=(PJ[ym]&&PJ[ym][pid])||{};var t=0;for(var d in pd){var v=pjMeta(pd[d]).v;if(!v)continue;var dd=(''+d).length<2?('0'+d):(''+d);t+=v*payMult(pid,ym+'-'+dd);}return t;}
 async function setMesaiAy(pid,ym,saat){MESAI[ym]=MESAI[ym]||{};MESAI[ym][pid]={'_ay':+saat||0};if(!(+saat))delete MESAI[ym][pid];await sset('mesai',MESAI);try{renderPersonel();}catch(e){}}
@@ -4074,7 +4109,7 @@ function renderGider(){
 }
 function wmoTr(c){if(c==null)return null;if(c===0)return{e:'☀️',t:'Açık'};if(c===1)return{e:'🌤️',t:'Az bulutlu'};if(c===2)return{e:'⛅',t:'Parçalı bulutlu'};if(c===3)return{e:'☁️',t:'Kapalı'};if(c===45||c===48)return{e:'🌫️',t:'Sisli'};if(c>=51&&c<=57)return{e:'🌦️',t:'Çiseleme'};if(c>=61&&c<=67)return{e:'🌧️',t:'Yağmurlu'};if(c>=71&&c<=77)return{e:'❄️',t:'Kar'};if(c>=80&&c<=82)return{e:'🌧️',t:'Sağanak'};if(c>=85&&c<=86)return{e:'❄️',t:'Kar sağanağı'};if(c>=95)return{e:'⛈️',t:'Gök gürültülü fırtına'};return{e:'🌡️',t:'—'};}function wxSlot(o){if(!o)return '';var m=wmoTr(o.c);var x=(m?m.e+' ':'')+(o.t!=null?Math.round(o.t)+'°':'');if(o.p!=null&&o.p>=0.2)x+=' yağış '+(Math.round(o.p*10)/10)+'mm';if(o.w!=null&&o.w>=20)x+=' rüzgar '+Math.round(o.w)+'km/s';return x.trim();}function wxStr(iso){if(typeof WX==='undefined'||!WX[iso])return '';var w=WX[iso];var seg=[];if(w.morn)seg.push('Sabah '+wxSlot(w.morn));if(w.noon)seg.push('Öğle '+wxSlot(w.noon));if(w.eve)seg.push('Akşam '+wxSlot(w.eve));var line=seg.join('   ·   ');var sfx=[];if(w.mx!=null&&w.mn!=null)sfx.push('gün '+Math.round(w.mn)+'–'+Math.round(w.mx)+'°');else if(!seg.length)return '';if(w.psum!=null&&w.psum>0)sfx.push('toplam yağış '+(Math.round(w.psum*10)/10)+' mm');if(sfx.length)line+=(line?'  ':'')+'('+sfx.join(' · ')+')';return esc(line);}function wxShort(iso){if(typeof WX==='undefined'||!WX[iso])return '';var w=WX[iso];var c=(w.noon&&w.noon.c!=null)?w.noon.c:((w.morn&&w.morn.c!=null)?w.morn.c:((w.eve&&w.eve.c!=null)?w.eve.c:null));var m=(c!=null)?wmoTr(c):null;var parts=[];if(m)parts.push(m.e+' '+m.t);if(w.mx!=null&&w.mn!=null)parts.push(Math.round(w.mn)+'–'+Math.round(w.mx)+'°');if(w.psum!=null&&w.psum>0)parts.push('yağış '+(Math.round(w.psum*10)/10)+'mm');return parts.length?esc(parts.join(' · ')):'';}async function gWxAuto(){try{var u='https://api.open-meteo.com/v1/forecast?latitude='+SITE_LAT+'&longitude='+SITE_LON+'&hourly=temperature_2m,weathercode,precipitation,windspeed_10m'+'&daily=temperature_2m_max,temperature_2m_min,precipitation_sum'+'&timezone=Asia%2FBaku&past_days=14&forecast_days=16';var res=await fetch(u);var j=await res.json();var w2={};if(j&&j.daily&&j.daily.time){var dt=j.daily.time,dmx=j.daily.temperature_2m_max||[],dmn=j.daily.temperature_2m_min||[],dps=j.daily.precipitation_sum||[];for(var i=0;i<dt.length;i++){w2[dt[i]]={mx:dmx[i],mn:dmn[i],psum:dps[i]};}}if(j&&j.hourly&&j.hourly.time){var ht=j.hourly.time,hte=j.hourly.temperature_2m||[],hc=j.hourly.weathercode||[],hp=j.hourly.precipitation||[],hw=j.hourly.windspeed_10m||[];for(var k=0;k<ht.length;k++){var iso=ht[k].slice(0,10),hh=parseInt(ht[k].slice(11,13),10);if(!w2[iso])w2[iso]={};var slot=(hh===8?'morn':(hh===13?'noon':(hh===18?'eve':null)));if(slot)w2[iso][slot]={t:hte[k],c:hc[k],p:hp[k],w:hw[k]};}}if(Object.keys(w2).length){w2._t=new Date().toISOString();w2._src='open-meteo.com';WX=w2;try{await sset('wx',WX);}catch(e){}if(typeof renderGunluk==='function'&&document.getElementById('gunluk'))renderGunluk();if(typeof renderRapor==='function'&&document.getElementById('rapor'))renderRapor();}}catch(e){}}
 function gunCellDuzelt(zone,iso,item){
-  var NM={ayakmont:'Ayak',kiris:'Kiriş',asik:'Aşık',capraz:'Çapraz',panel:'Panel'};
+  var NM={ayakmont:'Ayak',kiris:'Kiriş',asik:'Aşık',capraz:'Çapraz',panel:'Panel',string:'String (elektrik)',inv:'İnverter',dc:'DC kablo (m)',ac:'AC kablo (m)',og:'OG kablo (m)',ogb:'OG başlık'};
   var mqEntries=(typeof MQLOG!=='undefined'?MQLOG:[]).filter(function(r){return r&&r.tarih===iso&&r.zone===zone&&(+r[item==='ayakmont'?'ayak':item]||0)>0;});
   var t2Entries=(zone==='tr2')?(typeof TR2LOG!=='undefined'?TR2LOG:[]).filter(function(r){return r&&r.tarih===iso&&(+r[item==='ayakmont'?'ayak':item]||0)>0;}):[];
   var old=document.getElementById('gcdov');if(old)old.remove();
@@ -4152,7 +4187,7 @@ function zoneIlerlemeHTML(){
 function gunIsTablosuHTML(){
   var days=gDays().slice().reverse(); /* en yeni gün solda, puantaj ile aynı yön */
   var WK=['Pz','Pt','Sa','Ça','Pe','Cu','Ct'];
-  var ITEMS=[['ayakmont','Ayak'],['kiris','Kiriş'],['asik','Aşık'],['capraz','Çapraz'],['panel','Panel'],['string','String (elektrik)']];
+  var ITEMS=[['ayakmont','Ayak'],['kiris','Kiriş'],['asik','Aşık'],['capraz','Çapraz'],['panel','Panel'],['string','String (elektrik)'],['inv','İnverter (adet)'],['dc','DC kablo (m)'],['ac','AC kablo (m)'],['og','OG kablo (m)'],['ogb','OG başlık (adet)']];
   var ZONES=[['tr1','TR-1'],['tr2','TR-2'],['tr3','TR-3']];
   var data={}; /* data[zone][item][iso]=qty */
   ZONES.forEach(function(zc){data[zc[0]]={};ITEMS.forEach(function(it){data[zc[0]][it[0]]={};});});
@@ -4173,26 +4208,25 @@ function gunIsTablosuHTML(){
       var rowTot=0,cells='';
       days.forEach(function(iso){var v=data[zc[0]][it[0]][iso]||0;rowTot+=v;
         cells+='<td class="'+(isWe(iso)?'we':'')+(v?' style="font-weight:700;color:#1a56db;cursor:pointer;text-decoration:underline dotted" onclick="gunCellDuzelt(\''+zc[0]+'\',\''+iso+'\',\''+it[0]+'\')"':'')+'">'+(v||'')+'</td>';});
-      if(rowTot===0)return; /* tamamı sıfır olan satırı gösterme */
       body+='<tr><td class="pjname">'+it[1]+'</td>'+cells+'<td class="pjtot">'+rowTot+'</td></tr>';
     });
   });
   return '<div class="tk2"><h3>📊 Trafo sahaları — iş kalemleri (gün gün)</h3>'+
-    '<div class="hint" style="margin:0 0 8px">Puantaj tablosu gibi: her satır bir iş kalemi, her sütun bir gün. Hangi gün hangi bölgede ne yapılmış tek bakışta görünür. Tamamı sıfır olan satırlar gizlenir.</div>'+
+    '<div class="hint" style="margin:0 0 8px">Puantaj tablosu gibi: her satır bir iş kalemi, her sütun bir gün. Hangi gün hangi bölgede ne yapılmış tek bakışta görünür.</div>'+
     '<div class="pjscroll" style="max-height:50vh;width:100%;max-width:100%;overflow-x:auto;overflow-y:auto;display:block;box-sizing:border-box"><table class="pjtab" style="width:max-content"><thead>'+head+'</thead><tbody>'+(body||'<tr><td class="empty">Kayıt yok</td></tr>')+'</tbody></table></div></div>';
 }
 function gunZoneWorkItems(iso,zone,preQ1){
-  var out={ayakmont:0,kiris:0,asik:0,capraz:0,panel:0,string:0};
+  var out={ayakmont:0,kiris:0,asik:0,capraz:0,panel:0,string:0,inv:0,dc:0,ac:0,og:0,ogb:0};
   if(zone==='tr1'){
     var q=preQ1||((typeof dayItemQty==='function')?dayItemQty(iso):{});
     out.ayakmont=+q.ayakmont||0;out.kiris=+q.kiris||0;out.asik=+q.asik||0;out.capraz=+q.capraz||0;out.panel=+q.panel||0;
-    (typeof MQLOG!=='undefined'?MQLOG:[]).forEach(function(r){if(!r||r.tarih!==iso||r.zone!=='tr1')return;out.string+=(+r.string||0);});
+    (typeof MQLOG!=='undefined'?MQLOG:[]).forEach(function(r){if(!r||r.tarih!==iso||r.zone!=='tr1')return;out.string+=(+r.string||0);out.inv+=(+r.inv||0);out.dc+=(+r.dc||0);out.ac+=(+r.ac||0);out.og+=(+r.og||0);out.ogb+=(+r.ogb||0);});
     return out;
   }
   if(zone==='tr2'){
-    (typeof TR2LOG!=='undefined'?TR2LOG:[]).forEach(function(r){if(!r||r.tarih!==iso)return;out.ayakmont+=(+r.ayak||0);out.kiris+=(+r.kiris||0);out.asik+=(+r.asik||0);out.capraz+=(+r.capraz||0);out.panel+=(+r.panel||0);out.string+=(+r.string||0);});
+    (typeof TR2LOG!=='undefined'?TR2LOG:[]).forEach(function(r){if(!r||r.tarih!==iso)return;out.ayakmont+=(+r.ayak||0);out.kiris+=(+r.kiris||0);out.asik+=(+r.asik||0);out.capraz+=(+r.capraz||0);out.panel+=(+r.panel||0);out.string+=(+r.string||0);out.inv+=(+r.inv||0);out.dc+=(+r.dc||0);out.ac+=(+r.ac||0);out.og+=(+r.og||0);out.ogb+=(+r.ogb||0);});
   }
-  (typeof MQLOG!=='undefined'?MQLOG:[]).forEach(function(r){if(!r||r.tarih!==iso||r.zone!==zone)return;out.ayakmont+=(+r.ayak||0);out.kiris+=(+r.kiris||0);out.asik+=(+r.asik||0);out.capraz+=(+r.capraz||0);out.panel+=(+r.panel||0);out.string+=(+r.string||0);});
+  (typeof MQLOG!=='undefined'?MQLOG:[]).forEach(function(r){if(!r||r.tarih!==iso||r.zone!==zone)return;out.ayakmont+=(+r.ayak||0);out.kiris+=(+r.kiris||0);out.asik+=(+r.asik||0);out.capraz+=(+r.capraz||0);out.panel+=(+r.panel||0);out.string+=(+r.string||0);out.inv+=(+r.inv||0);out.dc+=(+r.dc||0);out.ac+=(+r.ac||0);out.og+=(+r.og||0);out.ogb+=(+r.ogb||0);});
   return out;
 }
 function gunZoneWorkersAllZones(iso){
@@ -4205,12 +4239,12 @@ function gunZoneWorkersAllZones(iso){
   return out;
 }
 function gunZoneBreakdownHTML(iso,preQ1){
-  var NM={ayakmont:'ayak montaj',kiris:'kiriş',asik:'aşık',capraz:'çapraz',panel:'panel',string:'string (elektrik)'};
+  var NM={ayakmont:'ayak montaj',kiris:'kiriş',asik:'aşık',capraz:'çapraz',panel:'panel',string:'string (elektrik)',inv:'inverter',dc:'DC kablo m',ac:'AC kablo m',og:'OG kablo m',ogb:'OG başlık'};
   var any=false;
   var workersAll=gunZoneWorkersAllZones(iso);
   var blocks=['tr1','tr2','tr3'].map(function(z){
     var w=gunZoneWorkItems(iso,z,z==='tr1'?preQ1:null);
-    var parts=[];['ayakmont','kiris','asik','capraz','panel','string'].forEach(function(k){if(w[k]>0)parts.push(trn(w[k])+' '+NM[k]);});
+    var parts=[];['ayakmont','kiris','asik','capraz','panel','string','inv','dc','ac','og','ogb'].forEach(function(k){if(w[k]>0)parts.push(trn(w[k])+' '+NM[k]);});
     var workers=workersAll[z];
     if(parts.length||workers.length)any=true;
     return '<div class="gzblock"><b style="color:#2f6fb0">'+ZLBL[z]+':</b> '+(parts.length?parts.join(', '):'<span style="color:#9aa3af">iş kaydı yok</span>')+
@@ -4802,7 +4836,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s297</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s300</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -4910,56 +4944,61 @@ function renderHakedisKesinti(){const el=document.getElementById('hkkesinti');if
     resmiKesintilerHTML();}
 /* Resmi hakediş belgelerindeki (02 Y.ARKA KAPAK sayfası) KESİNTİLER VE MAHSUPLAR dökümü — sabit, imzalı belgeden */
 function resmiKesintilerHTML(){
-  var K=[ // [ad, hak01, hak02]
-    ['Kesin Teminat Kesintisi',0,0],
-    ['Avans Kesintisi',69851.944,13284.696],
-    ['Nakit Teminat Kesintisi',9619.77,3321.17],
-    ['Ceza / Nefaset v.s. Kesintisi',0,0],
-    ['OSGB Hizmetleri',0,0],
-    ['SGK & Maaş Kesintisi',6342.16,0],
-    ['Yemek + Su + Elektrik Kullanım Bedeli',6896.945,3197.561],
-    ['İnşaat All Risk',0,0],
-    ['Stopaj',0,0],
-    ['Damga Vergisi Kesintisi',0,2389.327],
-    ['Diğer',0,0]
+  /* Her hakediş için resmi belgeden (02 Y.Arka Kapak): [Toplam Hakediş(A), İlave İşler(B), Avans Kesintisi, Nakit Teminat, SGK&Maaş, Yemek+Su+Elektrik, Damga Vergisi, Diğer] */
+  var HAKS=[
+    {no:1,brut:96197.66,ilave:0,kesin:0,avans:69851.944,nakit:9619.77,ceza:0,osgb:0,sgk:6342.16,yemek:6896.945,risk:0,stopaj:0,damga:0,diger:0},
+    {no:2,brut:33211.74,ilave:0,kesin:0,avans:13284.696,nakit:3321.17,ceza:0,osgb:0,sgk:0,yemek:3197.561,risk:0,stopaj:0,damga:2389.327,diger:0},
+    {no:3,brut:18221.23,ilave:56851.03,kesin:0,avans:39206.84,nakit:7507.23,ceza:0,osgb:0,sgk:0,yemek:2255.565,risk:0,stopaj:0,damga:0,diger:6092.965}
   ];
-  var t1=0,t2=0;K.forEach(function(k){t1+=k[1];t2+=k[2];});
-  var rows=K.filter(function(k){return k[1]>0||k[2]>0;}).map(function(k){
-    return '<tr><td>'+k[0]+'</td><td class="num">'+tr(k[1])+' $</td><td class="num">'+tr(k[2])+' $</td><td class="num"><b>'+tr(k[1]+k[2])+' $</b></td></tr>';
-  }).join('');
-  var brut1=96197.66,brut2=33211.74,fatura1=107741.38,fatura2=37197.15,net1=15030.56,net2=15004.40,verilenAvans=101372.88;
-  var mekTotal=6989.84,mek1=4809.883,mek2=1660.587,mekKum=6470.47,elekTotal=6989.84,elek1=0,elek2=0;
-  var mekPF=20,elekPF=17; /* USD/kWp birim fiyatlar */
+  HAKS.forEach(function(h){
+    h.kdvHaric=h.brut+h.ilave;
+    h.kdv20=h.kdvHaric*0.20;h.kdv40=h.kdvHaric*0.08;h.kdv60=h.kdvHaric*0.12;
+    h.fatura=h.kdvHaric+h.kdv60;h.tahakkuk=h.kdvHaric+h.kdv20;
+    h.kesintiler=h.kesin+h.avans+h.nakit+h.ceza+h.osgb+h.sgk+h.yemek+h.risk+h.stopaj+h.damga+h.diger;
+    h.net=h.fatura-h.kesintiler;
+  });
+  var N=HAKS.length;
+  function toplam(f){var s=0;HAKS.forEach(function(h){s+=f(h);});return s;}
+  var hdrCols=HAKS.map(function(h){return '<th>Hakediş No.'+h.no+'</th>';}).join('')+'<th>Toplam</th>';
+  function row(label,f,bold){var cells=HAKS.map(function(h){return '<td class="num">'+(bold?'<b>':'')+tr(f(h))+' $'+(bold?'</b>':'')+'</td>';}).join('');
+    return '<tr'+(bold?' class="eptot"':'')+'><td>'+label+'</td>'+cells+'<td class="num"><b>'+tr(toplam(f))+' $</b></td></tr>';}
+  var KROWS=[['Kesin Teminat Kesintisi',function(h){return h.kesin;}],['Avans Kesintisi',function(h){return h.avans;}],
+    ['Nakit Teminat Kesintisi',function(h){return h.nakit;}],['Ceza / Nefaset v.s.',function(h){return h.ceza;}],
+    ['OSGB Hizmetleri',function(h){return h.osgb;}],['SGK & Maaş Kesintisi',function(h){return h.sgk;}],
+    ['Yemek + Su + Elektrik',function(h){return h.yemek;}],['İnşaat All Risk',function(h){return h.risk;}],
+    ['Stopaj',function(h){return h.stopaj;}],['Damga Vergisi Kesintisi',function(h){return h.damga;}],['Diğer',function(h){return h.diger;}]];
+  var kesintiRows=KROWS.filter(function(k){return toplam(k[1])>0;}).map(function(k){return row(k[0],k[1],false);}).join('');
+  var verilenAvans=122343.48,avansKesintiToplam=toplam(function(h){return h.avans;});
+  var mekTotal=6989.84,mekKum=6865.56,elekTotal=6989.84,elekKum=607.02,mekPF=20,elekPF=17;
+  var mekHak=[4809.883,1660.587,395.095],elekHak=[0,0,607.02];
   return '<h3 style="margin:18px 0 6px">📄 Hakediş Belgesi</h3>'+
     '<div class="hint" style="margin:0 0 8px">İmzalı hakediş raporlarındaki (05 Keşif Özeti) o dönemde <b>fiilen yapılan iş miktarı ve tutarı</b> — mekanik montaj birim fiyatı 20 $/kWp, elektrik 17 $/kWp.</div>'+
-    '<div style="overflow:auto"><table class="gtbl"><thead><tr><th>İmalatın cinsi</th><th>Hakediş No.1</th><th>Hakediş No.2</th><th>Kümülatif</th><th>Toplam kapsam</th></tr></thead><tbody>'+
-    '<tr><td>Mekanik Montaj</td><td class="num">'+tr(mek1)+' kWp<br><b>'+tr(mek1*mekPF)+' $</b></td><td class="num">'+tr(mek2)+' kWp<br><b>'+tr(mek2*mekPF)+' $</b></td><td class="num">'+tr(mekKum)+' kWp<br><b style="color:var(--gnd)">'+tr(mekKum*mekPF)+' $</b></td><td class="num">'+tr(mekTotal)+' kWp<br>'+tr(mekTotal*mekPF)+' $</td></tr>'+
-    '<tr><td>Elektrik Montaj</td><td class="num">'+tr(elek1)+' kWp<br><b>'+tr(elek1*elekPF)+' $</b></td><td class="num">'+tr(elek2)+' kWp<br><b>'+tr(elek2*elekPF)+' $</b></td><td class="num">'+tr(elek1+elek2)+' kWp<br><b style="color:var(--gnd)">'+tr((elek1+elek2)*elekPF)+' $</b></td><td class="num">'+tr(elekTotal)+' kWp<br>'+tr(elekTotal*elekPF)+' $</td></tr>'+
-    '<tr class="eptot"><td>TOPLAM</td><td class="num"><b>'+tr(mek1*mekPF+elek1*elekPF)+' $</b></td><td class="num"><b>'+tr(mek2*mekPF+elek2*elekPF)+' $</b></td><td class="num"><b style="color:var(--gnd)">'+tr(mekKum*mekPF+(elek1+elek2)*elekPF)+' $</b></td><td class="num">'+tr(mekTotal*mekPF+elekTotal*elekPF)+' $</td></tr>'+
-    '<tr class="eptot"><td>Mekanik ilerleme</td><td colspan="4" class="num"><b>%'+((mekKum/mekTotal)*100).toFixed(1)+'</b> ('+tr(mekTotal-mekKum)+' kWp kaldı)</td></tr>'+
+    '<div style="overflow:auto"><table class="gtbl"><thead><tr><th>İmalatın cinsi</th>'+hdrCols+'</tr></thead><tbody>'+
+    '<tr><td>Mekanik Montaj</td>'+mekHak.map(function(v){return '<td class="num">'+tr(v)+' kWp<br><b>'+tr(v*mekPF)+' $</b></td>';}).join('')+'<td class="num">'+tr(mekKum)+' kWp<br><b style="color:var(--gnd)">'+tr(mekKum*mekPF)+' $</b></td></tr>'+
+    '<tr><td>Elektrik Montaj</td>'+elekHak.map(function(v){return '<td class="num">'+tr(v)+' kWp<br><b>'+tr(v*elekPF)+' $</b></td>';}).join('')+'<td class="num">'+tr(elekKum)+' kWp<br><b style="color:var(--gnd)">'+tr(elekKum*elekPF)+' $</b></td></tr>'+
+    '<tr class="eptot"><td>Mekanik ilerleme</td><td colspan="'+(N+1)+'" class="num"><b>%'+((mekKum/mekTotal)*100).toFixed(1)+'</b> ('+tr(mekTotal-mekKum)+' kWp kaldı) · Elektrik <b>%'+((elekKum/elekTotal)*100).toFixed(1)+'</b></td></tr>'+
     '</tbody></table></div>'+
-    '<div class="hint" style="margin:8px 0">Not: Elektrik montaj bu sözleşme kapsamında henüz başlamadı (0 kWp) — bu yüzden genel finansal ilerleme (%50,0) mekanik ilerlemeden (%92,6) düşük görünüyor.</div>'+
+    '<div class="hint" style="margin:8px 0">Hakediş No.3\'ten itibaren elektrik montaj başladı (607 kWp) ve yeni bölge "İlave İşler" (56.851 $) sözleşmeye eklendi — bu yüzden genel finansal ilerleme %79,1\'e sıçradı.</div>'+
     '<h3 style="margin:18px 0 6px">💰 Kesintiler ve Mahsuplar</h3>'+
     '<div class="hint" style="margin:0 0 8px">İmzalı hakediş raporlarındaki (02 Y.Arka Kapak) tam döküm — A\'dan F\'ye KDV detayları, sonra Kesintiler ve Mahsuplar. Yalnızca sıfır olmayan kesinti kalemleri gösterilir.</div>'+
-    '<div style="overflow:auto"><table class="gtbl"><thead><tr><th></th><th>Hakediş No.1</th><th>Hakediş No.2</th><th>Toplam</th></tr></thead><tbody>'+
-    ['A|Toplam Hakediş Tutarı|96197.66|33211.74',
-     'B|İlave İşler/İhzarat|0|0',
-     'C|Hakedişin Tutarı KDV Hariç (A+B)|96197.66|33211.74',
-     'D|KDV (C×%20)|19239.53|6642.35',
-     'D1|KDV (C×%40) Devlete Ödenen|7695.81|2656.94',
-     'D2|KDV (C×%60) Yükleniciye Ödenen|11543.72|3985.41',
-     'E|Yüklenici Fatura Tutarı (A+B+D1)|107741.38|37197.15',
-     'F|Tahakkuk Tutarı (C+D)|115437.19|39854.09'
-    ].map(function(row){var p=row.split('|');return '<tr><td><b>'+p[0]+'</b> '+p[1]+'</td><td class="num">'+tr(+p[2])+' $</td><td class="num">'+tr(+p[3])+' $</td><td class="num"><b>'+tr(+p[2]+ +p[3])+' $</b></td></tr>';}).join('')+
-    '<tr><td colspan="4" style="padding-top:14px;border-top:2px solid var(--line)"><b>KESİNTİLER VE MAHSUPLAR</b></td></tr>'+
-    rows+
-    '<tr class="eptot"><td>Kesintiler toplamı</td><td class="num">'+tr(t1)+' $</td><td class="num">'+tr(t2)+' $</td><td class="num"><b>'+tr(t1+t2)+' $</b></td></tr>'+
-    '<tr class="eptot"><td>Alt Yükleniciye Ödenecek (net) = E − Kesintiler</td><td class="num" style="color:var(--gnd)"><b>'+tr(net1)+' $</b></td><td class="num" style="color:var(--gnd)"><b>'+tr(net2)+' $</b></td><td class="num" style="color:var(--gnd)"><b>'+tr(net1+net2)+' $</b></td></tr>'+
+    '<div style="overflow:auto"><table class="gtbl"><thead><tr><th></th>'+hdrCols+'</tr></thead><tbody>'+
+    row('<b>A</b> Toplam Hakediş Tutarı',function(h){return h.brut;})+
+    row('<b>B</b> İlave İşler/İhzarat',function(h){return h.ilave;})+
+    row('<b>C</b> Hakedişin Tutarı KDV Hariç (A+B)',function(h){return h.kdvHaric;})+
+    row('<b>D</b> KDV (C×%20)',function(h){return h.kdv20;})+
+    row('<b>D1</b> KDV (C×%40) Devlete Ödenen',function(h){return h.kdv40;})+
+    row('<b>D2</b> KDV (C×%60) Yükleniciye Ödenen',function(h){return h.kdv60;})+
+    row('<b>E</b> Yüklenici Fatura Tutarı (A+B+D1)',function(h){return h.fatura;})+
+    row('<b>F</b> Tahakkuk Tutarı (C+D)',function(h){return h.tahakkuk;})+
+    '<tr><td colspan="'+(N+2)+'" style="padding-top:14px;border-top:2px solid var(--line)"><b>KESİNTİLER VE MAHSUPLAR</b></td></tr>'+
+    kesintiRows+
+    row('Kesintiler toplamı',function(h){return h.kesintiler;},true)+
+    '<tr class="eptot"><td>Alt Yükleniciye Ödenecek (net) = E − Kesintiler</td>'+HAKS.map(function(h){return '<td class="num" style="color:var(--gnd)"><b>'+tr(h.net)+' $</b></td>';}).join('')+'<td class="num" style="color:var(--gnd)"><b>'+tr(toplam(function(h){return h.net;}))+' $</b></td></tr>'+
     '</tbody></table></div>'+
     '<h3 style="margin:18px 0 6px">💵 Avans Takibi — Resmi Belgeden</h3>'+
-    '<div class="gsum" style="margin:6px 0"><div class="gscard"><span>Verilen Avans (sözleşmenin %39,2\'si)</span><b>'+tr(verilenAvans)+' $</b></div>'+
-    '<div class="gscard"><span>Avans kesintisi (Hak1+Hak2)</span><b>−'+tr(K[1][1]+K[1][2])+' $</b></div>'+
-    '<div class="gscard money"><span>Kalan avans</span><b style="color:var(--gnd)">'+tr(verilenAvans-(K[1][1]+K[1][2]))+' $</b></div></div>';
+    '<div class="gsum" style="margin:6px 0"><div class="gscard"><span>Verilen Avans (1.+2.+3. ödeme)</span><b>'+tr(verilenAvans)+' $</b></div>'+
+    '<div class="gscard"><span>Avans kesintisi (Hak1+Hak2+Hak3)</span><b>−'+tr(avansKesintiToplam)+' $</b></div>'+
+    '<div class="gscard money"><span>Kalan avans</span><b style="color:var(--gnd)">'+tr(verilenAvans-avansKesintiToplam)+' $</b></div></div>';
 }
 
 /* ===== SEKME 4 — BİLGİ BANKASI ===== */
@@ -5715,7 +5754,7 @@ function tanIsGiris(){
 
 async function backupAll(){try{
   if(typeof toast==='function')toast('Yedek hazırlanıyor…');
-  const dump={_app:'SHAMS1',_ver:'s297',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1',_ver:'s300',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pjz:','pja:','pjag:','pjp:','pjpg:','hc:','g:','gd:','arpay:','ppay:','hktah:'];
   for(const pre of pref){try{const o=await sgetAll(pre);for(const k in o){if(o[k]!=null)dump.data[k]=o[k];}}catch(e){}}
   const single=['wage','fx','fxlog','targets','mpct','cab:dc','cab:ac','cab:og','cab:kanal','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','zimmet','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
