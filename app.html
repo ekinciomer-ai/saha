@@ -807,7 +807,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 314</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 317</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -833,7 +833,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 314 · dokun→güncelle</div>
+<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 317 · dokun→güncelle</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -1078,7 +1078,7 @@ async function fbInit(){if(!FBCONFIG||!FBCONFIG.databaseURL)return false;if(FBDB
     FBDB=firebase.database();return true;}catch(e){return false;}}
 const TGT_TR1={masa:378,ayak:5292,kiris:2646,asik:4536,panel:9828,capraz:7182,inv:19};
 const TGT_TR2={masa:378,ayak:5292,kiris:2646,asik:4536,panel:9828,capraz:7182,inv:19}; /* resmi ölçüm yok — kullanıcı onayıyla TR-1 ile aynı kabul edildi (yaklaşık) */
-const TGT_TR3={masa:395,ayak:5530,kiris:2765,asik:4740,panel:10270,capraz:7505,inv:19};
+const TGT_TR3={masa:395,ayak:5292,kiris:2765,asik:4740,panel:9828,capraz:7505,inv:19};
 let TGT=TGT_TR1;
 let TRZ='tr1'; /* TR-2/TR-3 sekmeleri kaldırıldı — artık tek "canlı" bölge her zaman TR-1. Eski localStorage değeri (geçmişte TR-3'e geçilmiş olabilir) OKUNMAZ; bu tutarsızlık TR-1 hesaplarının TR-3 verisini yanlışlıkla toplamasına sebep oluyordu. */
 try{localStorage.removeItem('shams1:trz');}catch(e){}
@@ -4177,7 +4177,10 @@ function zoneIlerlemeYuzdesi(zone){
   var T=zone==='tr1'?TGT_TR1:(zone==='tr2'?TGT_TR2:TGT_TR3);
   var cum={ayakmont:0,kiris:0,asik:0,capraz:0,panel:0};
   if(zone==='tr1'){
-    try{repItems(0).forEach(function(it){if(it.id in cum)cum[it.id]=it.cum;});}catch(e){}
+    /* TR-1/TR-3 Kıyas tablosuyla (zoneMechAgg) BİREBİR aynı kaynak — tutarlılık için */
+    try{
+      cum.ayakmont=sumMon();cum.kiris=sumKiris();cum.asik=sumAsik12();cum.capraz=sumCapraz19();cum.panel=sumP('k7');
+    }catch(e){try{repItems(0).forEach(function(it){if(it.id in cum)cum[it.id]=it.cum;});}catch(e2){}}
   }else{
     if(zone==='tr2')(TR2LOG||[]).forEach(function(r){if(!r)return;cum.ayakmont+=(+r.ayak||0);cum.kiris+=(+r.kiris||0);cum.asik+=(+r.asik||0);cum.capraz+=(+r.capraz||0);cum.panel+=(+r.panel||0);});
     (typeof MQLOG!=='undefined'?MQLOG:[]).forEach(function(r){if(!r||r.zone!==zone)return;cum.ayakmont+=(+r.ayak||0);cum.kiris+=(+r.kiris||0);cum.asik+=(+r.asik||0);cum.capraz+=(+r.capraz||0);cum.panel+=(+r.panel||0);});
@@ -4993,7 +4996,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s314</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s317</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -5911,7 +5914,7 @@ function tanIsGiris(){
 
 async function backupAll(){try{
   if(typeof toast==='function')toast('Yedek hazırlanıyor…');
-  const dump={_app:'SHAMS1',_ver:'s314',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1',_ver:'s317',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pjz:','pja:','pjag:','pjp:','pjpg:','hc:','g:','gd:','arpay:','ppay:','hktah:'];
   for(const pre of pref){try{const o=await sgetAll(pre);for(const k in o){if(o[k]!=null)dump.data[k]=o[k];}}catch(e){}}
   const single=['wage','fx','fxlog','targets','mpct','cab:dc','cab:ac','cab:og','cab:kanal','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','zimmet','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
