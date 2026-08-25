@@ -807,7 +807,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 318</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 320</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -833,7 +833,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 318 · dokun→güncelle</div>
+<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 320 · dokun→güncelle</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -4133,6 +4133,23 @@ function renderGider(){
   try{renderArican();}catch(e){}
 }
 function wmoTr(c){if(c==null)return null;if(c===0)return{e:'☀️',t:'Açık'};if(c===1)return{e:'🌤️',t:'Az bulutlu'};if(c===2)return{e:'⛅',t:'Parçalı bulutlu'};if(c===3)return{e:'☁️',t:'Kapalı'};if(c===45||c===48)return{e:'🌫️',t:'Sisli'};if(c>=51&&c<=57)return{e:'🌦️',t:'Çiseleme'};if(c>=61&&c<=67)return{e:'🌧️',t:'Yağmurlu'};if(c>=71&&c<=77)return{e:'❄️',t:'Kar'};if(c>=80&&c<=82)return{e:'🌧️',t:'Sağanak'};if(c>=85&&c<=86)return{e:'❄️',t:'Kar sağanağı'};if(c>=95)return{e:'⛈️',t:'Gök gürültülü fırtına'};return{e:'🌡️',t:'—'};}function wxSlot(o){if(!o)return '';var m=wmoTr(o.c);var x=(m?m.e+' ':'')+(o.t!=null?Math.round(o.t)+'°':'');if(o.p!=null&&o.p>=0.2)x+=' yağış '+(Math.round(o.p*10)/10)+'mm';if(o.w!=null&&o.w>=20)x+=' rüzgar '+Math.round(o.w)+'km/s';return x.trim();}function wxStr(iso){if(typeof WX==='undefined'||!WX[iso])return '';var w=WX[iso];var seg=[];if(w.morn)seg.push('Sabah '+wxSlot(w.morn));if(w.noon)seg.push('Öğle '+wxSlot(w.noon));if(w.eve)seg.push('Akşam '+wxSlot(w.eve));var line=seg.join('   ·   ');var sfx=[];if(w.mx!=null&&w.mn!=null)sfx.push('gün '+Math.round(w.mn)+'–'+Math.round(w.mx)+'°');else if(!seg.length)return '';if(w.psum!=null&&w.psum>0)sfx.push('toplam yağış '+(Math.round(w.psum*10)/10)+' mm');if(sfx.length)line+=(line?'  ':'')+'('+sfx.join(' · ')+')';return esc(line);}function wxShort(iso){if(typeof WX==='undefined'||!WX[iso])return '';var w=WX[iso];var c=(w.noon&&w.noon.c!=null)?w.noon.c:((w.morn&&w.morn.c!=null)?w.morn.c:((w.eve&&w.eve.c!=null)?w.eve.c:null));var m=(c!=null)?wmoTr(c):null;var parts=[];if(m)parts.push(m.e+' '+m.t);if(w.mx!=null&&w.mn!=null)parts.push(Math.round(w.mn)+'–'+Math.round(w.mx)+'°');if(w.psum!=null&&w.psum>0)parts.push('yağış '+(Math.round(w.psum*10)/10)+'mm');return parts.length?esc(parts.join(' · ')):'';}async function gWxAuto(){try{var u='https://api.open-meteo.com/v1/forecast?latitude='+SITE_LAT+'&longitude='+SITE_LON+'&hourly=temperature_2m,weathercode,precipitation,windspeed_10m'+'&daily=temperature_2m_max,temperature_2m_min,precipitation_sum'+'&timezone=Asia%2FBaku&past_days=14&forecast_days=16';var res=await fetch(u);var j=await res.json();var w2={};if(j&&j.daily&&j.daily.time){var dt=j.daily.time,dmx=j.daily.temperature_2m_max||[],dmn=j.daily.temperature_2m_min||[],dps=j.daily.precipitation_sum||[];for(var i=0;i<dt.length;i++){w2[dt[i]]={mx:dmx[i],mn:dmn[i],psum:dps[i]};}}if(j&&j.hourly&&j.hourly.time){var ht=j.hourly.time,hte=j.hourly.temperature_2m||[],hc=j.hourly.weathercode||[],hp=j.hourly.precipitation||[],hw=j.hourly.windspeed_10m||[];for(var k=0;k<ht.length;k++){var iso=ht[k].slice(0,10),hh=parseInt(ht[k].slice(11,13),10);if(!w2[iso])w2[iso]={};var slot=(hh===8?'morn':(hh===13?'noon':(hh===18?'eve':null)));if(slot)w2[iso][slot]={t:hte[k],c:hc[k],p:hp[k],w:hw[k]};}}if(Object.keys(w2).length){w2._t=new Date().toISOString();w2._src='open-meteo.com';WX=w2;try{await sset('wx',WX);}catch(e){}if(typeof renderGunluk==='function'&&document.getElementById('gunluk'))renderGunluk();if(typeof renderRapor==='function'&&document.getElementById('rapor'))renderRapor();}}catch(e){}}
+async function gunQuickAdd(zone,iso,item,deger,not_){
+  if(roBlock())return;
+  deger=+deger||0;
+  if(!deger){toast('Miktar gerekli');return;}
+  var fieldKey=(item==='ayakmont')?'ayak':item;
+  var rec={id:uid(),zone:zone,tarih:iso,not:not_||'',ts:Date.now()};
+  rec[fieldKey]=deger;
+  MQLOG.unshift(rec);
+  MQLOG.sort(function(a,b){return (b.tarih||'').localeCompare(a.tarih||'');});
+  var ok=await sset('mqlog:'+rec.id,rec);
+  if(ok===false){MQLOG=MQLOG.filter(function(r){return r.id!==rec.id;});toast('⚠ Kaydedilemedi, internet bağlantısını kontrol edip TEKRAR DENE');return;}
+  _icmalHkMap=null;_icmalHkMapKey=null;
+  try{await logAct(ZLBL[zone]+' hızlı giriş',dtr(iso)+' · '+item+' → '+deger);}catch(e){}
+  toast('Kaydedildi');
+  var o=document.getElementById('gcdov');if(o)o.remove();
+  try{if(document.getElementById('gunluk'))renderGunluk();}catch(e){}
+}
 function gunCellDuzelt(zone,iso,item){
   var NM={aplikasyon:'Aplikasyon',ayakmont:'Kolon',kiris:'Kiriş',asik:'Aşık',ruzgarlik:'Payanda',capraz:'Rüzgarlık',panel:'PV',
     og:'AG-OG Kablo Kanal',ogb:'OG Başlık',dc:'1x6 Solar Kablo',kosk:'Köşk İçi OG',inv:'İnverter/Trafo',cctv:'CCTV-Aydınlatma',test:'Testler',
@@ -4154,8 +4171,9 @@ function gunCellDuzelt(zone,iso,item){
       '<button class="btn ghost sm" onclick="document.getElementById(\'gcdov\').remove();editTR2LogEntry(\''+r.id+'\')">✏️ Düzelt</button>'+
       ((typeof ROLE!=='undefined'&&ROLE==='admin')?('<button class="btn ghost sm" onclick="document.getElementById(\'gcdov\').remove();delTR2LogEntry(\''+r.id+'\')">🗑</button>'):'')+'</div>';
   });
+  var MASA_ITEMS={ayakmont:1,kiris:1,asik:1,capraz:1,panel:1};
   if(!rowsHtml){
-    if(zone==='tr1'){
+    if(zone==='tr1'&&MASA_ITEMS[item]){
       var mevcutDeger=0;try{mevcutDeger=(typeof dayItemQty==='function'?(dayItemQty(iso)[item]||0):0);}catch(e){}
       var duz=(DUZELTME||[]).find(function(r){return r&&r.tarih===iso&&r.item===item;});
       rowsHtml='<div class="hint" style="margin-bottom:8px">Bu sayı, tek bir kayıt değil — Montaj\'daki masa işaretlemelerinin o güne kadarki farkından hesaplanıyor. Masa değiştirmeden, sadece bu günün raporlanan sayısını düzeltebilirsin:</div>'+
@@ -4166,7 +4184,12 @@ function gunCellDuzelt(zone,iso,item){
         '<div class="frow"><label class="gwide">Not (opsiyonel)<input type="text" id="dz_not" value="'+(duz?esc(duz.not||''):'')+'" placeholder="ör. yanlışlıkla işaretlendi"></label></div>'+
         '<div class="drow"><button class="btn" onclick="addDuzeltme(\''+iso+'\',\''+item+'\',fval(\'dz_deger\'),fval(\'dz_not\'))">💾 Düzeltmeyi kaydet</button></div>';
     }
-    else rowsHtml='<div class="hint">Kayıt bulunamadı (silinmiş olabilir).</div>';
+    else{
+      rowsHtml='<div class="hint" style="margin-bottom:8px">Bu gün/bölge için henüz kayıt yok. Yeni kayıt ekle:</div>'+
+        '<div class="frow"><label>'+NM[item]+' miktarı<input type="number" id="gqa_deger" min="0" value="0"></label></div>'+
+        '<div class="frow"><label class="gwide">Not (opsiyonel)<input type="text" id="gqa_not" placeholder=""></label></div>'+
+        '<div class="drow"><button class="btn" onclick="gunQuickAdd(\''+zone+'\',\''+iso+'\',\''+item+'\',fval(\'gqa_deger\'),fval(\'gqa_not\'))">+ Kaydet</button></div>';
+    }
   }
   ov.innerHTML='<div class="pjgsheet"><div class="pjgh"><b>'+ZLBL[zone]+' — '+dtr(iso)+' — '+NM[item]+'</b><small>Bu güne ait kayıtlar, düzeltmek için kaydın yanındaki ✏️</small></div>'+
     rowsHtml+
@@ -4241,12 +4264,12 @@ function gunIsTablosuHTML(){
     ITEMS.forEach(function(it){
       var rowTot=0,cells='';
       days.forEach(function(iso){var v=data[zc[0]][it[0]][iso]||0;rowTot+=v;
-        cells+='<td class="'+(isWe(iso)?'we':'')+(v?' style="font-weight:700;color:#1a56db;cursor:pointer;text-decoration:underline dotted" onclick="gunCellDuzelt(\''+zc[0]+'\',\''+iso+'\',\''+it[0]+'\')"':'')+'">'+(v||'')+'</td>';});
+        cells+='<td class="'+(isWe(iso)?'we':'')+'" style="cursor:pointer;'+(v?'font-weight:700;color:#1a56db;text-decoration:underline dotted':'color:#c7cbd1')+'" onclick="gunCellDuzelt(\''+zc[0]+'\',\''+iso+'\',\''+it[0]+'\')">'+(v||'·')+'</td>';});
       body+='<tr><td class="pjname">'+it[1]+'</td>'+cells+'<td class="pjtot">'+rowTot+'</td></tr>';
     });
   });
   return '<div class="tk2"><h3>📊 Trafo sahaları — iş kalemleri (gün gün)</h3>'+
-    '<div class="hint" style="margin:0 0 8px">Puantaj tablosu gibi: her satır bir iş kalemi, her sütun bir gün. Hangi gün hangi bölgede ne yapılmış tek bakışta görünür.</div>'+
+    '<div class="hint" style="margin:0 0 8px">Puantaj tablosu gibi: her satır bir iş kalemi, her sütun bir gün. Herhangi bir hücreye dokunarak (boş olsa bile) o gün için kayıt ekleyebilir veya düzeltebilirsin.</div>'+
     '<div class="pjscroll" style="max-height:50vh;width:100%;max-width:100%;overflow-x:auto;overflow-y:auto;display:block;box-sizing:border-box"><table class="pjtab" style="width:max-content"><thead>'+head+'</thead><tbody>'+(body||'<tr><td class="empty">Kayıt yok</td></tr>')+'</tbody></table></div></div>';
 }
 var MQ_FIELDS=['aplikasyon','ayak','kiris','asik','ruzgarlik','capraz','panel','klemp','string','inv','dc','ac','og','ogb','kosk','cctv','test'];
@@ -4287,9 +4310,25 @@ function gunZoneBreakdownHTML(iso,preQ1){
     var workers=workersAll[z];
     if(parts.length||workers.length)any=true;
     return '<div class="gzblock"><b style="color:#2f6fb0">'+ZLBL[z]+':</b> '+(parts.length?parts.join(', '):'<span style="color:#9aa3af">iş kaydı yok</span>')+
+      ' <button class="btn ghost sm" style="padding:1px 8px;font-size:11px" onclick="gunDiaryQuickAdd(\''+z+'\',\''+iso+'\')">+ ekle</button>'+
       (workers.length?('<br><span style="color:#6b7682;font-size:12px">👷 '+workers.length+' kişi: '+esc(workers.join(', '))+'</span>'):'<br><span style="color:#9aa3af;font-size:12px">çalışan yok</span>')+'</div>';
   }).join('');
   return any?('<div class="gdsec"><span class="gdl">Bölge bazlı — TR-1 / TR-2 / TR-3</span>'+blocks+'</div>'):'';
+}
+function gunDiaryQuickAdd(zone,iso){
+  var NM={aplikasyon:'Aplikasyon',ayakmont:'Kolon',kiris:'Kiriş',asik:'Aşık',ruzgarlik:'Payanda',capraz:'Rüzgarlık',panel:'PV',
+    og:'AG-OG Kablo Kanal (m)',ogb:'OG Başlık',dc:'1x6 Solar Kablo (m)',kosk:'Köşk İçi OG',inv:'İnverter/Trafo',cctv:'CCTV-Aydınlatma',test:'Testler',
+    klemp:'Klemp',string:'String (elektrik)',ac:'AC kablo (m)'};
+  var old=document.getElementById('gcdov');if(old)old.remove();
+  var ov=document.createElement('div');ov.id='gcdov';ov.className='pjgov';
+  var opts=Object.keys(NM).map(function(k){return '<option value="'+k+'">'+NM[k]+'</option>';}).join('');
+  ov.innerHTML='<div class="pjgsheet"><div class="pjgh"><b>'+ZLBL[zone]+' — '+dtr(iso)+' — Yeni kayıt</b></div>'+
+    '<div class="frow"><label>İş kalemi<select id="gqa_item">'+opts+'</select></label></div>'+
+    '<div class="frow"><label>Miktar<input type="number" id="gqa_deger2" min="0" value="0"></label></div>'+
+    '<div class="frow"><label class="gwide">Not (opsiyonel)<input type="text" id="gqa_not2" placeholder=""></label></div>'+
+    '<div class="drow"><button class="btn" onclick="gunQuickAdd(\''+zone+'\',\''+iso+'\',fval(\'gqa_item\'),fval(\'gqa_deger2\'),fval(\'gqa_not2\'))">+ Kaydet</button></div>'+
+    '<button class="pjgx" onclick="var o=document.getElementById(\'gcdov\');if(o)o.remove()">Kapat</button></div>';
+  document.body.appendChild(ov);
 }
 function gunlukDiary(){
   var byDay={};(GUNLUK||[]).forEach(function(r){if(r.tarih)(byDay[r.tarih]=byDay[r.tarih]||[]).push(r);});
@@ -4381,7 +4420,7 @@ async function renderGunluk(){
     '<button class="subtab'+(GZ_SUBTAB==='ilerleme'?' on':'')+'" onclick="gzSubTo(\'ilerleme\',this)">✅ İlerleme</button>'+
     '</div>';
   var ilerleme=_repSafe('İlerleme yüzdesi',function(){return '<h3 style="margin:0 0 8px">📈 İş İlerleme Durumu</h3>'+zoneIlerlemeHTML();});
-  var paneDiary='<div id="gzpane_diary" style="display:'+(GZ_SUBTAB==='diary'?'':'none')+'"><div class="tk2">'+ilerleme+'</div>'+zonePicker+isTablo+form+sum+hist+'</div>';
+  var paneDiary='<div id="gzpane_diary" style="display:'+(GZ_SUBTAB==='diary'?'':'none')+'"><div class="tk2">'+ilerleme+'</div>'+isTablo+form+sum+hist+'</div>';
   var paneIsler='<div id="gzpane_isler" style="display:'+(GZ_SUBTAB==='isler'?'':'none')+'">'+maliTablo+'</div>';
   var paneIlerleme='<div id="gzpane_ilerleme" style="display:'+(GZ_SUBTAB==='ilerleme'?'':'none')+'">'+_repSafe('Bugüne kadar yapılan',function(){return bugüneKadarYapilanHTML();})+resmiIlerlemeYuzdeHTML()+'</div>';
   el.innerHTML=subtabs+paneDiary+paneIsler+paneIlerleme;gFillKisi();
@@ -4998,7 +5037,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s318</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s320</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -5916,7 +5955,7 @@ function tanIsGiris(){
 
 async function backupAll(){try{
   if(typeof toast==='function')toast('Yedek hazırlanıyor…');
-  const dump={_app:'SHAMS1',_ver:'s318',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1',_ver:'s320',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pjz:','pja:','pjag:','pjp:','pjpg:','hc:','g:','gd:','arpay:','ppay:','hktah:'];
   for(const pre of pref){try{const o=await sgetAll(pre);for(const k in o){if(o[k]!=null)dump.data[k]=o[k];}}catch(e){}}
   const single=['wage','fx','fxlog','targets','mpct','cab:dc','cab:ac','cab:og','cab:kanal','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','zimmet','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
