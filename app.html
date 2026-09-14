@@ -807,7 +807,7 @@
     <div class="loginhero"><div class="lh-mark"><div class="lh-glow"></div><svg class="lh-svg" viewBox="0 0 100 100" width="120" height="120"><defs><linearGradient id="lhEnergy" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFCE00"/><stop offset="0.38" stop-color="#FF7A00"/><stop offset="0.7" stop-color="#FF2D1A"/><stop offset="1" stop-color="#E50E2A"/></linearGradient><linearGradient id="lhSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="lhClip"><path d="M57 8 L29 53 L45 53 L40 92 L73 45 L55 45 Z"/></clipPath></defs><g class="lh-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="#D8D6D0" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 11"/></g><circle cx="50" cy="50" r="33" fill="none" stroke="#ECEAE4" stroke-width="6"/><g clip-path="url(#lhClip)"><rect x="0" y="0" width="100" height="100" fill="url(#lhEnergy)"/><rect class="lh-sheen" x="-40" y="0" width="34" height="100" fill="url(#lhSheen)"/></g></svg></div><div class="lh-word"><span class="lh-a">AKSARAY</span><span class="lh-e">ENERJ<span class="lh-i">I</span></span></div></div>
     <div class="ey">AE · Proje Yönetim</div>
     <h1>Saha Yönetim Sayfası</h1>
-      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 322</div>
+      <div style="font:11px/1.4 var(--mono,monospace);color:#9a9aa5;margin-top:-4px">sürüm 324</div>
     
     <div class="rlabel">Giriş türü</div>
     <div class="roles">
@@ -833,7 +833,7 @@
 </div>
 
 <div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#E5484D;color:#fff;font:12px/1.45 monospace;padding:8px 12px;white-space:pre-wrap"></div><script>(function(){function sh(t){var b=document.getElementById("errbar");if(b){b.style.display="block";b.textContent="⚠ "+t+"  (dokun→kapat)";b.onclick=function(){b.style.display="none";};}}window.addEventListener("error",function(e){sh("JS hata: "+(e.message||(e.error&&e.error.message)||"?")+(e.lineno?(" @"+e.lineno):""));});window.addEventListener("unhandledrejection",function(e){sh("Hata: "+((e.reason&&e.reason.message)||e.reason||"?"));});})();</script>
-<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 322 · dokun→güncelle</div>
+<div id="verbadge" onclick="forceUpdate()" title="Dokun: önbelleği temizle ve güncelle" style="position:fixed;left:10px;bottom:10px;z-index:56;font:10px/1.3 monospace;color:#8a8a95;background:#fff;border:1px solid #e6e6ec;border-radius:8px;padding:3px 8px;opacity:.9;cursor:pointer">SHAMS-1 · sürüm 324 · dokun→güncelle</div>
 <div id="app" class="hidden">
 <div class="wrap">
   <div class="top">
@@ -5050,7 +5050,7 @@ async function delCustomMat(id){if(roBlock())return;if(!confirm('Bu malzeme sili
 function renderUpBadge(){const b=document.getElementById('upbadge');if(!b)return;
   if(!UPCOUNT){b.style.display='none';return;}b.style.display='';
   const dt=UPLAST?new Date(UPLAST).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s322</b><br><span class="upd">'+dt+'</span>';}
+  b.innerHTML='⬆ Yükleme #'+UPCOUNT+' · <b>s324</b><br><span class="upd">'+dt+'</span>';}
 let KSUB=0;
 function kSub(n){KSUB=n;renderMontajScope(1);}
 function renderMontajScope(m){
@@ -5186,7 +5186,11 @@ function resmiKesintilerHTML(){
   var verilenAvans=122343.48,avansKesintiToplam=toplam(function(h){return h.avans;});
   var mekTotal=6989.84,mekKum=6904.36,elekTotal=6989.84,elekKum=2683.10,mekPF=20,elekPF=17;
   var mekHak=[4809.883,1660.587,395.095,38.80],elekHak=[0,0,607.02,2076.08];
-  return '<h3 style="margin:18px 0 6px">📄 Hakediş Belgesi</h3>'+
+  return '<h3 style="margin:0 0 6px">📑 TR-1 Sözleşme Bedeli</h3>'+
+    '<div class="gsum" style="margin:6px 0 16px"><div class="gscard"><span>Toplam Sözleşme Bedeli</span><b>258.624 $</b></div>'+
+    '<div class="gscard"><span>Mekanik Pay (%54,06)</span><b style="color:#2D6BE0">139.796,80 $</b></div>'+
+    '<div class="gscard"><span>Elektrik Pay (%45,94)</span><b style="color:#d97706">118.827,28 $</b></div></div>'+
+    '<h3 style="margin:18px 0 6px">📄 Hakediş Belgesi</h3>'+
     '<div class="hint" style="margin:0 0 8px">İmzalı hakediş raporlarındaki (05 Keşif Özeti) o dönemde <b>fiilen yapılan iş miktarı ve tutarı</b> — mekanik montaj birim fiyatı 20 $/kWp, elektrik 17 $/kWp.</div>'+
     '<div style="overflow:auto"><table class="gtbl"><thead><tr><th>İmalatın cinsi</th>'+hdrCols+'</tr></thead><tbody>'+
     '<tr><td>Mekanik Montaj</td>'+mekHak.map(function(v){return '<td class="num">'+tr(v)+' kWp<br><b>'+tr(v*mekPF)+' $</b></td>';}).join('')+'<td class="num">'+tr(mekKum)+' kWp<br><b style="color:var(--gnd)">'+tr(mekKum*mekPF)+' $</b></td></tr>'+
@@ -5194,6 +5198,27 @@ function resmiKesintilerHTML(){
     '<tr class="eptot"><td>Mekanik ilerleme</td><td colspan="'+(N+1)+'" class="num"><b>%'+((mekKum/mekTotal)*100).toFixed(1)+'</b> ('+tr(mekTotal-mekKum)+' kWp kaldı) · Elektrik <b>%'+((elekKum/elekTotal)*100).toFixed(1)+'</b></td></tr>'+
     '</tbody></table></div>'+
     '<div class="hint" style="margin:8px 0">Hakediş No.3\'ten itibaren elektrik montaj başladı ve yeni bölge "İlave İşler" sözleşmeye eklendi. Hakediş No.4\'te elektrik montaj %8,7\'den %38,4\'e sıçramıştır (607→2.683 kWp).</div>'+
+    '<h3 style="margin:18px 0 6px">⚖️ Sözleşme vs İlave İşler — Birim Fiyat Karşılaştırması</h3>'+
+    '<div class="hint" style="margin:0 0 8px">TR-1 sözleşme birim fiyatı ile İlave İşler\'in (TR-3) kendi resmi birim fiyatı karşılaştırması.</div>'+
+    '<div style="overflow:auto"><table class="gtbl"><thead><tr><th>Kalem</th><th>Sözleşme B.F.</th><th>İlave İş B.F.</th><th>Sonuç</th></tr></thead><tbody>'+
+    [['Kolon',11.10,11.12],['Kiriş',4.11,4.11],['Aşık',2.39,2.39],['Rüzgarlık',2.39,2.39],['Payanda',4.11,4.11],['PV',3.84,3.85]].map(function(r){
+      var ayni=Math.abs(r[1]-r[2])<0.03;
+      return '<tr><td>'+r[0]+'</td><td class="num">'+r[1].toFixed(2)+' $</td><td class="num">'+r[2].toFixed(2)+' $</td><td>'+(ayni?'<span style="color:var(--gnd);font-weight:700">AYNI</span>':'<span style="color:#dc2626;font-weight:700">FARKLI</span>')+'</td></tr>';
+    }).join('')+
+    '</tbody></table></div>'+
+    '<div class="hint" style="margin:8px 0">Altı kalemin de birim fiyatı sözleşme ile İlave İşler\'de pratik olarak aynı (Kiriş=Payanda 4,11$, Aşık=Rüzgarlık 2,39$ — "Üst Montaj" %31\'lik payı bu 4 kalem arasında bu şekilde bölüşülüyor).</div>'+
+    '<h3 style="margin:18px 0 6px">⚡ Elektrik Kalemleri — Keşif ve Gerçekleşme</h3>'+
+    '<div style="overflow:auto"><table class="gtbl"><thead><tr><th>Kalem</th><th>Metraj/B.F.</th><th>Toplam Keşif</th><th>Hakedişe Giren</th><th>Kalan</th></tr></thead><tbody>'+
+    '<tr><td>AG-OG Kablo Kanal Ve İşçiliği</td><td class="num">6.800 m · 5,24 $/m</td><td class="num">35.648,18 $</td><td class="num">7.863,57 $ (%22,1)</td><td class="num">27.784,61 $</td></tr>'+
+    '<tr><td>OG Başlık İşçiliği</td><td class="num">bilgi yok</td><td class="num">8.317,91 $</td><td class="num">0 $</td><td class="num">8.317,91 $</td></tr>'+
+    '<tr><td>1x6 Solar Kablo İşçiliği</td><td class="num">240.000 m · 0,08 $/m</td><td class="num">19.012,36 $</td><td class="num">2.455,76 $ (%12,9)</td><td class="num">16.556,60 $</td></tr>'+
+    '<tr><td>Köşk İçi OG Hücre/Pano</td><td class="num">bilgi yok</td><td class="num">13.071,00 $</td><td class="num">0 $</td><td class="num">13.071,00 $</td></tr>'+
+    '<tr><td>İnverter/Trafo Montajı</td><td class="num">bilgi yok</td><td class="num">20.200,64 $</td><td class="num">0 $</td><td class="num">20.200,64 $</td></tr>'+
+    '<tr><td>CCTV-Aydınlatma</td><td class="num">bilgi yok</td><td class="num">16.635,82 $</td><td class="num">0 $</td><td class="num">16.635,82 $</td></tr>'+
+    '<tr><td>Testler</td><td class="num">bilgi yok</td><td class="num">5.941,36 $</td><td class="num">0 $</td><td class="num">5.941,36 $</td></tr>'+
+    '<tr class="eptot"><td>TOPLAM ELEKTRİK</td><td></td><td class="num">118.827,28 $</td><td class="num">10.319,33 $</td><td class="num">108.507,95 $</td></tr>'+
+    '</tbody></table></div>'+
+    '<div class="hint" style="margin:8px 0">Bu elektrik dökümü Hakediş No.3 itibariyle — Hakediş No.4\'teki büyük sıçramanın (607→2.683 kWp) kalem bazlı resmi dökümü henüz elimizde yok, gelince güncellenecek.</div>'+
     '<h3 style="margin:18px 0 6px">💰 Kesintiler ve Mahsuplar</h3>'+
     '<div class="hint" style="margin:0 0 8px">İmzalı hakediş raporlarındaki (02 Y.Arka Kapak) tam döküm — A\'dan F\'ye KDV detayları, sonra Kesintiler ve Mahsuplar. Yalnızca sıfır olmayan kesinti kalemleri gösterilir.</div>'+
     '<div style="overflow:auto"><table class="gtbl"><thead><tr><th></th>'+hdrCols+'</tr></thead><tbody>'+
@@ -5210,6 +5235,14 @@ function resmiKesintilerHTML(){
     row('Kesintiler toplamı',function(h){return h.kesintiler;},true)+
     '<tr class="eptot"><td>Alt Yükleniciye Ödenecek (net) = E − Kesintiler</td>'+HAKS.map(function(h){return '<td class="num" style="color:var(--gnd)"><b>'+tr(h.net)+' $</b></td>';}).join('')+'<td class="num" style="color:var(--gnd)"><b>'+tr(toplam(function(h){return h.net;}))+' $</b></td></tr>'+
     '</tbody></table></div>'+
+    '<h3 style="margin:18px 0 6px">📋 Kesinti Kalemi İçerikleri</h3>'+
+    acc('Avans Kesintisi — 122.343,48 $ (toplam)','Verilen 3 avans ödemesinin (70.000 + 31.372,88 + 20.970,60 = 122.343,48 $) hakedişlerden geri kesintisi. Hakediş No.4 itibariyle avans tamamen mahsup edilmiştir — kalan avans 0 $.')+
+    acc('Nakit Teminat Kesintisi — %10','Sözleşme gereği her hakedişin brüt tutarının %10\'u nakit teminat olarak kesiliyor.')+
+    acc('SGK & Maaş Kesintisi — Hak.1: 6.342,16 $ · Hak.4: 16.051,34 $','Hakediş No.4\'teki kesinti, "01.09.2026 tarihine kadar olan SGK ve maaş ödemesi" olarak açıklanmış — MENSİS\'in personel adına doğrudan yaptığı SGK/maaş ödemesinin hakedişten geri kesintisidir (26.752,23 $ brüt tutar üzerinden, KDV dahil 16.051,34 $ kesinti). Bu kalemde kişi bazlı isim listesi resmi belgede yer almamaktadır — toplu tutar olarak bildirilmiştir.')+
+    acc('Yemek + Su + Elektrik Kullanım Bedeli — 4 hakediş toplamı: 17.594,90 $','Şantiyede sağlanan yemek, su ve elektrik kullanımının günlük puantaja dayalı kesintisi. Yemek Puantajı tablosu 16.06.2026\'dan itibaren günlük öğlen/akşam/ekstra adet olarak tutulmaktadır.')+
+    acc('Damga Vergisi Kesintisi — Sadece Hak.2: 2.389,33 $','Tek seferlik, sözleşme damga vergisi yükümlülüğü — Hakediş No.2\'de tahsil edilmiş, diğer dönemlerde tekrar kesilmemiştir.')+
+    acc('Harita Hizmet Bedeli — Hak.4: −523,36 $ (iade/kredi)','Hakediş No.4\'te bu kalem NEGATİF görünüyor — yani kesinti değil, tarafımıza bir iade/kredi olarak yansımış. Kümülatif 8.024 adetlik (TR-1+TR-3 kolon metrajı ile eşleşen) bir referansla hesaplanmış.')+
+    acc('Diğer (İlave İşler ilk dönem) — Sadece Hak.3: 6.092,97 $','İlave İşler kapsamının hakedişe ilk girdiği dönemde (Hak.3) tek seferlik bir kesinti/mahsup kalemi.')+
     '<h3 style="margin:18px 0 6px">💵 Avans Takibi — Resmi Belgeden</h3>'+
     '<div class="gsum" style="margin:6px 0"><div class="gscard"><span>Verilen Avans (1.+2.+3. ödeme)</span><b>'+tr(verilenAvans)+' $</b></div>'+
     '<div class="gscard"><span>Avans kesintisi (Hak1+Hak2+Hak3)</span><b>−'+tr(avansKesintiToplam)+' $</b></div>'+
@@ -5969,7 +6002,7 @@ function tanIsGiris(){
 
 async function backupAll(){try{
   if(typeof toast==='function')toast('Yedek hazırlanıyor…');
-  const dump={_app:'SHAMS1',_ver:'s322',_ts:Date.now(),data:{}};
+  const dump={_app:'SHAMS1',_ver:'s324',_ts:Date.now(),data:{}};
   const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pjz:','pja:','pjag:','pjp:','pjpg:','hc:','g:','gd:','arpay:','ppay:','hktah:'];
   for(const pre of pref){try{const o=await sgetAll(pre);for(const k in o){if(o[k]!=null)dump.data[k]=o[k];}}catch(e){}}
   const single=['wage','fx','fxlog','targets','mpct','cab:dc','cab:ac','cab:og','cab:kanal','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','zimmet','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
