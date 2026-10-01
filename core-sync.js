@@ -30,11 +30,12 @@
 //   onlarca yerde kullanılıyor) — ama her fonksiyona artık opsiyonel bir
 //   `zone` parametresi eklendi: verilmezse DAVRANIŞ ESKİSİYLE BİREBİR AYNI
 //   (TRZ okunur), verilirse TRZ'ye hiç dokunmadan o bölge sorgulanabilir.
-//   Yani riskli "flip-and-restore" paterni artık ZORUNLU DEĞİL — ama bu
-//   dosya onu kaldırmıyor, sadece alternatifini sunuyor. ensureHeavy()'nin
-//   kendisi bu dosyaya taşınmadı (bkz. proje dokümanı §8.3) — o hâlâ
-//   index.html'de, TRZ-flip ile çalışmaya devam ediyor. Onun yeni
-//   `sgetAllValuesBothZones` ile değiştirilmesi AYRI bir adım.
+//   Yani riskli "flip-and-restore" paterni artık ZORUNLU DEĞİL. ensureHeavy()
+//   kendisi bu dosyaya taşınmadı (bkz. proje dokümanı §8.3) — hâlâ
+//   index.html'de yaşıyor, ama içindeki 4 TRZ-flip-restore bloğu (gd:/arpay:/
+//   ppay:/hktah:) sürüm 327 itibariyle aşağıdaki `sgetAllValuesBothZones`
+//   primitifini kullanacak şekilde değiştirildi — TRZ artık o 4 noktada HİÇ
+//   mutate edilmiyor (bkz. proje dokümanı §10).
 //
 // index.html'de SİLİNMESİ GEREKEN karşılık gelen eski tanımlar (bu dosya
 // onların yerini alıyor): FBCONFIG, `let FBDB=null;`, loadScript, fbInit,
@@ -305,9 +306,10 @@ async function sgetAll(p, zone) {
   return o;
 }
 
-// ------------------------- yeni primitif (ileriye dönük) --------------------
-// Henüz hiçbir çağıran yok — ensureHeavy()'nin TRZ-flip bloklarını değiştirmek
-// için hazırlanan, state'siz bir yardımcı. Bkz. dosya başındaki not.
+// ------------------------- çapraz-bölge okuma primitifi ----------------------
+// Sürüm 327 itibariyle index.html'deki ensureHeavy()'nin 4 TRZ-flip bloğu
+// (gd:/arpay:/ppay:/hktah:) bunu çağırıyor — state'e dokunmadan iki bölgeyi
+// birleştirir. Bkz. dosya başındaki not ve proje dokümanı §10.
 
 async function sgetAllValues(prefix, zone) {
   const obj = await sgetAll(prefix, zone);
