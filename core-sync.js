@@ -325,6 +325,72 @@ async function sgetAllValuesBothZones(prefix, zone, otherZone) {
   return a.concat(b);
 }
 
+// ------------------------- toplu kök okuma (sürüm 328) -----------------------
+// index.html'deki reloadAll(), her açılışta/pollSync'te/her yazmadan sonra 44
+// AYRI sget/sgetAll çağrısı yapıyordu — her biri BACKEND==='fb' olduğunda ayrı
+// bir Firebase ağ gidiş-dönüşü. Bu, hem açılışta "veri geç geliyor" hissinin
+// hem de 84 kullanıcı × 25 saniyede bir tekrarlanan yükün (Spark/ücretsiz plan
+// üzerinde) olası kararsızlık kaynağının en güçlü adayı (bkz. proje dokümanı
+// §11). fbPath'in ürettiği yollar neredeyse hep TEK bir kök düğümün
+// ('shams1tr1', ve TRZ==='tr3' iken ayrıca 'shams1tr3') altında yaşıyor —
+// bu yüzden o kökü/kökleri TEK seferde çekip, 44 değeri ağa hiç çıkmadan
+// yerel bir önbellekten ayrıştırmak mümkün.
+//
+// fbFetchZoneCache(zone): 1 (veya zone==='tr3' ise 2) FBDB.ref(...).once()
+// çağrısı yapar, kök düğüm(ler)i olduğu gibi döner. Kök okuma başarısız
+// olursa null döner — çağıran taraf (reloadAll) bunu görüp eskisi gibi
+// tek-tek sget/sgetAll'a düşer, sessizce boş veri GÖSTERMEZ.
+//
+// sgetCached/sgetAllCached: aynı fbPath(k,zone) yolunu üretir (sget/sgetAll
+// ile BİREBİR aynı yol mantığı — path üretimi tek yerde, fbPath'te, kalıyor),
+// sonra o yolu ağa sormak yerine önbellekteki kök nesnede yürüyerek bulur.
+// Davranışları sget/sgetAll'ın BACKEND==='fb' koluyla bire bir aynı olmalı.
+
+async function fbFetchZoneCache(zone) {
+  if (BACKEND !== 'fb' || !FBDB) return null;
+  const cache = {};
+  try {
+    const sn1 = await FBDB.ref('shams1tr1').once('value');
+    cache.shams1tr1 = sn1.exists() ? (sn1.val() || {}) : {};
+  } catch (e) { return null; }
+  if (zone === 'tr3') {
+    try {
+      const sn3 = await FBDB.ref('shams1tr3').once('value');
+      cache.shams1tr3 = sn3.exists() ? (sn3.val() || {}) : {};
+    } catch (e) { cache.shams1tr3 = {}; }
+  }
+  return cache;
+}
+
+function _cacheLookup(cache, fullPath) {
+  const slash = fullPath.indexOf('/');
+  const rootKey = slash === -1 ? fullPath : fullPath.slice(0, slash);
+  const rest = slash === -1 ? '' : fullPath.slice(slash + 1);
+  let node = cache[rootKey];
+  if (node === undefined) return undefined;
+  if (rest === '') return node;
+  const parts = rest.split('/');
+  for (let i = 0; i < parts.length; i++) {
+    if (node === null || typeof node !== 'object') return undefined;
+    node = node[parts[i]];
+  }
+  return node;
+}
+
+function sgetCached(cache, k, zone) {
+  if (!cache) return null;
+  const v = _cacheLookup(cache, fbPath(k, zone));
+  return (v === undefined) ? null : v;
+}
+
+function sgetAllCached(cache, p, zone) {
+  if (!cache) return {};
+  const node = _cacheLookup(cache, fbPath(p.replace(/:$/, ''), zone));
+  const o = {};
+  if (node && typeof node === 'object') { for (const ck in node) o[p + ck] = node[ck]; }
+  return o;
+}
+
 // --------------------------- GitHub yedek havuzu -----------------------------
 
 function ghUrl() {
