@@ -367,9 +367,17 @@ function syncHead(){
 }
 
 /* ============================= RENDER ============================= */
-/* ---- görünürlük: Yönetici her şeyi, Saha sadece PERM ile açık olanları ---- */
-function PERM(){var d={gunluk:true,puantaj:true,ilerleme:false,odeme:true,od_maas:true,od_harcama:true,od_hakedis:false,od_taseron:false,ekip:true};var p=get('perm',null);if(p&&typeof p==='object'){for(var k in p)d[k]=p[k];}return d;}
-function canSee(key){ if(ROLE==='admin')return true; if(key==='bugun'||key==='daha')return true; return PERM()[key]!==false; }
+/* ---- görünürlük: portaldan gelen yetkilere göre ---- */
+var PIZIN=[]; /* portal: S.izinler.saha alt-yetkileri */
+function canSee(key){
+  if(ROLE==='admin')return true;              /* parasal/yönetici = tüm ekranlar */
+  if(key==='bugun'||key==='daha')return true;
+  var iz=PIZIN||[];
+  if(key==='gunluk')return iz.indexOf('gunluk')>=0;
+  if(key==='puantaj')return iz.indexOf('puantaj')>=0;
+  if(key==='odeme'||key==='od_maas'||key==='od_harcama')return iz.indexOf('odeme')>=0;
+  return false; /* ilerleme/hakediş/taşeron/işartışı/rapor sadece yöneticide */
+}
 function applyNav(){ try{document.querySelectorAll('#nav button').forEach(function(b){var t=b.getAttribute('data-t');b.style.display=canSee(t)?'':'none';});}catch(e){} }
 function go(t){ if(!canSee(t))t='bugun'; TAB=t;var ns=document.querySelectorAll('#nav button');for(var i=0;i<ns.length;i++)ns[i].classList.toggle('on',ns[i].getAttribute('data-t')===t);render();$('body').scrollTop=0;}
 function render(){ syncHead(); applyNav(); var b=$('body');
@@ -922,11 +930,13 @@ function seedIfEmpty(){ // sadece TR-1 ve veri yoksa
 function portalOturum(){ try{ var o=JSON.parse(localStorage.getItem('ae_portal')||'null'),S=o&&o.S;
   if(!S||Date.now()>=(o.son||0))return null;
   if(!(S.ka||(S.anahtarlar&&S.anahtarlar.saha)))return null;
-  return {S:S, admin:!!S.ka, user:(S.ad||S.isim||S.kad||S.k||(o&&o.kad)||(o&&o.u)||'')}; }catch(e){return null;} }
+  var iz=(S.izinler&&S.izinler.saha)||[];
+  var tamYetki=!!S.ka||iz.indexOf('parasal')>=0;  /* parasal = hakediş/ilerleme görür = yönetici seviyesi */
+  return {S:S, admin:tamYetki, izin:iz, user:(S.ad||S.isim||S.kad||S.k||(o&&o.kad)||(o&&o.u)||'')}; }catch(e){return null;} }
 function startApp(){
   var pt=portalOturum();
   if(!pt){ try{location.replace('/aesun/portal/?git=saha');}catch(e){} return; }
-  ROLE=pt.admin?'admin':'saha'; USER=pt.user||(pt.admin?'Yönetici':'Saha'); RO=false;
+  ROLE=pt.admin?'admin':'saha'; PIZIN=pt.izin||[]; USER=pt.user||(pt.admin?'Yönetici':'Saha'); RO=false;
   $('app').classList.remove('hidden'); $('sync').classList.remove('hidden');
   try{PROJE=localStorage.getItem('sh2:proje')||'tr1';}catch(e){}
   applyNav();
