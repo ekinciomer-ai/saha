@@ -390,13 +390,14 @@ function GIDER(){var out=[];keys('gd:').forEach(function(k){var v=get(k);if(v)ou
 function ARPAY(){var out=[];keys('arpay:').forEach(function(k){var v=get(k);if(v)out.push(v);});return out.sort(function(a,b){return (b.ts||0)-(a.ts||0);});}
 function HKTAH(){var out=[];keys('hktah:').forEach(function(k){var v=get(k);if(v)out.push(v);});return out.sort(function(a,b){return (a.tarih||'').localeCompare(b.tarih||'');});}
 function ISARTIS(){var out=[];keys('isartis:').forEach(function(k){var v=get(k);if(v)out.push(v);});return out.sort(function(a,b){return (a.tarih||'').localeCompare(b.tarih||'');});}
+function iaKey(id){var kk=null;keys('isartis:').forEach(function(k){var v=get(k);if(v&&v.id===id)kk=k;});return kk;}
 function isArtisTop(){var t=0;ISARTIS().forEach(function(r){(r.kalemler||[]).forEach(function(k){t+=+k.tutar||0;});});return t;}
 function isArtisDis(dis){var t=0;ISARTIS().forEach(function(r){(r.kalemler||[]).forEach(function(k){var it=null;allItems().forEach(function(x){if(x.id===k.id||x.ad===k.ad)it=x;});if(it&&it.dis===dis)t+=+k.tutar||0;});});return t;}
 function seedIsArtis(){ if(get('ia_seeded',null))return;
   keys('isartis:').forEach(function(k){var v=get(k);if(v&&v.by==='import')del(k);}); /* eski gömülü protokolü temizle */
   var K=[['kolon','Kolon',3430,38156.74],['kiris','Kiriş',2023,8305.30],['asik','Aşık',4536,10862.99],['ruzgarlik','Rüzgarlık',5592,13391.94],['payanda','Payanda',3262,13391.94],['pv','PV (Panel)',4862,18722.38]];
   var kal=K.map(function(x){return {id:x[0],ad:x[1],miktar:x[2],birim:'adet',bf:x[3]/x[2],tutar:x[3]};});
-  set('isartis:rev01',{id:'iarev01',protokolNo:'REV-01',tarih:'2026-09-01',aciklama:'Revize proje iş artışı (mekanik)',kalemler:kal,by:'import',ts:Date.now()});
+  set('isartis:iarev01',{id:'iarev01',protokolNo:'REV-01',tarih:'2026-09-01',aciklama:'Revize proje iş artışı (mekanik)',kalemler:kal,by:'import',ts:Date.now()});
   set('ia_seeded',1);
 }
 /* ---- RESMİ HAKEDİŞ DÖKÜMÜ (02 Y.Arka Kapak mantığı) ---- */
@@ -672,7 +673,9 @@ function vHakedis(){
   h+=hakDokum();
   if(isl.length){ h+='<div class="card"><div class="ch">İş artışı protokolleri<button class="tag" style="border:0" onclick="window.SH.openIsArtis()">+ Ekle</button></div>';
     isl.forEach(function(r){var tp=0;(r.kalemler||[]).forEach(function(k){tp+=+k.tutar||0;});
-      h+='<div class="gun"><div class="gd">Protokol '+esc(r.protokolNo||'—')+' · '+esc((r.tarih||'').split('-').reverse().join('.'))+'</div><div class="gt">'+esc(r.aciklama||'')+'</div>';
+      h+='<div class="gun"><div class="gd">Protokol '+esc(r.protokolNo||'—')+' · '+esc((r.tarih||'').split('-').reverse().join('.'))
+        +(ROLE==='admin'?('<span style="float:right;white-space:nowrap"><button class="tag ia_ed" data-id="'+esc(r.id)+'" style="border:0">düzenle</button> <button class="tag ia_sl" data-id="'+esc(r.id)+'" style="border:0;color:var(--red)">sil</button></span>'):'')
+        +'</div><div class="gt">'+esc(r.aciklama||'')+'</div>';
       (r.kalemler||[]).forEach(function(k){h+='<div class="row"><span>'+esc(k.ad)+(k.miktar?(' · '+n0(k.miktar)+' '+esc(k.birim||'')+(k.bf?(' × '+n2(k.bf)+' $'):'')):'')+'</span><b>'+n0(k.tutar)+' $</b></div>';});
       h+='<div class="row"><span style="font-weight:700">Protokol toplamı</span><b>'+n0(tp)+' $</b></div></div>';
     });
@@ -742,6 +745,8 @@ function bHakedis(){
   if($('hk_add'))$('hk_add').onclick=function(){hakedisForm(null);};
   document.querySelectorAll('#body .hk_ed').forEach(function(b){b.onclick=function(){hakedisForm(b.getAttribute('data-no'));};});
   document.querySelectorAll('#body .hk_sl').forEach(function(b){b.onclick=function(){if(ROLE!=='admin')return;if(!confirm('Hakediş No.'+b.getAttribute('data-no')+' silinsin mi?'))return;del('hak:'+b.getAttribute('data-no'));toast('Silindi');render();};});
+  document.querySelectorAll('#body .ia_ed').forEach(function(b){b.onclick=function(){isArtisForm(b.getAttribute('data-id'));};});
+  document.querySelectorAll('#body .ia_sl').forEach(function(b){b.onclick=function(){if(ROLE!=='admin')return;if(!confirm('Protokol silinsin mi?'))return;var k=iaKey(b.getAttribute('data-id'));if(k)del(k);toast('Silindi');render();};});
   document.querySelectorAll('#body .dH').forEach(function(b){b.onclick=function(){if(ROLE!=='admin')return;if(!confirm('Silinsin mi?'))return;keys('hktah:').forEach(function(k){var v=get(k);if(v&&v.id===b.getAttribute('data-id'))del(k);});toast('Silindi');render();};});
 }
 function hakForm(){ if(!roOk())return;
@@ -1014,23 +1019,26 @@ function isArtisSheet(){ var list=ISARTIS();
   if(list.length){h+='<div class="ch2">Protokoller ('+list.length+')</div>';
     list.forEach(function(r){var tp=0;(r.kalemler||[]).forEach(function(k){tp+=+k.tutar||0;});
       h+='<div class="gun"><div class="gd">Protokol '+esc(r.protokolNo||'—')+' · '+esc((r.tarih||'').split('-').reverse().join('.'))+'</div><div class="gt">'+esc(r.aciklama||'')+' · '+(r.kalemler||[]).length+' kalem · '+n0(tp)+' $</div>'
-        +(ROLE==='admin'?('<button class="del ia_del" data-id="'+esc(r.id)+'">sil</button>'):'')+'</div>';
+        +(ROLE==='admin'?('<div style="margin-top:6px"><button class="tag ia_ed2" data-id="'+esc(r.id)+'" style="border:0">düzenle</button> <button class="tag ia_del" data-id="'+esc(r.id)+'" style="border:0;color:var(--red)">sil</button></div>'):'')+'</div>';
     });
   }
   openSheet('İş Artışı',h);
-  $('ia_new').onclick=isArtisForm;
-  document.querySelectorAll('#sbox .ia_del').forEach(function(b){b.onclick=function(){if(ROLE!=='admin')return;if(!confirm('Silinsin mi?'))return;del('isartis:'+b.getAttribute('data-id'));isArtisSheet();render();};});
+  $('ia_new').onclick=function(){isArtisForm();};
+  document.querySelectorAll('#sbox .ia_ed2').forEach(function(b){b.onclick=function(){isArtisForm(b.getAttribute('data-id'));};});
+  document.querySelectorAll('#sbox .ia_del').forEach(function(b){b.onclick=function(){if(ROLE!=='admin')return;if(!confirm('Silinsin mi?'))return;var k=iaKey(b.getAttribute('data-id'));if(k)del(k);isArtisSheet();render();};});
 }
-function isArtisForm(){ if(!roOk())return;
+function isArtisForm(editId){ if(!roOk())return;
+  var ex=null; if(editId)ISARTIS().forEach(function(r){if(r.id===editId)ex=r;});
   var opts='<option value="">Kalem seç…</option>'+allItems().map(function(it){return '<option value="'+it.id+'">'+esc(it.ad)+' ('+esc(it.birim||'adet')+')</option>';}).join('');
-  var h='<div class="frow"><input id="ia_no" placeholder="Protokol no"><input id="ia_tarih" type="date" value="'+today()+'"></div>'
-    +'<input id="ia_acik" placeholder="Açıklama (ör. revize proje iş artışı)">'
+  var h='<div class="frow"><input id="ia_no" placeholder="Protokol no" value="'+(ex?esc(ex.protokolNo||''):'')+'"><input id="ia_tarih" type="date" value="'+(ex?esc(ex.tarih||today()):today())+'"></div>'
+    +'<input id="ia_acik" placeholder="Açıklama (ör. revize proje iş artışı)" value="'+(ex?esc(ex.aciklama||''):'')+'">'
     +'<div class="ch2">İş kalemleri · miktar × birim fiyat</div><div id="ia_lines"></div>'
     +'<div class="frow"><select id="ia_sel" style="flex:1.5">'+opts+'</select><input id="ia_mik" type="number" inputmode="decimal" placeholder="Miktar" style="flex:1"></div>'
     +'<div class="frow"><input id="ia_bf" type="number" inputmode="decimal" placeholder="Birim fiyat ($)" style="flex:1"><div id="ia_hes" class="gt" style="flex:1;align-self:center;text-align:right">= 0 $</div><button class="ghost" id="ia_add" style="flex:.7">+ Ekle</button></div>'
-    +'<button class="prim" id="ia_save" style="margin-top:12px">Protokolü kaydet</button>';
-  openSheet('Yeni iş artışı',h);
-  var lines=[];
+    +'<button class="prim" id="ia_save" style="margin-top:12px">Protokolü kaydet</button>'
+    +(ex?'<button class="ghost" id="ia_delp" style="margin-top:8px;color:var(--red)">Bu protokolü sil</button>':'');
+  openSheet(ex?'İş artışı düzenle':'Yeni iş artışı',h);
+  var lines=ex?(ex.kalemler||[]).map(function(k){return {id:k.id,ad:k.ad,miktar:k.miktar,birim:k.birim,bf:k.bf,tutar:k.tutar};}):[];
   function hes(){var m=+($('ia_mik').value||0)||0,b=+($('ia_bf').value||0)||0;$('ia_hes').textContent='= '+n0(m*b)+' $';}
   $('ia_sel').onchange=function(){var it=null,id=$('ia_sel').value;allItems().forEach(function(x){if(x.id===id)it=x;});if(it){$('ia_bf').value=it.bf||'';}hes();};
   $('ia_mik').oninput=hes; $('ia_bf').oninput=hes;
@@ -1044,8 +1052,10 @@ function isArtisForm(){ if(!roOk())return;
     lines.push({id:it.id,ad:it.ad,miktar:mik,birim:it.birim||'adet',bf:bf,tutar:mik*bf});
     $('ia_sel').value='';$('ia_mik').value='';$('ia_bf').value='';hes();redraw();};
   $('ia_save').onclick=function(){var no=($('ia_no').value||'').trim();if(!no){toast('Protokol no girin');return;}if(!lines.length){toast('En az bir kalem ekleyin');return;}
-    var rec={id:'ia'+Date.now(),protokolNo:no,tarih:$('ia_tarih').value||today(),aciklama:($('ia_acik').value||'').trim(),kalemler:lines,by:ROLE,ts:Date.now()};
-    set('isartis:'+rec.id,rec);closeSheet();toast('İş artışı kaydedildi');render();};
+    var rec={id:ex?ex.id:('ia'+Date.now()),protokolNo:no,tarih:$('ia_tarih').value||today(),aciklama:($('ia_acik').value||'').trim(),kalemler:lines,by:ROLE,ts:Date.now()};
+    var key=ex?(iaKey(ex.id)||('isartis:'+rec.id)):('isartis:'+rec.id);
+    set(key,rec);closeSheet();toast('İş artışı kaydedildi');render();};
+  if($('ia_delp'))$('ia_delp').onclick=function(){if(!confirm('Bu protokol silinsin mi?'))return;var k=iaKey(ex.id);if(k)del(k);closeSheet();toast('Silindi');render();};
 }
 /* ---- ESKİ YEDEĞİ İÇE AKTAR ---- */
 function _stripFoto(r){ if(r&&typeof r==='object'&&!Array.isArray(r)){var x={};for(var k in r)x[k]=r[k];if('foto'in x)x.foto='';if('img'in x)x.img='';return x;} return r; }
