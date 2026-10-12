@@ -178,6 +178,7 @@ details.acc[open]>summary{border-bottom:1.5px solid var(--line)}
 .ptbl{border-collapse:collapse;font-size:12px}
 .ptbl th{font:700 10px 'Barlow';color:#8a9099;padding:4px 2px;text-align:center;position:sticky;top:0;background:#fff}
 .ptbl th.sun,.ptbl td.sun{color:var(--red)}
+.ptbl th.tdy{color:#fff;background:var(--org)!important;border-radius:4px}
 .pname{position:sticky;left:0;background:#fff;z-index:2;text-align:left!important;min-width:94px;max-width:94px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600;padding:5px 7px!important;box-shadow:2px 0 4px rgba(0,0,0,.04)}
 .pc{width:27px;height:31px;text-align:center;border:1px solid #F0EEE8;font:700 12px 'Barlow Semi Condensed';position:relative;user-select:none;cursor:pointer}
 .pg{position:absolute;left:2px;bottom:2px;width:6px;height:6px;border-radius:50%}
@@ -309,7 +310,7 @@ var ISB='2026-08-24';
 var PROJE='tr1';            // aktif saha
 var ROLE='admin', USER='', RO=false;
 var D={};                   // bellekteki veri (tüm anahtarlar)
-var TAB='bugun', PYM='', PSUB='pers', OSUB='maas';
+var TAB='bugun', PYM='', PSUB='pers', OSUB='maas', PSHOW=false;
 var N8N_BASE=localStorage.getItem('sh2:n8n')||'https://xbay.app.n8n.cloud/webhook';
 
 /* ============================= YARDIMCI ============================= */
@@ -942,20 +943,33 @@ function gridPers(ym){
   var team=TEAM().filter(function(p){return p.aktif!==false;});
   var dim=new Date(+ym.slice(0,4),+ym.slice(5,7),0).getDate();
   if(!team.length)return '<div class="card"><div class="empty">Ekip listesi boş — Daha → Ekip\'ten personel ekleyin</div></div>';
-  var h='<div class="card" style="padding:10px"><div class="pwrap"><table class="ptbl"><thead><tr><th class="pname">Personel</th>';
-  for(var d=1;d<=dim;d++){var dow=new Date(+ym.slice(0,4),+ym.slice(5,7)-1,d).getDay();h+='<th class="'+(dow===0?'sun':'')+'">'+d+'</th>';}
-  h+='<th class="ptot">Gün</th></tr></thead><tbody>';
   var pj=PJ(),pjg=PJG();
-  team.forEach(function(p){ h+='<tr><td class="pname">'+esc(p.ad)+'</td>'; var tot=0;
-    for(var d=1;d<=dim;d++){var c=cell(pj,ym,p.id,d),m=pjMeta(c),gv=cell(pjg,ym,p.id,d),gc=gv&&pjgOf(gv)?pjgOf(gv).c:'';
-      tot+=m.v*payMult(p.id,ym+'-'+String(d).padStart(2,'0'));
-      h+='<td class="pc" data-p="'+esc(p.id)+'" data-d="'+d+'" style="background:'+(m.bg||'')+';color:'+m.fg+'">'+m.l+(gc?('<i class="pg" style="background:'+gc+'"></i>'):'')+'</td>';}
-    h+='<td class="ptot">'+(tot||'')+'</td></tr>';
-  });
-  h+='</tbody></table></div></div>';
-  var totYev=0;team.forEach(function(p){totYev+=persMaas(p.id).yev;});
-  h+='<div class="two"><div class="stat"><div class="k">Çalışan</div><div class="v">'+team.length+'</div><div class="s">aktif</div></div>'
-    +'<div class="stat mo"><div class="k">Yevmiye (toplam)</div><div class="v" style="font-size:20px">'+usd$(toAZN(totYev,wageCur(team[0]&&team[0].id)))+'</div><div class="s">işe başlangıçtan</div></div></div>';
+  /* gün sırası: içinde bulunduğumuz ayda bugünden geriye (bugün solda); geçmiş ayda son günden geriye */
+  var isCur=(ym===today().slice(0,7)), son=isCur?+today().slice(8,10):dim, days=[];
+  for(var d=son;d>=1;d--)days.push(d);
+  /* ay içi giriş sayısı + ay toplam gün */
+  function ayGiris(p){var n=0;for(var dd=1;dd<=dim;dd++){if(cell(pj,ym,p.id,dd))n++;}return n;}
+  function ayTot(p){var t=0;for(var dd=1;dd<=dim;dd++){var m=pjMeta(cell(pj,ym,p.id,dd));t+=m.v*payMult(p.id,ym+'-'+String(dd).padStart(2,'0'));}return t;}
+  var aktif=[],pasif=[];
+  team.forEach(function(p){ (ayGiris(p)>0?aktif:pasif).push(p); });
+  aktif.sort(function(a,b){return ayTot(b)-ayTot(a)||(a.ad||'').localeCompare(b.ad||'','tr');});
+  pasif.sort(function(a,b){return (a.ad||'').localeCompare(b.ad||'','tr');});
+  var rows=aktif.concat(PSHOW?pasif:[]);
+  function rowHtml(p){var h='<tr><td class="pname">'+esc(p.ad)+'</td>';
+    days.forEach(function(d){var c=cell(pj,ym,p.id,d),m=pjMeta(c),gv=cell(pjg,ym,p.id,d),gc=gv&&pjgOf(gv)?pjgOf(gv).c:'';
+      h+='<td class="pc" data-p="'+esc(p.id)+'" data-d="'+d+'" style="background:'+(m.bg||'')+';color:'+m.fg+'">'+m.l+(gc?('<i class="pg" style="background:'+gc+'"></i>'):'')+'</td>';});
+    return h+'<td class="ptot">'+(ayTot(p)||'')+'</td></tr>';
+  }
+  var h='<div class="card" style="padding:10px"><div class="pwrap"><table class="ptbl"><thead><tr><th class="pname">Personel</th>';
+  days.forEach(function(d){var dow=new Date(+ym.slice(0,4),+ym.slice(5,7)-1,d).getDay();h+='<th class="'+(d===son&&isCur?'tdy':(dow===0?'sun':''))+'">'+d+'</th>';});
+  h+='<th class="ptot">Gün</th></tr></thead><tbody>';
+  rows.forEach(function(p){h+=rowHtml(p);});
+  h+='</tbody></table></div>';
+  if(pasif.length)h+='<button class="more" id="ps_tog" style="margin-top:8px">'+(PSHOW?'▴ Çalışmayanları gizle':'▾ Çalışmayanları göster ('+pasif.length+')')+'</button>';
+  h+='</div>';
+  var totYev=0;aktif.forEach(function(p){totYev+=persMaas(p.id).yev;});
+  h+='<div class="two"><div class="stat"><div class="k">Bu ay çalışan</div><div class="v">'+aktif.length+'</div><div class="s">'+team.length+' kişiden</div></div>'
+    +'<div class="stat mo"><div class="k">Yevmiye (toplam)</div><div class="v" style="font-size:20px">'+usd$(toAZN(totYev,wageCur(aktif[0]&&aktif[0].id)))+'</div><div class="s">işe başlangıçtan</div></div></div>';
   return h;
 }
 function gridArac(ym){
@@ -982,6 +996,7 @@ function bPua(){
   $('pm_n').onclick=function(){PYM=ymShift(curYM(),1);render();};
   $('ps_pers').onclick=function(){PSUB='pers';render();};
   $('ps_arac').onclick=function(){PSUB='arac';render();};
+  if($('ps_tog'))$('ps_tog').onclick=function(){PSHOW=!PSHOW;render();};
   if($('ar_add'))$('ar_add').onclick=aracSheet;
   if($('ar_add0'))$('ar_add0').onclick=aracSheet;
   document.querySelectorAll('#body .pc:not(.pca)').forEach(function(c){var pid=c.getAttribute('data-p'),d=+c.getAttribute('data-d'),tm=null,mv=false;
