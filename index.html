@@ -1226,7 +1226,8 @@ function pickRole(r){document.querySelectorAll('.rolebtn').forEach(b=>b.classLis
 function doLogin(){const u=(document.getElementById('loginuser').value||'').trim();
   const p=(document.getElementById('pin').value||'');
   const list=USERS[PENDING_ROLE]||[];
-  const _n=s=>String(s).toLocaleLowerCase('tr').replace(/[çğıöşü]/g,c=>({ç:'c',ğ:'g',ı:'i',ö:'o',ş:'s',ü:'u'}[c]));const m=list.find(x=>_n(x.u)===_n(u)&&x.p===p);
+  /* giriş kaldırıldı: şifre sormaz — yazılan kullanıcı varsa onu, yoksa rolün ilk kullanıcısını al */
+  const m=list.find(x=>x.u.toLocaleLowerCase('tr')===u.toLocaleLowerCase('tr'))||list[0]||{u:(u||'Yönetici')};
   if(m){ROLE=PENDING_ROLE;CURUSER=m.u;document.getElementById('pinerr').textContent='';
     var _rem=document.getElementById('remember');SESS_ON=!(_rem&&!_rem.checked);
     clearSess();SESS_ON=!(_rem&&!_rem.checked);
@@ -6672,7 +6673,8 @@ var N8N={
   proje:function(){return 'SHAMS1-'+((typeof TRZ!=='undefined'&&TRZ)||'tr1');},
   cihaz:function(){var c=localStorage.getItem('shams1:n8n_dev');if(!c){c='c'+Math.floor(1000+Math.random()*9000);localStorage.setItem('shams1:n8n_dev',c);}return c;},
   skip:function(k){return !k||k.indexOf('matph:')===0||k.indexOf('zimph:')===0||k.indexOf('mig_')===0||k==='upc'||k==='uplast';},
-  dot:function(s){var el=document.getElementById('n8ndot');if(el){el.style.background=({ok:'#49d496',busy:'#FFC400',err:'#ff6a56',off:'#8a93a3'})[s]||'#8a93a3';}},
+  _st:'off',
+  dot:function(s){N8N._st=s||'off';var el=document.getElementById('n8ndc');var tx=document.getElementById('n8ntx');var c=({ok:'#49d496',busy:'#FFC400',err:'#ff6a56',off:'#8a93a3'})[s]||'#8a93a3';if(el)el.style.background=c;if(tx)tx.textContent='n8n '+({ok:'✓',busy:'…',err:'!',off:'·'})[s||'off'];},
   queue:function(k,v){ if(!N8N.on||N8N.skip(k))return; N8N.q[k]=v; clearTimeout(N8N._t); N8N._t=setTimeout(N8N.flush,1600); },
   flush:async function(){ if(!N8N.on||!navigator.onLine)return; var keys=Object.keys(N8N.q); if(!keys.length)return;
     var items=keys.map(function(k){return {anahtar:k,deger:JSON.stringify(N8N.q[k])};}); N8N.dot('busy');
@@ -6695,9 +6697,11 @@ var N8N={
   },
   ui:function(){ if(document.getElementById('n8ndot'))return;
     var d=document.createElement('div'); d.id='n8ndot';
-    d.style.cssText='position:fixed;left:10px;bottom:10px;width:13px;height:13px;border-radius:50%;background:#8a93a3;z-index:99999;box-shadow:0 0 0 3px rgba(0,0,0,.15);cursor:pointer';
-    d.title='n8n senkron'; d.onclick=N8N.panel; document.body.appendChild(d);
+    d.style.cssText='position:fixed;right:10px;bottom:48px;z-index:2147483000;display:flex;align-items:center;gap:6px;background:#111820;color:#fff;border-radius:999px;padding:5px 10px 5px 8px;font:600 11px/1 system-ui;box-shadow:0 4px 14px rgba(0,0,0,.35);cursor:pointer;user-select:none';
+    d.innerHTML='<span id="n8ndc" style="width:9px;height:9px;border-radius:50%;background:#8a93a3;display:inline-block"></span><span id="n8ntx">n8n ·</span>';
+    d.title='n8n senkron — ayarlar için tıkla'; d.onclick=N8N.panel; document.body.appendChild(d); N8N.dot(N8N._st);
   },
+  ensure:function(){ if(!document.getElementById('n8ndot')){ try{N8N.ui();}catch(e){} } },
   panel:function(){ var o=document.getElementById('n8npanel'); if(o){o.remove();return;}
     var w=document.createElement('div'); w.id='n8npanel';
     w.style.cssText='position:fixed;left:10px;bottom:30px;z-index:99999;background:#111820;color:#fff;border-radius:12px;padding:14px;width:280px;font:13px/1.45 system-ui;box-shadow:0 10px 30px rgba(0,0,0,.45)';
@@ -6714,7 +6718,7 @@ var N8N={
   start:function(){ N8N.ui(); if(!N8N.on){N8N.dot('off');return;}
     try{ if(typeof sset==='function'){ var _o=sset; sset=async function(k,v){ var r=await _o(k,v); try{N8N.queue(k,v);}catch(e){} return r; }; } }catch(e){}
     try{ if(typeof sdel==='function'){ var _d=sdel; sdel=async function(k){ var r=await _d(k); try{N8N.queue(k,null);}catch(e){} return r; }; } }catch(e){}
-    setTimeout(N8N.snapshot,4000); setInterval(N8N.snapshot,600000);
+    setTimeout(N8N.snapshot,4000); setInterval(N8N.snapshot,600000); setInterval(N8N.ensure,3000);
     window.addEventListener('online',function(){N8N.flush();});
     document.addEventListener('visibilitychange',function(){if(!document.hidden)N8N.flush();});
   }
