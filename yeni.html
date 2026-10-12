@@ -178,7 +178,6 @@ details.eng summary{color:var(--mut);font:600 13px 'Barlow';padding:6px 0;cursor
     <div class="r1">
       <div>
         <div class="pj" id="h_pj">SHAMS-1 GES</div>
-        <button class="zn" id="h_zn">TR-1 ▾</button>
       </div>
       <div class="hact">
         <button class="hb" id="h_sync" title="Yenile">↻</button>
@@ -299,17 +298,19 @@ var N8N={ dev:(localStorage.getItem('sh2:dev')||('c'+Math.floor(1000+Math.random
   schedule:function(ms){ clearTimeout(N8N.t); N8N.t=setTimeout(N8N.flush, ms||800); },
   /* bir anahtarı kalıcı kuyruğa koy (v===null → silme damgası) */
   queue:function(k,v){ if(N8N.skip(k))return; N8N.box[k]={d:(v===null?null:JSON.stringify(v)),ts:Date.now()}; N8N.saveBox(); N8N.dot(navigator.onLine?'busy':'off'); N8N.schedule(800); },
+  CHUNK:40,  /* büyük yüklemeler tek dev istek yerine parça parça → hep tam gider */
   flush:function(){
     if(N8N.sending)return;
-    var ks=Object.keys(N8N.box); if(!ks.length){N8N.dot('ok');return;}
+    var all=Object.keys(N8N.box); if(!all.length){N8N.dot('ok');return;}
     if(!navigator.onLine){N8N.dot('off');N8N.schedule(6000);return;}
+    var ks=all.slice(0,N8N.CHUNK);  /* bu turda yalnızca ilk parça */
     N8N.sending=true; N8N.dot('busy');
     var sent={}; var items=ks.map(function(k){ sent[k]=N8N.box[k].ts; return {anahtar:k,deger:N8N.box[k].d,sil:(N8N.box[k].d===null),ts:N8N.box[k].ts}; });
     fetch(N8N_BASE+'/saha-set',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({proje:N8N.proje(),cihaz:N8N.dev,items:items})})
       .then(function(r){ if(!r.ok)throw 0;
         ks.forEach(function(k){ if(N8N.box[k]&&N8N.box[k].ts===sent[k]) delete N8N.box[k]; }); /* bu arada gelen yeni yazılar kuyrukta kalır */
         N8N.saveBox(); N8N.sending=false; N8N.backoff=0;
-        if(N8N.pend()){N8N.dot('busy');N8N.schedule(400);} else N8N.dot('ok');
+        if(N8N.pend()){N8N.dot('busy');N8N.schedule(300);} else N8N.dot('ok');  /* kalan parçaları gönder */
       })
       .catch(function(){ N8N.sending=false; N8N.dot('err'); N8N.backoff=Math.min((N8N.backoff||1500)*2,30000); N8N.schedule(N8N.backoff); });
   },
@@ -389,7 +390,6 @@ function engAd(t){for(var i=0;i<ENGEL.length;i++)if(ENGEL[i][0]===t)return ENGEL
 /* ============================= HEADER ============================= */
 function syncHead(){
   $('h_pj').textContent='SHAMS-1 GES';
-  $('h_zn').textContent=(PROJE==='tr3'?'TR-3':'TR-1')+' ▾';
   var tot=cumUsd(),pct=SOZBEDEL>0?tot/SOZBEDEL*100:0;
   $('h_pct').textContent='%'+pct.toFixed(1).replace('.',',');
   $('h_bar').style.width=Math.min(100,pct)+'%';
@@ -495,7 +495,7 @@ function vGun(){
     +'<button class="prim" id="g_save">Kaydet</button></div>';
   h+='<div class="card"><div class="ch">Kayıtlar ('+list.length+')</div>';
   if(!list.length)h+='<div class="empty">Henüz kayıt yok</div>';
-  list.slice(0,80).forEach(function(g){
+  list.slice(0,400).forEach(function(g){
     var eb=g.engelVar?('<div><span class="eb">⚠ '+esc(engAd(g.engelTip))+(g.engelSure?(' · '+g.engelSure+'s'):'')+'</span></div>'):'';
     h+='<div class="gun"><div class="gd">'+esc(g.tarih||'')+' · '+esc(phAd(g.kalem))+(g.kisi?(' · '+g.kisi+' kişi'):'')+(g.ilerleme?(' · '+n0(g.ilerleme)):'')+'</div><div class="gt">'+esc(g.not||g.gozlem||'—')+'</div>'+eb
       +(ROLE==='admin'?('<button class="del" data-id="'+esc(g.id)+'">sil</button>'):'')+'</div>';
@@ -549,7 +549,7 @@ function vMaas(){
   });
   h+='</div><div class="card"><div class="ch">Son ödemeler ('+pays.length+')</div>';
   if(!pays.length)h+='<div class="empty">Henüz ödeme yok</div>';
-  pays.slice().sort(function(a,b){return (b.ts||0)-(a.ts||0);}).slice(0,40).forEach(function(r){
+  pays.slice().sort(function(a,b){return (b.ts||0)-(a.ts||0);}).forEach(function(r){
     h+='<div class="gun"><div class="gd">'+esc(byp[r.pid]||r.pid)+' · '+esc(ODTUR[r.tur]||r.tur||'')+'</div><div class="gt">'+n2(r.tutar)+' '+esc(r.pb||'AZN')+' · '+esc(r.tarih||'')+'</div>'
       +(ROLE==='admin'?('<button class="del dP" data-id="'+esc(r.id)+'">sil</button>'):'')+'</div>';
   });
@@ -569,7 +569,7 @@ function vHarca(){
   h+='<button class="prim" id="gd_new">+ Harcama ekle</button><div style="height:12px"></div>';
   h+='<div class="card"><div class="ch">Harcamalar ('+g.length+')</div>';
   if(!g.length)h+='<div class="empty">Henüz harcama yok</div>';
-  g.slice(0,60).forEach(function(r){var kt=gkatOf(r.kat);
+  g.forEach(function(r){var kt=gkatOf(r.kat);
     h+='<div class="gun"><div class="gd">'+kt.ic+' '+esc(kt.ad)+' · '+esc(r.tarih||'')+'</div><div class="gt">'+n2(r.tutar)+' '+esc(r.pb||'AZN')+(r.aciklama?(' · '+esc(r.aciklama)):'')+(r.foto?' 📎':'')+'</div>'
       +(r.foto?('<button class="ghost gd_ph" data-id="'+esc(r.id)+'" style="margin-top:6px;padding:5px 10px">Belgeyi gör</button>'):'')
       +(ROLE==='admin'?('<button class="del dG" data-id="'+esc(r.id)+'">sil</button>'):'')+'</div>';
@@ -652,7 +652,7 @@ function vTaseron(){
   h+='<button class="prim" id="ar_new">+ Taşeron ödemesi ekle</button><div style="height:12px"></div>';
   h+='<div class="card"><div class="ch">Ödemeler ('+ar.length+')</div>';
   if(!ar.length)h+='<div class="empty">Henüz kayıt yok (ör. Adem Arıcan)</div>';
-  ar.slice(0,60).forEach(function(r){
+  ar.forEach(function(r){
     h+='<div class="gun"><div class="gd">'+esc(r.taseron||'Taşeron')+' · '+esc(r.tarih||'')+'</div><div class="gt">'+n2(r.tutar)+' '+esc(r.pb||'USD')+(r.aciklama?(' · '+esc(r.aciklama)):'')+(r.foto?' 📎':'')+'</div>'
       +(r.foto?('<button class="ghost ar_ph" data-id="'+esc(r.id)+'" style="margin-top:6px;padding:5px 10px">Dekontu gör</button>'):'')
       +(ROLE==='admin'?('<button class="del dA" data-id="'+esc(r.id)+'">sil</button>'):'')+'</div>';
@@ -811,7 +811,7 @@ function vDaha(){
       +'<button class="mod" id="m_import"><span class="mic">📥</span><span class="mtx"><b>Eski yedeği içe aktar</b><small>Eski SHAMS verisini bu uygulamaya al</small></span></button>'
       +'<button class="mod" id="m_sync"><span class="mic">☁</span><span class="mtx"><b>Yedek / senkron</b><small>n8n tam yedek gönder</small></span></button></div>';
   }
-  h+='<div class="empty">Saha geçişi için üstteki "'+(PROJE==='tr3'?'TR-3':'TR-1')+' ▾"'+(adm?'':' · Hakediş yalnız yöneticide görünür')+'.</div>';
+  if(!adm)h+='<div class="empty">Hakediş ve parasal bilgiler yalnız yöneticide görünür.</div>';
   return h;
 }
 function bDaha(){
@@ -822,12 +822,6 @@ function bDaha(){
   if($('m_import'))$('m_import').onclick=function(){importSheet();};
   if($('m_team'))$('m_team').onclick=function(){teamSheet();};
   if($('m_arac'))$('m_arac').onclick=function(){aracSheet();};
-}
-function switchProje(p){ if(p===PROJE){closeSheet();go('bugun');return;} N8N.beacon(); /* eski projenin bekleyenlerini gönder */ PROJE=p; try{localStorage.setItem('sh2:proje',p);}catch(e){} D={}; N8N.loadBox(); closeSheet(); seedIfEmpty(); go('bugun'); N8N.pull(function(){ seedIfEmpty(); render(); toast((p==='tr3'?'TR-3':'TR-1')+' sahasına geçildi'); }); }
-function zonePicker(){ openSheet('Saha seç','<div class="gt" style="margin-bottom:10px">Her saha ayrı veri tutar (personel, puantaj, hakediş, ödeme).</div>'
-   +'<button class="mod" id="z_tr1"><span class="mic">▣</span><span class="mtx"><b>TR-1 sahası</b><small>'+(PROJE==='tr1'?'● aktif':'geç')+'</small></span></button>'
-   +'<button class="mod" id="z_tr3"><span class="mic">▣</span><span class="mtx"><b>TR-3 sahası</b><small>'+(PROJE==='tr3'?'● aktif':'geç')+'</small></span></button>');
-  $('z_tr1').onclick=function(){switchProje('tr1');};$('z_tr3').onclick=function(){switchProje('tr3');};
 }
 function syncSheet(){ openSheet('n8n senkron','<div class="gt" style="margin-bottom:10px">Veri cihazda anında kaydedilir; n8n arka planda ortak kaynağa yazar (rapor/bildirim/yedek).</div><div class="ch2">Webhook</div><input id="n_url" value="'+esc(N8N_BASE)+'"><div class="frow" style="margin-top:10px"><button class="ghost" id="n_save" style="flex:1">Kaydet</button><button class="prim" id="n_snap" style="flex:1">Tümünü gönder</button></div>');
   $('n_save').onclick=function(){N8N_BASE=($('n_url').value||'').trim().replace(/\/$/,'');try{localStorage.setItem('sh2:n8n',N8N_BASE);}catch(e){}closeSheet();toast('Kaydedildi');};
@@ -962,7 +956,7 @@ function raporSheet(){
   var tah=0;HKTAH().forEach(function(r){tah+=toAZN(r.tutar,r.pb||'USD');});
   var r=gRate();var earnedAZN=tot*(r.usdazn||1);
   function rw(a,b){return '<div class="row"><span>'+a+'</span><b>'+b+'</b></div>';}
-  var h='<div style="font:600 13px Barlow;color:#9aa0a6;margin-bottom:10px">SHAMS-1 GES · '+(PROJE==='tr3'?'TR-3':'TR-1')+' · '+today()+'</div>';
+  var h='<div style="font:600 13px Barlow;color:#9aa0a6;margin-bottom:10px">SHAMS-1 GES · '+today()+'</div>';
   h+='<div class="ch2">İş ilerlemesi</div>'+rw('Toplam ilerleme','%'+pct.toFixed(1).replace('.',','))+rw('Mekanik','%'+disUsd('MEK').toFixed(0))+rw('Elektrik','%'+disUsd('ELK').toFixed(0));
   var iart=isArtisTop();
   h+='<div class="ch2">İşveren (hakediş)</div>'+rw('Sözleşme bedeli',n0(SOZBEDEL)+' $')+(iart?rw('İş artışı',' +'+n0(iart)+' $')+rw('Revize sözleşme',n0(SOZBEDEL+iart)+' $'):'')+rw('Hak edilen',n0(tot+iart)+' $')+rw('Tahsil edilen',usd$(tah))+rw('Kalan alacak',usd$(earnedAZN+iart*(gRate().usdazn||1)-tah));
@@ -995,14 +989,13 @@ function startApp(){
   if(!pt){ try{location.replace('/aesun/portal/?git=saha');}catch(e){} return; }
   ROLE=pt.admin?'admin':'saha'; PIZIN=pt.izin||[]; USER=pt.user||(pt.admin?'Yönetici':'Saha'); RO=false;
   $('app').classList.remove('hidden'); $('sync').classList.remove('hidden');
-  try{PROJE=localStorage.getItem('sh2:proje')||'tr1';}catch(e){}
+  PROJE='tr1'; try{localStorage.setItem('sh2:proje','tr1');}catch(e){}  /* tek birleşik veri — saha ayrımı yok */
   applyNav();
   N8N.loadBox();                 /* aktif projenin kalıcı kuyruğu */
   if(N8N.pend())N8N.schedule(300); /* önceki oturumdan bekleyen yazılar varsa gönder */
   seedIfEmpty(); go('bugun');    /* önce yerel veriyle anında aç (donma yok) */
   N8N.pull(function(){ seedIfEmpty(); render(); });  /* sonra ortak kaynaktan tazele */
   document.querySelectorAll('#nav button').forEach(function(b){b.onclick=function(){go(b.getAttribute('data-t'));};});
-  $('h_zn').onclick=function(){zonePicker();};
   $('h_sync').onclick=function(){N8N.pull(function(){render();toast('Yenilendi');});};
   $('h_out').onclick=function(){ try{location.replace('/aesun/portal/');}catch(e){location.reload();} };
   $('sbg').onclick=closeSheet;
