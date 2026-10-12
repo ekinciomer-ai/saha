@@ -769,10 +769,8 @@ function vDaha(){
   if(adm){
     h+='<div class="card"><div class="ch">Rapor & sözleşme</div>'
       +'<button class="mod" id="m_rapor"><span class="mic">📊</span><span class="mtx"><b>Saha raporu</b><small>İlerleme, hakediş, maliyet özeti</small></span></button>'
-      +'<button class="mod" id="m_isartis"><span class="mic">📈</span><span class="mtx"><b>İş Artışı</b><small>Ek iş / protokol — tarih, no, kalemler</small></span></button></div>';
-    h+='<div class="card"><div class="ch">Yönetici paneli</div>'
-      +'<button class="mod" id="m_perm"><span class="mic">🔒</span><span class="mtx"><b>Saha görünürlüğü</b><small>Saha kullanıcısı hangi ekranları görsün</small></span></button>'
-      +'<button class="mod" id="m_sync"><span class="mic">☁</span><span class="mtx"><b>n8n senkron</b><small>Bağlantı & tam yedek</small></span></button></div>';
+      +'<button class="mod" id="m_isartis"><span class="mic">📈</span><span class="mtx"><b>İş Artışı</b><small>Ek iş / protokol — tarih, no, kalemler</small></span></button>'
+      +'<button class="mod" id="m_sync"><span class="mic">☁</span><span class="mtx"><b>Yedek / senkron</b><small>n8n tam yedek gönder</small></span></button></div>';
   }
   h+='<div class="empty">Saha geçişi için üstteki "'+(PROJE==='tr3'?'TR-3':'TR-1')+' ▾"'+(adm?'':' · Hakediş yalnız yöneticide görünür')+'.</div>';
   return h;
