@@ -1112,6 +1112,25 @@ location.replace('/aesun/portal/?git=saha');})();
 #ltoggle{position:fixed;right:12px;bottom:14px;z-index:860;display:none;border:0;border-radius:999px;padding:12px 16px;background:linear-gradient(135deg,#E50E2A,#c40b22);color:#fff;font-weight:800;font-size:14px;box-shadow:0 6px 18px rgba(229,14,42,.4);cursor:pointer}
 #litetoast{position:fixed;left:50%;bottom:78px;transform:translateX(-50%) translateY(20px);z-index:2147483100;background:#141a21;color:#fff;padding:11px 18px;border-radius:999px;font-size:13.5px;font-weight:600;opacity:0;pointer-events:none;transition:.22s;box-shadow:0 6px 20px rgba(0,0,0,.3)}
 #litetoast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.lmodlist{display:flex;flex-direction:column;gap:8px}
+.lmod{display:flex;align-items:center;gap:12px;width:100%;border:1px solid #e7ebf0;background:#fff;border-radius:12px;padding:12px;cursor:pointer;text-align:left}
+.lmod:active{background:#f4f6f9}
+.lmic{width:38px;height:38px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;border-radius:10px;background:#f4f6f9;font-size:18px}
+.lmtx{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.25}
+.lmtx b{font-size:14px}
+.lmtx small{font-size:11.5px;color:#9aa3ad}
+.lmar{color:#c3cad3;font-size:18px;font-weight:700}
+.lmodnote{font-size:11.5px;color:#9aa3ad;margin-top:12px;line-height:1.4}
+.lhback{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.lhback b{font-size:16px;font-weight:800}
+.lhback span{width:60px}
+.lodp{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;border:0;border-top:1px solid #f1f3f6;background:none;padding:11px 0;cursor:pointer;text-align:left}
+.lodp:first-of-type{border-top:0}
+.lodn{display:flex;flex-direction:column;line-height:1.3;font-size:14px;font-weight:600}
+.lodn small{font-size:11px;color:#9aa3ad;font-weight:500}
+.lodk{display:flex;flex-direction:column;align-items:flex-end;font-size:14px;font-weight:800;white-space:nowrap}
+.lodk small{font-size:10px;color:#9aa3ad;font-weight:600}
+.lodinfo{margin:6px 0}
 @media(min-width:640px){#lbody{padding-left:max(14px,calc(50vw - 300px));padding-right:max(14px,calc(50vw - 300px))}}
 
 </style>
@@ -6891,6 +6910,7 @@ function build(){
    +'  <button data-t="gunluk"><span>✎</span>Günlük</button>'
    +'  <button data-t="malzeme"><span>▦</span>Malzeme</button>'
    +'  <button data-t="puantaj"><span>☷</span>Puantaj</button>'
+   +'  <button data-t="daha"><span>⋯</span>Daha</button>'
    +'</nav>'
    +'<div id="lsheet" class="loff"><div id="lsheetbg"></div><div id="lsheetbox"></div></div>';
   document.body.appendChild(root);
@@ -6901,7 +6921,38 @@ function build(){
   L.booted=true;
 }
 
-function go(t){ L.tab=t; try{document.querySelectorAll('#lnav button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-t')===t);});}catch(e){} render(); try{$('lbody').scrollTop=0;}catch(e){} }
+function go(t){ if(t==='daha'){ openMore(); return; } L.tab=t; try{document.querySelectorAll('#lnav button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-t')===t);});}catch(e){} render(); try{$('lbody').scrollTop=0;}catch(e){} }
+
+/* ---------- Daha fazla: tüm klasik modüller ---------- */
+var LMODS=[
+  {native:'odeme', ic:'💵', ad:'Ödemeler', ds:'Personel ödemeleri & kalan bakiye', admin:1},
+  {t:11,sub:'maas',  ic:'📅', ad:'Maaşlar (aylık)', ds:'Aylık maaş dökümü', admin:1},
+  {t:11,sub:'gider', ic:'💸', ad:'Giderler', ds:'Saha giderleri', admin:1},
+  {t:2, sub:null,    ic:'▤', ad:'Hakediş (detay)', ds:'Kalem kalem hakediş & kesinti', admin:1},
+  {t:6, sub:null,    ic:'📋', ad:'Sözleşme', ds:'Sözleşme bilgileri', admin:1},
+  {t:7, sub:null,    ic:'📅', ad:'İş Programı', ds:'Planlanan iş takvimi', admin:0},
+  {t:8, sub:null,    ic:'📊', ad:'Rapor', ds:'Raporlar & döküm', admin:0},
+  {t:10,sub:null,    ic:'⚡', ad:'Verimlilik', ds:'Ekip / iş verimliliği', admin:1},
+  {t:1, sub:null,    ic:'◫', ad:'Montaj (masa detayı)', ds:'1000 masa / ayak-kiriş-panel', admin:0},
+  {t:3, sub:null,    ic:'▦', ad:'Bilgi Bankası', ds:'Dokümanlar & notlar', admin:0}
+];
+function openMore(){
+  var admin=(typeof ROLE!=='undefined'&&ROLE==='admin');
+  var h='<div class="lmodlist">';
+  LMODS.forEach(function(m,i){ if(m.admin&&!admin)return;
+    h+='<button class="lmod" data-i="'+i+'"><span class="lmic">'+m.ic+'</span><span class="lmtx"><b>'+esc(m.ad)+'</b><small>'+esc(m.ds)+'</small></span><span class="lmar">›</span></button>';
+  });
+  h+='</div><div class="lmodnote">Bu ekranlar klasik görünümde açılır. Üstteki “⚡ Yeni görünüm” ile buraya dönersiniz.</div>';
+  openSheet('Daha fazla', h);
+  document.querySelectorAll('#lsheetbox .lmod').forEach(function(b){ b.onclick=function(){ var m=LMODS[+b.getAttribute('data-i')]; if(m.native){ closeSheet(); L.tab=m.native; try{document.querySelectorAll('#lnav button').forEach(function(x){x.classList.remove('on');});}catch(e){} render(); try{$('lbody').scrollTop=0;}catch(e){} } else { openModule(m); } }; });
+}
+function openModule(m){
+  closeSheet(); toClassic();
+  setTimeout(function(){
+    try{ if(typeof activateTab==='function')activateTab(m.t); else if(typeof tabTo==='function')tabTo(m.t); }catch(e){}
+    if(m.sub){ setTimeout(function(){ try{ var btn=document.querySelector("#gsub .subtab[onclick*=\"'"+m.sub+"'\"]"); if(typeof gTo==='function')gTo(m.sub,btn); }catch(e){} }, 120); }
+  }, 80);
+}
 
 function show(){ build(); var o=$('lite'); if(o){o.style.display='flex';} L.active=true; syncHead(); render(); }
 function hide(){ var o=$('lite'); if(o)o.style.display='none'; L.active=false; }
@@ -6933,6 +6984,7 @@ function render(){ if(!L.active)return; syncHead(); var b=$('lbody'); if(!b)retu
     else if(L.tab==='gunluk'){b.innerHTML=viewGunluk();bindGunluk();}
     else if(L.tab==='malzeme'){b.innerHTML=viewMalzeme();bindMalzeme();}
     else if(L.tab==='puantaj'){b.innerHTML=viewPuantaj();bindPuantaj();}
+    else if(L.tab==='odeme'){b.innerHTML=viewOdeme();bindOdeme();}
   }catch(e){ b.innerHTML='<div class="lcard">Bir sorun oluştu: '+esc(e&&e.message||e)+'</div>'; }
 }
 
@@ -7143,6 +7195,76 @@ function cellSheet(pid,d){
 /* ---------- alt sayfa (sheet) ---------- */
 function openSheet(ttl,html){ build(); var s=$('lsheet'); $('lsheetbox').innerHTML='<div class="lsh"><b>'+esc(ttl)+'</b><button id="lshx" class="lghost2">×</button></div><div class="lshbody">'+html+'</div>'; s.classList.remove('loff'); var x=$('lshx'); if(x)x.onclick=closeSheet; }
 function closeSheet(){ var s=$('lsheet'); if(s)s.classList.add('loff'); }
+
+/* ---------- ÖDEMELER (native) ---------- */
+var _odeHeavy=false;
+var ODTUR={maas:'Maaş',mesai:'Fazla mesai',avans:'Avans',tazminat:'Tazminat',diger:'Diğer'};
+function ensurePpay(){ if(_odeHeavy)return; _odeHeavy=true; try{ if(typeof ensureHeavy==='function'){ Promise.resolve(ensureHeavy()).then(function(){ if(L.tab==='odeme')render(); }).catch(function(){}); } }catch(e){} }
+function persKalanAZN(pid){ try{ var cur=(typeof wageCur==='function'?wageCur(pid):'AZN'); var M=(typeof persMaasTop==='function'?persMaasTop(pid):{toplam:0}); var od=(typeof persOdenen==='function'?persOdenen(pid):0); var hakAZN=(typeof toAZN==='function'?toAZN(M.toplam,cur):M.toplam); return {hak:M.toplam,hakAZN:hakAZN,od:od,kalan:hakAZN-od,cur:cur,M:M}; }catch(e){ return {hak:0,hakAZN:0,od:0,kalan:0,cur:'AZN',M:{}}; } }
+function money(azn){ try{ if(typeof gMoney==='function')return gMoney(azn); }catch(e){} return n0(azn)+' ₼'; }
+function viewOdeme(){
+  ensurePpay();
+  var pays=[]; try{pays=(typeof PPAY!=='undefined'?PPAY:[]).slice();}catch(e){}
+  var tot=0; try{pays.forEach(function(r){tot+=(typeof toAZN==='function'?toAZN(r.tutar,r.pb||'AZN',r.tarih):(+r.tutar||0));});}catch(e){}
+  var team=[]; try{team=(typeof TEAM!=='undefined'?TEAM:[]).filter(function(p){return p.aktif!==false||(typeof gPersDays==='function'&&gPersDays(p.id)>0);});}catch(e){}
+  var h='';
+  h+='<div class="lhback"><button class="lghost2" onclick="window.LITE.go(\'bugun\')">‹ Geri</button><b>Ödemeler</b><span></span></div>';
+  h+='<div class="lgrid2">'+card('Toplam ödenen',money(tot).split(' (')[0],pays.length+' kayıt','grn')+card('Personel',n0(team.length),'aktif','')+'</div>';
+  h+='<button class="lprim" id="od_new">+ Ödeme ekle</button><div style="height:12px"></div>';
+  h+='<div class="lcard"><div class="lch">Personel bakiye</div>';
+  if(!team.length)h+='<div class="lempty">Ekip listesi boş</div>';
+  team.sort(function(a,b){return (a.ad||'').localeCompare(b.ad||'','tr');}).forEach(function(p){
+    var k=persKalanAZN(p.id); var col=k.kalan>0.5?'lneg':'';
+    h+='<button class="lodp" data-p="'+esc(p.id)+'"><span class="lodn">'+esc(p.ad||p.id)+'<small>hak '+money(k.hakAZN).split(' (')[0]+' · ödenen '+money(k.od).split(' (')[0]+'</small></span>'
+      +'<span class="lodk '+col+'">'+money(k.kalan).split(' (')[0]+'<small>kalan</small></span></button>';
+  });
+  h+='</div>';
+  h+='<div class="lcard"><div class="lch">Son ödemeler ('+pays.length+')</div>';
+  if(!pays.length)h+='<div class="lempty">Henüz ödeme kaydı yok</div>';
+  var byp={}; try{(TEAM||[]).forEach(function(p){byp[p.id]=p.ad;});}catch(e){}
+  pays.slice(0,40).forEach(function(r){
+    h+='<div class="lgun"><div class="lgt">'+esc(byp[r.pid]||r.pid)+' · '+esc(ODTUR[r.tur]||r.tur||'')+'</div>'
+      +'<div class="lgx">'+n2(r.tutar)+' '+esc(r.pb||'AZN')+' · '+esc(r.tarih||'')+'</div>'
+      +((typeof ROLE!=='undefined'&&ROLE==='admin')?('<button class="ldel" data-id="'+esc(r.id)+'">sil</button>'):'')+'</div>';
+  });
+  h+='</div>';
+  return h;
+}
+function bindOdeme(){
+  var nb=$('od_new'); if(nb)nb.onclick=function(){payForm(null);};
+  document.querySelectorAll('#lbody .lodp').forEach(function(b){ b.onclick=function(){ payForm(b.getAttribute('data-p')); }; });
+  document.querySelectorAll('#lbody .ldel').forEach(function(b){ b.onclick=function(){ if(typeof ROLE==='undefined'||ROLE!=='admin')return; if(!confirm('Ödeme kaydı silinsin mi?'))return; var id=b.getAttribute('data-id'); try{ if(typeof PPAY!=='undefined')PPAY=PPAY.filter(function(x){return x.id!==id;}); if(typeof slist==='function'){ Promise.resolve(slist('ppay:')).then(function(keys){(keys||[]).forEach(function(k){ if(k.indexOf('ppay:'+id+'_')===0)sdel(k); });}); } }catch(e){} toast('Silindi'); render(); }; });
+}
+function payForm(pid){
+  if(!roOk())return;
+  var team=[]; try{team=(typeof TEAM!=='undefined'?TEAM:[]).filter(function(p){return p.aktif!==false||(typeof gPersDays==='function'&&gPersDays(p.id)>0);}).sort(function(a,b){return (a.ad||'').localeCompare(b.ad||'','tr');});}catch(e){}
+  var opt='<option value="">— personel —</option>'+team.map(function(p){return '<option value="'+esc(p.id)+'"'+(p.id===pid?' selected':'')+'>'+esc(p.ad||p.id)+'</option>';}).join('');
+  var turOpt=Object.keys(ODTUR).map(function(k){return '<option value="'+k+'">'+esc(ODTUR[k])+'</option>';}).join('');
+  var curOpt=['AZN','USD','TRY'].map(function(c){return '<option value="'+c+'">'+c+'</option>';}).join('');
+  openSheet('Ödeme ekle',
+    '<select id="op_pid">'+opt+'</select>'
+   +'<div id="op_info" class="lodinfo"></div>'
+   +'<div class="lch2">Tür / tarih</div><div class="lfrow"><select id="op_tur">'+turOpt+'</select><input id="op_tarih" type="date" value="'+today()+'"></div>'
+   +'<div class="lch2">Tutar</div><div class="lfrow"><input id="op_tutar" type="text" inputmode="decimal" placeholder="0"><select id="op_pb" style="max-width:90px">'+curOpt+'</select></div>'
+   +'<input id="op_not" placeholder="Not (opsiyonel)">'
+   +'<button id="op_save" class="lprim">Kaydet</button>');
+  var sel=$('op_pid');
+  function info(){ var id=(sel||{}).value; var e=$('op_info'); if(!e)return; if(!id){e.innerHTML='';return;} var k=persKalanAZN(id); try{var pb=$('op_pb');if(pb)pb.value=k.cur;}catch(_){}
+    e.innerHTML='<div class="lrow"><span>Toplam hak</span><b>'+money(k.hakAZN).split(' (')[0]+'</b></div><div class="lrow"><span>Ödenen</span><b>'+money(k.od).split(' (')[0]+'</b></div><div class="lrow"><span>Kalan</span><b class="'+(k.kalan>0.5?'lneg':'')+'">'+money(k.kalan).split(' (')[0]+'</b></div>';
+    try{ var t=$('op_tutar'); if(t&&!t.value&&k.kalan>0.5)t.value=Math.round(k.kalan*100)/100; }catch(_){}
+  }
+  if(sel){sel.onchange=info; if(pid)info();}
+  $('op_save').onclick=function(){
+    var id=(sel||{}).value; if(!id){toast('Personel seçin');return;}
+    var tur=($('op_tur')||{}).value||'maas'; var tarih=($('op_tarih')||{}).value||today();
+    var tutar=parseFloat((($('op_tutar')||{}).value||'0').replace(',','.'))||0;
+    var pb=($('op_pb')||{}).value||'AZN'; var nt=(($('op_not')||{}).value||'').trim();
+    if(!tutar){toast('Tutar girin');return;}
+    var rec={id:'pp'+Date.now(),pid:id,tur:tur,tarih:tarih,saat:'',tutar:tutar,pb:pb,not:(ODTUR[tur]||tur)+(nt?(' · '+nt):''),foto:'',by:(typeof ROLE!=='undefined'?ROLE:'')||'?',ts:Date.now()};
+    try{ if(typeof PPAY!=='undefined')PPAY.unshift(rec); if(typeof _PPSEQ==='undefined')window._PPSEQ=0; _PPSEQ=(_PPSEQ||0)+1; sset('ppay:'+rec.id+'_'+_PPSEQ,rec); if(typeof logAct==='function')logAct('odeme','ekle',rec.id); }catch(e){}
+    closeSheet(); toast('Ödeme kaydedildi'); render();
+  };
+}
 
 /* ===================== HAYATA GEÇİR ===================== */
 // klasik render'ı lite aktifken bastır (donma engeli), lite'ı tazele
