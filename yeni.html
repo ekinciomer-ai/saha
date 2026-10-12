@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
 <meta name="theme-color" content="#E8622A">
 <title>SHAMS · Saha</title>
+<script>
+/* Aksaray Enerji Portal girişi zorunlu — rol/yetki portaldan gelir, burada giriş yapılmaz */
+(function(){try{var o=JSON.parse(localStorage.getItem('ae_portal')||'null'),S=o&&o.S;
+if(S&&Date.now()<(o.son||0)&&(S.ka||(S.anahtarlar&&S.anahtarlar.saha)))return;}catch(e){}
+location.replace('/aesun/portal/?git=saha');})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
@@ -166,19 +172,6 @@ details.eng summary{color:var(--mut);font:600 13px 'Barlow';padding:6px 0;cursor
 </style>
 </head>
 <body>
-
-<div id="login">
-  <div class="lg">⚡</div>
-  <h1>SHAMS SAHA</h1>
-  <p>Aksaray Enerji · Saha Yönetim</p>
-  <div class="roles">
-    <button data-r="admin" class="on">Yönetici</button>
-    <button data-r="saha">Saha</button>
-  </div>
-  <div class="pin" id="pinwrap"><input id="pin" type="tel" inputmode="numeric" placeholder="• • • •" maxlength="6"></div>
-  <button class="go" id="loginbtn">Gir</button>
-  <div class="err" id="loginerr"></div>
-</div>
 
 <div id="app" class="hidden">
   <div id="hd">
@@ -927,36 +920,27 @@ function seedIfEmpty(){ // sadece TR-1 ve veri yoksa
     for(var k in seed){ if(get(k,null)==null) set(k,seed[k]); }
   }catch(e){}
 }
+/* rol/kullanıcı portal oturumundan (ae_portal) — burada giriş yok */
+function portalOturum(){ try{ var o=JSON.parse(localStorage.getItem('ae_portal')||'null'),S=o&&o.S;
+  if(!S||Date.now()>=(o.son||0))return null;
+  if(!(S.ka||(S.anahtarlar&&S.anahtarlar.saha)))return null;
+  return {S:S, admin:!!S.ka, user:(S.ad||S.isim||S.kad||S.k||(o&&o.kad)||(o&&o.u)||'')}; }catch(e){return null;} }
 function startApp(){
-  $('login').classList.add('hidden'); $('app').classList.remove('hidden'); $('sync').classList.remove('hidden');
-  RO=false;
+  var pt=portalOturum();
+  if(!pt){ try{location.replace('/aesun/portal/?git=saha');}catch(e){} return; }
+  ROLE=pt.admin?'admin':'saha'; USER=pt.user||(pt.admin?'Yönetici':'Saha'); RO=false;
+  $('app').classList.remove('hidden'); $('sync').classList.remove('hidden');
   try{PROJE=localStorage.getItem('sh2:proje')||'tr1';}catch(e){}
   applyNav();
   N8N.pull(function(){ seedIfEmpty(); go('bugun'); setTimeout(function(){N8N.snapshot&&N8N.flush();},2000); });
-  // ilk render hemen (pull beklemeden)
   seedIfEmpty(); go('bugun');
-  // nav
   document.querySelectorAll('#nav button').forEach(function(b){b.onclick=function(){go(b.getAttribute('data-t'));};});
   $('h_zn').onclick=function(){zonePicker();};
   $('h_sync').onclick=function(){N8N.pull(function(){render();toast('Yenilendi');});};
-  $('h_out').onclick=function(){if(confirm('Çıkış yapılsın mı?')){try{localStorage.removeItem('sh2:sess');}catch(e){}location.reload();}};
+  $('h_out').onclick=function(){ try{location.replace('/aesun/portal/');}catch(e){location.reload();} };
   $('sbg').onclick=closeSheet;
-  // "Daha" nav — 6. düğme yok; zn ile açılıyor. Alt menüye Daha ekle:
 }
-function doLogin(){
-  var pin=($('pin').value||'').trim();
-  if(ROLE==='admin'&&pin!=='1453'){ $('loginerr').textContent='Şifre hatalı'; return; }
-  USER=ROLE==='admin'?'Ömer':'Saha';
-  try{localStorage.setItem('sh2:sess',JSON.stringify({role:ROLE,user:USER,ts:Date.now()}));}catch(e){}
-  startApp();
-}
-
-/* login UI */
-document.querySelectorAll('#login .roles button').forEach(function(b){b.onclick=function(){ROLE=b.getAttribute('data-r');document.querySelectorAll('#login .roles button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');$('pinwrap').style.display=(ROLE==='saha')?'none':'block';$('loginerr').textContent='';};});
-$('loginbtn').onclick=doLogin;
-$('pin').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
-// oturum hatırla
-try{var s=JSON.parse(localStorage.getItem('sh2:sess')||'null');if(s&&s.role&&(Date.now()-s.ts<7*24*3600*1000)){ROLE=s.role;USER=s.user||'';startApp();}}catch(e){}
+startApp();
 
 window.SH={go:go,render:render,openIsArtis:isArtisSheet};
 })();
