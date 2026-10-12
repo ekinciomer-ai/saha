@@ -1226,7 +1226,7 @@ function pickRole(r){document.querySelectorAll('.rolebtn').forEach(b=>b.classLis
 function doLogin(){const u=(document.getElementById('loginuser').value||'').trim();
   const p=(document.getElementById('pin').value||'');
   const list=USERS[PENDING_ROLE]||[];
-  const m=list.find(x=>x.u.toLocaleLowerCase('tr')===u.toLocaleLowerCase('tr')&&x.p===p);
+  const _n=s=>String(s).toLocaleLowerCase('tr').replace(/[çğıöşü]/g,c=>({ç:'c',ğ:'g',ı:'i',ö:'o',ş:'s',ü:'u'}[c]));const m=list.find(x=>_n(x.u)===_n(u)&&x.p===p);
   if(m){ROLE=PENDING_ROLE;CURUSER=m.u;document.getElementById('pinerr').textContent='';
     var _rem=document.getElementById('remember');SESS_ON=!(_rem&&!_rem.checked);
     clearSess();SESS_ON=!(_rem&&!_rem.checked);
