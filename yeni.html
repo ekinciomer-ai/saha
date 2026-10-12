@@ -282,29 +282,60 @@ function del(k){ delete D[k]; try{localStorage.removeItem(lkey(k));}catch(e){} N
 function keys(prefix){ var out=[],seen={}; for(var kk in D){if(kk.indexOf(prefix)===0){out.push(kk);seen[kk]=1;}} try{for(var i=0;i<localStorage.length;i++){var sk=localStorage.key(i),pf='sh2:'+PROJE+':'; if(sk&&sk.indexOf(pf)===0){var kn=sk.slice(pf.length); if(kn.indexOf(prefix)===0&&!seen[kn]){out.push(kn);seen[kn]=1;}}}}catch(e){} return out; }
 function getAll(prefix){ var o={}; keys(prefix).forEach(function(k){o[k]=get(k);}); return o; }
 
-/* ---- n8n senkron (arka plan, kayıt ASLA buna bağlı değil) ---- */
-var N8N={ q:{}, t:null, dev:(localStorage.getItem('sh2:dev')||('c'+Math.floor(1000+Math.random()*9000))),
+/* ---- n8n senkron: KALICI KUYRUK (outbox) — kayıt ASLA ağa bağlı değil ----
+   İlke: her yazı önce cihaza (localStorage) anında yazılır → arayüz hiç donmaz.
+   Değişiklik ayrıca kalıcı bir kuyruğa (localStorage __outbox) düşer; sayfa
+   kapansa/çevrimdışı olsa bile kuyruk kalır ve bağlantı gelince yeniden denenir
+   → veri kaybı olmaz. pull, kuyrukta bekleyen yerel anahtarları ASLA ezmez. */
+var N8N={ dev:(localStorage.getItem('sh2:dev')||('c'+Math.floor(1000+Math.random()*9000))),
+  box:{}, t:null, backoff:0, sending:false,
   proje:function(){return 'SHAMS1-'+PROJE;},
-  skip:function(k){return !k||k==='sess';},
-  dot:function(s){var i=$('syncdot'),x=$('synctx');var c={ok:'#49d496',busy:'#FFC400',off:'#8a93a3',err:'#ff6a56'}[s]||'#8a93a3';if(i)i.style.background=c;if(x)x.textContent='n8n '+({ok:'✓',busy:'…',off:'·',err:'!'}[s]||'');},
-  queue:function(k,v){ if(N8N.skip(k))return; N8N.q[k]=v; clearTimeout(N8N.t); N8N.t=setTimeout(N8N.flush,1500); },
-  flush:function(){ if(!navigator.onLine){N8N.dot('off');return;} var ks=Object.keys(N8N.q); if(!ks.length)return;
-    var items=ks.map(function(k){return {anahtar:k,deger:JSON.stringify(N8N.q[k])};}); N8N.dot('busy'); var snap={}; ks.forEach(function(k){snap[k]=1;});
+  bkey:function(){return 'sh2:'+PROJE+':__outbox';},
+  skip:function(k){return !k||k==='sess'||String(k).indexOf('__')===0;},
+  loadBox:function(){ try{N8N.box=JSON.parse(localStorage.getItem(N8N.bkey())||'{}')||{};}catch(e){N8N.box={};} },
+  saveBox:function(){ try{localStorage.setItem(N8N.bkey(),JSON.stringify(N8N.box));}catch(e){} },
+  pend:function(){ return Object.keys(N8N.box).length; },
+  dot:function(s){var i=$('syncdot'),x=$('synctx');var c={ok:'#49d496',busy:'#FFC400',off:'#8a93a3',err:'#ff6a56'}[s]||'#8a93a3';if(i)i.style.background=c;if(x){var n=N8N.pend();x.textContent='n8n '+({ok:'✓',busy:'…',off:'·',err:'!'}[s]||'')+(n?(' '+n):'');}},
+  schedule:function(ms){ clearTimeout(N8N.t); N8N.t=setTimeout(N8N.flush, ms||800); },
+  /* bir anahtarı kalıcı kuyruğa koy (v===null → silme damgası) */
+  queue:function(k,v){ if(N8N.skip(k))return; N8N.box[k]={d:(v===null?null:JSON.stringify(v)),ts:Date.now()}; N8N.saveBox(); N8N.dot(navigator.onLine?'busy':'off'); N8N.schedule(800); },
+  flush:function(){
+    if(N8N.sending)return;
+    var ks=Object.keys(N8N.box); if(!ks.length){N8N.dot('ok');return;}
+    if(!navigator.onLine){N8N.dot('off');N8N.schedule(6000);return;}
+    N8N.sending=true; N8N.dot('busy');
+    var sent={}; var items=ks.map(function(k){ sent[k]=N8N.box[k].ts; return {anahtar:k,deger:N8N.box[k].d,sil:(N8N.box[k].d===null),ts:N8N.box[k].ts}; });
     fetch(N8N_BASE+'/saha-set',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({proje:N8N.proje(),cihaz:N8N.dev,items:items})})
-      .then(function(r){ if(r.ok){ks.forEach(function(k){if(snap[k])delete N8N.q[k];});N8N.dot(Object.keys(N8N.q).length?'busy':'ok');}else N8N.dot('err'); })
-      .catch(function(){N8N.dot('off');}); },
+      .then(function(r){ if(!r.ok)throw 0;
+        ks.forEach(function(k){ if(N8N.box[k]&&N8N.box[k].ts===sent[k]) delete N8N.box[k]; }); /* bu arada gelen yeni yazılar kuyrukta kalır */
+        N8N.saveBox(); N8N.sending=false; N8N.backoff=0;
+        if(N8N.pend()){N8N.dot('busy');N8N.schedule(400);} else N8N.dot('ok');
+      })
+      .catch(function(){ N8N.sending=false; N8N.dot('err'); N8N.backoff=Math.min((N8N.backoff||1500)*2,30000); N8N.schedule(N8N.backoff); });
+  },
+  /* kapanış/arka plan: kapanan sekme bile kuyruğu göndersin (onay beklemez; kuyruk temizlenmez) */
+  beacon:function(){ try{ var ks=Object.keys(N8N.box); if(!ks.length||!navigator.sendBeacon)return;
+    var items=ks.map(function(k){return {anahtar:k,deger:N8N.box[k].d,sil:(N8N.box[k].d===null),ts:N8N.box[k].ts};});
+    navigator.sendBeacon(N8N_BASE+'/saha-set', new Blob([JSON.stringify({proje:N8N.proje(),cihaz:N8N.dev,items:items})],{type:'application/json'})); }catch(e){} },
   pull:function(cb){ if(!navigator.onLine){cb&&cb();return;} N8N.dot('busy');
     fetch(N8N_BASE+'/saha-get?proje='+encodeURIComponent(N8N.proje())).then(function(r){return r.ok?r.json():null;}).then(function(rows){
-      try{ var arr=Array.isArray(rows)?rows:(rows&&rows.data)||[]; arr.forEach(function(row){ var k=row.anahtar,dv=row.deger; if(!k||N8N.skip(k))return; var val; try{val=JSON.parse(dv);}catch(e){val=dv;}
-        D[k]=val; try{localStorage.setItem(lkey(k),JSON.stringify(val));}catch(e){} }); }catch(e){}
-      N8N.dot('ok'); cb&&cb();
+      try{ var arr=Array.isArray(rows)?rows:(rows&&rows.data)||[]; arr.forEach(function(row){ var k=row.anahtar,dv=row.deger;
+        if(!k||N8N.skip(k))return; if(N8N.box[k])return; /* yerelde bekleyen değişikliği EZME */
+        var val; try{val=JSON.parse(dv);}catch(e){val=dv;}
+        if(val===null){ delete D[k]; try{localStorage.removeItem(lkey(k));}catch(e){} } /* silme damgası */
+        else { D[k]=val; try{localStorage.setItem(lkey(k),JSON.stringify(val));}catch(e){} }
+      }); }catch(e){}
+      N8N.dot(N8N.pend()?'busy':'ok'); cb&&cb();
     }).catch(function(){N8N.dot('off');cb&&cb();}); },
-  snapshot:function(){ var all=getAll(''); var ks=Object.keys(all).filter(function(k){return !N8N.skip(k);}); if(!ks.length)return;
-    for(var i=0;i<ks.length;i+=40){ (function(chunk){ var items=chunk.map(function(k){return {anahtar:k,deger:JSON.stringify(all[k])};});
-      fetch(N8N_BASE+'/saha-set',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({proje:N8N.proje(),cihaz:N8N.dev,items:items})}).catch(function(){}); })(ks.slice(i,i+40)); }
-  }
+  /* tam yedek: tüm anahtarları kalıcı kuyruğa koy → güvenli, yeniden denemeli gönderim */
+  snapshot:function(){ var all=getAll(''); var now=Date.now(); Object.keys(all).forEach(function(k){ if(!N8N.skip(k)) N8N.box[k]={d:JSON.stringify(all[k]),ts:now}; }); N8N.saveBox(); N8N.flush(); }
 };
 try{localStorage.setItem('sh2:dev',N8N.dev);}catch(e){}
+N8N.loadBox();
+window.addEventListener('online',function(){N8N.backoff=0;N8N.schedule(300);});
+window.addEventListener('offline',function(){N8N.dot('off');});
+document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='hidden')N8N.beacon(); else N8N.schedule(300); });
+window.addEventListener('pagehide',function(){N8N.beacon();});
 
 /* ============================= HESAPLAR ============================= */
 function TEAM(){return get('team',[])||[];}
@@ -792,7 +823,7 @@ function bDaha(){
   if($('m_team'))$('m_team').onclick=function(){teamSheet();};
   if($('m_arac'))$('m_arac').onclick=function(){aracSheet();};
 }
-function switchProje(p){ if(p===PROJE){closeSheet();go('bugun');return;} PROJE=p; try{localStorage.setItem('sh2:proje',p);}catch(e){} D={}; closeSheet(); N8N.pull(function(){ seedIfEmpty(); go('bugun'); toast((p==='tr3'?'TR-3':'TR-1')+' sahasına geçildi'); }); }
+function switchProje(p){ if(p===PROJE){closeSheet();go('bugun');return;} N8N.beacon(); /* eski projenin bekleyenlerini gönder */ PROJE=p; try{localStorage.setItem('sh2:proje',p);}catch(e){} D={}; N8N.loadBox(); closeSheet(); seedIfEmpty(); go('bugun'); N8N.pull(function(){ seedIfEmpty(); render(); toast((p==='tr3'?'TR-3':'TR-1')+' sahasına geçildi'); }); }
 function zonePicker(){ openSheet('Saha seç','<div class="gt" style="margin-bottom:10px">Her saha ayrı veri tutar (personel, puantaj, hakediş, ödeme).</div>'
    +'<button class="mod" id="z_tr1"><span class="mic">▣</span><span class="mtx"><b>TR-1 sahası</b><small>'+(PROJE==='tr1'?'● aktif':'geç')+'</small></span></button>'
    +'<button class="mod" id="z_tr3"><span class="mic">▣</span><span class="mtx"><b>TR-3 sahası</b><small>'+(PROJE==='tr3'?'● aktif':'geç')+'</small></span></button>');
@@ -966,8 +997,10 @@ function startApp(){
   $('app').classList.remove('hidden'); $('sync').classList.remove('hidden');
   try{PROJE=localStorage.getItem('sh2:proje')||'tr1';}catch(e){}
   applyNav();
-  N8N.pull(function(){ seedIfEmpty(); go('bugun'); setTimeout(function(){N8N.snapshot&&N8N.flush();},2000); });
-  seedIfEmpty(); go('bugun');
+  N8N.loadBox();                 /* aktif projenin kalıcı kuyruğu */
+  if(N8N.pend())N8N.schedule(300); /* önceki oturumdan bekleyen yazılar varsa gönder */
+  seedIfEmpty(); go('bugun');    /* önce yerel veriyle anında aç (donma yok) */
+  N8N.pull(function(){ seedIfEmpty(); render(); });  /* sonra ortak kaynaktan tazele */
   document.querySelectorAll('#nav button').forEach(function(b){b.onclick=function(){go(b.getAttribute('data-t'));};});
   $('h_zn').onclick=function(){zonePicker();};
   $('h_sync').onclick=function(){N8N.pull(function(){render();toast('Yenilendi');});};
