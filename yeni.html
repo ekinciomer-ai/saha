@@ -153,7 +153,14 @@ details.eng summary{color:var(--mut);font:600 13px 'Barlow';padding:6px 0;cursor
 #sync i{width:9px;height:9px;border-radius:50%;background:#8a93a3;display:inline-block}
 #toast{position:fixed;left:50%;bottom:120px;transform:translateX(-50%) translateY(16px);z-index:200;background:var(--ink);color:#fff;padding:11px 18px;border-radius:999px;font:600 13.5px 'Barlow';opacity:0;pointer-events:none;transition:.22s;box-shadow:0 6px 20px rgba(0,0,0,.3)}
 #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
-@media(min-width:620px){#body{padding-left:max(14px,calc(50vw - 296px));padding-right:max(14px,calc(50vw - 296px))}}
+@media(min-width:620px){
+  body{background:#EBE9E3}
+  #app{max-width:560px;margin:0 auto;background:var(--bg);box-shadow:0 0 50px rgba(0,0,0,.1);min-height:100vh}
+  #nav{left:50%;transform:translateX(-50%);width:100%;max-width:560px}
+  #sync{right:calc(50vw - 280px + 12px)}
+  #toast{bottom:120px}
+  #login{max-width:560px;margin:0 auto;box-shadow:0 0 50px rgba(0,0,0,.1)}
+}
 </style>
 </head>
 <body>
@@ -376,8 +383,24 @@ function render(){ syncHead(); var b=$('body');
 
 /* ---- BUGÜN ---- */
 function vBugun(){
-  var tgt=TGT[PROJE]; var g=GUN()[0];
+  var tgt=TGT[PROJE];
+  var tdIso=today(),ym=tdIso.slice(0,7),d=+tdIso.slice(8,10);
+  var A=['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'];
+  var dn=new Date(tdIso+'T00:00:00');
+  // bugünkü saha durumu
+  var pj=PJ(),ekip=0;TEAM().forEach(function(p){if(pjMeta(cell(pj,ym,p.id,d)).v>0)ekip++;});
+  var pja=PJA(),arc=0;ARAC().forEach(function(a){if(pjaMeta(cell(pja,ym,a.id,d)).v>0)arc++;});
+  var tdGun=GUN().filter(function(g){return g.tarih===tdIso;});
+  var tdHarca=GIDER().filter(function(r){return r.tarih===tdIso;}).reduce(function(s,r){return s+toAZN(r.tutar,r.pb||'AZN');},0);
   var h='';
+  h+='<div class="card" style="background:linear-gradient(135deg,#fff,#FFF7F1);border-color:#F3D9C4"><div style="font:600 13px Barlow;color:#9a5b09">'+A[dn.getDay()]+' · '+tdIso.split('-').reverse().join('.')+'</div>'
+    +'<div class="three" style="margin:12px 0 2px">'
+    +'<div class="mini" style="border-color:#F3D9C4"><div class="k">Sahada bugün</div><div class="v" style="color:#E8622A">'+(ekip||'—')+'<small style="font:600 12px Barlow;color:#9aa0a6"> kişi</small></div></div>'
+    +'<div class="mini" style="border-color:#F3D9C4"><div class="k">Araç</div><div class="v">'+(arc||'—')+'</div></div>'
+    +'<div class="mini" style="border-color:#F3D9C4"><div class="k">Harcama</div><div class="v" style="font-size:15px">'+(tdHarca?usd$(tdHarca):'—')+'</div></div></div>';
+  if(tdGun.length){tdGun.forEach(function(g){h+='<div class="row"><span>'+esc(phAd(g.kalem))+(g.kisi?(' · '+g.kisi+' kişi'):'')+'</span><b class="cond">'+(g.ilerleme?n0(g.ilerleme):'✓')+'</b></div>';});}
+  else h+='<div class="empty" style="padding:10px 0">Bugün henüz iş kaydı yok</div>';
+  h+='<div class="frow" style="margin-top:10px"><button class="prim" style="flex:1" onclick="SH.go(\'gunluk\')">Günü kaydet</button><button class="ghost" style="flex:1" onclick="SH.go(\'puantaj\')">Puantaj</button></div></div>';
   h+='<div class="two">'
     +'<div class="stat go"><div class="k">Mekanik</div><div class="v">%'+disUsd('MEK').toFixed(0)+'</div><div class="s">montaj işçiliği</div></div>'
     +'<div class="stat mo"><div class="k">Elektrik</div><div class="v">%'+disUsd('ELK').toFixed(0)+'</div><div class="s">kablo/pano/test</div></div></div>';
@@ -386,13 +409,9 @@ function vBugun(){
     +'<div><div class="mv">'+n0(tgt.masa)+'</div><div class="mk">Masa</div></div>'
     +'<div><div class="mv">'+n0(tgt.panel)+'</div><div class="mk">Panel</div></div>'
     +'<div><div class="mv">'+tgt.inv+'</div><div class="mk">İnverter</div></div></div>';
-  h+='<div class="card"><div class="ch">Hakediş kalemleri<span class="tag">'+n0(cumUsd())+' $</span></div>';
+  h+='<div class="card"><div class="ch">Hakediş<span class="tag">'+n0(cumUsd())+' $</span></div>';
   allItems().slice(0,4).forEach(function(it){h+='<div class="row"><span>'+esc(it.ad)+'</span><b class="cond">%'+itemPct(it).toFixed(0)+'</b></div>';});
   h+='<button class="more" onclick="SH.go(\'ilerleme\')">Tüm kalemler & hakediş</button></div>';
-  h+='<div class="card"><div class="ch">Son saha günlüğü<button class="tag" style="border:0" onclick="SH.go(\'gunluk\')">+ Ekle</button></div>';
-  if(!g)h+='<div class="empty">Henüz günlük kaydı yok</div>';
-  else h+='<div class="gun"><div class="gd">'+esc(g.tarih||'')+' · '+esc(phAd(g.kalem))+(g.kisi?(' · '+g.kisi+' kişi'):'')+'</div><div class="gt">'+esc((g.not||g.gozlem||'—')).slice(0,240)+'</div></div>';
-  h+='</div>';
   return h;
 }
 
