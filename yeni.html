@@ -364,8 +364,9 @@ window.addEventListener('pagehide',function(){N8N.beacon();});
 /* ============================= HESAPLAR ============================= */
 function TEAM(){return get('team',[])||[];}
 function teamGet(id){var t=TEAM();for(var i=0;i<t.length;i++)if(t[i].id===id)return t[i];return null;}
-function ILP(){return get('ilp',{})||{};}                 // kalem yüzdeleri {id:pct}
-function itemPct(it){var p=ILP()[it.id]; return Math.max(0,Math.min(100,+p||0));}
+function ILP(){return get('ilp',{})||{};}                 // {id: tamamlanan adet}  (metrajsız kalemde doğrudan %)
+function itemDone(it){return Math.max(0,+((ILP()[it.id])||0)||0);}   // girilen tamamlanan adet
+function itemPct(it){var d=itemDone(it); if(it&&it.mik&&it.mik>0)return Math.max(0,Math.min(100,d/it.mik*100)); return Math.max(0,Math.min(100,d));}
 function cumUsd(){var t=0;allItems().forEach(function(it){t+=bedel(it)*itemPct(it)/100;});return t;}
 function disUsd(dis){var s=0,w=0;allItems().forEach(function(it){if(it.dis===dis){s+=it.pur*itemPct(it);w+=it.pur;}});return w?s/w:0;}
 function gRate(){var fx=get('fx',{})||{};return {usdazn:+fx.usdazn||0,usdtry:+fx.usdtry||0};}
@@ -516,17 +517,17 @@ function grp(ttl,items,base,artis,open){
   var earned=0; items.forEach(function(it){earned+=bedel(it)*itemPct(it)/100;});
   var gp=base>0?earned/base*100:0;
   var h='<details class="acc"'+(open?' open':'')+'><summary><span class="accl"><b>'+esc(ttl)+'</b><small>'+n0(base)+' $'+(artis?(' · iş artışı +'+n0(artis)+' $'):'')+'</small></span><span class="accr">%'+gp.toFixed(0)+'<small>'+n0(earned)+' $</small></span></summary><div class="accb">';
-  items.forEach(function(it){var p=itemPct(it),u=bedel(it)*p/100;
+  items.forEach(function(it){var p=itemPct(it),u=bedel(it)*p/100,done=itemDone(it),hasM=it.mik&&it.mik>0;
     h+='<div class="pr"><div class="prt"><span>'+esc(it.ad)+(it.mik?(' <small style="color:#9aa0a6;font-weight:600">· '+n0(it.mik)+' '+esc(it.birim||'')+'</small>'):'')+'</span><small>%'+(it.pur*100).toFixed(2).replace('.',',').replace(',00','')+' · '+n0(u)+' $</small></div>'
       +'<div class="trk"><i class="'+(it.dis==='MEK'?'fm':'fe')+'" style="width:'+Math.min(100,p)+'%"></i></div>'
-      +'<div class="prx"><span class="prp">%'+p.toFixed(0)+'</span>'
-      +(ROLE==='admin'?('<input class="pedit" data-it="'+it.id+'" type="number" inputmode="numeric" min="0" max="100" value="'+(ILP()[it.id]||0)+'">'):'')
+      +'<div class="prx"><span class="prp">%'+p.toFixed(0)+(hasM?(' · '+n0(done)+' / '+n0(it.mik)+' '+esc(it.birim||'')):'')+'</span>'
+      +(ROLE==='admin'?('<input class="pedit" data-it="'+it.id+'" type="number" inputmode="numeric" min="0"'+(hasM?(' max="'+it.mik+'"'):' max="100"')+' value="'+done+'" placeholder="'+(hasM?'tamamlanan '+esc(it.birim||''):'%')+'">'):'')
       +'</div></div>';
   });
   return h+'</div></details>';
 }
 function bIler(){ if(ROLE!=='admin')return;
-  document.querySelectorAll('#body .pedit').forEach(function(inp){ inp.onchange=function(){ if(!roOk())return; var id=inp.getAttribute('data-it'); var v=Math.max(0,Math.min(100,+inp.value||0)); var m=ILP();m[id]=v;set('ilp',m); render(); }; });
+  document.querySelectorAll('#body .pedit').forEach(function(inp){ inp.onchange=function(){ if(!roOk())return; var id=inp.getAttribute('data-it'); var it=null;allItems().forEach(function(x){if(x.id===id)it=x;}); var mx=(it&&it.mik&&it.mik>0)?it.mik:100; var v=Math.max(0,Math.min(mx,+inp.value||0)); var m=ILP();m[id]=v;set('ilp',m); render(); }; });
 }
 
 /* ---- GÜNLÜK ---- */
