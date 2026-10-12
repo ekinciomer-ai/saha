@@ -6662,6 +6662,67 @@ function renderBilgi(){const el=document.getElementById('bilgi');if(!el)return;
   document.addEventListener('pointercancel',cancel,true);
   document.addEventListener('click',onclick,true);
 })();
+
+/* ================= n8n ENTEGRASYON (tek yönlü ayna · otomasyon için) ================= */
+(function(){ try{
+var N8N={
+  base:(localStorage.getItem('shams1:n8n_url')||'https://xbay.app.n8n.cloud/webhook').replace(/\/$/,''),
+  on: localStorage.getItem('shams1:n8n_off')!=='1',
+  q:{}, _t:null,
+  proje:function(){return 'SHAMS1-'+((typeof TRZ!=='undefined'&&TRZ)||'tr1');},
+  cihaz:function(){var c=localStorage.getItem('shams1:n8n_dev');if(!c){c='c'+Math.floor(1000+Math.random()*9000);localStorage.setItem('shams1:n8n_dev',c);}return c;},
+  skip:function(k){return !k||k.indexOf('matph:')===0||k.indexOf('zimph:')===0||k.indexOf('mig_')===0||k==='upc'||k==='uplast';},
+  dot:function(s){var el=document.getElementById('n8ndot');if(el){el.style.background=({ok:'#49d496',busy:'#FFC400',err:'#ff6a56',off:'#8a93a3'})[s]||'#8a93a3';}},
+  queue:function(k,v){ if(!N8N.on||N8N.skip(k))return; N8N.q[k]=v; clearTimeout(N8N._t); N8N._t=setTimeout(N8N.flush,1600); },
+  flush:async function(){ if(!N8N.on||!navigator.onLine)return; var keys=Object.keys(N8N.q); if(!keys.length)return;
+    var items=keys.map(function(k){return {anahtar:k,deger:JSON.stringify(N8N.q[k])};}); N8N.dot('busy');
+    try{ var c=new AbortController(),to=setTimeout(function(){c.abort();},9000);
+      var r=await fetch(N8N.base+'/saha-set',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({proje:N8N.proje(),cihaz:N8N.cihaz(),items:items}),signal:c.signal});
+      clearTimeout(to); if(r.ok){keys.forEach(function(k){delete N8N.q[k];}); N8N.dot(Object.keys(N8N.q).length?'busy':'ok');} else N8N.dot('err');
+    }catch(e){N8N.dot('off');}
+  },
+  allData:function(){ var o={}; try{
+    if(typeof BACKEND!=='undefined'&&BACKEND==='gh'&&typeof POOL==='object'&&POOL){ for(var k in POOL)o[k]=POOL[k]; }
+    else { for(var i=0;i<localStorage.length;i++){var kk=localStorage.key(i); if(kk&&kk.indexOf('shams1:')===0){var kn=kk.slice(7); try{o[kn]=JSON.parse(localStorage.getItem(kk));}catch(e){o[kn]=localStorage.getItem(kk);} }} }
+  }catch(e){} return o; },
+  snapshot:async function(){ if(!N8N.on||!navigator.onLine)return; var d=N8N.allData();
+    var keys=Object.keys(d).filter(function(k){return !N8N.skip(k);}); if(!keys.length)return; N8N.dot('busy');
+    for(var i=0;i<keys.length;i+=40){ var chunk=keys.slice(i,i+40).map(function(k){return {anahtar:k,deger:JSON.stringify(d[k])};});
+      try{ var c=new AbortController(),to=setTimeout(function(){c.abort();},12000);
+        await fetch(N8N.base+'/saha-set',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({proje:N8N.proje(),cihaz:N8N.cihaz(),items:chunk}),signal:c.signal}); clearTimeout(to);
+      }catch(e){N8N.dot('off');return;} }
+    N8N.dot('ok');
+  },
+  ui:function(){ if(document.getElementById('n8ndot'))return;
+    var d=document.createElement('div'); d.id='n8ndot';
+    d.style.cssText='position:fixed;left:10px;bottom:10px;width:13px;height:13px;border-radius:50%;background:#8a93a3;z-index:99999;box-shadow:0 0 0 3px rgba(0,0,0,.15);cursor:pointer';
+    d.title='n8n senkron'; d.onclick=N8N.panel; document.body.appendChild(d);
+  },
+  panel:function(){ var o=document.getElementById('n8npanel'); if(o){o.remove();return;}
+    var w=document.createElement('div'); w.id='n8npanel';
+    w.style.cssText='position:fixed;left:10px;bottom:30px;z-index:99999;background:#111820;color:#fff;border-radius:12px;padding:14px;width:280px;font:13px/1.45 system-ui;box-shadow:0 10px 30px rgba(0,0,0,.45)';
+    w.innerHTML='<b>n8n senkron</b><div style="opacity:.7;font-size:11px;margin:4px 0 10px">Veri n8n&#39;e aktarılır (rapor/bildirim/yedek için). Uygulamanın kendi kayıt sistemi aynen kalır.</div>'
+     +'<div style="font-size:11px;opacity:.7">Proje / cihaz</div><div style="margin-bottom:8px">'+N8N.proje()+' · '+N8N.cihaz()+'</div>'
+     +'<div style="font-size:11px;opacity:.7">Webhook</div><input id="n8nurl" value="'+N8N.base+'" style="width:100%;margin:2px 0 10px;padding:7px;border-radius:7px;border:1px solid #333;background:#0b0f14;color:#fff">'
+     +'<label style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><input type="checkbox" id="n8non" '+(N8N.on?'checked':'')+'> Senkron açık</label>'
+     +'<div style="display:flex;gap:8px"><button id="n8nsave" style="flex:1;padding:9px;border:none;border-radius:8px;background:#E50E2A;color:#fff;font-weight:700">Kaydet</button>'
+     +'<button id="n8nsnap" style="flex:1;padding:9px;border:1px solid #333;border-radius:8px;background:#0b0f14;color:#fff">Tümünü gönder</button></div>';
+    document.body.appendChild(w);
+    document.getElementById('n8nsave').onclick=function(){ N8N.base=(document.getElementById('n8nurl').value||'').trim().replace(/\/$/,''); N8N.on=document.getElementById('n8non').checked; localStorage.setItem('shams1:n8n_url',N8N.base); localStorage.setItem('shams1:n8n_off',N8N.on?'0':'1'); N8N.dot(N8N.on?'ok':'off'); w.remove(); if(N8N.on)N8N.snapshot(); };
+    document.getElementById('n8nsnap').onclick=function(){ w.remove(); N8N.snapshot(); };
+  },
+  start:function(){ N8N.ui(); if(!N8N.on){N8N.dot('off');return;}
+    try{ if(typeof sset==='function'){ var _o=sset; sset=async function(k,v){ var r=await _o(k,v); try{N8N.queue(k,v);}catch(e){} return r; }; } }catch(e){}
+    try{ if(typeof sdel==='function'){ var _d=sdel; sdel=async function(k){ var r=await _d(k); try{N8N.queue(k,null);}catch(e){} return r; }; } }catch(e){}
+    setTimeout(N8N.snapshot,4000); setInterval(N8N.snapshot,600000);
+    window.addEventListener('online',function(){N8N.flush();});
+    document.addEventListener('visibilitychange',function(){if(!document.hidden)N8N.flush();});
+  }
+};
+window.N8N=N8N;
+if(document.readyState!=='loading')N8N.start(); else document.addEventListener('DOMContentLoaded',N8N.start);
+}catch(e){ try{console.error('[n8n]',e);}catch(_){} } })();
+
 </script>
 <div id="dmodal" class="dmodal" style="display:none" onclick="if(event.target===this)closeDetay()"><div class="dbox"><div class="dhead"><b id="dtitle"></b><button class="dx" onclick="closeDetay()">✕</button></div><div id="dbody"></div></div></div>
 
