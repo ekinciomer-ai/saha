@@ -6006,23 +6006,53 @@ function tanIsGiris(){
   if(typeof modalShow==='function')modalShow('Tanı — kiriş / aşık / çapraz / beton',h);
 }
 
-async function backupAll(){try{
-  if(typeof toast==='function')toast('Yedek hazırlanıyor…');
-  const dump={_app:'SHAMS1',_ver:'s325',_ts:Date.now(),data:{}};
-  const pref=['tr1g:','log:','al:','dr:','tr1m:','pj:','pjg:','pjz:','pja:','pjag:','pjp:','pjpg:','pj2x:','hc:','g:','gd:','arpay:','ppay:','hktah:'];
-  for(const pre of pref){try{const o=await sgetAll(pre);for(const k in o){if(o[k]!=null)dump.data[k]=o[k];}}catch(e){}}
-  const single=['wage','wagehist','mesai','tazm','gunluk','wx','tr2data','fx','fxlog','targets','mpct','cab:dc','cab:ac','cab:og','cab:kanal','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','zimmet','parac','isbasi','cins:dc','cins:ac','cins:og','team','team_del','upc','uplast'];
-  for(const k of single){try{const v=await sget(k);if(v!=null)dump.data[k]=v;}catch(e){}}
-  const _json=JSON.stringify(dump);const _blob=new Blob([_json],{type:'application/json'});const _url=URL.createObjectURL(_blob);const _fname='SHAMS1_yedek_'+RAPDAY+'.json';
-  window._bkBlob=_blob;window._bkName=_fname;window._bkUrl=_url;
+/* Ortak indirme/paylaşma penceresi */
+function _bkIndir(dump,fname,baslik){
+  const _json=JSON.stringify(dump);const _blob=new Blob([_json],{type:'application/json'});const _url=URL.createObjectURL(_blob);
+  window._bkBlob=_blob;window._bkName=fname;window._bkUrl=_url;
   try{localStorage.setItem('lastbackup',Date.now());}catch(e){}
-  const _kb=Math.round(_json.length/1024),_n=Object.keys(dump.data).length;
-  const _share=(navigator.canShare&&navigator.share)?'<button class="btn" onclick="bkShare()">\uD83D\uDCE4 Payla\u015F / Kaydet</button>':'';
-  if(typeof modalShow==='function'){modalShow('Yedek haz\u0131r \u2014 '+_n+' kay\u0131t \u00B7 '+_kb+' KB',
-    '<div class="hint" style="margin-bottom:10px">Haz\u0131r. A\u015Fa\u011F\u0131dan <b>indir</b> ya da <b>payla\u015F</b>. Mobilde \u00ABindir\u00BB dosyay\u0131 a\u00E7arsa, \u00ABPayla\u015F / Kaydet\u00BB ile WhatsApp / Drive / Dosyalar\u2019a g\u00F6nderebilirsin.</div>'+
-    '<div class="drow" style="gap:8px;flex-wrap:wrap"><a class="btn" href="'+_url+'" download="'+_fname+'">\u2B07 \u0130ndir</a> '+_share+'</div>');
-  }else{const a=document.createElement('a');a.href=_url;a.download=_fname;document.body.appendChild(a);a.click();a.remove();}
-}catch(e){alert('Yedek hatas\u0131: '+e.message);}}
+  const _mb=(_json.length/1024/1024),_kb=Math.round(_json.length/1024),_boy=_mb>=1?_mb.toFixed(1)+' MB':_kb+' KB';
+  const _n=Object.keys(dump.data||{}).length;
+  const _share=(navigator.canShare&&navigator.share)?'<button class="btn" onclick="bkShare()">Paylas / Kaydet</button>':'';
+  if(typeof modalShow==='function'){modalShow(baslik+' - '+_n+' kayit ('+_boy+')',
+    '<div class="hint" style="margin-bottom:10px">Hazir. Asagidan indir ya da paylas. Mobilde Paylas/Kaydet ile WhatsApp / Drive / Dosyalara gonderebilirsin.</div>'+
+    '<div class="drow" style="gap:8px;flex-wrap:wrap"><a class="btn" href="'+_url+'" download="'+fname+'">Indir</a> '+_share+'</div>');
+  }else{const a=document.createElement('a');a.href=_url;a.download=fname;document.body.appendChild(a);a.click();a.remove();}
+}
+/* KAPSAMLI VERI YEDEGI - hicbir anahtar atlanmaz (fotograflar haric; ayri menude) */
+async function backupAll(){try{
+  if(typeof toast==='function')toast('Kapsamli yedek hazirlaniyor...');
+  const dump={_app:'SHAMS1',_ver:'s326',_ts:Date.now(),fotosuz:true,data:{},_fb:{}};
+  const isFoto=k=>k.indexOf('matph:')===0||k.indexOf('zimph:')===0;
+  try{ if(typeof POOL==='object'&&POOL) for(const k in POOL){ if(POOL[k]!=null&&!isFoto(k)) dump.data[k]=POOL[k]; } }catch(e){}
+  try{ if(typeof MEM==='object'&&MEM) for(const k in MEM){ if(MEM[k]!=null&&!isFoto(k)&&!(k in dump.data)) dump.data[k]=MEM[k]; } }catch(e){}
+  try{ for(let i=0;i<localStorage.length;i++){const sk=localStorage.key(i); if(sk&&sk.indexOf('shams1:')===0){const kn=sk.slice(7); if(!isFoto(kn)&&!(kn in dump.data)){try{dump.data[kn]=JSON.parse(localStorage.getItem(sk));}catch(e){dump.data[kn]=localStorage.getItem(sk);}}}} }catch(e){}
+  const pref=['tr1g:','tr3g:','log:','al:','dr:','tr1m:','tr3m:','pj:','pjg:','pjz:','pja:','pjag:','pjp:','pjpg:','pj2x:','hc:','g:','gd:','arpay:','ppay:','hktah:'];
+  for(const pre of pref){try{const o=await sgetAll(pre);for(const k in o){if(o[k]!=null&&!(k in dump.data))dump.data[k]=o[k];}}catch(e){}}
+  const single=['team','team_del','arac','wage','wagehist','mesai','tazm','gunluk','wx','tr2data','tr2log','mqlog','fx','fxlog','targets','mpct','cab:dc','cab:ac','cab:og','cab:kanal','cins:dc','cins:ac','cins:og','dcstr','ogb','matin','matuse','matkov','matcustom','matlink','zimmet','parac','isbasi','upc','uplast'];
+  for(const k of single){try{const v=await sget(k);if(v!=null&&!(k in dump.data))dump.data[k]=v;}catch(e){}}
+  try{ if(typeof BACKEND!=='undefined'&&BACKEND==='fb'&&typeof FBDB!=='undefined'&&FBDB){
+    for(const base of ['shams1tr1','shams1tr3']){ try{
+      const s=await FBDB.ref(base).once('value'); const v=s.val()||{};
+      for(const T in v){ if(T.indexOf('matph')===0||T.indexOf('zimph')===0)continue;
+        const yakalandi=(T in dump.data)||Object.keys(dump.data).some(k=>k.indexOf(T+':')===0);
+        if(!yakalandi){ dump._fb[base+'/'+T]=v[T]; }
+      }
+    }catch(e){} }
+  }}catch(e){}
+  for(const k in dump.data){ const r=dump.data[k]; if(r&&typeof r==='object'&&!Array.isArray(r)&&typeof r.foto==='string'&&r.foto){ dump.data[k]=Object.assign({},r,{foto:'',_foto:1}); } }
+  _bkIndir(dump,'SHAMS1_veri_'+RAPDAY+'.json','Kapsamli veri yedegi');
+}catch(e){alert('Yedek hatasi: '+e.message);}}
+/* FOTOGRAF YEDEGI - tum foto/dekont/fatura gorselleri ayri */
+async function backupFotos(){try{
+  if(typeof toast==='function')toast('Fotograf yedegi hazirlaniyor...');
+  const dump={_app:'SHAMS1_FOTO',_ver:'s326',_ts:Date.now(),data:{}};
+  for(const pre of ['matph:','zimph:']){ try{const o=await sgetAll(pre);for(const k in o){if(o[k])dump.data[k]=o[k];}}catch(e){} }
+  for(const pre of ['gd:','arpay:','ppay:']){ try{const o=await sgetAll(pre);for(const k in o){const r=o[k];if(r&&r.foto)dump.data['foto@'+k]=r.foto;}}catch(e){} }
+  try{ const mi=await sget('matin'); if(Array.isArray(mi)) mi.forEach(r=>{ if(r&&(r.img||r.foto)) dump.data['foto@matin:'+r.id]=r.img||r.foto; }); }catch(e){}
+  _bkIndir(dump,'SHAMS1_foto_'+RAPDAY+'.json','Fotograf yedegi');
+}catch(e){alert('Foto yedek hatasi: '+e.message);}}
+
 async function bkShare(){try{var f=new File([window._bkBlob],window._bkName,{type:'application/json'});if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:'SHAMS-1 Yedek'});}else{location.href=window._bkUrl;}}catch(e){try{location.href=window._bkUrl;}catch(_){}}}
 async function restoreBackup(file){if(!file)return;
   if(!confirm('DİKKAT: Yedekten geri yükleme mevcut bulut verisinin ÜZERİNE yazar. Devam edilsin mi?'))return;
@@ -6185,12 +6215,13 @@ function _renderRaporCore(){const el=document.getElementById('rapor');if(!el)ret
     ${_repSafe('Proje geneli özet',projeGeneliOzetHTML)}
     <div class="tk2 ceza adminonly"><h3>🛡 Veri Yedekleme & Güvenlik</h3>
       <div class="frow" style="gap:8px;flex-wrap:wrap;align-items:center">
-        <button class="btn" onclick="backupAll()">⬇ Yedek al (tüm veri · JSON)</button>
+        <button class="btn" onclick="backupAll()">⬇ Veri yedeği (tüm kayıtlar · JSON)</button>
+        <button class="btn" onclick="backupFotos()">🖼 Fotoğraf yedeği (foto/fatura/dekont)</button>
         <button class="btn ghost" onclick="tanIsGiris()">🔍 Tanı — kiriş / beton</button>
         <label class="tg" style="cursor:pointer;display:inline-flex;align-items:center">⬆ Yedekten geri yükle<input type="file" accept="application/json,.json" style="display:none" onchange="restoreBackup(this.files[0])"></label>
         <span class="hint" id="lastbk">${lastBackupTxt()}</span>
       </div>
-      <div class="hint">Veriler bulutta (Firebase) kalıcı ve her cihazda ortaktır. Yine de <b>her mesai sonu yedek almanız</b> önerilir — bir hata veya yanlış silmede yedekten dönebilirsiniz.</div>
+      <div class="hint"><b>Veri yedeği:</b> tüm kayıtları (ekip, puantaj, ödeme, hakediş, günlük…) eksiksiz alır — hiçbir anahtar atlanmaz, fotoğraflar hariç (dosya küçük kalsın diye). <b>Fotoğraf yedeği:</b> tüm fatura/dekont/foto görsellerini ayrı dosyada alır. Veriler Firebase'de kalıcı ve her cihazda ortak; yine de <b>her mesai sonu yedek almanız</b> önerilir.</div>
     </div>
     <div id="rapout">`+rapBody(RAPDAY,false)+`</div>`;}
 function kfDot(){return '………………';}
