@@ -194,7 +194,7 @@ details.eng summary{color:var(--mut);font:600 13px 'Barlow';padding:6px 0;cursor
     <div class="rail">
       <div class="lab"><span>Toplam ilerleme</span><span id="h_pct">%0</span></div>
       <div class="bar"><i id="h_bar" style="width:0%"></i></div>
-      <div class="big"><span id="h_usd">0 $</span> <small id="h_soz">/ 258.624 $ sözleşme</small></div>
+      <div class="big"><span>Mekanik <b id="h_mek">%0</b></span> <small style="margin-left:10px">Elektrik <b id="h_elk">%0</b></small></div>
     </div>
   </div>
   <div id="body"></div>
@@ -368,8 +368,8 @@ function syncHead(){
   var tot=cumUsd(),pct=SOZBEDEL>0?tot/SOZBEDEL*100:0;
   $('h_pct').textContent='%'+pct.toFixed(1).replace('.',',');
   $('h_bar').style.width=Math.min(100,pct)+'%';
-  $('h_usd').textContent=n0(tot)+' $';
-  $('h_soz').textContent='/ '+n0(SOZBEDEL)+' $ sözleşme';
+  if($('h_mek'))$('h_mek').textContent='%'+disUsd('MEK').toFixed(0);
+  if($('h_elk'))$('h_elk').textContent='%'+disUsd('ELK').toFixed(0);
 }
 
 /* ============================= RENDER ============================= */
@@ -401,7 +401,7 @@ function vBugun(){
     +'<div class="three" style="margin:12px 0 2px">'
     +'<div class="mini" style="border-color:#F3D9C4"><div class="k">Sahada bugün</div><div class="v" style="color:#E8622A">'+(ekip||'—')+'<small style="font:600 12px Barlow;color:#9aa0a6"> kişi</small></div></div>'
     +'<div class="mini" style="border-color:#F3D9C4"><div class="k">Araç</div><div class="v">'+(arc||'—')+'</div></div>'
-    +'<div class="mini" style="border-color:#F3D9C4"><div class="k">Harcama</div><div class="v" style="font-size:15px">'+(tdHarca?usd$(tdHarca):'—')+'</div></div></div>';
+    +'<div class="mini" style="border-color:#F3D9C4"><div class="k">İş kaydı</div><div class="v">'+(tdGun.length||'—')+'</div></div></div>';
   if(tdGun.length){tdGun.forEach(function(g){h+='<div class="row"><span>'+esc(phAd(g.kalem))+(g.kisi?(' · '+g.kisi+' kişi'):'')+'</span><b class="cond">'+(g.ilerleme?n0(g.ilerleme):'✓')+'</b></div>';});}
   else h+='<div class="empty" style="padding:10px 0">Bugün henüz iş kaydı yok</div>';
   h+='<div class="frow" style="margin-top:10px"><button class="prim" style="flex:1" onclick="SH.go(\'gunluk\')">Günü kaydet</button><button class="ghost" style="flex:1" onclick="SH.go(\'puantaj\')">Puantaj</button></div></div>';
@@ -413,9 +413,9 @@ function vBugun(){
     +'<div><div class="mv">'+n0(tgt.masa)+'</div><div class="mk">Masa</div></div>'
     +'<div><div class="mv">'+n0(tgt.panel)+'</div><div class="mk">Panel</div></div>'
     +'<div><div class="mv">'+tgt.inv+'</div><div class="mk">İnverter</div></div></div>';
-  h+='<div class="card"><div class="ch">Hakediş<span class="tag">'+n0(cumUsd())+' $</span></div>';
-  allItems().slice(0,4).forEach(function(it){h+='<div class="row"><span>'+esc(it.ad)+'</span><b class="cond">%'+itemPct(it).toFixed(0)+'</b></div>';});
-  h+='<button class="more" onclick="SH.go(\'ilerleme\')">Tüm kalemler & hakediş</button></div>';
+  h+='<div class="card"><div class="ch">İş kalemleri · ilerleme</div>';
+  allItems().slice(0,5).forEach(function(it){var pp=itemPct(it);h+='<div class="pr" style="margin-bottom:9px"><div class="prt"><span>'+esc(it.ad)+'</span><span class="prp">%'+pp.toFixed(0)+'</span></div><div class="trk"><i class="'+(it.dis==='MEK'?'fm':'fe')+'" style="width:'+Math.min(100,pp)+'%"></i></div></div>';});
+  h+='<button class="more" onclick="SH.go(\'ilerleme\')">Tüm kalemler</button></div>';
   return h;
 }
 
