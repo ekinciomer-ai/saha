@@ -325,6 +325,8 @@ function usd$(azn){var r=gRate();return r.usdazn?n0(azn/r.usdazn)+' $':n0(azn)+'
 function WAGE(){return get('wage',{})||{};}
 function wageOf(pid){var w=WAGE();return +((w[pid]!=null&&w[pid]!=='')?w[pid]:(w._def||0))||0;}
 function wageCur(pid){var w=WAGE();return (w._c&&w._c[pid])||w._wpb||'AZN';}
+function WAGEHIST(){return get('wagehist',{})||{};}
+function wageOnDate(pid,iso){var h=WAGEHIST()[pid];if(Array.isArray(h)&&h.length){var best=null;for(var i=0;i<h.length;i++){if(h[i].from<=iso&&(!best||h[i].from>best.from))best=h[i];}if(best)return +best.rate||0;}return wageOf(pid);}
 function PJ(){return get('pj',{})||{};}
 function PJG(){return get('pjg',{})||{};}
 function PJ2X(){return get('pj2x',{})||{};}
@@ -347,8 +349,8 @@ function isTR(pid){var p=teamGet(pid);return !!(p&&p.uyruk==='Türkiye');}
 function payMult(pid,iso){if(isCift(pid,iso))return 2;if(!isTR(pid))return 1;if(iso>='2026-08-01')return 1;return (new Date(iso+'T00:00:00').getDay()===0)?2:1;}
 function gPjv(pid,iso){var ym=iso.slice(0,7),d=+iso.slice(8,10);return pjMeta(cell(PJ(),ym,pid,d)).v;}
 function gDays(){var out=[],iso=ISB,t=today(),n=0;while(iso<=t&&n<800){out.push(iso);iso=dadd(iso,1);n++;}return out;}
-function yevSum(pid){var s=0,days=gDays();days.forEach(function(iso){var v=gPjv(pid,iso);if(v)s+=v*payMult(pid,iso)*wageOf(pid);});return s;}
-function mesSum(pid){var s=0,M=MESAI();for(var ym in M){var mp=(M[ym]&&M[ym][pid])||{};for(var d in mp){var saat=+mp[d]||0;if(!saat||d==='_ay')continue;s+=(wageOf(pid)/9)*1.5*saat;}if(mp['_ay'])s+=(wageOf(pid)/9)*1.5*(+mp['_ay']||0);}return s;}
+function yevSum(pid){var s=0,days=gDays();days.forEach(function(iso){var v=gPjv(pid,iso);if(v)s+=v*payMult(pid,iso)*wageOnDate(pid,iso);});return s;}
+function mesSum(pid){var s=0,M=MESAI();for(var ym in M){var mp=(M[ym]&&M[ym][pid])||{};for(var d in mp){var saat=+mp[d]||0;if(!saat||d==='_ay')continue;var dd=(''+d).length<2?('0'+d):(''+d);s+=(wageOnDate(pid,ym+'-'+dd)/9)*1.5*saat;}if(mp['_ay'])s+=(wageOnDate(pid,ym+'-15')/9)*1.5*(+mp['_ay']||0);}return s;}
 function persMaas(pid){var y=yevSum(pid),m=mesSum(pid),t=+(TAZM()[pid]||0)||0;return {yev:y,mes:m,tazm:t,top:y+m+t};}
 function persOdenen(pid){var t=0;PPAY().forEach(function(r){if(r.pid===pid)t+=toAZN(r.tutar,r.pb||'AZN');});return t;}
 function persKalan(pid){var M=persMaas(pid),od=persOdenen(pid),cur=wageCur(pid);var hak=toAZN(M.top,cur);return {hak:hak,od:od,kalan:hak-od,M:M,cur:cur};}
@@ -750,10 +752,10 @@ function cellSheet(pid,d){ if(!roOk())return; var ym=curYM(),p=teamGet(pid)||{};
 function vDaha(){
   var h='<div class="card"><div class="ch">Rapor</div>'
     +'<button class="mod" id="m_rapor"><span class="mic">📊</span><span class="mtx"><b>Saha raporu</b><small>İlerleme, hakediş, maliyet özeti</small></span></button></div>';
-  h+='<div class="card"><div class="ch">Diğer</div>';
-  h+='<button class="mod" id="m_team"><span class="mic">👷</span><span class="mtx"><b>Ekip</b><small>Personel ekle / çıkar</small></span></button>';
-  h+='<button class="mod" id="m_arac"><span class="mic">🚜</span><span class="mtx"><b>Araç / Ekipman</b><small>Araç ekle / çıkar (puantajda seçilir)</small></span></button>';
-  h+='<button class="mod" id="m_wage"><span class="mic">₺</span><span class="mtx"><b>Yevmiyeler</b><small>Günlük ücret / para birimi</small></span></button>';
+  h+='<div class="card"><div class="ch">Ekip</div>';
+  h+='<button class="mod" id="m_team"><span class="mic">👷</span><span class="mtx"><b>Personel</b><small>Ekle / düzenle · yevmiye, foto, TC, telefon</small></span></button>';
+  h+='<button class="mod" id="m_arac"><span class="mic">🚜</span><span class="mtx"><b>Araç / Ekipman</b><small>Ekle / çıkar (puantajda seçilir)</small></span></button>';
+  h+='</div><div class="card"><div class="ch">Ayarlar</div>';
   h+='<button class="mod" id="m_sync"><span class="mic">☁</span><span class="mtx"><b>n8n senkron</b><small>Bağlantı & tam yedek</small></span></button>';
   h+='</div><div class="card"><div class="ch">Saha</div>'
     +'<button class="mod" id="m_tr1"><span class="mic">▣</span><span class="mtx"><b>TR-1 sahası</b><small>'+(PROJE==='tr1'?'aktif':'geç')+'</small></span></button>'
@@ -768,7 +770,6 @@ function bDaha(){
   $('m_rapor').onclick=function(){raporSheet();};
   $('m_team').onclick=function(){teamSheet();};
   $('m_arac').onclick=function(){aracSheet();};
-  $('m_wage').onclick=function(){wageSheet();};
 }
 function switchProje(p){ if(p===PROJE){go('bugun');return;} PROJE=p; try{localStorage.setItem('sh2:proje',p);}catch(e){} D={}; N8N.pull(function(){ seedIfEmpty(); go('bugun'); toast((p==='tr3'?'TR-3':'TR-1')+' sahasına geçildi'); }); }
 function syncSheet(){ openSheet('n8n senkron','<div class="gt" style="margin-bottom:10px">Veri cihazda anında kaydedilir; n8n arka planda ortak kaynağa yazar (rapor/bildirim/yedek).</div><div class="ch2">Webhook</div><input id="n_url" value="'+esc(N8N_BASE)+'"><div class="frow" style="margin-top:10px"><button class="ghost" id="n_save" style="flex:1">Kaydet</button><button class="prim" id="n_snap" style="flex:1">Tümünü gönder</button></div>');
@@ -777,17 +778,58 @@ function syncSheet(){ openSheet('n8n senkron','<div class="gt" style="margin-bot
 }
 function teamSheet(){ var t=TEAM();
   var h='<button class="prim" id="t_add" style="margin-bottom:12px">+ Personel ekle</button>';
-  t.forEach(function(p){h+='<div class="row"><span>'+esc(p.ad)+'<br><small style="color:#9aa0a6">'+esc(p.gorev||'')+'</small></span>'+(ROLE==='admin'?('<button class="ghost t_del" data-id="'+esc(p.id)+'">çıkar</button>'):'')+'</div>';});
+  if(!t.length)h+='<div class="empty">Personel yok</div>';
+  t.slice().sort(function(a,b){return (a.ad||'').localeCompare(b.ad||'','tr');}).forEach(function(p){
+    var k=persKalan(p.id);
+    h+='<button class="odp t_edit" data-id="'+esc(p.id)+'"><span style="display:flex;align-items:center;gap:10px">'
+      +(p.foto?('<img src="'+p.foto+'" style="width:38px;height:38px;border-radius:50%;object-fit:cover">'):'<span style="width:38px;height:38px;border-radius:50%;background:#F4F1EA;display:flex;align-items:center;justify-content:center">👷</span>')
+      +'<span class="odn">'+esc(p.ad)+'<small>'+esc(p.gorev||'')+(p.tel?(' · '+esc(p.tel)):'')+'</small></span></span>'
+      +'<span class="odk" style="font-size:13px">'+n0(wageOf(p.id))+' '+esc(wageCur(p.id))+'<small>yevmiye</small></span></button>';
+  });
   openSheet('Ekip ('+t.length+')',h);
-  if($('t_add'))$('t_add').onclick=function(){ if(!roOk())return; var ad=prompt('Personel adı:');if(!ad)return; var tm=TEAM();tm.push({id:'p'+Date.now().toString(36),ad:ad.trim(),gorev:'Mekanik',tel:'',giris:today(),aktif:true});set('team',tm);teamSheet();render();};
-  document.querySelectorAll('#sbox .t_del').forEach(function(b){b.onclick=function(){if(!roOk())return;if(!confirm('Çıkarılsın mı?'))return;var id=b.getAttribute('data-id');set('team',TEAM().filter(function(x){return x.id!==id;}));teamSheet();render();};});
+  if($('t_add'))$('t_add').onclick=function(){personForm(null);};
+  document.querySelectorAll('#sbox .t_edit').forEach(function(b){b.onclick=function(){personForm(b.getAttribute('data-id'));};});
 }
-function wageSheet(){ var t=TEAM(),w=WAGE();
-  var h='<div class="ch2">Varsayılan yevmiye</div><div class="frow"><input id="w_def" type="number" inputmode="decimal" value="'+(w._def||'')+'" placeholder="0"><select id="w_cur" style="max-width:88px"><option'+((w._wpb||'AZN')==='AZN'?' selected':'')+'>AZN</option><option'+(w._wpb==='USD'?' selected':'')+'>USD</option><option'+(w._wpb==='TRY'?' selected':'')+'>TRY</option></select></div><button class="ghost" id="w_defsave" style="margin-bottom:14px">Varsayılanı kaydet</button><div class="ch2">Kişiye özel</div>';
-  t.forEach(function(p){h+='<div class="frow" style="align-items:center"><span style="flex:1.4;font-size:13px">'+esc(p.ad)+'</span><input class="w_one" data-id="'+esc(p.id)+'" type="number" inputmode="decimal" value="'+(w[p.id]!=null?w[p.id]:'')+'" placeholder="'+(w._def||0)+'" style="flex:1"></div>';});
-  openSheet('Yevmiyeler',h);
-  $('w_defsave').onclick=function(){if(!roOk())return;var ww=WAGE();ww._def=+$('w_def').value||0;ww._wpb=$('w_cur').value||'AZN';set('wage',ww);toast('Kaydedildi');render();};
-  document.querySelectorAll('#sbox .w_one').forEach(function(inp){inp.onchange=function(){if(!roOk())return;var ww=WAGE();var v=inp.value;if(v==='')delete ww[inp.getAttribute('data-id')];else ww[inp.getAttribute('data-id')]=+v||0;set('wage',ww);render();};});
+var PFOTO='';
+function personForm(id){ if(!roOk())return;
+  var p=id?(teamGet(id)||{}):{}; PFOTO=p.foto||'';
+  var w=WAGE(),yev=id?(w[id]!=null?w[id]:''):'',cur=id?wageCur(id):'AZN';
+  var roles=['Mekanik','Elektrik','Formen','Şantiye Şefi','Mühendis','Operatör','Yardımcı','Güvenlik'];
+  var rop=roles.map(function(r){return '<option'+((p.gorev||'Mekanik')===r?' selected':'')+'>'+r+'</option>';}).join('');
+  var uyr=['Azerbaycan','Türkiye','Diğer'].map(function(u){return '<option'+((p.uyruk||'')===u?' selected':'')+'>'+u+'</option>';}).join('');
+  var cop=['AZN','USD','TRY'].map(function(c){return '<option'+(cur===c?' selected':'')+'>'+c+'</option>';}).join('');
+  var h='<div style="display:flex;justify-content:center;margin-bottom:12px"><label style="cursor:pointer;text-align:center">'
+    +'<span id="pf_pv">'+(PFOTO?('<img src="'+PFOTO+'" style="width:84px;height:84px;border-radius:50%;object-fit:cover;border:2px solid var(--line)">'):'<span style="width:84px;height:84px;border-radius:50%;background:#F4F1EA;display:flex;align-items:center;justify-content:center;font-size:34px">📷</span>')+'</span>'
+    +'<div style="font:600 12px Barlow;color:var(--org);margin-top:6px">Foto ekle / değiştir</div><input id="pf_foto" type="file" accept="image/*" style="display:none"></label></div>';
+  h+='<div class="ch2">Ad Soyad *</div><input id="pf_ad" value="'+esc(p.ad||'')+'" placeholder="Ad Soyad">';
+  h+='<div class="frow" style="margin-top:8px"><div style="flex:1"><div class="ch2">Telefon *</div><input id="pf_tel" type="tel" value="'+esc(p.tel||'')+'" placeholder="+994 / +90"></div><div style="flex:1"><div class="ch2">TC Kimlik No *</div><input id="pf_tc" type="tel" inputmode="numeric" value="'+esc(p.kimlikno||'')+'" placeholder="11 hane"></div></div>';
+  h+='<div class="frow" style="margin-top:8px"><div style="flex:1"><div class="ch2">Görev</div><select id="pf_gorev">'+rop+'</select></div><div style="flex:1"><div class="ch2">Uyruk</div><select id="pf_uyruk">'+uyr+'</select></div></div>';
+  h+='<div class="ch2">Sigorta / SGK (ops.)</div><input id="pf_sig" value="'+esc(p.sigorta||'')+'" placeholder="SGK no / durum">';
+  h+='<div class="frow" style="margin-top:8px"><div style="flex:1"><div class="ch2">İşe giriş</div><input id="pf_giris" type="date" value="'+esc(p.giris||today())+'"></div><div style="flex:1"><div class="ch2">Çıkış (ops.)</div><input id="pf_cikis" type="date" value="'+esc(p.cikis||'')+'"></div></div>';
+  h+='<div class="ch2" style="color:var(--org)">Yevmiye *</div><div class="frow"><input id="pf_yev" type="number" inputmode="decimal" value="'+esc(yev)+'" placeholder="Günlük ücret"><select id="pf_pb" style="max-width:88px">'+cop+'</select></div>';
+  h+='<div class="ch2">Yevmiye geçerlilik başlangıcı</div><input id="pf_wfrom" type="date" value="'+esc((p.giris||today()))+'">';
+  if(id){ var hist=(WAGEHIST()[id]||[]).slice().sort(function(a,b){return (a.from||'').localeCompare(b.from||'');});
+    h+='<div class="ch2">Yevmiye değişiklikleri</div>';
+    if(hist.length)hist.forEach(function(x){h+='<div class="row"><span>'+esc((x.from||'').split('-').reverse().join('.'))+'’den</span><b>'+n0(x.rate)+' '+esc(x.cur||'AZN')+'</b></div>';});
+    else h+='<div class="empty" style="padding:6px 0">Değişiklik kaydı yok</div>';
+    h+='<div class="frow" style="margin-top:6px"><input id="pf_cfrom" type="date" value="'+today()+'" style="flex:1.2"><input id="pf_crate" type="number" inputmode="decimal" placeholder="Yeni yevmiye" style="flex:1"><button class="ghost" id="pf_cadd">+ Değişiklik</button></div>';
+  }
+  h+='<button class="prim" id="pf_save" style="margin-top:14px">Kaydet</button>';
+  if(id)h+='<button class="ghost" id="pf_del" style="width:100%;margin-top:8px;color:var(--red);border-color:#f0c9c4">Personeli çıkar</button>';
+  openSheet(id?'Personel düzenle':'Yeni personel',h);
+  $('pf_foto').onchange=function(){pickPhoto($('pf_foto'),function(d){PFOTO=d||'';var pv=$('pf_pv');if(pv&&d)pv.innerHTML='<img src="'+d+'" style="width:84px;height:84px;border-radius:50%;object-fit:cover;border:2px solid var(--line)">';});};
+  if($('pf_cadd'))$('pf_cadd').onclick=function(){var cf=$('pf_cfrom').value,cr=+($('pf_crate').value||0)||0;if(!cr){toast('Yeni yevmiye girin');return;}var wh=WAGEHIST();wh[id]=wh[id]||[];wh[id].push({from:cf||today(),rate:cr,cur:$('pf_pb').value||'AZN'});set('wagehist',wh);var ww=WAGE();ww[id]=cr;set('wage',ww);toast('Değişiklik eklendi');personForm(id);render();};
+  $('pf_save').onclick=function(){
+    var ad=($('pf_ad').value||'').trim(),tel=($('pf_tel').value||'').trim(),tc=($('pf_tc').value||'').trim(),yv=+($('pf_yev').value||0)||0;
+    if(!ad){toast('Ad Soyad zorunlu');return;} if(!tel){toast('Telefon zorunlu');return;} if(!tc){toast('TC Kimlik No zorunlu');return;} if(!yv){toast('Yevmiye zorunlu');return;}
+    var pid=id||('p'+Date.now().toString(36));
+    var rec={id:pid,ad:ad,tel:tel,kimlikno:tc,sigorta:($('pf_sig').value||'').trim(),uyruk:$('pf_uyruk').value||'',gorev:$('pf_gorev').value||'Mekanik',giris:$('pf_giris').value||today(),cikis:$('pf_cikis').value||'',foto:PFOTO||'',aktif:(p.aktif!==false)};
+    var tm=TEAM();var found=false;for(var i=0;i<tm.length;i++){if(tm[i].id===pid){tm[i]=rec;found=true;}}if(!found)tm.push(rec);set('team',tm);
+    var ww=WAGE();ww[pid]=yv;ww._c=ww._c||{};ww._c[pid]=$('pf_pb').value||'AZN';set('wage',ww);
+    var wfrom=$('pf_wfrom').value||rec.giris;var wh=WAGEHIST();if(!wh[pid]||!wh[pid].length){wh[pid]=[{from:wfrom,rate:yv,cur:$('pf_pb').value||'AZN'}];set('wagehist',wh);}
+    closeSheet();toast('Kaydedildi');teamSheet();render();
+  };
+  if($('pf_del'))$('pf_del').onclick=function(){if(ROLE!=='admin')return;if(!confirm('Personel çıkarılsın mı?'))return;set('team',TEAM().filter(function(x){return x.id!==id;}));closeSheet();toast('Çıkarıldı');teamSheet();render();};
 }
 
 /* ---- RAPOR ---- */
