@@ -344,7 +344,7 @@ function isCift(pid,iso){var ym=iso.slice(0,7),d=+iso.slice(8,10);if(cell(PJ(),y
 function isTR(pid){var p=teamGet(pid);return !!(p&&p.uyruk==='Türkiye');}
 function payMult(pid,iso){if(isCift(pid,iso))return 2;if(!isTR(pid))return 1;if(iso>='2026-08-01')return 1;return (new Date(iso+'T00:00:00').getDay()===0)?2:1;}
 function gPjv(pid,iso){var ym=iso.slice(0,7),d=+iso.slice(8,10);return pjMeta(cell(PJ(),ym,pid,d)).v;}
-function gDays(){var out=[],iso=ISB,t=today(),n=0;while(iso<=t&&n<800){out.push(iso);iso=dadd(iso,1);n++;}return out;}
+function gDays(){var out=[],iso=(get('isbasi')||ISB),t=today(),n=0;while(iso<=t&&n<800){out.push(iso);iso=dadd(iso,1);n++;}return out;}
 function yevSum(pid){var s=0,days=gDays();days.forEach(function(iso){var v=gPjv(pid,iso);if(v)s+=v*payMult(pid,iso)*wageOnDate(pid,iso);});return s;}
 function mesSum(pid){var s=0,M=MESAI();for(var ym in M){var mp=(M[ym]&&M[ym][pid])||{};for(var d in mp){var saat=+mp[d]||0;if(!saat||d==='_ay')continue;var dd=(''+d).length<2?('0'+d):(''+d);s+=(wageOnDate(pid,ym+'-'+dd)/9)*1.5*saat;}if(mp['_ay'])s+=(wageOnDate(pid,ym+'-15')/9)*1.5*(+mp['_ay']||0);}return s;}
 function persMaas(pid){var y=yevSum(pid),m=mesSum(pid),t=+(TAZM()[pid]||0)||0;return {yev:y,mes:m,tazm:t,top:y+m+t};}
@@ -775,8 +775,9 @@ function vDaha(){
   h+='<button class="mod" id="m_team"><span class="mic">👷</span><span class="mtx"><b>Personel</b><small>Ekle / düzenle · yevmiye, foto, TC, telefon</small></span></button>';
   h+='<button class="mod" id="m_arac"><span class="mic">🚜</span><span class="mtx"><b>Araç / Ekipman</b><small>Ekle / çıkar (puantajda seçilir)</small></span></button></div>';
   if(adm){
-    h+='<div class="card"><div class="ch">Rapor</div>'
+    h+='<div class="card"><div class="ch">Rapor & veri</div>'
       +'<button class="mod" id="m_rapor"><span class="mic">📊</span><span class="mtx"><b>Saha raporu</b><small>İlerleme, hakediş, maliyet özeti</small></span></button>'
+      +'<button class="mod" id="m_import"><span class="mic">📥</span><span class="mtx"><b>Eski yedeği içe aktar</b><small>Eski SHAMS verisini bu uygulamaya al</small></span></button>'
       +'<button class="mod" id="m_sync"><span class="mic">☁</span><span class="mtx"><b>Yedek / senkron</b><small>n8n tam yedek gönder</small></span></button></div>';
   }
   h+='<div class="empty">Saha geçişi için üstteki "'+(PROJE==='tr3'?'TR-3':'TR-1')+' ▾"'+(adm?'':' · Hakediş yalnız yöneticide görünür')+'.</div>';
@@ -787,6 +788,7 @@ function bDaha(){
   if($('m_perm'))$('m_perm').onclick=function(){permSheet();};
   if($('m_sync'))$('m_sync').onclick=function(){syncSheet();};
   if($('m_rapor'))$('m_rapor').onclick=function(){raporSheet();};
+  if($('m_import'))$('m_import').onclick=function(){importSheet();};
   if($('m_team'))$('m_team').onclick=function(){teamSheet();};
   if($('m_arac'))$('m_arac').onclick=function(){aracSheet();};
 }
@@ -894,6 +896,31 @@ function isArtisForm(){ if(!roOk())return;
     var rec={id:'ia'+Date.now(),protokolNo:no,tarih:$('ia_tarih').value||today(),aciklama:($('ia_acik').value||'').trim(),kalemler:lines,by:ROLE,ts:Date.now()};
     set('isartis:'+rec.id,rec);closeSheet();toast('İş artışı kaydedildi');render();};
 }
+/* ---- ESKİ YEDEĞİ İÇE AKTAR ---- */
+function _stripFoto(r){ if(r&&typeof r==='object'&&!Array.isArray(r)){var x={};for(var k in r)x[k]=r[k];if('foto'in x)x.foto='';if('img'in x)x.img='';return x;} return r; }
+function importEski(text){
+  var J; try{J=JSON.parse(text);}catch(e){toast('Dosya okunamadı');return;}
+  var data=(J&&J.data)||J; if(!data||typeof data!=='object'){toast('Geçersiz yedek');return;}
+  var n=0; function put(k,v){ D[k]=v; try{localStorage.setItem(lkey(k),JSON.stringify(v));}catch(e){} n++; }
+  ['team','wage','wagehist','mesai','fx','mpct','isbasi','arac','matcustom','parac'].forEach(function(k){ if(data[k]!=null) put(k,data[k]); });
+  if(Array.isArray(data.matin)) put('matin', data.matin.map(_stripFoto));
+  ['pj','pjg','pjz','pj2x','pja','pjag','pjp','pjpg'].forEach(function(p){ var o={}; for(var k in data){ if(k.indexOf(p+':')===0) o[k.slice(p.length+1)]=data[k]; } if(Object.keys(o).length) put(p,o); });
+  var pp=[]; for(var k1 in data){ if(k1.indexOf('ppay:')===0&&data[k1]) pp.push(_stripFoto(data[k1])); } if(pp.length) put('ppay',pp);
+  for(var k in data){
+    if(k.indexOf('gd:')===0){ put(k,_stripFoto(data[k])); }
+    else if(k.indexOf('arpay:')===0){ var r=_stripFoto(data[k]); if(r&&!r.taseron)r.taseron='Adem Arıcan'; put(k,r); }
+    else if(k.indexOf('hktah:')===0 && data[k] && typeof data[k]==='object' && data[k].tutar!=null){ put(k,data[k]); }
+    else if(k.indexOf('g:')===0 && data[k] && data[k].tarih){ put(k,data[k]); }
+  }
+  closeSheet(); toast(n+' kayıt aktarıldı ✓');
+  try{ if(N8N&&N8N.snapshot) setTimeout(N8N.snapshot,1500); }catch(e){}
+  render();
+}
+function importSheet(){ if(ROLE!=='admin'){return;}
+  openSheet('Eski yedeği içe aktar','<div class="gt" style="margin-bottom:12px">Eski SHAMS uygulamasından aldığınız <b>Veri yedeği (JSON)</b> dosyasını seçin. Ekip, puantaj, ödeme, hakediş, günlük, araç — hepsi yeni uygulamaya aktarılır. (Fotoğraflar ayrı; yerel depoya sığmaz.)</div>'
+    +'<input id="imp_file" type="file" accept="application/json,.json"><div id="imp_st" class="gt" style="margin-top:10px"></div>');
+  $('imp_file').onchange=function(){ var f=$('imp_file').files&&$('imp_file').files[0]; if(!f)return; $('imp_st').textContent='Okunuyor… ('+Math.round(f.size/1024)+' KB)'; var rd=new FileReader(); rd.onload=function(e){ try{importEski(e.target.result);}catch(err){toast('Hata: '+err.message);} }; rd.readAsText(f); };
+}
 /* ---- RAPOR ---- */
 function raporSheet(){
   var tot=cumUsd(),pct=SOZBEDEL>0?tot/SOZBEDEL*100:0;
@@ -949,7 +976,7 @@ function startApp(){
 }
 startApp();
 
-window.SH={go:go,render:render,openIsArtis:isArtisSheet};
+window.SH={go:go,render:render,openIsArtis:isArtisSheet,importEski:importEski,importSheet:importSheet};
 })();
 </script>
 </body>
