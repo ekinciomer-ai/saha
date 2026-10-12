@@ -147,6 +147,8 @@ details.eng summary{color:var(--mut);font:600 13px 'Barlow';padding:6px 0;cursor
 .mod{display:flex;align-items:center;gap:12px;width:100%;border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:12px;margin-bottom:8px;text-align:left}
 .mic{width:38px;height:38px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;border-radius:9px;background:#F4F1EA;font-size:18px}
 .mtx{flex:1}.mtx b{font:700 14px 'Barlow'}.mtx small{display:block;font-size:11.5px;color:#9aa0a6}
+.pswitch{border:1.5px solid var(--line);background:#fff;color:#9aa0a6;border-radius:999px;padding:6px 13px;font:700 12px 'Barlow';min-width:68px}
+.pswitch.on{background:var(--grn);color:#fff;border-color:var(--grn)}
 
 /* durum noktası + toast */
 #sync{position:fixed;right:12px;bottom:78px;z-index:45;display:flex;align-items:center;gap:6px;background:var(--ink);color:#fff;border-radius:999px;padding:6px 11px 6px 9px;font:700 11px 'Barlow';box-shadow:0 4px 14px rgba(0,0,0,.25)}
@@ -171,8 +173,7 @@ details.eng summary{color:var(--mut);font:600 13px 'Barlow';padding:6px 0;cursor
   <p>Aksaray Enerji · Saha Yönetim</p>
   <div class="roles">
     <button data-r="admin" class="on">Yönetici</button>
-    <button data-r="usta">Usta</button>
-    <button data-r="demo">Demo</button>
+    <button data-r="saha">Saha</button>
   </div>
   <div class="pin" id="pinwrap"><input id="pin" type="tel" inputmode="numeric" placeholder="• • • •" maxlength="6"></div>
   <button class="go" id="loginbtn">Gir</button>
@@ -373,8 +374,12 @@ function syncHead(){
 }
 
 /* ============================= RENDER ============================= */
-function go(t){TAB=t;var ns=document.querySelectorAll('#nav button');for(var i=0;i<ns.length;i++)ns[i].classList.toggle('on',ns[i].getAttribute('data-t')===t);render();$('body').scrollTop=0;}
-function render(){ syncHead(); var b=$('body');
+/* ---- görünürlük: Yönetici her şeyi, Saha sadece PERM ile açık olanları ---- */
+function PERM(){var d={gunluk:true,puantaj:true,ilerleme:false,odeme:true,od_maas:true,od_harcama:true,od_hakedis:false,od_taseron:false,ekip:true};var p=get('perm',null);if(p&&typeof p==='object'){for(var k in p)d[k]=p[k];}return d;}
+function canSee(key){ if(ROLE==='admin')return true; if(key==='bugun'||key==='daha')return true; return PERM()[key]!==false; }
+function applyNav(){ try{document.querySelectorAll('#nav button').forEach(function(b){var t=b.getAttribute('data-t');b.style.display=canSee(t)?'':'none';});}catch(e){} }
+function go(t){ if(!canSee(t))t='bugun'; TAB=t;var ns=document.querySelectorAll('#nav button');for(var i=0;i<ns.length;i++)ns[i].classList.toggle('on',ns[i].getAttribute('data-t')===t);render();$('body').scrollTop=0;}
+function render(){ syncHead(); applyNav(); var b=$('body');
   try{
     if(TAB==='bugun')b.innerHTML=vBugun();
     else if(TAB==='ilerleme'){b.innerHTML=vIler();bIler();}
@@ -478,7 +483,9 @@ function bGun(){
 
 /* ---- ÖDEMELER ---- */
 function vOde(){
-  var subs=[['maas','Maaş'],['harcama','Harcamalar'],['hakedis','Hakediş'],['taseron','Taşeron']];
+  var subs=[['maas','Maaş'],['harcama','Harcamalar'],['hakedis','Hakediş'],['taseron','Taşeron']].filter(function(s){return canSee('od_'+s[0]);});
+  if(!subs.length)return '<div class="card"><div class="empty">Bu bölüm için yetkiniz yok</div></div>';
+  if(!subs.some(function(s){return s[0]===OSUB;}))OSUB=subs[0][0];
   var h='<div class="card" style="padding:10px"><div class="gos osub">'+subs.map(function(s){return '<button class="'+(OSUB===s[0]?'on':'')+'" data-o="'+s[0]+'">'+esc(s[1])+'</button>';}).join('')+'</div></div>';
   if(OSUB==='harcama')return h+vHarca();
   if(OSUB==='hakedis')return h+vHakedis();
@@ -762,24 +769,28 @@ function cellSheet(pid,d){ if(!roOk())return; var ym=curYM(),p=teamGet(pid)||{};
 
 /* ---- DAHA ---- */
 function vDaha(){
-  var h='<div class="card"><div class="ch">Rapor</div>'
-    +'<button class="mod" id="m_rapor"><span class="mic">📊</span><span class="mtx"><b>Saha raporu</b><small>İlerleme, hakediş, maliyet özeti</small></span></button></div>';
-  h+='<div class="card"><div class="ch">Ekip</div>';
+  var adm=(ROLE==='admin');
+  var h='<div class="card"><div class="ch">Ekip</div>';
   h+='<button class="mod" id="m_team"><span class="mic">👷</span><span class="mtx"><b>Personel</b><small>Ekle / düzenle · yevmiye, foto, TC, telefon</small></span></button>';
-  h+='<button class="mod" id="m_arac"><span class="mic">🚜</span><span class="mtx"><b>Araç / Ekipman</b><small>Ekle / çıkar (puantajda seçilir)</small></span></button>';
-  h+='</div><div class="card"><div class="ch">Ayarlar</div>';
-  h+='<button class="mod" id="m_sync"><span class="mic">☁</span><span class="mtx"><b>n8n senkron</b><small>Bağlantı & tam yedek</small></span></button>';
-  h+='</div><div class="card"><div class="ch">Sözleşme</div>'
-    +'<button class="mod" id="m_isartis"><span class="mic">📈</span><span class="mtx"><b>İş Artışı</b><small>Ek iş / protokol — tarih, no, kalemler</small></span></button></div>';
-  h+='<div class="empty">Saha geçişi için üstteki "'+(PROJE==='tr3'?'TR-3':'TR-1')+' ▾" · Malzeme arka planda.</div>';
+  h+='<button class="mod" id="m_arac"><span class="mic">🚜</span><span class="mtx"><b>Araç / Ekipman</b><small>Ekle / çıkar (puantajda seçilir)</small></span></button></div>';
+  if(adm){
+    h+='<div class="card"><div class="ch">Rapor & sözleşme</div>'
+      +'<button class="mod" id="m_rapor"><span class="mic">📊</span><span class="mtx"><b>Saha raporu</b><small>İlerleme, hakediş, maliyet özeti</small></span></button>'
+      +'<button class="mod" id="m_isartis"><span class="mic">📈</span><span class="mtx"><b>İş Artışı</b><small>Ek iş / protokol — tarih, no, kalemler</small></span></button></div>';
+    h+='<div class="card"><div class="ch">Yönetici paneli</div>'
+      +'<button class="mod" id="m_perm"><span class="mic">🔒</span><span class="mtx"><b>Saha görünürlüğü</b><small>Saha kullanıcısı hangi ekranları görsün</small></span></button>'
+      +'<button class="mod" id="m_sync"><span class="mic">☁</span><span class="mtx"><b>n8n senkron</b><small>Bağlantı & tam yedek</small></span></button></div>';
+  }
+  h+='<div class="empty">Saha geçişi için üstteki "'+(PROJE==='tr3'?'TR-3':'TR-1')+' ▾"'+(adm?'':' · Hakediş yalnız yöneticide görünür')+'.</div>';
   return h;
 }
 function bDaha(){
-  $('m_isartis').onclick=function(){isArtisSheet();};
-  $('m_sync').onclick=function(){syncSheet();};
-  $('m_rapor').onclick=function(){raporSheet();};
-  $('m_team').onclick=function(){teamSheet();};
-  $('m_arac').onclick=function(){aracSheet();};
+  if($('m_isartis'))$('m_isartis').onclick=function(){isArtisSheet();};
+  if($('m_perm'))$('m_perm').onclick=function(){permSheet();};
+  if($('m_sync'))$('m_sync').onclick=function(){syncSheet();};
+  if($('m_rapor'))$('m_rapor').onclick=function(){raporSheet();};
+  if($('m_team'))$('m_team').onclick=function(){teamSheet();};
+  if($('m_arac'))$('m_arac').onclick=function(){aracSheet();};
 }
 function switchProje(p){ if(p===PROJE){closeSheet();go('bugun');return;} PROJE=p; try{localStorage.setItem('sh2:proje',p);}catch(e){} D={}; closeSheet(); N8N.pull(function(){ seedIfEmpty(); go('bugun'); toast((p==='tr3'?'TR-3':'TR-1')+' sahasına geçildi'); }); }
 function zonePicker(){ openSheet('Saha seç','<div class="gt" style="margin-bottom:10px">Her saha ayrı veri tutar (personel, puantaj, hakediş, ödeme).</div>'
@@ -790,6 +801,14 @@ function zonePicker(){ openSheet('Saha seç','<div class="gt" style="margin-bott
 function syncSheet(){ openSheet('n8n senkron','<div class="gt" style="margin-bottom:10px">Veri cihazda anında kaydedilir; n8n arka planda ortak kaynağa yazar (rapor/bildirim/yedek).</div><div class="ch2">Webhook</div><input id="n_url" value="'+esc(N8N_BASE)+'"><div class="frow" style="margin-top:10px"><button class="ghost" id="n_save" style="flex:1">Kaydet</button><button class="prim" id="n_snap" style="flex:1">Tümünü gönder</button></div>');
   $('n_save').onclick=function(){N8N_BASE=($('n_url').value||'').trim().replace(/\/$/,'');try{localStorage.setItem('sh2:n8n',N8N_BASE);}catch(e){}closeSheet();toast('Kaydedildi');};
   $('n_snap').onclick=function(){closeSheet();N8N.snapshot();toast('Tam yedek gönderiliyor');};
+}
+function permSheet(){ if(ROLE!=='admin')return;
+  function tog(key,label,hint){var on=!!PERM()[key];return '<div class="row"><span>'+esc(label)+(hint?('<br><small style="color:#9aa0a6">'+esc(hint)+'</small>'):'')+'</span><button class="pswitch'+(on?' on':'')+'" data-k="'+key+'">'+(on?'Görünür':'Gizli')+'</button></div>';}
+  var h='<div class="gt" style="margin-bottom:10px">Saha kullanıcısının göreceği ekranlar. Yönetici her zaman hepsini görür. Hakediş varsayılan olarak gizlidir.</div>';
+  h+='<div class="ch2">Ekranlar</div>'+tog('gunluk','Günlük')+tog('puantaj','Puantaj')+tog('ilerleme','İlerleme & Hakediş','parasal bilgi içerir');
+  h+='<div class="ch2">Ödemeler (parasal)</div>'+tog('odeme','Ödemeler sekmesi')+tog('od_maas','— Maaş')+tog('od_harcama','— Harcamalar')+tog('od_hakedis','— Hakediş')+tog('od_taseron','— Taşeron');
+  openSheet('Görünürlük / Yetki',h);
+  document.querySelectorAll('#sbox .pswitch').forEach(function(b){b.onclick=function(){var pp=PERM();var k=b.getAttribute('data-k');pp[k]=!pp[k];set('perm',pp);permSheet();render();};});
 }
 function teamSheet(){ var t=TEAM();
   var h='<button class="prim" id="t_add" style="margin-bottom:12px">+ Personel ekle</button>';
@@ -910,8 +929,9 @@ function seedIfEmpty(){ // sadece TR-1 ve veri yoksa
 }
 function startApp(){
   $('login').classList.add('hidden'); $('app').classList.remove('hidden'); $('sync').classList.remove('hidden');
-  RO=(ROLE==='demo');
+  RO=false;
   try{PROJE=localStorage.getItem('sh2:proje')||'tr1';}catch(e){}
+  applyNav();
   N8N.pull(function(){ seedIfEmpty(); go('bugun'); setTimeout(function(){N8N.snapshot&&N8N.flush();},2000); });
   // ilk render hemen (pull beklemeden)
   seedIfEmpty(); go('bugun');
@@ -926,14 +946,13 @@ function startApp(){
 function doLogin(){
   var pin=($('pin').value||'').trim();
   if(ROLE==='admin'&&pin!=='1453'){ $('loginerr').textContent='Şifre hatalı'; return; }
-  if(ROLE==='usta'&&pin&&pin!=='0571'){ $('loginerr').textContent='Şifre hatalı'; return; }
-  USER=ROLE==='admin'?'Ömer':(ROLE==='usta'?'Usta':'Demo');
+  USER=ROLE==='admin'?'Ömer':'Saha';
   try{localStorage.setItem('sh2:sess',JSON.stringify({role:ROLE,user:USER,ts:Date.now()}));}catch(e){}
   startApp();
 }
 
 /* login UI */
-document.querySelectorAll('#login .roles button').forEach(function(b){b.onclick=function(){ROLE=b.getAttribute('data-r');document.querySelectorAll('#login .roles button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');$('pinwrap').style.display=(ROLE==='demo')?'none':'block';$('loginerr').textContent='';};});
+document.querySelectorAll('#login .roles button').forEach(function(b){b.onclick=function(){ROLE=b.getAttribute('data-r');document.querySelectorAll('#login .roles button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');$('pinwrap').style.display=(ROLE==='saha')?'none':'block';$('loginerr').textContent='';};});
 $('loginbtn').onclick=doLogin;
 $('pin').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
 // oturum hatırla
