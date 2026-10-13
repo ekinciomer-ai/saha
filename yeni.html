@@ -396,6 +396,34 @@ window.addEventListener('offline',function(){N8N.dot('off');});
 document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='hidden')N8N.beacon(); else N8N.schedule(300); });
 window.addEventListener('pagehide',function(){N8N.beacon();});
 
+/* ---- FOTO/PDF DEPOSU: yerel IndexedDB + n8n saha_foto (istek üzerine) ----
+   Belgeler ana veriden (saha_kv) AYRI tutulur; sadece kayıtta küçük fotoId referansı. */
+var PH={ db:null, _s:false, box:[],
+  bkey:function(){return 'sh2:'+PROJE+':__fotobox';},
+  loadBox:function(){ try{PH.box=JSON.parse(localStorage.getItem(PH.bkey())||'[]')||[];}catch(e){PH.box=[];} },
+  saveBox:function(){ try{localStorage.setItem(PH.bkey(),JSON.stringify(PH.box));}catch(e){} },
+  open:function(cb){ if(PH.db){cb(PH.db);return;} try{var rq=indexedDB.open('sh2foto',1);
+    rq.onupgradeneeded=function(e){try{e.target.result.createObjectStore('f');}catch(x){}};
+    rq.onsuccess=function(e){PH.db=e.target.result;cb(PH.db);}; rq.onerror=function(){cb(null);}; }catch(e){cb(null);} },
+  idbPut:function(fid,data,cb){ PH.open(function(db){ if(!db){cb&&cb(false);return;} try{var t=db.transaction('f','readwrite');t.objectStore('f').put(data,fid);t.oncomplete=function(){cb&&cb(true);};t.onerror=function(){cb&&cb(false);};}catch(e){cb&&cb(false);} }); },
+  idbGet:function(fid,cb){ PH.open(function(db){ if(!db){cb(null);return;} try{var r=db.transaction('f','readonly').objectStore('f').get(fid);r.onsuccess=function(){cb(r.result||null);};r.onerror=function(){cb(null);};}catch(e){cb(null);} }); },
+  save:function(data){ if(!data)return ''; var fid='ph'+Date.now()+Math.floor(Math.random()*1000); PH.idbPut(fid,data); PH.box.push(fid); PH.saveBox(); setTimeout(PH.flush,200); return fid; },
+  get:function(fid,cb){ if(!fid){cb(null);return;} PH.idbGet(fid,function(d){ if(d){cb(d);return;} PH.fetch(fid,cb); }); },
+  fetch:function(fid,cb){ if(!navigator.onLine){cb(null);return;}
+    fetch(N8N_BASE+'/foto-get?proje='+encodeURIComponent(N8N.proje())+'&fid='+encodeURIComponent(fid)).then(function(r){return r.ok?r.json():null;}).then(function(rows){var arr=Array.isArray(rows)?rows:(rows&&rows.data)||[];var v=arr[0]&&arr[0].veri;if(v){PH.idbPut(fid,v);cb(v);}else cb(null);}).catch(function(){cb(null);}); },
+  flush:function(){ if(PH._s||!navigator.onLine||!PH.box.length)return; var fid=PH.box[0];
+    PH.idbGet(fid,function(data){ if(!data){PH.box.shift();PH.saveBox();PH.flush();return;}
+      PH._s=true; var tur=(String(data).indexOf('application/pdf')>=0?'pdf':'img');
+      fetch(N8N_BASE+'/foto-set',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({proje:N8N.proje(),items:[{fid:fid,veri:data,tur:tur}]})})
+        .then(function(r){PH._s=false; if(r.ok){PH.box.shift();PH.saveBox(); if(PH.box.length)setTimeout(PH.flush,300);} else setTimeout(PH.flush,6000);})
+        .catch(function(){PH._s=false;setTimeout(PH.flush,8000);}); }); }
+};
+PH.loadBox(); setTimeout(PH.flush,2000);
+window.addEventListener('online',function(){PH.flush();});
+/* belge göster: yeni fotoId (PH) veya eski inline foto */
+function showBelge(rec){ if(!rec)return; if(rec.fotoId){ toast('Belge açılıyor…'); PH.get(rec.fotoId,function(d){ if(d)showDoc(d); else toast('Belge bulunamadı (senkron bekliyor olabilir)'); }); } else if(rec.foto){ showDoc(rec.foto); } }
+function recHasBelge(r){ return !!(r&&(r.fotoId||r.foto)); }
+
 /* ============================= HESAPLAR ============================= */
 function TEAM(){return get('team',[])||[];}
 function teamGet(id){var t=TEAM();for(var i=0;i<t.length;i++)if(t[i].id===id)return t[i];return null;}
@@ -705,7 +733,8 @@ function vMaas(){
   if(pays.length){
     h+='<details class="acc"><summary><span class="accl"><b>Ödeme geçmişi</b><small>tüm maaş / avans kayıtları</small></span><span class="accr" style="font-size:15px">'+pays.length+'<small>kayıt</small></span></summary><div class="accb">';
     pays.slice().sort(function(a,b){return (b.ts||0)-(a.ts||0);}).forEach(function(r){
-      h+='<div class="gun"><div class="gd">'+esc(byp[r.pid]||r.pid)+' · '+esc(ODTUR[r.tur]||r.tur||'')+'</div><div class="gt">'+n2(r.tutar)+' '+esc(r.pb||'AZN')+' · '+esc(r.tarih||'')+'</div>'
+      h+='<div class="gun"><div class="gd">'+esc(byp[r.pid]||r.pid)+' · '+esc(ODTUR[r.tur]||r.tur||'')+(recHasBelge(r)?' 📎':'')+'</div><div class="gt">'+n2(r.tutar)+' '+esc(r.pb||'AZN')+' · '+esc(r.tarih||'')+'</div>'
+        +(recHasBelge(r)?('<button class="ghost pp_ph" data-id="'+esc(r.id)+'" style="padding:4px 9px;margin-right:6px">Dekontu gör</button>'):'')
         +(ROLE==='admin'?('<button class="del dP" data-id="'+esc(r.id)+'">sil</button>'):'')+'</div>';
     });
     h+='</div></details>';
@@ -716,6 +745,7 @@ function bMaas(){
   if($('o_new'))$('o_new').onclick=function(){payForm(null);};
   document.querySelectorAll('#body .odp').forEach(function(b){b.onclick=function(){payForm(b.getAttribute('data-p'));};});
   document.querySelectorAll('#body .dP').forEach(function(b){b.onclick=function(){if(ROLE!=='admin')return;if(!confirm('Silinsin mi?'))return;set('ppay',PPAY().filter(function(x){return x.id!==b.getAttribute('data-id');}));toast('Silindi');render();};});
+  document.querySelectorAll('#body .pp_ph').forEach(function(b){b.onclick=function(){var id=b.getAttribute('data-id');var r=PPAY().filter(function(x){return x.id===id;})[0];showBelge(r);};});
 }
 
 /* ---- HARCAMALAR (şantiye gideri, foto/fatura) ---- */
@@ -731,8 +761,8 @@ function vHarca(){
   cats.forEach(function(k){var kt=gkatOf(k),arr=byk[k],ct=0;arr.forEach(function(r){ct+=toAZN(r.tutar,r.pb||'AZN');});
     h+='<details class="acc"><summary><span class="accl"><b>'+kt.ic+' '+esc(kt.ad)+'</b><small>'+arr.length+' kayıt</small></span><span class="accr">'+usd$(ct)+'</span></summary><div class="accb">';
     arr.forEach(function(r){
-      h+='<div class="gun"><div class="gd">'+esc(r.tarih||'')+(r.aciklama?(' · '+esc(r.aciklama)):'')+'</div><div class="gt">'+n2(r.tutar)+' '+esc(r.pb||'AZN')+(r.foto?' 📎':'')+'</div>'
-        +(r.foto?('<button class="ghost gd_ph" data-id="'+esc(r.id)+'" style="margin-top:6px;padding:5px 10px">Belgeyi gör</button>'):'')
+      h+='<div class="gun"><div class="gd">'+esc(r.tarih||'')+(r.aciklama?(' · '+esc(r.aciklama)):'')+'</div><div class="gt">'+n2(r.tutar)+' '+esc(r.pb||'AZN')+(recHasBelge(r)?' 📎':'')+'</div>'
+        +(recHasBelge(r)?('<button class="ghost gd_ph" data-id="'+esc(r.id)+'" style="margin-top:6px;padding:5px 10px">Belgeyi gör</button>'):'')
         +(ROLE==='admin'?('<button class="del dG" data-id="'+esc(r.id)+'">sil</button>'):'')+'</div>';
     });
     h+='</div></details>';
@@ -743,7 +773,7 @@ var GD_FOTO='';
 function bHarca(){
   if($('gd_new'))$('gd_new').onclick=harcaForm;
   document.querySelectorAll('#body .dG').forEach(function(b){b.onclick=function(){if(ROLE!=='admin')return;if(!confirm('Silinsin mi?'))return;keys('gd:').forEach(function(k){var v=get(k);if(v&&v.id===b.getAttribute('data-id'))del(k);});toast('Silindi');render();};});
-  document.querySelectorAll('#body .gd_ph').forEach(function(b){b.onclick=function(){var id=b.getAttribute('data-id'),rec=null;keys('gd:').forEach(function(k){var v=get(k);if(v&&v.id===id)rec=v;});if(rec&&rec.foto)showDoc(rec.foto);};});
+  document.querySelectorAll('#body .gd_ph').forEach(function(b){b.onclick=function(){var id=b.getAttribute('data-id'),rec=null;keys('gd:').forEach(function(k){var v=get(k);if(v&&v.id===id)rec=v;});showBelge(rec);};});
 }
 function harcaForm(){ if(!roOk())return; GD_FOTO='';
   var kop=GKAT.map(function(g){return '<option value="'+g.k+'">'+g.ic+' '+esc(g.ad)+'</option>';}).join('');
@@ -755,7 +785,8 @@ function harcaForm(){ if(!roOk())return; GD_FOTO='';
     +'<button class="prim" id="gd_save" style="margin-top:10px">Kaydet</button>');
   $('gd_foto').onchange=function(){pickPhoto($('gd_foto'),function(d){GD_FOTO=d||'';},'gd_pv');};
   $('gd_save').onclick=function(){var tutar=parseFloat(($('gd_tutar').value||'0').replace(',','.'))||0;if(!tutar&&!GD_FOTO){toast('Tutar veya belge girin');return;}
-    var rec={id:'gd'+Date.now(),tarih:$('gd_tarih').value||today(),kat:$('gd_kat').value||'diger',tutar:tutar,pb:$('gd_pb').value||'AZN',aciklama:($('gd_acik').value||'').trim(),foto:GD_FOTO||'',by:ROLE,ts:Date.now()};
+    var fid=GD_FOTO?PH.save(GD_FOTO):'';
+    var rec={id:'gd'+Date.now(),tarih:$('gd_tarih').value||today(),kat:$('gd_kat').value||'diger',tutar:tutar,pb:$('gd_pb').value||'AZN',aciklama:($('gd_acik').value||'').trim(),fotoId:fid,by:ROLE,ts:Date.now()};
     set('gd:'+rec.id,rec);closeSheet();toast('Harcama eklendi');render();};
 }
 
@@ -900,8 +931,8 @@ function vTaseron(){
   tsr.forEach(function(t){var arr=byt[t],ct=0;arr.forEach(function(r){ct+=toAZN(r.tutar,r.pb||'USD');});
     h+='<details class="acc"'+(tsr.length===1?' open':'')+'><summary><span class="accl"><b>👷 '+esc(t)+'</b><small>'+arr.length+' ödeme</small></span><span class="accr">'+usd$(ct)+'</span></summary><div class="accb">';
     arr.forEach(function(r){
-      h+='<div class="gun"><div class="gd">'+esc(r.tarih||'')+(r.aciklama?(' · '+esc(r.aciklama)):'')+'</div><div class="gt">'+n2(r.tutar)+' '+esc(r.pb||'USD')+(r.foto?' 📎':'')+'</div>'
-        +(r.foto?('<button class="ghost ar_ph" data-id="'+esc(r.id)+'" style="margin-top:6px;padding:5px 10px">Dekontu gör</button>'):'')
+      h+='<div class="gun"><div class="gd">'+esc(r.tarih||'')+(r.aciklama?(' · '+esc(r.aciklama)):'')+'</div><div class="gt">'+n2(r.tutar)+' '+esc(r.pb||'USD')+(recHasBelge(r)?' 📎':'')+'</div>'
+        +(recHasBelge(r)?('<button class="ghost ar_ph" data-id="'+esc(r.id)+'" style="margin-top:6px;padding:5px 10px">Dekontu gör</button>'):'')
         +(ROLE==='admin'?('<button class="del dA" data-id="'+esc(r.id)+'">sil</button>'):'')+'</div>';
     });
     h+='</div></details>';
@@ -912,7 +943,7 @@ var AR_FOTO='';
 function bTaseron(){
   if($('ar_new'))$('ar_new').onclick=taseronForm;
   document.querySelectorAll('#body .dA').forEach(function(b){b.onclick=function(){if(ROLE!=='admin')return;if(!confirm('Silinsin mi?'))return;keys('arpay:').forEach(function(k){var v=get(k);if(v&&v.id===b.getAttribute('data-id'))del(k);});toast('Silindi');render();};});
-  document.querySelectorAll('#body .ar_ph').forEach(function(b){b.onclick=function(){var id=b.getAttribute('data-id'),rec=null;keys('arpay:').forEach(function(k){var v=get(k);if(v&&v.id===id)rec=v;});if(rec&&rec.foto)showDoc(rec.foto);};});
+  document.querySelectorAll('#body .ar_ph').forEach(function(b){b.onclick=function(){var id=b.getAttribute('data-id'),rec=null;keys('arpay:').forEach(function(k){var v=get(k);if(v&&v.id===id)rec=v;});showBelge(rec);};});
 }
 function taseronForm(){ if(!roOk())return; AR_FOTO='';
   var cur=['USD','AZN','TRY'].map(function(c){return '<option>'+c+'</option>';}).join('');
@@ -924,11 +955,13 @@ function taseronForm(){ if(!roOk())return; AR_FOTO='';
     +'<button class="prim" id="ar_save" style="margin-top:10px">Kaydet</button>');
   $('ar_foto').onchange=function(){pickPhoto($('ar_foto'),function(d){AR_FOTO=d||'';},'ar_pv');};
   $('ar_save').onclick=function(){var t=parseFloat(($('ar_tutar').value||'0').replace(',','.'))||0;if(!t&&!AR_FOTO){toast('Tutar veya dekont girin');return;}
-    var rec={id:'ar'+Date.now(),taseron:($('ar_tas').value||'Taşeron').trim(),tarih:$('ar_tarih').value||today(),tutar:t,pb:$('ar_pb').value||'USD',aciklama:($('ar_acik').value||'').trim(),foto:AR_FOTO||'',by:ROLE,ts:Date.now()};
+    var fid=AR_FOTO?PH.save(AR_FOTO):'';
+    var rec={id:'ar'+Date.now(),taseron:($('ar_tas').value||'Taşeron').trim(),tarih:$('ar_tarih').value||today(),tutar:t,pb:$('ar_pb').value||'USD',aciklama:($('ar_acik').value||'').trim(),fotoId:fid,by:ROLE,ts:Date.now()};
     set('arpay:'+rec.id,rec);closeSheet();toast('Taşeron ödemesi eklendi');render();};
 }
 function showDoc(d){ if(!d)return; if(d.indexOf('data:application/pdf')===0){var w=window.open();if(w)w.document.write('<iframe src="'+d+'" style="width:100%;height:100%;border:0"></iframe>');return;} openSheet('Belge','<img src="'+d+'" style="width:100%;border-radius:8px"><a href="'+d+'" download="belge.jpg" class="prim" style="display:block;text-align:center;text-decoration:none;margin-top:10px">İndir</a>'); }
-function payForm(pid){ if(!roOk())return;
+var PAY_FOTO='';
+function payForm(pid){ if(!roOk())return; PAY_FOTO='';
   var team=TEAM().filter(function(p){return p.aktif!==false;}).sort(function(a,b){return (a.ad||'').localeCompare(b.ad||'','tr');});
   var opt='<option value="">— personel —</option>'+team.map(function(p){return '<option value="'+esc(p.id)+'"'+(p.id===pid?' selected':'')+'>'+esc(p.ad)+'</option>';}).join('');
   var tur=Object.keys(ODTUR).map(function(k){return '<option value="'+k+'">'+esc(ODTUR[k])+'</option>';}).join('');
@@ -939,7 +972,10 @@ function payForm(pid){ if(!roOk())return;
     +'<label class="chk" style="margin:8px 0"><input type="checkbox" id="o_mes"> Fazla mesai de dahil edilsin</label>'
     +'<button class="ghost" id="o_getir" style="width:100%;margin-bottom:10px">↻ Hakedişi getir</button>'
     +'<div class="ch2">Tutar</div><div class="frow"><input id="o_tutar" type="text" inputmode="decimal" placeholder="0"><select id="o_pb" style="max-width:88px">'+cur+'</select></div>'
-    +'<input id="o_not" placeholder="Not (opsiyonel)"><button class="prim" id="o_save" style="margin-top:10px">Kaydet</button>');
+    +'<input id="o_not" placeholder="Not (opsiyonel)">'
+    +'<div class="ch2">📄 Dekont / imza (foto veya PDF)</div><input id="o_foto" type="file" accept="image/*,application/pdf"><div id="o_pv" style="margin-top:8px"></div>'
+    +'<button class="prim" id="o_save" style="margin-top:10px">Kaydet</button>');
+  $('o_foto').onchange=function(){pickPhoto($('o_foto'),function(d){PAY_FOTO=d||'';},'o_pv');};
   $('o_getir').onclick=function(){var id=$('o_pid').value;if(!id){toast('Personel seçin');return;}var c=wageCur(id);var hak=periodHak(id,$('o_d1').value,$('o_d2').value,$('o_mes').checked);$('o_tutar').value=Math.round(hak*100)/100;$('o_pb').value=c;var d1=$('o_d1').value,d2=$('o_d2').value;toast((d1||d2?'Dönem':'Tüm')+' hakedişi: '+n0(hak)+' '+c);};
   function info(){var id=$('o_pid').value,e=$('o_info');if(!id){e.innerHTML='';return;}var k=persKalan(id);$('o_pb').value=k.cur;
     e.innerHTML=persDetay(id);
@@ -948,7 +984,8 @@ function payForm(pid){ if(!roOk())return;
   $('o_save').onclick=function(){var id=$('o_pid').value;if(!id){toast('Personel seçin');return;}
     var tutar=parseFloat(($('o_tutar').value||'0').replace(',','.'))||0;if(!tutar){toast('Tutar girin');return;}
     var nt=($('o_not').value||'').trim(),tr=$('o_tur').value||'maas';
-    var rec={id:'pp'+Date.now(),pid:id,tur:tr,tarih:$('o_tarih').value||today(),tutar:tutar,pb:$('o_pb').value||'AZN',not:(ODTUR[tr]||tr)+(nt?(' · '+nt):''),by:ROLE,ts:Date.now()};
+    var fid=PAY_FOTO?PH.save(PAY_FOTO):'';
+    var rec={id:'pp'+Date.now(),pid:id,tur:tr,tarih:$('o_tarih').value||today(),tutar:tutar,pb:$('o_pb').value||'AZN',not:(ODTUR[tr]||tr)+(nt?(' · '+nt):''),fotoId:fid,by:ROLE,ts:Date.now()};
     var p=PPAY();p.unshift(rec);set('ppay',p);closeSheet();toast('Ödeme kaydedildi');render();};
 }
 
