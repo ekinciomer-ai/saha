@@ -1113,6 +1113,8 @@ function vDaha(){
   var h='<div class="card"><div class="ch">Ekip</div>';
   h+='<button class="mod" id="m_team"><span class="mic">👷</span><span class="mtx"><b>Personel</b><small>Ekle / düzenle · yevmiye, foto, TC, telefon</small></span></button>';
   h+='<button class="mod" id="m_arac"><span class="mic">🚜</span><span class="mtx"><b>Araç / Ekipman</b><small>Ekle / çıkar (puantajda seçilir)</small></span></button></div>';
+  h+='<div class="card"><div class="ch">Arşiv</div>'
+    +'<button class="mod" id="m_eski"><span class="mic">📺</span><span class="mtx"><b>Eski uygulama (arşiv)</b><small>Salt görüntüleme · eski SHAMS, veri girişi kapalı</small></span></button></div>';
   if(adm){
     h+='<div class="card"><div class="ch">Rapor & veri</div>'
       +'<button class="mod" id="m_rapor"><span class="mic">📊</span><span class="mtx"><b>Saha raporu</b><small>İlerleme, hakediş, maliyet özeti</small></span></button>'
@@ -1130,6 +1132,7 @@ function bDaha(){
   if($('m_import'))$('m_import').onclick=function(){importSheet();};
   if($('m_team'))$('m_team').onclick=function(){teamSheet();};
   if($('m_arac'))$('m_arac').onclick=function(){aracSheet();};
+  if($('m_eski'))$('m_eski').onclick=function(){window.open('eski.html','_blank','noopener');};
 }
 function syncSheet(){ openSheet('n8n senkron','<div class="gt" style="margin-bottom:10px">Veri cihazda anında kaydedilir; n8n arka planda ortak kaynağa yazar (rapor/bildirim/yedek).</div><div class="ch2">Webhook</div><input id="n_url" value="'+esc(N8N_BASE)+'"><div class="frow" style="margin-top:10px"><button class="ghost" id="n_save" style="flex:1">Kaydet</button><button class="prim" id="n_snap" style="flex:1">Tümünü gönder</button></div>');
   $('n_save').onclick=function(){N8N_BASE=($('n_url').value||'').trim().replace(/\/$/,'');try{localStorage.setItem('sh2:n8n',N8N_BASE);}catch(e){}closeSheet();toast('Kaydedildi');};
