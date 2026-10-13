@@ -762,12 +762,13 @@ function harcaForm(){ if(!roOk())return; GD_FOTO='';
 /* ---- HAKEDİŞ (işverenle, yapılan işlerden + tahsilat) ---- */
 function vHakedis(){
   var earned=cumUsd(); // $ (bedel × %)
-  var tah=HKTAH();var avans=0,hak=0;tah.forEach(function(r){var v=toAZN(r.tutar,r.pb||'USD');if(r.tip==='avans')avans+=v;else hak+=v;});
-  var r=gRate();var earnedAZN=earned*(r.usdazn||1);
-  var tahsilAZN=avans+hak;var kalanAZN=earnedAZN-tahsilAZN;
-  var h='<div class="two"><div class="stat go"><div class="k">Hak edilen</div><div class="v" style="font-size:21px">'+n0(earned)+' $</div><div class="s">yapılan işlerden</div></div>'
-    +'<div class="stat mo"><div class="k">Kalan alacak</div><div class="v" style="font-size:21px">'+usd$(kalanAZN)+'</div><div class="s">işverenden</div></div></div>';
   var iart=isArtisTop();var isl=ISARTIS();
+  var hakTop=earned+iart;  // iş artışı dahil toplam hak ediş
+  var tah=HKTAH();var avans=0,hak=0;tah.forEach(function(r){var v=toAZN(r.tutar,r.pb||'USD');if(r.tip==='avans')avans+=v;else hak+=v;});
+  var r=gRate();var earnedAZN=hakTop*(r.usdazn||1);
+  var tahsilAZN=avans+hak;var kalanAZN=earnedAZN-tahsilAZN;
+  var h='<div class="two"><div class="stat go"><div class="k">Hak edilen</div><div class="v" style="font-size:21px">'+n0(hakTop)+' $</div><div class="s">işler + iş artışı</div></div>'
+    +'<div class="stat mo"><div class="k">Kalan alacak</div><div class="v" style="font-size:21px">'+usd$(kalanAZN)+'</div><div class="s">işverenden</div></div></div>';
   h+='<div class="card"><div class="ch">Sözleşme & ilerleme</div>'
     +'<div class="row"><span>Sözleşme bedeli</span><b>'+n0(SOZBEDEL)+' $</b></div>'
     +(iart?('<div class="row"><span>İş artışı ('+isl.length+' protokol)</span><b style="color:#E8622A">+'+n0(iart)+' $</b></div><div class="row"><span>Revize sözleşme</span><b>'+n0(SOZBEDEL+iart)+' $</b></div>'):'')
