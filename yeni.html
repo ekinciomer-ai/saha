@@ -761,20 +761,22 @@ function harcaForm(){ if(!roOk())return; GD_FOTO='';
 
 /* ---- HAKEDİŞ (işverenle, yapılan işlerden + tahsilat) ---- */
 function vHakedis(){
-  var earned=cumUsd(); // $ (bedel × %)
+  var earned=cumUsd(); // $ ilerleme tahmini (bedel × %)
   var iart=isArtisTop();var isl=ISARTIS();
-  var hakTop=earned+iart;  // iş artışı dahil toplam hak ediş
+  var hakC=0;HAKED().forEach(function(x){hakC+=hakHesap(x).C;});  // resmi hakediş C toplam (A+B, KDV hariç) = gerçek yapılan iş
+  var hakTop=HAKED().length?hakC:(earned+iart);  // hakediş varsa ondan (gerçek), yoksa ilerleme tahmini
   var tah=HKTAH();var avans=0,hak=0;tah.forEach(function(r){var v=toAZN(r.tutar,r.pb||'USD');if(r.tip==='avans')avans+=v;else hak+=v;});
   var r=gRate();var earnedAZN=hakTop*(r.usdazn||1);
   var tahsilAZN=avans+hak;var kalanAZN=earnedAZN-tahsilAZN;
-  var h='<div class="two"><div class="stat go"><div class="k">Hak edilen</div><div class="v" style="font-size:21px">'+n0(hakTop)+' $</div><div class="s">işler + iş artışı</div></div>'
+  var h='<div class="two"><div class="stat go"><div class="k">Hak edilen</div><div class="v" style="font-size:21px">'+n0(hakTop)+' $</div><div class="s">'+(HAKED().length?'hakediş · KDV hariç':'ilerleme tahmini')+'</div></div>'
     +'<div class="stat mo"><div class="k">Kalan alacak</div><div class="v" style="font-size:21px">'+usd$(kalanAZN)+'</div><div class="s">işverenden</div></div></div>';
   h+='<div class="card"><div class="ch">Sözleşme & ilerleme</div>'
     +'<div class="row"><span>Sözleşme bedeli</span><b>'+n0(SOZBEDEL)+' $</b></div>'
     +(iart?('<div class="row"><span>İş artışı ('+isl.length+' protokol)</span><b style="color:#E8622A">+'+n0(iart)+' $</b></div><div class="row"><span>Revize sözleşme</span><b>'+n0(SOZBEDEL+iart)+' $</b></div>'):'')
     +'<div class="row"><span>Mekanik ('+n0(disBedel('MEK'))+' $)</span><b>%'+disUsd('MEK').toFixed(0)+'</b></div>'
     +'<div class="row"><span>Elektrik ('+n0(disBedel('ELK'))+' $)</span><b>%'+disUsd('ELK').toFixed(0)+'</b></div>'
-    +'<div class="row"><span>Toplam hak ediş</span><b>'+n0(earned+iart)+' $</b></div>'
+    +'<div class="row"><span>İlerlemeye göre (tahmini)</span><b style="color:#9aa0a6">'+n0(earned+iart)+' $</b></div>'
+    +(HAKED().length?('<div class="row"><span style="font-weight:700">Hakedişe göre (gerçek)</span><b>'+n0(hakC)+' $</b></div>'):'')
     +'<button class="more" onclick="window.SH.go(\'ilerleme\')">Kalem yüzdelerini düzenle</button></div>';
   h+=hakDokum();
   if(isl.length){ h+='<div class="card"><div class="ch">İş artışı protokolleri<button class="tag" style="border:0" onclick="window.SH.openIsArtis()">+ Ekle</button></div>';
