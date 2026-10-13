@@ -474,7 +474,7 @@ function persDetay(pid){
   var gun=persGun(pid),M=persMaas(pid),K=persKalan(pid),ms=mesSaat(pid),cur=wageCur(pid),yev=wageOf(pid);
   var h='<div class="pinfo"><div class="gt" style="margin-bottom:8px">Hesap: her gün → puantaj (tam/yarım/2×) × o günkü yevmiye. Mesai: yevmiye÷9×1,5×saat.</div>';
   h+='<div class="row"><span>📞 Telefon</span><b>'+esc(p.tel||'—')+'</b></div>';
-  h+='<div class="row"><span>Çalıştığı gün</span><b>'+n2(gun)+' gün</b></div>';
+  h+='<div class="row" style="cursor:pointer" onclick="var d=document.getElementById(\'o_dokum\');if(d){d.open=true;d.scrollIntoView({behavior:\'smooth\',block:\'nearest\'});}"><span style="color:var(--org);font-weight:700">Çalıştığı gün ▾</span><b>'+n2(gun)+' gün</b></div>';
   h+='<div class="row"><span>Yevmiye</span><b>'+n0(yev)+' '+esc(cur)+'</b></div>';
   h+='<div class="row"><span>Yevmiye × gün</span><b>'+n0(M.yev)+' '+esc(cur)+'</b></div>';
   if(ms>0)h+='<div class="row"><span>⏱ Fazla mesai ('+n2(ms)+' sa) → hak</span><b>'+n0(M.mes)+' '+esc(cur)+'</b></div>';
@@ -485,7 +485,7 @@ function persDetay(pid){
   /* detaylı döküm — günlük (aya göre) + ödemeler */
   var days=gDays().filter(function(iso){return gPjv(pid,iso)>0||mesDay(pid,iso)>0;});
   var pays=PPAY().filter(function(r){return r.pid===pid;}).sort(function(a,b){return (a.tarih||'').localeCompare(b.tarih||'');});
-  h+='<details class="acc" style="margin-top:10px"><summary><span class="accl"><b>Detaylı döküm</b><small>'+days.length+' çalışma günü · '+pays.length+' ödeme</small></span><span class="accr" style="font-size:14px">›</span></summary><div class="accb">';
+  h+='<details class="acc" id="o_dokum" style="margin-top:10px"><summary><span class="accl"><b>Detaylı döküm</b><small>'+days.length+' çalışma günü · '+pays.length+' ödeme</small></span><span class="accr" style="font-size:14px">›</span></summary><div class="accb">';
   if(days.length){
     h+='<div class="pdet"><table><thead><tr><th>Tarih</th><th>Durum</th><th>Yevmiye</th><th>Gün tutarı</th><th>Mesai sa</th><th>Mesai tutarı</th></tr></thead><tbody>';
     var curYm2='';
