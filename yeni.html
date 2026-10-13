@@ -1027,6 +1027,10 @@ function gridPers(ym){
   var h='<div class="card" style="padding:10px"><div class="pwrap"><table class="ptbl"><thead><tr><th class="pname">Personel</th>';
   days.forEach(function(d){var dow=new Date(+ym.slice(0,4),+ym.slice(5,7)-1,d).getDay();h+='<th class="'+(d===son&&isCur?'tdy':(dow===0?'sun':''))+'">'+d+'</th>';});
   h+='<th class="ptot">Gün</th></tr></thead><tbody>';
+  var allT=TEAM();
+  h+='<tr><td class="pname" style="color:#6B7177;font-weight:600;font-size:12px">👷 Çalışan</td>';
+  days.forEach(function(d){var n=0;allT.forEach(function(p){if(pjMeta(cell(pj,ym,p.id,d)).v>0)n++;});h+='<td style="text-align:center;font-weight:700;background:#EEF4EC;border-bottom:2px solid #d7dcd4;color:'+(d===son&&isCur?'#E8622A':(n?'#2E7D46':'#c2c8bf'))+'">'+(n||'·')+'</td>';});
+  h+='<td class="ptot" style="background:#EEF4EC;border-bottom:2px solid #d7dcd4"></td></tr>';
   rows.forEach(function(p){h+=rowHtml(p);});
   h+='</tbody></table></div>';
   if(pasif.length)h+='<button class="more" id="ps_tog" style="margin-top:8px">'+(PSHOW?'▴ Uzun süre çalışmayanları gizle':'▾ Uzun süre çalışmayanları göster ('+pasif.length+')')+'</button>';
