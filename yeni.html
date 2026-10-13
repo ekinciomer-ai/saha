@@ -429,11 +429,10 @@ function iaKey(id){var kk=null;keys('isartis:').forEach(function(k){var v=get(k)
 function isArtisTop(){var t=0;ISARTIS().forEach(function(r){(r.kalemler||[]).forEach(function(k){t+=+k.tutar||0;});});return t;}
 function isArtisDis(dis){var t=0;ISARTIS().forEach(function(r){(r.kalemler||[]).forEach(function(k){var it=null;allItems().forEach(function(x){if(x.id===k.id||x.ad===k.ad)it=x;});if(it&&it.dis===dis)t+=+k.tutar||0;});});return t;}
 function seedIsArtis(){ if(get('ia_seeded',null))return;
-  keys('isartis:').forEach(function(k){var v=get(k);if(v&&v.by==='import')del(k);}); /* eski gömülü protokolü temizle */
   var K=[['kolon','Kolon',3430,38156.74],['kiris','Kiriş',2023,8305.30],['asik','Aşık',4536,10862.99],['ruzgarlik','Rüzgarlık',5592,13391.94],['payanda','Payanda',3262,13391.94],['pv','PV (Panel)',4862,18722.38]];
   var kal=K.map(function(x){return {id:x[0],ad:x[1],miktar:x[2],birim:'adet',bf:x[3]/x[2],tutar:x[3]};});
-  set('isartis:iarev01',{id:'iarev01',protokolNo:'REV-01',tarih:'2026-09-01',aciklama:'Revize proje iş artışı (mekanik)',kalemler:kal,by:'import',ts:Date.now()});
-  set('ia_seeded',1);
+  seedLocal('isartis:iarev01',{id:'iarev01',protokolNo:'REV-01',tarih:'2026-09-01',aciklama:'Revize proje iş artışı (mekanik)',kalemler:kal,by:'import',ts:Date.now()});
+  seedPut('ia_seeded',1);   /* yalnız yerel — senkrona yazma */
 }
 /* ---- RESMİ HAKEDİŞ DÖKÜMÜ (02 Y.Arka Kapak mantığı) ---- */
 var KESK=[['kesinTeminat','Kesin Teminat Kesintisi'],['avans','Avans Kesintisi'],['nakit','Nakit Teminat Kesintisi'],['ceza','Ceza & Nefaset'],['osgb','OSGB Hizmetleri'],['sgk','SGK & Maaş Kesintisi'],['yemek','Yemek + Su + Elektrik'],['allrisk','İnşaat All Risk'],['stopaj','Stopaj'],['damga','Damga Vergisi Kesintisi'],['diger','Diğer']];
@@ -445,8 +444,8 @@ function seedHak(){ if(get('hak_seeded',null))return; if(HAKED().length)return;
          {no:3,tarih:'2026-08-19',A:18221.23,B:56851.03,k:{avans:39206.84,nakit:7507.23,yemek:2255.56,diger:6092.96}},
          {no:4,tarih:'2026-09-07',A:36069.28,B:5803.95,k:{nakit:4187.32,sgk:16051.34,yemek:5244.83,diger:-523.36}},
          {no:5,tarih:'2026-09-29',A:216436.63,B:27854.25,k:{nakit:24429.09,sgk:9709.18,yemek:2899.61,diger:3171.27}}];
-  S.forEach(function(r){set('hak:'+r.no,{id:'hak'+r.no,no:r.no,tarih:r.tarih,A:r.A,B:r.B,k:r.k,by:'import',ts:Date.now()});});
-  set('hak_seeded',1);
+  S.forEach(function(r){seedLocal('hak:'+r.no,{id:'hak'+r.no,no:r.no,tarih:r.tarih,A:r.A,B:r.B,k:r.k,by:'import',ts:Date.now()});});
+  seedPut('hak_seeded',1);   /* yalnız yerel — senkrona yazma */
 }
 /* foto/belge → base64 (küçültülmüş jpeg, pdf desteği) */
 function pickPhoto(inp,cb,pvId){var f=inp.files&&inp.files[0];if(!f){cb('');return;}var pv=pvId?$(pvId):null;
@@ -1232,11 +1231,16 @@ function openSheet(t,html){$('sbox').innerHTML='<div class="sh"><b>'+esc(t)+'</b
 function closeSheet(){$('sheet').classList.add('off');}
 
 /* ============================= SEED & BAŞLAT ============================= */
+/* ÖNEMLİ: tohum YALNIZ yerele yazılır (senkrona DEĞİL). Böylece boş bir cihazda
+   tohumlanan veri n8n'deki gerçek veriyi ASLA ezmez; pull gerçek veriyi getirince
+   yereldeki tohumun üstüne biner. lmt de işaretlenmez ki pull serbestçe ezebilsin. */
+function seedLocal(k,v){ try{ if(get(k,null)==null){ D[k]=v; localStorage.setItem(lkey(k),JSON.stringify(v)); } }catch(e){} }
+function seedPut(k,v){ try{ D[k]=v; localStorage.setItem(lkey(k),JSON.stringify(v)); }catch(e){} }
 function seedIfEmpty(){ // sadece TR-1 ve veri yoksa
   if(PROJE!=='tr1')return;
   if(get('team',null))return; // zaten veri var
   try{ var seed=JSON.parse(document.getElementById('seed').textContent||'{}');
-    for(var k in seed){ if(get(k,null)==null) set(k,seed[k]); }
+    for(var k in seed){ seedLocal(k,seed[k]); }  /* yalnız yerel */
   }catch(e){}
 }
 /* rol/kullanıcı portal oturumundan (ae_portal) — burada giriş yok */
