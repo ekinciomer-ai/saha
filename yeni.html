@@ -228,6 +228,7 @@ details.acc[open]>summary{border-bottom:1.5px solid var(--line)}
     <div class="r1">
       <div>
         <div class="pj" id="h_pj">SHAMS-1 GES</div>
+        <div class="who" id="h_who" style="font:600 11px Barlow;color:#ffe3d0;opacity:.95;margin-top:2px"></div>
       </div>
       <div class="hact">
         <button class="hb" id="h_sync" title="Yenile">↻</button>
@@ -260,7 +261,7 @@ details.acc[open]>summary{border-bottom:1.5px solid var(--line)}
 "use strict";
 (function(){
 /* ============================= SABİTLER ============================= */
-var BUILD='v64';  /* uygulama sürümü (önbellek/güncelleme takibi) */
+var BUILD='v66';  /* uygulama sürümü (önbellek/güncelleme takibi) */
 var MEK=139796.80, ELK=353953.60, SOZBEDEL=0, CFG=null;  /* değerler proje CFG'den; varsayılan SHAMS-1 */
 var MEK_ART=102831.30;  /* mekanik iş artışı (proje CFG'den gelir) */
 var TGT={tr1:{masa:378,ayak:5292,kiris:2646,asik:4536,panel:9828,capraz:7182,inv:19},
@@ -564,6 +565,7 @@ function engAd(t){for(var i=0;i<ENGEL.length;i++)if(ENGEL[i][0]===t)return ENGEL
 /* ============================= HEADER ============================= */
 function syncHead(){
   var pp=projGet(PROJE); $('h_pj').textContent=(pp&&pp.ad)||'SHAMS-1 GES';
+  if($('h_who'))$('h_who').textContent='👤 '+(USER||'—')+' · '+(ROLE==='admin'?'Yönetici':'Sınırlı yetki')+' · '+BUILD;
   $('h_pj').style.cursor='pointer'; $('h_pj').title='Proje değiştir'; $('h_pj').onclick=function(){ if(ROLE==='admin')projeSheet(); };
   var tot=cumUsd(),pct=SOZBEDEL>0?tot/SOZBEDEL*100:0;
   $('h_pct').textContent='%'+pct.toFixed(1).replace('.',',');
@@ -588,7 +590,10 @@ function canSee(key){
   if(key==='od_taseron')return has('od_taseron');
   if(key==='od_hakedis')return has('od_hakedis');
   if(key==='odeme')return has('odeme')||has('od_maas')||has('od_harcama')||has('od_taseron')||has('od_hakedis'); /* alt sekmelerden biri varsa Ödemeler sekmesi açık */
-  return false; /* rapor/işartışı vb. sadece yöneticide */
+  if(key==='ekip')return has('ekip');
+  if(key==='rapor')return has('rapor');
+  if(key==='yedek')return has('yedek');
+  return false; /* proje/işartışı vb. sadece yöneticide */
 }
 function applyNav(){ try{document.querySelectorAll('#nav button').forEach(function(b){var t=b.getAttribute('data-t');b.style.display=canSee(t)?'':'none';});}catch(e){} }
 function go(t){ if(!canSee(t))t='bugun'; TAB=t;var ns=document.querySelectorAll('#nav button');for(var i=0;i<ns.length;i++)ns[i].classList.toggle('on',ns[i].getAttribute('data-t')===t);render();$('body').scrollTop=0;}
@@ -1138,25 +1143,29 @@ function cellSheet(pid,d){ if(!roOk())return; var ym=curYM(),p=teamGet(pid)||{};
 
 /* ---- DAHA ---- */
 function vDaha(){
-  var adm=(ROLE==='admin');
-  var h='<div class="card"><div class="ch">Ekip</div>';
-  h+='<button class="mod" id="m_team"><span class="mic">👷</span><span class="mtx"><b>Personel</b><small>Ekle / düzenle · yevmiye, foto, TC, telefon</small></span></button>';
-  h+='<button class="mod" id="m_arac"><span class="mic">🚜</span><span class="mtx"><b>Araç / Ekipman</b><small>Ekle / çıkar (puantajda seçilir)</small></span></button></div>';
+  var adm=(ROLE==='admin'),h='';
+  if(canSee('ekip')){
+    h+='<div class="card"><div class="ch">Ekip</div>';
+    h+='<button class="mod" id="m_team"><span class="mic">👷</span><span class="mtx"><b>Personel</b><small>Ekle / düzenle · yevmiye, foto, TC, telefon</small></span></button>';
+    h+='<button class="mod" id="m_arac"><span class="mic">🚜</span><span class="mtx"><b>Araç / Ekipman</b><small>Ekle / çıkar (puantajda seçilir)</small></span></button></div>';
+  }
   h+='<div class="card"><div class="ch">Arşiv</div>'
     +'<button class="mod" id="m_eski"><span class="mic">📺</span><span class="mtx"><b>Eski uygulama (arşiv)</b><small>Salt görüntüleme · eski SHAMS, veri girişi kapalı</small></span></button></div>';
   if(adm){
     h+='<div class="card"><div class="ch">Projeler</div>'
       +'<button class="mod" id="m_proje"><span class="mic">🗂️</span><span class="mtx"><b>Projeler</b><small>Aktif: '+esc((projGet(PROJE)||{}).ad||PROJE)+' · ekle / geç, isim + renk</small></span></button></div>';
-    h+='<div class="card"><div class="ch">Rapor & veri</div>'
-      +'<button class="mod" id="m_rapor"><span class="mic">📊</span><span class="mtx"><b>Saha raporu</b><small>İlerleme, hakediş, maliyet özeti</small></span></button>'
-      +'<button class="mod" id="m_import"><span class="mic">📥</span><span class="mtx"><b>Eski yedeği içe aktar</b><small>Eski SHAMS verisini bu uygulamaya al</small></span></button>'
+  }
+  if(canSee('rapor')||canSee('yedek')){
+    h+='<div class="card"><div class="ch">Rapor & veri</div>';
+    if(canSee('rapor'))h+='<button class="mod" id="m_rapor"><span class="mic">📊</span><span class="mtx"><b>Saha raporu</b><small>İlerleme, hakediş, maliyet özeti</small></span></button>';
+    if(canSee('yedek'))h+='<button class="mod" id="m_import"><span class="mic">📥</span><span class="mtx"><b>Eski yedeği içe aktar</b><small>Eski SHAMS verisini bu uygulamaya al</small></span></button>'
       +'<button class="mod" id="m_sync"><span class="mic">☁</span><span class="mtx"><b>Yedek / senkron</b><small>n8n tam yedek gönder</small></span></button>'
-      +'<button class="mod" id="m_yedek"><span class="mic">💾</span><span class="mtx"><b>Yedek al / geri yükle</b><small>Veriyi dosyaya indir ya da dosyadan geri yükle</small></span></button></div>';
+      +'<button class="mod" id="m_yedek"><span class="mic">💾</span><span class="mtx"><b>Yedek al / geri yükle</b><small>Veriyi dosyaya indir ya da dosyadan geri yükle</small></span></button>';
+    h+='</div>';
   }
   h+='<div class="card"><div class="ch">Uygulama</div>'
     +'<button class="mod" id="m_guncelle"><span class="mic">⟳</span><span class="mtx"><b>Uygulamayı güncelle</b><small>En son sürümü yükle · ekranlar/yetkiler eksikse buna dokunun</small></span></button>'
     +'<div class="gt" style="margin-top:8px;color:#9aa0a6">Sürüm <b id="m_ver">'+esc(BUILD)+'</b></div></div>';
-  if(!adm)h+='<div class="empty">Hakediş ve parasal bilgiler yalnız yöneticide görünür.</div>';
   return h;
 }
 function bDaha(){
@@ -1186,7 +1195,7 @@ function projeSheet(){ if(ROLE!=='admin')return;
     if(confirm('"'+ad+'" oluşturuldu. Şimdi bu (boş) projeye geçilsin mi?')) projeSwitch(id); else { toast('Proje eklendi'); projeSheet(); }
   };
 }
-function yedekSheet(){ if(ROLE!=='admin')return;
+function yedekSheet(){ if(!canSee('yedek'))return;
   var a0=getAll(''),n=0; Object.keys(a0).forEach(function(k){if(!N8N.skip(k))n++;});
   openSheet('Yedek al / geri yükle',
     '<div class="gt" style="margin-bottom:12px">Bu cihazdaki tüm saha verisini (ekip, puantaj, ödeme, hakediş, günlük, gider…) tek bir JSON dosyasına indirir ya da böyle bir dosyadan geri yükler. Fotoğraflar ayrıdır (buluta yedeklenir).</div>'
@@ -1347,7 +1356,7 @@ function importEski(text){
   try{ if(N8N&&N8N.snapshot) setTimeout(N8N.snapshot,1500); }catch(e){}
   render();
 }
-function importSheet(){ if(ROLE!=='admin'){return;}
+function importSheet(){ if(!canSee('yedek')){return;}
   openSheet('Eski yedeği içe aktar','<div class="gt" style="margin-bottom:12px">Eski SHAMS uygulamasından aldığınız <b>Veri yedeği (JSON)</b> dosyasını seçin. Ekip, puantaj, ödeme, hakediş, günlük, araç — hepsi yeni uygulamaya aktarılır.</div>'
     +'<input id="imp_file" type="file" accept="application/json,.json"><div id="imp_st" class="gt" style="margin-top:10px"></div>'
     +'<div class="ch2" style="margin-top:16px">📎 Belge / foto yedeği (ayrı dosya)</div>'
