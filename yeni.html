@@ -261,7 +261,7 @@ details.acc[open]>summary{border-bottom:1.5px solid var(--line)}
 "use strict";
 (function(){
 /* ============================= SABİTLER ============================= */
-var BUILD='v67';  /* uygulama sürümü (önbellek/güncelleme takibi) */
+var BUILD='v68';  /* uygulama sürümü (önbellek/güncelleme takibi) */
 var MEK=139796.80, ELK=353953.60, SOZBEDEL=0, CFG=null;  /* değerler proje CFG'den; varsayılan SHAMS-1 */
 var MEK_ART=102831.30;  /* mekanik iş artışı (proje CFG'den gelir) */
 var TGT={tr1:{masa:378,ayak:5292,kiris:2646,asik:4536,panel:9828,capraz:7182,inv:19},
@@ -322,7 +322,7 @@ var PROJELER=[{id:'tr1',ad:'SHAMS-1 GES',renk:'#E8622A'}];
 function projGet(id){for(var i=0;i<PROJELER.length;i++)if(PROJELER[i].id===id)return PROJELER[i];return null;}
 function projeIzinli(id){ if(ROLE==='admin')return true; if(!PIZPROJ||!PIZPROJ.length)return true; return PIZPROJ.indexOf(id)>=0; } /* boş liste = tümü (geriye uyumlu) */
 function allowedProjeler(){ return PROJELER.filter(function(p){return projeIzinli(p.id);}); }
-function aktifProje(){try{var a=localStorage.getItem('sh2:aktif');if(a)return a;}catch(e){}return 'tr1';}
+function aktifProje(){try{var u=new URLSearchParams(location.search).get('proje');if(u){try{localStorage.setItem('sh2:aktif',u);}catch(e){}return u;}}catch(e){} try{var a=localStorage.getItem('sh2:aktif');if(a)return a;}catch(e){}return 'tr1';}
 function loadReg(){try{var r=localStorage.getItem('sh2:projeler');if(r){var l=JSON.parse(r);if(l&&l.length)PROJELER=l;}}catch(e){}
   if(!projGet('tr1'))PROJELER.unshift({id:'tr1',ad:'SHAMS-1 GES',renk:'#E8622A'});}
 function saveReg(){try{localStorage.setItem('sh2:projeler',JSON.stringify(PROJELER));}catch(e){}
@@ -579,7 +579,7 @@ function engAd(t){for(var i=0;i<ENGEL.length;i++)if(ENGEL[i][0]===t)return ENGEL
 function syncHead(){
   var pp=projGet(PROJE); $('h_pj').textContent=(pp&&pp.ad)||'SHAMS-1 GES';
   if($('h_who'))$('h_who').textContent='👤 '+(USER||'—')+' · '+(ROLE==='admin'?'Yönetici':'Sınırlı yetki')+' · '+BUILD;
-  var cokP=(ROLE==='admin')||allowedProjeler().length>1; $('h_pj').style.cursor=cokP?'pointer':'default'; $('h_pj').title=cokP?'Proje değiştir':''; $('h_pj').onclick=function(){ if(cokP)projeSheet(); };
+  var cokP=allowedProjeler().length>1; $('h_pj').style.cursor=cokP?'pointer':'default'; $('h_pj').title=cokP?'Proje değiştir':''; $('h_pj').onclick=function(){ if(cokP)projeSheet(); };
   var tot=cumUsd(),pct=SOZBEDEL>0?tot/SOZBEDEL*100:0;
   $('h_pct').textContent='%'+pct.toFixed(1).replace('.',',');
   $('h_bar').style.width=Math.min(100,pct)+'%';
@@ -1164,10 +1164,6 @@ function vDaha(){
   }
   h+='<div class="card"><div class="ch">Arşiv</div>'
     +'<button class="mod" id="m_eski"><span class="mic">📺</span><span class="mtx"><b>Eski uygulama (arşiv)</b><small>Salt görüntüleme · eski SHAMS, veri girişi kapalı</small></span></button></div>';
-  if(adm){
-    h+='<div class="card"><div class="ch">Projeler</div>'
-      +'<button class="mod" id="m_proje"><span class="mic">🗂️</span><span class="mtx"><b>Projeler</b><small>Aktif: '+esc((projGet(PROJE)||{}).ad||PROJE)+' · ekle / geç, isim + renk</small></span></button></div>';
-  }
   if(canSee('rapor')||canSee('yedek')){
     h+='<div class="card"><div class="ch">Rapor & veri</div>';
     if(canSee('rapor'))h+='<button class="mod" id="m_rapor"><span class="mic">📊</span><span class="mtx"><b>Saha raporu</b><small>İlerleme, hakediş, maliyet özeti</small></span></button>';
@@ -1194,21 +1190,13 @@ function bDaha(){
   if($('m_proje'))$('m_proje').onclick=function(){projeSheet();};
   if($('m_guncelle'))$('m_guncelle').onclick=function(){forceUpdate();};
 }
-function projeSheet(){ var adm=(ROLE==='admin'); var liste=allowedProjeler(); if(!adm&&liste.length<2&&!projGet(PROJE))return;
-  var h='<div class="gt" style="margin-bottom:10px">'+(adm?'Aktif projeyi seç ya da yeni proje ekle. Her projenin verisi tamamen ayrıdır; iş kalemleri şablon olarak kopyalanır.':'Erişebildiğin projeyi seç.')+'</div><div class="kartlar">';
+function projeSheet(){ var liste=allowedProjeler(); if(liste.length<2)return;
+  var h='<div class="gt" style="margin-bottom:10px">Projeyi seç.</div><div class="kartlar">';
   liste.forEach(function(p){var akt=p.id===PROJE;
     h+='<button class="mod pj_sw" data-id="'+esc(p.id)+'" style="width:100%;text-align:left'+(akt?(';border-color:'+esc(p.renk||'#E8622A')):'')+'"><span class="mic" style="background:'+esc(p.renk||'#E8622A')+';color:#fff">●</span><span class="mtx"><b>'+esc(p.ad)+(akt?' · <span style="color:#2E7D46">aktif</span>':'')+'</b><small>'+esc(p.id)+'</small></span></button>';});
-  h+='</div>';
-  if(adm){ h+='<div class="ch2" style="margin-top:16px">Yeni proje</div>'
-    +'<div class="frow" style="align-items:center"><input id="pj_ad" placeholder="Proje adı (ör. SHAMS-2 GES)"><input id="pj_renk" type="color" value="#3f6fb0" style="max-width:52px;min-width:48px;height:42px;padding:2px"></div>'
-    +'<button class="prim" id="pj_ekle" style="margin-top:10px;width:100%">+ Proje oluştur</button>'
-    +'<div class="gt" style="margin-top:8px;color:#9aa0a6">Yeni projeye kullanıcı erişimini portaldan verirsin.</div>'; }
+  h+='</div>'+(ROLE==='admin'?'<div class="gt" style="margin-top:12px;color:#9aa0a6">Yeni proje eklemek için Portal → Saha İş Yönetimi.</div>':'');
   openSheet('Projeler',h);
   document.querySelectorAll('.pj_sw').forEach(function(b){b.onclick=function(){projeSwitch(b.getAttribute('data-id'));};});
-  if($('pj_ekle'))$('pj_ekle').onclick=function(){var ad=($('pj_ad').value||'').trim();if(!ad){toast('Proje adı girin');return;}
-    var id=projeAdd(ad,$('pj_renk').value);
-    if(confirm('"'+ad+'" oluşturuldu. Şimdi bu (boş) projeye geçilsin mi?')) projeSwitch(id); else { toast('Proje eklendi'); projeSheet(); }
-  };
 }
 function yedekSheet(){ if(!canSee('yedek'))return;
   var a0=getAll(''),n=0; Object.keys(a0).forEach(function(k){if(!N8N.skip(k))n++;});
