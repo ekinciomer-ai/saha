@@ -768,18 +768,23 @@ function vHakedis(){
   var tah=HKTAH();var avans=0,hak=0;tah.forEach(function(r){var v=toAZN(r.tutar,r.pb||'USD');if(r.tip==='avans')avans+=v;else hak+=v;});
   var r=gRate();var earnedAZN=hakTop*(r.usdazn||1);
   var tahsilAZN=avans+hak;var kalanAZN=earnedAZN-tahsilAZN;
-  var h='<div class="two"><div class="stat go"><div class="k">Hak edilen</div><div class="v" style="font-size:21px">'+n0(hakTop)+' $</div><div class="s">'+(HAKED().length?'hakediş · KDV hariç':'ilerleme tahmini')+'</div></div>'
-    +'<div class="stat mo"><div class="k">Kalan alacak</div><div class="v" style="font-size:21px">'+usd$(kalanAZN)+'</div><div class="s">işverenden</div></div></div>';
-  h+='<div class="card"><div class="ch">Sözleşme & ilerleme</div>'
-    +'<div class="row"><span>Sözleşme bedeli</span><b>'+n0(SOZBEDEL)+' $</b></div>'
-    +(iart?('<div class="row"><span>İş artışı ('+isl.length+' protokol)</span><b style="color:#E8622A">+'+n0(iart)+' $</b></div><div class="row"><span>Revize sözleşme</span><b>'+n0(SOZBEDEL+iart)+' $</b></div>'):'')
-    +'<div class="row"><span>Mekanik ('+n0(disBedel('MEK'))+' $)</span><b>%'+disUsd('MEK').toFixed(0)+'</b></div>'
-    +'<div class="row"><span>Elektrik ('+n0(disBedel('ELK'))+' $)</span><b>%'+disUsd('ELK').toFixed(0)+'</b></div>'
-    +'<div class="row"><span>İlerlemeye göre (tahmini)</span><b style="color:#9aa0a6">'+n0(earned+iart)+' $</b></div>'
-    +(HAKED().length?('<div class="row"><span style="font-weight:700">Hak edilen (hakediş · gerçek)</span><b>'+n0(hakC)+' $</b></div>'):'')
-    +'<div class="row"><span>Kalan iş (revize − hak ediş)</span><b style="color:#E8622A">'+n0((SOZBEDEL+iart)-hakTop)+' $</b></div>'
-    +'<div class="row"><span>Tahsil edilen</span><b style="color:#1e8e4e">'+usd$(tahsilAZN)+'</b></div>'
-    +'<div class="row"><span>Kalan alacak (hak − tahsilat)</span><b style="color:'+(kalanAZN>0.5?'#E8622A':'#1e8e4e')+'">'+usd$(kalanAZN)+'</b></div>'
+  /* SÖZLEŞME FİYATI T = a(mekanik) + b(elektrik tam) + c(iş artışı mek) */
+  var sozA=MEK, sozB=ELK, sozC=MEK_ART, sozT=sozA+sozB+sozC;  // 139.797 + 353.954 + 102.831 = 596.582
+  var kalanIs=sozT-hakTop, tahsil$=usd$(tahsilAZN);
+  var h='<div class="card" style="border:1.5px solid var(--org);background:#FFF8F2"><div class="ch">💰 Sözleşme fiyatı & kalan</div>'
+    +'<div class="row"><span>a · Mekanik</span><b>'+n0(sozA)+' $</b></div>'
+    +'<div class="row"><span>b · Elektrik</span><b>'+n0(sozB)+' $</b></div>'
+    +'<div class="row"><span>c · İş artışı (mekanik)</span><b style="color:#E8622A">'+n0(sozC)+' $</b></div>'
+    +'<div class="row" style="border-top:2px solid #E8C4A8"><span style="font-weight:800">Sözleşme fiyatı (T = a+b+c)</span><b style="color:var(--org);font-size:18px">'+n0(sozT)+' $</b></div>'
+    +'<div class="row"><span>Hak edilen (hakediş · KDV hariç)</span><b style="color:#1e8e4e">'+n0(hakTop)+' $</b></div>'
+    +'<div class="row"><span style="font-weight:800">Kalan iş (T − hak edilen)</span><b style="color:#E8622A;font-size:18px">'+n0(kalanIs)+' $</b></div>'
+    +'<div class="row" style="border-top:1px solid #E8C4A8"><span>Tahsil edilen (işverenden)</span><b style="color:#1e8e4e">'+tahsil$+'</b></div>'
+    +'<div class="row"><span style="font-weight:700">Kalan alacak (hak − tahsilat)</span><b style="color:'+(kalanAZN>0.5?'#E8622A':'#1e8e4e')+'">'+usd$(kalanAZN)+'</b></div>'
+    +'</div>';
+  h+='<div class="card"><div class="ch">İlerleme durumu</div>'
+    +'<div class="row"><span>Mekanik ilerleme</span><b>%'+disUsd('MEK').toFixed(0)+'</b></div>'
+    +'<div class="row"><span>Elektrik ilerleme <small style="color:#9aa0a6">(CCTV hariç)</small></span><b>%'+disUsd('ELK').toFixed(0)+'</b></div>'
+    +'<div class="row"><span>İlerlemeye göre tahmini hak</span><b style="color:#9aa0a6">'+n0(earned+iart)+' $</b></div>'
     +'<button class="more" onclick="window.SH.go(\'ilerleme\')">Kalem yüzdelerini düzenle</button></div>';
   h+=hakDokum();
   if(isl.length){ h+='<div class="card"><div class="ch">İş artışı protokolleri<button class="tag" style="border:0" onclick="window.SH.openIsArtis()">+ Ekle</button></div>';
