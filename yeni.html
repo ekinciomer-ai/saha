@@ -260,6 +260,7 @@ details.acc[open]>summary{border-bottom:1.5px solid var(--line)}
 "use strict";
 (function(){
 /* ============================= SABİTLER ============================= */
+var BUILD='v63';  /* uygulama sürümü (önbellek/güncelleme takibi) */
 var MEK=139796.80, ELK=353953.60, SOZBEDEL=0, CFG=null;  /* değerler proje CFG'den; varsayılan SHAMS-1 */
 var MEK_ART=102831.30;  /* mekanik iş artışı (proje CFG'den gelir) */
 var TGT={tr1:{masa:378,ayak:5292,kiris:2646,asik:4536,panel:9828,capraz:7182,inv:19},
@@ -1146,6 +1147,9 @@ function vDaha(){
       +'<button class="mod" id="m_sync"><span class="mic">☁</span><span class="mtx"><b>Yedek / senkron</b><small>n8n tam yedek gönder</small></span></button>'
       +'<button class="mod" id="m_yedek"><span class="mic">💾</span><span class="mtx"><b>Yedek al / geri yükle</b><small>Veriyi dosyaya indir ya da dosyadan geri yükle</small></span></button></div>';
   }
+  h+='<div class="card"><div class="ch">Uygulama</div>'
+    +'<button class="mod" id="m_guncelle"><span class="mic">⟳</span><span class="mtx"><b>Uygulamayı güncelle</b><small>En son sürümü yükle · ekranlar/yetkiler eksikse buna dokunun</small></span></button>'
+    +'<div class="gt" style="margin-top:8px;color:#9aa0a6">Sürüm <b id="m_ver">'+esc(BUILD)+'</b></div></div>';
   if(!adm)h+='<div class="empty">Hakediş ve parasal bilgiler yalnız yöneticide görünür.</div>';
   return h;
 }
@@ -1160,6 +1164,7 @@ function bDaha(){
   if($('m_eski'))$('m_eski').onclick=function(){window.open('eski.html','_blank','noopener');};
   if($('m_yedek'))$('m_yedek').onclick=function(){yedekSheet();};
   if($('m_proje'))$('m_proje').onclick=function(){projeSheet();};
+  if($('m_guncelle'))$('m_guncelle').onclick=function(){forceUpdate();};
 }
 function projeSheet(){ if(ROLE!=='admin')return;
   var h='<div class="gt" style="margin-bottom:10px">Aktif projeyi seç ya da yeni proje ekle. Her projenin verisi (ekip, puantaj, ödeme, hakediş) tamamen ayrıdır; iş kalemleri şablon olarak kopyalanır, metraj/fiyatları projeye göre düzenlersin.</div><div class="kartlar">';
@@ -1428,7 +1433,42 @@ function startApp(){
   $('h_out').onclick=function(){ try{location.replace('/aesun/portal/');}catch(e){location.reload();} };
   $('sbg').onclick=closeSheet;
 }
+
+/* ---- service worker: yeni sürümü yükle, eski önbelleği devral ---- */
+var _swReloaded=false;
+function regSW(){
+  if(!('serviceWorker' in navigator))return;
+  try{
+    navigator.serviceWorker.addEventListener('controllerchange',function(){
+      if(_swReloaded)return; _swReloaded=true; location.reload();
+    });
+    navigator.serviceWorker.register('sw.js').then(function(reg){
+      try{reg.update();}catch(e){}
+      reg.addEventListener('updatefound',function(){
+        var nw=reg.installing; if(!nw)return;
+        nw.addEventListener('statechange',function(){
+          if(nw.state==='installed' && navigator.serviceWorker.controller && !_swReloaded){
+            _swReloaded=true; location.reload();
+          }
+        });
+      });
+    }).catch(function(){});
+  }catch(e){}
+}
+/* tek dokunuşla zorla güncelle: SW kaldır + tüm önbellek sil + taze yükle */
+function forceUpdate(){
+  if(!confirm('Uygulama güncellensin mi?\nÖnbellek temizlenip en son sürüm yüklenir.'))return;
+  var done=function(){ try{location.reload(true);}catch(e){location.reload();} };
+  Promise.resolve()
+    .then(function(){ return ('serviceWorker' in navigator)?navigator.serviceWorker.getRegistrations():[]; })
+    .then(function(regs){ return Promise.all((regs||[]).map(function(r){return r.unregister();})); })
+    .then(function(){ return ('caches' in window)?caches.keys():[]; })
+    .then(function(keys){ return Promise.all((keys||[]).map(function(k){return caches.delete(k);})); })
+    .then(done).catch(done);
+}
+
 startApp();
+regSW();
 
 window.SH={go:go,render:render,openIsArtis:isArtisSheet,importEski:importEski,importSheet:importSheet,importBelge:importBelge};
 })();
