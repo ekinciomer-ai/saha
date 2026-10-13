@@ -776,7 +776,10 @@ function vHakedis(){
     +'<div class="row"><span>Mekanik ('+n0(disBedel('MEK'))+' $)</span><b>%'+disUsd('MEK').toFixed(0)+'</b></div>'
     +'<div class="row"><span>Elektrik ('+n0(disBedel('ELK'))+' $)</span><b>%'+disUsd('ELK').toFixed(0)+'</b></div>'
     +'<div class="row"><span>İlerlemeye göre (tahmini)</span><b style="color:#9aa0a6">'+n0(earned+iart)+' $</b></div>'
-    +(HAKED().length?('<div class="row"><span style="font-weight:700">Hakedişe göre (gerçek)</span><b>'+n0(hakC)+' $</b></div>'):'')
+    +(HAKED().length?('<div class="row"><span style="font-weight:700">Hak edilen (hakediş · gerçek)</span><b>'+n0(hakC)+' $</b></div>'):'')
+    +'<div class="row"><span>Kalan iş (revize − hak ediş)</span><b style="color:#E8622A">'+n0((SOZBEDEL+iart)-hakTop)+' $</b></div>'
+    +'<div class="row"><span>Tahsil edilen</span><b style="color:#1e8e4e">'+usd$(tahsilAZN)+'</b></div>'
+    +'<div class="row"><span>Kalan alacak (hak − tahsilat)</span><b style="color:'+(kalanAZN>0.5?'#E8622A':'#1e8e4e')+'">'+usd$(kalanAZN)+'</b></div>'
     +'<button class="more" onclick="window.SH.go(\'ilerleme\')">Kalem yüzdelerini düzenle</button></div>';
   h+=hakDokum();
   if(isl.length){ h+='<div class="card"><div class="ch">İş artışı protokolleri<button class="tag" style="border:0" onclick="window.SH.openIsArtis()">+ Ekle</button></div>';
