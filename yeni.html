@@ -769,17 +769,23 @@ function vHakedis(){
   var r=gRate();var earnedAZN=hakTop*(r.usdazn||1);
   var tahsilAZN=avans+hak;var kalanAZN=earnedAZN-tahsilAZN;
   /* SÖZLEŞME FİYATI T = a(mekanik) + b(elektrik tam) + c(iş artışı mek) */
-  var sozA=MEK, sozB=ELK, sozC=MEK_ART, sozT=sozA+sozB+sozC;  // 139.797 + 353.954 + 102.831 = 596.582
-  var kalanIs=sozT-hakTop, tahsil$=usd$(tahsilAZN);
+  var sozA=disBedel('MEK'), sozB=disBedel('ELK'), sozC=MEK_ART, sozT=sozA+sozB+sozC;  // 139.797 + 304.400 (CCTV hariç) + 102.831 = 547.028
+  var kalanIs=sozT-hakTop;
+  /* Tahsil edilen = avans + hesaba yatan (net hakediş) — hakediş dökümünden */
+  var avansTop=0, netTop=0;
+  HAKED().forEach(function(x){var hc=hakHesap(x); avansTop+=+((x.k&&x.k.avans)||0); netTop+=hc.net;});
+  var tahsilHak=avansTop+netTop, kalanAlacak=hakTop-tahsilHak;
   var h='<div class="card" style="border:1.5px solid var(--org);background:#FFF8F2"><div class="ch">💰 Sözleşme fiyatı & kalan</div>'
     +'<div class="row"><span>a · Mekanik</span><b>'+n0(sozA)+' $</b></div>'
-    +'<div class="row"><span>b · Elektrik</span><b>'+n0(sozB)+' $</b></div>'
+    +'<div class="row"><span>b · Elektrik <small style="color:#9aa0a6">(CCTV −'+n0(49553.50)+' hariç)</small></span><b>'+n0(sozB)+' $</b></div>'
     +'<div class="row"><span>c · İş artışı (mekanik)</span><b style="color:#E8622A">'+n0(sozC)+' $</b></div>'
     +'<div class="row" style="border-top:2px solid #E8C4A8"><span style="font-weight:800">Sözleşme fiyatı (T = a+b+c)</span><b style="color:var(--org);font-size:18px">'+n0(sozT)+' $</b></div>'
     +'<div class="row"><span>Hak edilen (hakediş · KDV hariç)</span><b style="color:#1e8e4e">'+n0(hakTop)+' $</b></div>'
     +'<div class="row"><span style="font-weight:800">Kalan iş (T − hak edilen)</span><b style="color:#E8622A;font-size:18px">'+n0(kalanIs)+' $</b></div>'
-    +'<div class="row" style="border-top:1px solid #E8C4A8"><span>Tahsil edilen (işverenden)</span><b style="color:#1e8e4e">'+tahsil$+'</b></div>'
-    +'<div class="row"><span style="font-weight:700">Kalan alacak (hak − tahsilat)</span><b style="color:'+(kalanAZN>0.5?'#E8622A':'#1e8e4e')+'">'+usd$(kalanAZN)+'</b></div>'
+    +'<div class="row" style="border-top:1px solid #E8C4A8"><span>Avans</span><b>'+n0(avansTop)+' $</b></div>'
+    +'<div class="row"><span>Hesaba yatan (net hakediş)</span><b>'+n0(netTop)+' $</b></div>'
+    +'<div class="row"><span style="font-weight:700">Tahsil edilen (avans + hesaba yatan)</span><b style="color:#1e8e4e">'+n0(tahsilHak)+' $</b></div>'
+    +'<div class="row"><span style="font-weight:800">Kalan alacak (hak − tahsil)</span><b style="color:'+(kalanAlacak>0.5?'#E8622A':'#1e8e4e')+';font-size:17px">'+n0(kalanAlacak)+' $</b></div>'
     +'</div>';
   h+='<div class="card"><div class="ch">İlerleme durumu</div>'
     +'<div class="row"><span>Mekanik ilerleme</span><b>%'+disUsd('MEK').toFixed(0)+'</b></div>'
