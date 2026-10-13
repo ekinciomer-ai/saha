@@ -1119,7 +1119,8 @@ function vDaha(){
     h+='<div class="card"><div class="ch">Rapor & veri</div>'
       +'<button class="mod" id="m_rapor"><span class="mic">📊</span><span class="mtx"><b>Saha raporu</b><small>İlerleme, hakediş, maliyet özeti</small></span></button>'
       +'<button class="mod" id="m_import"><span class="mic">📥</span><span class="mtx"><b>Eski yedeği içe aktar</b><small>Eski SHAMS verisini bu uygulamaya al</small></span></button>'
-      +'<button class="mod" id="m_sync"><span class="mic">☁</span><span class="mtx"><b>Yedek / senkron</b><small>n8n tam yedek gönder</small></span></button></div>';
+      +'<button class="mod" id="m_sync"><span class="mic">☁</span><span class="mtx"><b>Yedek / senkron</b><small>n8n tam yedek gönder</small></span></button>'
+      +'<button class="mod" id="m_yedek"><span class="mic">💾</span><span class="mtx"><b>Yedek al / geri yükle</b><small>Veriyi dosyaya indir ya da dosyadan geri yükle</small></span></button></div>';
   }
   if(!adm)h+='<div class="empty">Hakediş ve parasal bilgiler yalnız yöneticide görünür.</div>';
   return h;
@@ -1133,6 +1134,35 @@ function bDaha(){
   if($('m_team'))$('m_team').onclick=function(){teamSheet();};
   if($('m_arac'))$('m_arac').onclick=function(){aracSheet();};
   if($('m_eski'))$('m_eski').onclick=function(){window.open('eski.html','_blank','noopener');};
+  if($('m_yedek'))$('m_yedek').onclick=function(){yedekSheet();};
+}
+function yedekSheet(){ if(ROLE!=='admin')return;
+  var a0=getAll(''),n=0; Object.keys(a0).forEach(function(k){if(!N8N.skip(k))n++;});
+  openSheet('Yedek al / geri yükle',
+    '<div class="gt" style="margin-bottom:12px">Bu cihazdaki tüm saha verisini (ekip, puantaj, ödeme, hakediş, günlük, gider…) tek bir JSON dosyasına indirir ya da böyle bir dosyadan geri yükler. Fotoğraflar ayrıdır (buluta yedeklenir).</div>'
+    +'<button class="prim" id="y_al" style="width:100%">⬇ Yedeği indir ('+n+' kayıt)</button>'
+    +'<div class="ch2" style="margin-top:18px">Dosyadan geri yükle</div>'
+    +'<div class="gt" style="margin-bottom:8px">Dosyadaki kayıtlar mevcut verinin üzerine yazılır (aynı anahtarlar güncellenir) ve buluta senkronlanır.</div>'
+    +'<input id="y_file" type="file" accept="application/json,.json"><div id="y_st" class="gt" style="margin-top:10px"></div>');
+  $('y_al').onclick=function(){
+    var data={},a=getAll(''); Object.keys(a).forEach(function(k){if(!N8N.skip(k))data[k]=a[k];});
+    var payload={_app:'SHAMS',_tur:'yedek',proje:PROJE,alindi:new Date().toISOString(),kayit:Object.keys(data).length,data:data};
+    try{var blob=new Blob([JSON.stringify(payload)],{type:'application/json'}),url=URL.createObjectURL(blob),el=document.createElement('a');
+      el.href=url; el.download='SHAMS_yedek_'+today()+'.json'; document.body.appendChild(el); el.click();
+      setTimeout(function(){URL.revokeObjectURL(url);el.remove();},800); toast('Yedek indirildi');
+    }catch(e){toast('İndirilemedi: '+e.message);}
+  };
+  $('y_file').onchange=function(){ var f=$('y_file').files&&$('y_file').files[0]; if(!f)return;
+    $('y_st').textContent='Okunuyor… ('+Math.round(f.size/1024)+' KB)';
+    var rd=new FileReader(); rd.onload=function(e){ try{yedekYukle(e.target.result);}catch(err){$('y_st').textContent='Hata: '+err.message;} }; rd.readAsText(f); };
+}
+function yedekYukle(text){ var J; try{J=JSON.parse(text);}catch(e){toast('Dosya okunamadı');return;}
+  var data=(J&&J.data)||J; if(!data||typeof data!=='object'){toast('Geçersiz yedek');return;}
+  var ks=Object.keys(data).filter(function(k){return !N8N.skip(k);});
+  if(!ks.length){toast('Yedekte veri yok');return;}
+  if(!confirm(ks.length+' kayıt geri yüklenecek, mevcut veriyle birleştirilecek. Devam?'))return;
+  var n=0; ks.forEach(function(k){ try{ set(k,data[k]); n++; }catch(e){} });
+  closeSheet(); toast(n+' kayıt geri yüklendi'); render();
 }
 function syncSheet(){ openSheet('n8n senkron','<div class="gt" style="margin-bottom:10px">Veri cihazda anında kaydedilir; n8n arka planda ortak kaynağa yazar (rapor/bildirim/yedek).</div><div class="ch2">Webhook</div><input id="n_url" value="'+esc(N8N_BASE)+'"><div class="frow" style="margin-top:10px"><button class="ghost" id="n_save" style="flex:1">Kaydet</button><button class="prim" id="n_snap" style="flex:1">Tümünü gönder</button></div>');
   $('n_save').onclick=function(){N8N_BASE=($('n_url').value||'').trim().replace(/\/$/,'');try{localStorage.setItem('sh2:n8n',N8N_BASE);}catch(e){}closeSheet();toast('Kaydedildi');};
