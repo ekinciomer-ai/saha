@@ -947,14 +947,17 @@ function gridPers(ym){
   /* gün sırası: içinde bulunduğumuz ayda bugünden geriye (bugün solda); geçmiş ayda son günden geriye */
   var isCur=(ym===today().slice(0,7)), son=isCur?+today().slice(8,10):dim, days=[];
   for(var d=son;d>=1;d--)days.push(d);
-  /* ay içi giriş sayısı + ay toplam gün */
+  /* ay içi giriş + ay toplam gün + en son çalışma günü */
   function ayGiris(p){var n=0;for(var dd=1;dd<=dim;dd++){if(cell(pj,ym,p.id,dd))n++;}return n;}
   function ayTot(p){var t=0;for(var dd=1;dd<=dim;dd++){var m=pjMeta(cell(pj,ym,p.id,dd));t+=m.v*payMult(p.id,ym+'-'+String(dd).padStart(2,'0'));}return t;}
+  function sonCalisma(pid){var best='';for(var y in pj){var mp=pj[y]&&pj[y][pid];if(!mp)continue;for(var dd in mp){if(mp[dd]){var iso=y+'-'+(String(dd).length<2?'0'+dd:dd);if(iso>best)best=iso;}}}return best;}
+  var esik=dadd(today(),-30);  /* son 30 günde çalışan = aktif */
+  /* aktif: bu ay giriş var VEYA son 30 günde çalışmış; uzun süre çalışmayan: gerisi */
   var aktif=[],pasif=[];
-  team.forEach(function(p){ (ayGiris(p)>0?aktif:pasif).push(p); });
-  aktif.sort(function(a,b){return ayTot(b)-ayTot(a)||(a.ad||'').localeCompare(b.ad||'','tr');});
-  pasif.sort(function(a,b){return (a.ad||'').localeCompare(b.ad||'','tr');});
-  var rows=aktif.concat(PSHOW?pasif:[]);
+  team.forEach(function(p){ var son=sonCalisma(p.id); if(ayGiris(p)>0||(son&&son>=esik))aktif.push(p); else pasif.push(p); });
+  aktif.sort(function(a,b){return (sonCalisma(b.id)||'').localeCompare(sonCalisma(a.id)||'')||ayTot(b)-ayTot(a)||(a.ad||'').localeCompare(b.ad||'','tr');});
+  pasif.sort(function(a,b){return (sonCalisma(b.id)||'').localeCompare(sonCalisma(a.id)||'')||(a.ad||'').localeCompare(b.ad||'','tr');});
+  var rows=aktif.length?aktif.concat(PSHOW?pasif:[]):team.slice().sort(function(a,b){return (sonCalisma(b.id)||'').localeCompare(sonCalisma(a.id)||'');}); /* yakın çalışan yoksa boş kalmasın, herkesi göster */
   function rowHtml(p){var h='<tr><td class="pname">'+esc(p.ad)+'</td>';
     days.forEach(function(d){var c=cell(pj,ym,p.id,d),m=pjMeta(c),gv=cell(pjg,ym,p.id,d),gc=gv&&pjgOf(gv)?pjgOf(gv).c:'';
       h+='<td class="pc" data-p="'+esc(p.id)+'" data-d="'+d+'" style="background:'+(m.bg||'')+';color:'+m.fg+'">'+m.l+(gc?('<i class="pg" style="background:'+gc+'"></i>'):'')+'</td>';});
@@ -965,10 +968,10 @@ function gridPers(ym){
   h+='<th class="ptot">Gün</th></tr></thead><tbody>';
   rows.forEach(function(p){h+=rowHtml(p);});
   h+='</tbody></table></div>';
-  if(pasif.length)h+='<button class="more" id="ps_tog" style="margin-top:8px">'+(PSHOW?'▴ Çalışmayanları gizle':'▾ Çalışmayanları göster ('+pasif.length+')')+'</button>';
+  if(pasif.length)h+='<button class="more" id="ps_tog" style="margin-top:8px">'+(PSHOW?'▴ Uzun süre çalışmayanları gizle':'▾ Uzun süre çalışmayanları göster ('+pasif.length+')')+'</button>';
   h+='</div>';
   var totYev=0;aktif.forEach(function(p){totYev+=persMaas(p.id).yev;});
-  h+='<div class="two"><div class="stat"><div class="k">Bu ay çalışan</div><div class="v">'+aktif.length+'</div><div class="s">'+team.length+' kişiden</div></div>'
+  h+='<div class="two"><div class="stat"><div class="k">Çalışan</div><div class="v">'+aktif.length+'</div><div class="s">son 30 gün · '+team.length+' kişiden</div></div>'
     +'<div class="stat mo"><div class="k">Yevmiye (toplam)</div><div class="v" style="font-size:20px">'+usd$(toAZN(totYev,wageCur(aktif[0]&&aktif[0].id)))+'</div><div class="s">işe başlangıçtan</div></div></div>';
   return h;
 }
