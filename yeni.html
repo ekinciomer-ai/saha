@@ -260,31 +260,33 @@ details.acc[open]>summary{border-bottom:1.5px solid var(--line)}
 "use strict";
 (function(){
 /* ============================= SABİTLER ============================= */
-var MEK=139796.80, ELK=353953.60, SOZBEDEL=0;  /* ELK: % tabanı (keşif); SOZBEDEL kalemlerden hesaplanır (CCTV hariç) */
-var MEK_ART=102831.30;  /* mekanik iş artışı (revize 242.628,10 − sözleşme 139.796,80) */
+var MEK=139796.80, ELK=353953.60, SOZBEDEL=0, CFG=null;  /* değerler proje CFG'den; varsayılan SHAMS-1 */
+var MEK_ART=102831.30;  /* mekanik iş artışı (proje CFG'den gelir) */
 var TGT={tr1:{masa:378,ayak:5292,kiris:2646,asik:4536,panel:9828,capraz:7182,inv:19},
          tr3:{masa:395,ayak:5292,kiris:2765,asik:4740,panel:9828,capraz:7505,inv:19}};
 /* CCTV-Aydınlatma kapsam dışı — listeden ve hesaptan çıkarıldı */
-var GEN=[
+function defItems(){return [
+ {id:'kolon',ad:'Kolon',dis:'MEK',pur:0.42,birim:'adet',bf:11.12,soz:5278,mik:8708},
+ {id:'kiris',ad:'Kiriş',dis:'MEK',pur:0.0775,birim:'adet',bf:4.11,soz:2639,mik:4662},
+ {id:'asik',ad:'Aşık',dis:'MEK',pur:0.0775,birim:'adet',bf:2.39,soz:4524,mik:9060},
+ {id:'ruzgarlik',ad:'Rüzgarlık',dis:'MEK',pur:0.0775,birim:'adet',bf:2.39,soz:4524,mik:10116},
+ {id:'payanda',ad:'Payanda',dis:'MEK',pur:0.0775,birim:'adet',bf:4.11,soz:2639,mik:5901},
+ {id:'pv',ad:'PV (Panel)',dis:'MEK',pur:0.27,birim:'adet',bf:3.85,soz:9802,mik:14664},
  {id:'kanal',ad:'AG-OG Kablo Kanalı',dis:'ELK',pur:0.30,birim:'mt',bf:16.89,mik:6287},
  {id:'solar',ad:'1x6 Solar Kablo',dis:'ELK',pur:0.16,birim:'mt',bf:0.236,mik:240000},
  {id:'ogbas',ad:'OG Başlık',dis:'ELK',pur:0.07,birim:'adet',bf:688.24,mik:36},
  {id:'kosk', ad:'Köşk OG Hücre / Pano',dis:'ELK',pur:0.11,birim:'adet',bf:12978.30,mik:3},
  {id:'invtr',ad:'İnverter + Trafo',dis:'ELK',pur:0.17,birim:'adet',bf:1002.87,mik:60},
  {id:'test', ad:'Testler & Devreye Alma',dis:'ELK',pur:0.05,birim:'set',bf:17697.68,mik:1}
-];
-function MECH(){return [
- {id:'kolon',ad:'Kolon',dis:'MEK',pur:0.42,birim:'adet',bf:11.12,soz:5278,mik:8708},
- {id:'kiris',ad:'Kiriş',dis:'MEK',pur:0.0775,birim:'adet',bf:4.11,soz:2639,mik:4662},
- {id:'asik',ad:'Aşık',dis:'MEK',pur:0.0775,birim:'adet',bf:2.39,soz:4524,mik:9060},
- {id:'ruzgarlik',ad:'Rüzgarlık',dis:'MEK',pur:0.0775,birim:'adet',bf:2.39,soz:4524,mik:10116},
- {id:'payanda',ad:'Payanda',dis:'MEK',pur:0.0775,birim:'adet',bf:4.11,soz:2639,mik:5901},
- {id:'pv',ad:'PV (Panel)',dis:'MEK',pur:0.27,birim:'adet',bf:3.85,soz:9802,mik:14664}
 ];}
-function allItems(){return MECH().concat(GEN);}
+function defCFG(){return {MEK:139796.80,ELK:353953.60,MEK_ART:102831.30,items:defItems()};}
+CFG=defCFG();
+function allItems(){return (CFG&&CFG.items&&CFG.items.length)?CFG.items:defItems();}
+function MECH(){return allItems().filter(function(it){return it.dis==='MEK';});}
 function bedel(it){return (it.dis==='MEK'?MEK:ELK)*it.pur;}
 function disBedel(dis){var t=0;allItems().forEach(function(it){if(it.dis===dis)t+=bedel(it);});return t;}
-SOZBEDEL=disBedel('MEK')+disBedel('ELK');  /* mekanik + elektrik (CCTV hariç) */
+SOZBEDEL=disBedel('MEK')+disBedel('ELK');
+function loadCFG(){ var c=null; try{c=get('cfg',null);}catch(e){} CFG=(c&&c.items&&c.items.length)?c:defCFG(); MEK=+CFG.MEK||0; ELK=+CFG.ELK||0; MEK_ART=+CFG.MEK_ART||0; SOZBEDEL=disBedel('MEK')+disBedel('ELK'); }
 
 var PJST=[{c:'',l:'—',v:0,bg:'',fg:'#9aa0a6'},{c:'V',l:'●',v:1,bg:'#16a34a',fg:'#fff'},
  {c:'Y',l:'½',v:0.5,bg:'#d97706',fg:'#fff'},{c:'X',l:'–',v:0,bg:'#e5e7eb',fg:'#6b7280'},
@@ -312,6 +314,21 @@ var ROLE='admin', USER='', RO=false;
 var D={};                   // bellekteki veri (tüm anahtarlar)
 var TAB='bugun', PYM='', PSUB='pers', OSUB='maas', PSHOW=false;
 var N8N_BASE=localStorage.getItem('sh2:n8n')||'https://xbay.app.n8n.cloud/webhook';
+/* ---- ÇOK PROJE (kayıt defteri + aktif proje + renk teması) ---- */
+var PROJELER=[{id:'tr1',ad:'SHAMS-1 GES',renk:'#E8622A'}];
+function projGet(id){for(var i=0;i<PROJELER.length;i++)if(PROJELER[i].id===id)return PROJELER[i];return null;}
+function aktifProje(){try{var a=localStorage.getItem('sh2:aktif');if(a)return a;}catch(e){}return 'tr1';}
+function loadReg(){try{var r=localStorage.getItem('sh2:projeler');if(r){var l=JSON.parse(r);if(l&&l.length)PROJELER=l;}}catch(e){}
+  if(!projGet('tr1'))PROJELER.unshift({id:'tr1',ad:'SHAMS-1 GES',renk:'#E8622A'});}
+function saveReg(){try{localStorage.setItem('sh2:projeler',JSON.stringify(PROJELER));}catch(e){}
+  try{fetch(N8N_BASE+'/saha-set',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({proje:'SHAMS1-reg',cihaz:(N8N&&N8N.dev)||'',items:[{anahtar:'projeler',deger:JSON.stringify(PROJELER)}]})}).catch(function(){});}catch(e){}}
+function regFetch(cb){try{fetch(N8N_BASE+'/saha-get?proje=SHAMS1-reg&t='+Date.now()).then(function(r){return r.ok?r.json():null;}).then(function(rows){var arr=Array.isArray(rows)?rows:(rows&&rows.data)||[];var p=null;arr.forEach(function(x){if(x.anahtar==='projeler'){try{p=JSON.parse(x.deger);}catch(e){}}});if(p&&p.length){PROJELER=p;if(!projGet('tr1'))PROJELER.unshift({id:'tr1',ad:'SHAMS-1 GES',renk:'#E8622A'});try{localStorage.setItem('sh2:projeler',JSON.stringify(PROJELER));}catch(e){}}cb&&cb();}).catch(function(){cb&&cb();});}catch(e){cb&&cb();}}
+function applyTheme(){var p=projGet(PROJE),c=(p&&p.renk)||'#E8622A';try{document.documentElement.style.setProperty('--org',c);}catch(e){}}
+function projeSwitch(id){if(id===PROJE)return;try{localStorage.setItem('sh2:aktif',id);}catch(e){}location.reload();}
+function projeAdd(ad,renk){var id='p'+Date.now().toString(36);var p={id:id,ad:(ad||'Yeni proje').trim(),renk:renk||'#3f6fb0'};PROJELER.push(p);saveReg();
+  try{var kopya=JSON.parse(JSON.stringify(defCFG()));localStorage.setItem('sh2:'+id+':cfg',JSON.stringify(kopya));
+    fetch(N8N_BASE+'/saha-set',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({proje:'SHAMS1-'+id,cihaz:(N8N&&N8N.dev)||'',items:[{anahtar:'cfg',deger:JSON.stringify(kopya)}]})}).catch(function(){});}catch(e){}
+  return id;}
 
 /* ============================= YARDIMCI ============================= */
 function $(id){return document.getElementById(id);}
@@ -545,7 +562,8 @@ function engAd(t){for(var i=0;i<ENGEL.length;i++)if(ENGEL[i][0]===t)return ENGEL
 
 /* ============================= HEADER ============================= */
 function syncHead(){
-  $('h_pj').textContent='SHAMS-1 GES';
+  var pp=projGet(PROJE); $('h_pj').textContent=(pp&&pp.ad)||'SHAMS-1 GES';
+  $('h_pj').style.cursor='pointer'; $('h_pj').title='Proje değiştir'; $('h_pj').onclick=function(){ if(ROLE==='admin')projeSheet(); };
   var tot=cumUsd(),pct=SOZBEDEL>0?tot/SOZBEDEL*100:0;
   $('h_pct').textContent='%'+pct.toFixed(1).replace('.',',');
   $('h_bar').style.width=Math.min(100,pct)+'%';
@@ -1120,6 +1138,8 @@ function vDaha(){
   h+='<div class="card"><div class="ch">Arşiv</div>'
     +'<button class="mod" id="m_eski"><span class="mic">📺</span><span class="mtx"><b>Eski uygulama (arşiv)</b><small>Salt görüntüleme · eski SHAMS, veri girişi kapalı</small></span></button></div>';
   if(adm){
+    h+='<div class="card"><div class="ch">Projeler</div>'
+      +'<button class="mod" id="m_proje"><span class="mic">🗂️</span><span class="mtx"><b>Projeler</b><small>Aktif: '+esc((projGet(PROJE)||{}).ad||PROJE)+' · ekle / geç, isim + renk</small></span></button></div>';
     h+='<div class="card"><div class="ch">Rapor & veri</div>'
       +'<button class="mod" id="m_rapor"><span class="mic">📊</span><span class="mtx"><b>Saha raporu</b><small>İlerleme, hakediş, maliyet özeti</small></span></button>'
       +'<button class="mod" id="m_import"><span class="mic">📥</span><span class="mtx"><b>Eski yedeği içe aktar</b><small>Eski SHAMS verisini bu uygulamaya al</small></span></button>'
@@ -1139,6 +1159,21 @@ function bDaha(){
   if($('m_arac'))$('m_arac').onclick=function(){aracSheet();};
   if($('m_eski'))$('m_eski').onclick=function(){window.open('eski.html','_blank','noopener');};
   if($('m_yedek'))$('m_yedek').onclick=function(){yedekSheet();};
+  if($('m_proje'))$('m_proje').onclick=function(){projeSheet();};
+}
+function projeSheet(){ if(ROLE!=='admin')return;
+  var h='<div class="gt" style="margin-bottom:10px">Aktif projeyi seç ya da yeni proje ekle. Her projenin verisi (ekip, puantaj, ödeme, hakediş) tamamen ayrıdır; iş kalemleri şablon olarak kopyalanır, metraj/fiyatları projeye göre düzenlersin.</div><div class="kartlar">';
+  PROJELER.forEach(function(p){var akt=p.id===PROJE;
+    h+='<button class="mod pj_sw" data-id="'+esc(p.id)+'" style="width:100%;text-align:left'+(akt?(';border-color:'+esc(p.renk||'#E8622A')):'')+'"><span class="mic" style="background:'+esc(p.renk||'#E8622A')+';color:#fff">●</span><span class="mtx"><b>'+esc(p.ad)+(akt?' · <span style="color:#2E7D46">aktif</span>':'')+'</b><small>'+esc(p.id)+'</small></span></button>';});
+  h+='</div><div class="ch2" style="margin-top:16px">Yeni proje</div>'
+    +'<div class="frow" style="align-items:center"><input id="pj_ad" placeholder="Proje adı (ör. SHAMS-2 GES)"><input id="pj_renk" type="color" value="#3f6fb0" style="max-width:52px;min-width:48px;height:42px;padding:2px"></div>'
+    +'<button class="prim" id="pj_ekle" style="margin-top:10px;width:100%">+ Proje oluştur</button>';
+  openSheet('Projeler',h);
+  document.querySelectorAll('.pj_sw').forEach(function(b){b.onclick=function(){projeSwitch(b.getAttribute('data-id'));};});
+  $('pj_ekle').onclick=function(){var ad=($('pj_ad').value||'').trim();if(!ad){toast('Proje adı girin');return;}
+    var id=projeAdd(ad,$('pj_renk').value);
+    if(confirm('"'+ad+'" oluşturuldu. Şimdi bu (boş) projeye geçilsin mi?')) projeSwitch(id); else { toast('Proje eklendi'); projeSheet(); }
+  };
 }
 function yedekSheet(){ if(ROLE!=='admin')return;
   var a0=getAll(''),n=0; Object.keys(a0).forEach(function(k){if(!N8N.skip(k))n++;});
@@ -1379,12 +1414,15 @@ function startApp(){
   if(!pt){ try{location.replace('/aesun/portal/?git=saha');}catch(e){} return; }
   ROLE=pt.admin?'admin':'saha'; PIZIN=pt.izin||[]; USER=pt.user||(pt.admin?'Yönetici':'Saha'); RO=false;
   $('app').classList.remove('hidden'); $('sync').classList.remove('hidden');
-  PROJE='tr1'; try{localStorage.setItem('sh2:proje','tr1');}catch(e){}  /* tek birleşik veri — saha ayrımı yok */
+  PROJE=aktifProje(); loadReg(); try{localStorage.setItem('sh2:proje',PROJE);}catch(e){}
+  loadCFG(); applyTheme();       /* projenin iş kalemleri + renk teması */
   applyNav();
   N8N.loadBox();                 /* aktif projenin kalıcı kuyruğu */
   if(N8N.pend())N8N.schedule(300); /* önceki oturumdan bekleyen yazılar varsa gönder */
-  seedIfEmpty(); seedHak(); seedIsArtis(); iaDedup(); go('bugun');    /* önce yerel veriyle anında aç (donma yok) */
-  N8N.pull(function(){ seedIfEmpty(); seedHak(); seedIsArtis(); iaDedup(); render(); });  /* sonra ortak kaynaktan tazele */
+  var sv=(PROJE==='tr1');         /* tohum YALNIZ SHAMS-1'e; yeni projeler boş başlar */
+  if(sv){seedIfEmpty(); seedHak(); seedIsArtis();} iaDedup(); go('bugun');    /* önce yerel veriyle anında aç */
+  N8N.pull(function(){ if(sv){seedIfEmpty(); seedHak(); seedIsArtis();} iaDedup(); loadCFG(); render(); });  /* ortak kaynaktan tazele */
+  regFetch();                    /* proje kayıt defterini buluttan güncelle */
   document.querySelectorAll('#nav button').forEach(function(b){b.onclick=function(){go(b.getAttribute('data-t'));};});
   $('h_sync').onclick=function(){N8N.pull(function(){render();toast('Yenilendi');});};
   $('h_out').onclick=function(){ try{location.replace('/aesun/portal/');}catch(e){location.reload();} };
