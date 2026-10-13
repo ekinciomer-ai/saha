@@ -261,7 +261,7 @@ details.acc[open]>summary{border-bottom:1.5px solid var(--line)}
 "use strict";
 (function(){
 /* ============================= SABİTLER ============================= */
-var BUILD='v69';  /* uygulama sürümü (önbellek/güncelleme takibi) */
+var BUILD='v70';  /* uygulama sürümü (önbellek/güncelleme takibi) */
 var MEK=0, ELK=0, SOZBEDEL=0, CFG=null;  /* tüm değerler projenin KENDİ cfg verisinden gelir */
 var MEK_ART=0;                           /* mekanik iş artışı (cfg'den) */
 var TGT={};                              /* aktif projenin hedefleri (cfg.tgt) */
@@ -1162,6 +1162,10 @@ function vDaha(){
     h+='<button class="mod" id="m_team"><span class="mic">👷</span><span class="mtx"><b>Personel</b><small>Ekle / düzenle · yevmiye, foto, TC, telefon</small></span></button>';
     h+='<button class="mod" id="m_arac"><span class="mic">🚜</span><span class="mtx"><b>Araç / Ekipman</b><small>Ekle / çıkar (puantajda seçilir)</small></span></button></div>';
   }
+  if(adm){
+    h+='<div class="card"><div class="ch">Proje</div>'
+      +'<button class="mod" id="m_cfg"><span class="mic">⚙️</span><span class="mtx"><b>Proje ayarları</b><small>Metraj, birim bedel, iş kalemleri · hakediş bundan hesaplanır</small></span></button></div>';
+  }
   h+='<div class="card"><div class="ch">Arşiv</div>'
     +'<button class="mod" id="m_eski"><span class="mic">📺</span><span class="mtx"><b>Eski uygulama (arşiv)</b><small>Salt görüntüleme · eski SHAMS, veri girişi kapalı</small></span></button></div>';
   if(canSee('rapor')||canSee('yedek')){
@@ -1189,6 +1193,7 @@ function bDaha(){
   if($('m_yedek'))$('m_yedek').onclick=function(){yedekSheet();};
   if($('m_proje'))$('m_proje').onclick=function(){projeSheet();};
   if($('m_guncelle'))$('m_guncelle').onclick=function(){forceUpdate();};
+  if($('m_cfg'))$('m_cfg').onclick=function(){cfgSheet();};
 }
 function projeSheet(){ var liste=allowedProjeler(); if(liste.length<2)return;
   var h='<div class="gt" style="margin-bottom:10px">Projeyi seç.</div><div class="kartlar">';
@@ -1197,6 +1202,54 @@ function projeSheet(){ var liste=allowedProjeler(); if(liste.length<2)return;
   h+='</div>'+(ROLE==='admin'?'<div class="gt" style="margin-top:12px;color:#9aa0a6">Yeni proje eklemek için Portal → Saha İş Yönetimi.</div>':'');
   openSheet('Projeler',h);
   document.querySelectorAll('.pj_sw').forEach(function(b){b.onclick=function(){projeSwitch(b.getAttribute('data-id'));};});
+}
+/* ---- PROJE AYARLARI (cfg düzenleyici) — yönetici: metraj / birim bedel / iş kalemleri ---- */
+function cfgItemRow(it,i){
+  return '<div class="card" style="padding:8px;margin-bottom:6px" data-row="'+i+'">'
+    +'<input type="hidden" data-i="'+i+'" data-f="id" value="'+esc(it.id||'')+'">'
+    +'<div class="frow" style="gap:6px"><input data-i="'+i+'" data-f="ad" value="'+esc(it.ad||'')+'" placeholder="Kalem adı" style="flex:2">'
+    +'<select data-i="'+i+'" data-f="dis" style="flex:0 0 72px"><option value="MEK"'+(it.dis!=='ELK'?' selected':'')+'>MEK</option><option value="ELK"'+(it.dis==='ELK'?' selected':'')+'>ELK</option></select>'
+    +'<button class="ghost ci_del" data-i="'+i+'" style="flex:0 0 auto;color:var(--red)">sil</button></div>'
+    +'<div class="frow" style="gap:6px;margin-top:4px">'
+    +'<label style="flex:1;font-size:11px;color:#6B7177">Metraj<input data-i="'+i+'" data-f="mik" type="number" inputmode="decimal" value="'+(+it.mik||0)+'"></label>'
+    +'<label style="flex:1;font-size:11px;color:#6B7177">Sözleşme<input data-i="'+i+'" data-f="soz" type="number" inputmode="decimal" value="'+(+it.soz||0)+'"></label>'
+    +'<label style="flex:1;font-size:11px;color:#6B7177">Ağırlık<input data-i="'+i+'" data-f="pur" type="number" inputmode="decimal" step="0.0001" value="'+(+it.pur||0)+'"></label>'
+    +'<label style="flex:1;font-size:11px;color:#6B7177">Birim fiyat<input data-i="'+i+'" data-f="bf" type="number" inputmode="decimal" step="0.01" value="'+(+it.bf||0)+'"></label>'
+    +'<label style="flex:0 0 54px;font-size:11px;color:#6B7177">Birim<input data-i="'+i+'" data-f="birim" value="'+esc(it.birim||'adet')+'"></label>'
+    +'</div></div>';
+}
+function cfgSheet(){ if(ROLE!=='admin')return;
+  var c=CFG||defCFG(); var t=c.tgt||{};
+  var h='<div class="gt" style="margin-bottom:10px">'+esc((projGet(PROJE)||{}).ad||PROJE)+' · metraj, birim bedel ve iş kalemleri. Hakediş ve ilerleme bu değerlerden hesaplanır. Ağırlık = kalemin MEK/ELK bedeli içindeki payı.</div>';
+  h+='<div class="ch2">Birim bedeller ($)</div>'
+    +'<div class="frow" style="gap:8px"><label style="flex:1">Mekanik (MEK)<input id="c_mek" type="number" inputmode="decimal" step="0.01" value="'+(+c.MEK||0)+'"></label><label style="flex:1">Elektrik (ELK)<input id="c_elk" type="number" inputmode="decimal" step="0.01" value="'+(+c.ELK||0)+'"></label></div>'
+    +'<div class="frow" style="gap:8px;margin-top:4px"><label style="flex:1">İş artışı (MEK)<input id="c_art" type="number" inputmode="decimal" step="0.01" value="'+(+c.MEK_ART||0)+'"></label></div>';
+  h+='<div class="ch2">Hedefler (adet)</div><div class="frow" style="gap:6px;flex-wrap:wrap">';
+  [['masa','Masa'],['ayak','Ayak'],['kiris','Kiriş'],['asik','Aşık'],['panel','Panel'],['capraz','Çapraz'],['inv','İnverter']].forEach(function(f){
+    h+='<label style="flex:1 1 30%;font-size:11px;color:#6B7177">'+f[1]+'<input id="t_'+f[0]+'" type="number" inputmode="numeric" value="'+(+t[f[0]]||0)+'"></label>';});
+  h+='</div>';
+  h+='<div class="ch2">İş kalemleri</div><div id="c_items">';
+  (c.items||[]).forEach(function(it,i){ h+=cfgItemRow(it,i); });
+  h+='</div><button class="ghost" id="c_add" style="width:100%;margin-bottom:10px">+ Kalem ekle</button>';
+  h+='<button class="prim" id="c_save" style="width:100%">Kaydet</button>';
+  openSheet('Proje ayarları',h);
+  var next=(c.items||[]).length;
+  function bindDel(){ document.querySelectorAll('#c_items .ci_del').forEach(function(b){ b.onclick=function(){ var row=b.closest('[data-row]'); if(row)row.parentNode.removeChild(row); }; }); }
+  bindDel();
+  $('c_add').onclick=function(){ var d=document.createElement('div'); d.innerHTML=cfgItemRow({dis:'MEK',birim:'adet'},next++); $('c_items').appendChild(d.firstChild); bindDel(); };
+  $('c_save').onclick=cfgKaydet;
+}
+function cfgKaydet(){ if(ROLE!=='admin')return;
+  var cfg={MEK:+($('c_mek').value||0)||0, ELK:+($('c_elk').value||0)||0, MEK_ART:+($('c_art').value||0)||0, tgt:{}, items:[]};
+  ['masa','ayak','kiris','asik','panel','capraz','inv'].forEach(function(k){ var el=$('t_'+k); cfg.tgt[k]=el?(+el.value||0):0; });
+  document.querySelectorAll('#c_items [data-row]').forEach(function(row){
+    var it={}; row.querySelectorAll('[data-f]').forEach(function(el){ var f=el.getAttribute('data-f'); it[f]=(f==='ad'||f==='dis'||f==='birim'||f==='id')?el.value:(+el.value||0); });
+    if(!(it.ad||'').trim())return;
+    if(!it.id)it.id='k'+Date.now().toString(36)+Math.floor(Math.random()*1296).toString(36);
+    it.dis=(it.dis==='ELK')?'ELK':'MEK';
+    cfg.items.push(it);
+  });
+  set('cfg',cfg); loadCFG(); applyTheme(); toast('Proje ayarları kaydedildi'); closeSheet(); render();
 }
 function yedekSheet(){ if(!canSee('yedek'))return;
   var a0=getAll(''),n=0; Object.keys(a0).forEach(function(k){if(!N8N.skip(k))n++;});
