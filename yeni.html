@@ -424,8 +424,9 @@ function PJAG(){return get('pjag',{})||{};}
 function GIDER(){var out=[];keys('gd:').forEach(function(k){var v=get(k);if(v)out.push(v);});return out.sort(function(a,b){return (b.ts||0)-(a.ts||0);});}
 function ARPAY(){var out=[];keys('arpay:').forEach(function(k){var v=get(k);if(v)out.push(v);});return out.sort(function(a,b){return (b.ts||0)-(a.ts||0);});}
 function HKTAH(){var out=[];keys('hktah:').forEach(function(k){var v=get(k);if(v)out.push(v);});return out.sort(function(a,b){return (a.tarih||'').localeCompare(b.tarih||'');});}
-function ISARTIS(){var out=[];keys('isartis:').forEach(function(k){var v=get(k);if(v)out.push(v);});return out.sort(function(a,b){return (a.tarih||'').localeCompare(b.tarih||'');});}
+function ISARTIS(){var out=[],seen={};keys('isartis:').forEach(function(k){var v=get(k);if(!v)return;if(v.id!=null){if(seen[v.id])return;seen[v.id]=1;}out.push(v);});return out.sort(function(a,b){return (a.tarih||'').localeCompare(b.tarih||'');});}
 function iaKey(id){var kk=null;keys('isartis:').forEach(function(k){var v=get(k);if(v&&v.id===id)kk=k;});return kk;}
+function iaDedup(){var seen={};keys('isartis:').forEach(function(k){var v=get(k);if(!v||v.id==null)return;if(seen[v.id])del(k);else seen[v.id]=1;});} /* aynı id'li çift protokolleri temizle (n8n'den de) */
 function isArtisTop(){var t=0;ISARTIS().forEach(function(r){(r.kalemler||[]).forEach(function(k){t+=+k.tutar||0;});});return t;}
 function isArtisDis(dis){var t=0;ISARTIS().forEach(function(r){(r.kalemler||[]).forEach(function(k){var it=null;allItems().forEach(function(x){if(x.id===k.id||x.ad===k.ad)it=x;});if(it&&it.dis===dis)t+=+k.tutar||0;});});return t;}
 function seedIsArtis(){ if(get('ia_seeded',null))return;
@@ -1259,8 +1260,8 @@ function startApp(){
   applyNav();
   N8N.loadBox();                 /* aktif projenin kalıcı kuyruğu */
   if(N8N.pend())N8N.schedule(300); /* önceki oturumdan bekleyen yazılar varsa gönder */
-  seedIfEmpty(); seedHak(); seedIsArtis(); go('bugun');    /* önce yerel veriyle anında aç (donma yok) */
-  N8N.pull(function(){ seedIfEmpty(); seedHak(); seedIsArtis(); render(); });  /* sonra ortak kaynaktan tazele */
+  seedIfEmpty(); seedHak(); seedIsArtis(); iaDedup(); go('bugun');    /* önce yerel veriyle anında aç (donma yok) */
+  N8N.pull(function(){ seedIfEmpty(); seedHak(); seedIsArtis(); iaDedup(); render(); });  /* sonra ortak kaynaktan tazele */
   document.querySelectorAll('#nav button').forEach(function(b){b.onclick=function(){go(b.getAttribute('data-t'));};});
   $('h_sync').onclick=function(){N8N.pull(function(){render();toast('Yenilendi');});};
   $('h_out').onclick=function(){ try{location.replace('/aesun/portal/');}catch(e){location.reload();} };
