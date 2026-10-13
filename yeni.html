@@ -408,6 +408,7 @@ var PH={ db:null, _s:false, box:[],
   idbPut:function(fid,data,cb){ PH.open(function(db){ if(!db){cb&&cb(false);return;} try{var t=db.transaction('f','readwrite');t.objectStore('f').put(data,fid);t.oncomplete=function(){cb&&cb(true);};t.onerror=function(){cb&&cb(false);};}catch(e){cb&&cb(false);} }); },
   idbGet:function(fid,cb){ PH.open(function(db){ if(!db){cb(null);return;} try{var r=db.transaction('f','readonly').objectStore('f').get(fid);r.onsuccess=function(){cb(r.result||null);};r.onerror=function(){cb(null);};}catch(e){cb(null);} }); },
   save:function(data){ if(!data)return ''; var fid='ph'+Date.now()+Math.floor(Math.random()*1000); PH.idbPut(fid,data); PH.box.push(fid); PH.saveBox(); setTimeout(PH.flush,200); return fid; },
+  put:function(fid,data,cb){ if(!fid||!data){cb&&cb(false);return;} PH.idbPut(fid,data,function(){ if(PH.box.indexOf(fid)<0){PH.box.push(fid);PH.saveBox();} cb&&cb(true); }); },
   get:function(fid,cb){ if(!fid){cb(null);return;} PH.idbGet(fid,function(d){ if(d){cb(d);return;} PH.fetch(fid,cb); }); },
   fetch:function(fid,cb){ if(!navigator.onLine){cb(null);return;}
     fetch(N8N_BASE+'/foto-get?proje='+encodeURIComponent(N8N.proje())+'&fid='+encodeURIComponent(fid)).then(function(r){return r.ok?r.json():null;}).then(function(rows){var arr=Array.isArray(rows)?rows:(rows&&rows.data)||[];var v=arr[0]&&arr[0].veri;if(v){PH.idbPut(fid,v);cb(v);}else cb(null);}).catch(function(){cb(null);}); },
@@ -1264,9 +1265,34 @@ function importEski(text){
   render();
 }
 function importSheet(){ if(ROLE!=='admin'){return;}
-  openSheet('Eski yedeği içe aktar','<div class="gt" style="margin-bottom:12px">Eski SHAMS uygulamasından aldığınız <b>Veri yedeği (JSON)</b> dosyasını seçin. Ekip, puantaj, ödeme, hakediş, günlük, araç — hepsi yeni uygulamaya aktarılır. (Fotoğraflar ayrı; yerel depoya sığmaz.)</div>'
-    +'<input id="imp_file" type="file" accept="application/json,.json"><div id="imp_st" class="gt" style="margin-top:10px"></div>');
+  openSheet('Eski yedeği içe aktar','<div class="gt" style="margin-bottom:12px">Eski SHAMS uygulamasından aldığınız <b>Veri yedeği (JSON)</b> dosyasını seçin. Ekip, puantaj, ödeme, hakediş, günlük, araç — hepsi yeni uygulamaya aktarılır.</div>'
+    +'<input id="imp_file" type="file" accept="application/json,.json"><div id="imp_st" class="gt" style="margin-top:10px"></div>'
+    +'<div class="ch2" style="margin-top:16px">📎 Belge / foto yedeği (ayrı dosya)</div>'
+    +'<div class="gt" style="margin-bottom:8px">Fiş, dekont ve PDF\'lerin olduğu <b>Belge yedeği (JSON)</b> dosyasını seçin. Belgeler kayıtlara (gider, taşeron, maaş) bağlanır ve cihazda saklanıp buluta yüklenir.</div>'
+    +'<input id="impf_file" type="file" accept="application/json,.json"><div id="impf_st" class="gt" style="margin-top:10px"></div>');
   $('imp_file').onchange=function(){ var f=$('imp_file').files&&$('imp_file').files[0]; if(!f)return; $('imp_st').textContent='Okunuyor… ('+Math.round(f.size/1024)+' KB)'; var rd=new FileReader(); rd.onload=function(e){ try{importEski(e.target.result);}catch(err){toast('Hata: '+err.message);} }; rd.readAsText(f); };
+  $('impf_file').onchange=function(){ var f=$('impf_file').files&&$('impf_file').files[0]; if(!f)return; $('impf_st').textContent='Okunuyor… ('+Math.round(f.size/1024/1024*10)/10+' MB) — büyük dosya, lütfen bekleyin…'; var rd=new FileReader(); rd.onload=function(e){ try{importBelge(e.target.result,'impf_st');}catch(err){toast('Hata: '+err.message);} }; rd.readAsText(f); };
+}
+/* ---- BELGE (foto/pdf) YEDEĞİNİ İÇE AKTAR ---- */
+function importBelge(text,stId){
+  var J; try{J=JSON.parse(text);}catch(e){toast('Dosya okunamadı');return;}
+  var data=(J&&J.data)||J; if(!data||typeof data!=='object'){toast('Geçersiz yedek');return;}
+  var ents=[]; for(var k in data){ if(k.indexOf('foto@')===0 && data[k]){ var sk=k.slice(5); var ci=sk.indexOf(':'); if(ci<0)continue; ents.push({fid:k,tip:sk.slice(0,ci),skey:sk,suf:sk.slice(ci+1),veri:data[k]}); } }
+  if(!ents.length){ toast('Bu dosyada belge (foto/pdf) bulunamadı'); return; }
+  var pp=PPAY(), ppDirty=false, linked=0, saved=0, i=0;
+  function st(m){ try{var e=$(stId); if(e)e.textContent=m;}catch(x){} }
+  function step(){
+    if(i>=ents.length){ if(ppDirty)set('ppay',pp); try{PH.saveBox();}catch(x){} setTimeout(PH.flush,300);
+      st(''); closeSheet(); toast(saved+' belge aktarıldı · '+linked+' kayda bağlandı ✓'); render(); return; }
+    var e=ents[i++];
+    PH.put(e.fid, e.veri, function(){ saved++;
+      if(e.tip==='gd'||e.tip==='arpay'){ var kk=e.skey; var rec=get(kk); if(rec&&typeof rec==='object'){ rec.fotoId=e.fid; set(kk,rec); linked++; } }
+      else if(e.tip==='ppay'){ var base=e.suf.replace(/_\d+$/,''); for(var j=0;j<pp.length;j++){ if(pp[j]&&pp[j].id===base&&!pp[j].fotoId){ pp[j].fotoId=e.fid; ppDirty=true; linked++; break; } } }
+      if((i%20)===0) st('Aktarılıyor… '+i+' / '+ents.length);
+      setTimeout(step, 0);
+    });
+  }
+  st('Aktarılıyor… 0 / '+ents.length); step();
 }
 /* ---- RAPOR ---- */
 function raporSheet(){
@@ -1329,7 +1355,7 @@ function startApp(){
 }
 startApp();
 
-window.SH={go:go,render:render,openIsArtis:isArtisSheet,importEski:importEski,importSheet:importSheet};
+window.SH={go:go,render:render,openIsArtis:isArtisSheet,importEski:importEski,importSheet:importSheet,importBelge:importBelge};
 })();
 </script>
 </body>
