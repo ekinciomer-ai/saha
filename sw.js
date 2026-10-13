@@ -1,5 +1,5 @@
 /* SHAMS-1 Saha Takip · service worker */
-const CACHE = 'shams1-v54';
+const CACHE = 'shams1-v55';
 const SHELL = ['./', './index.html', './manifest.webmanifest'];
 self.addEventListener('install', e => {
   self.skipWaiting();

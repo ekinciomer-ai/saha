@@ -771,26 +771,32 @@ function vHakedis(){
   /* SÖZLEŞME FİYATI T = a(mekanik) + b(elektrik tam) + c(iş artışı mek) */
   var sozA=disBedel('MEK'), sozB=disBedel('ELK'), sozC=MEK_ART, sozT=sozA+sozB+sozC;  // 139.797 + 304.400 (CCTV hariç) + 102.831 = 547.028
   var kalanIs=sozT-hakTop;
-  /* Tahsil edilen = avans + hesaba yatan (net hakediş) — hakediş dökümünden */
+  /* KDV + tevkifat (sözleşmeye göre toplam alacak) */
+  var kdv=sozT*0.20, tKdv=sozT+kdv, tevkifat=kdv*0.40, sozAlacak=tKdv-tevkifat;  // = T + KDV×%60 (fatura)
+  /* Alınan = avans + hesaba yatan (net hakediş) — hakediş dökümünden */
   var avansTop=0, netTop=0;
   HAKED().forEach(function(x){var hc=hakHesap(x); avansTop+=+((x.k&&x.k.avans)||0); netTop+=hc.net;});
-  var tahsilHak=avansTop+netTop, kalanAlacak=hakTop-tahsilHak;
-  var h='<div class="card" style="border:1.5px solid var(--org);background:#FFF8F2"><div class="ch">💰 Sözleşme fiyatı & kalan</div>'
+  var alinan=avansTop+netTop, kalanAlacak=sozAlacak-alinan;
+  var h='<div class="card" style="border:1.5px solid var(--org);background:#FFF8F2"><div class="ch">💰 Sözleşme & alacak</div>'
     +'<div class="row"><span>a · Mekanik</span><b>'+n0(sozA)+' $</b></div>'
     +'<div class="row"><span>b · Elektrik <small style="color:#9aa0a6">(CCTV −'+n0(49553.50)+' hariç)</small></span><b>'+n0(sozB)+' $</b></div>'
     +'<div class="row"><span>c · İş artışı (mekanik)</span><b style="color:#E8622A">'+n0(sozC)+' $</b></div>'
-    +'<div class="row" style="border-top:2px solid #E8C4A8"><span style="font-weight:800">Sözleşme fiyatı (T = a+b+c)</span><b style="color:var(--org);font-size:18px">'+n0(sozT)+' $</b></div>'
-    +'<div class="row"><span>Hak edilen (hakediş · KDV hariç)</span><b style="color:#1e8e4e">'+n0(hakTop)+' $</b></div>'
-    +'<div class="row"><span style="font-weight:800">Kalan iş (T − hak edilen)</span><b style="color:#E8622A;font-size:18px">'+n0(kalanIs)+' $</b></div>'
+    +'<div class="row" style="border-top:2px solid #E8C4A8"><span style="font-weight:800">Sözleşme (T, KDV hariç)</span><b style="color:var(--org);font-size:17px">'+n0(sozT)+' $</b></div>'
+    +'<div class="row"><span>+ KDV %20</span><b>'+n0(kdv)+' $</b></div>'
+    +'<div class="row"><span>T + KDV</span><b>'+n0(tKdv)+' $</b></div>'
+    +'<div class="row"><span>− Tevkifat (KDV ×%40 devlete)</span><b style="color:var(--red)">−'+n0(tevkifat)+' $</b></div>'
+    +'<div class="row"><span style="font-weight:800">Sözleşmeye göre alacak (fatura)</span><b style="color:var(--org);font-size:18px">'+n0(sozAlacak)+' $</b></div>'
     +'<div class="row" style="border-top:1px solid #E8C4A8"><span>Avans</span><b>'+n0(avansTop)+' $</b></div>'
     +'<div class="row"><span>Hesaba yatan (net hakediş)</span><b>'+n0(netTop)+' $</b></div>'
-    +'<div class="row"><span style="font-weight:700">Tahsil edilen (avans + hesaba yatan)</span><b style="color:#1e8e4e">'+n0(tahsilHak)+' $</b></div>'
-    +'<div class="row"><span style="font-weight:800">Kalan alacak (hak − tahsil)</span><b style="color:'+(kalanAlacak>0.5?'#E8622A':'#1e8e4e')+';font-size:17px">'+n0(kalanAlacak)+' $</b></div>'
+    +'<div class="row"><span style="font-weight:700">Alınan (avans + hesaba yatan)</span><b style="color:#1e8e4e">'+n0(alinan)+' $</b></div>'
+    +'<div class="row"><span style="font-weight:800">Kalan alacak <small style="color:#9aa0a6">(kesintiler hariç)</small></span><b style="color:'+(kalanAlacak>0.5?'#E8622A':'#1e8e4e')+';font-size:18px">'+n0(kalanAlacak)+' $</b></div>'
     +'</div>';
-  h+='<div class="card"><div class="ch">İlerleme durumu</div>'
+  h+='<div class="card"><div class="ch">İlerleme & hak ediş (KDV hariç)</div>'
     +'<div class="row"><span>Mekanik ilerleme</span><b>%'+disUsd('MEK').toFixed(0)+'</b></div>'
     +'<div class="row"><span>Elektrik ilerleme <small style="color:#9aa0a6">(CCTV hariç)</small></span><b>%'+disUsd('ELK').toFixed(0)+'</b></div>'
-    +'<div class="row"><span>İlerlemeye göre tahmini hak</span><b style="color:#9aa0a6">'+n0(earned+iart)+' $</b></div>'
+    +'<div class="row"><span>Hak edilen (hakediş)</span><b style="color:#1e8e4e">'+n0(hakTop)+' $</b></div>'
+    +'<div class="row"><span>Kalan iş (T − hak edilen)</span><b style="color:#E8622A">'+n0(kalanIs)+' $</b></div>'
+    +'<div class="row"><span>İlerlemeye göre tahmini</span><b style="color:#9aa0a6">'+n0(earned+iart)+' $</b></div>'
     +'<button class="more" onclick="window.SH.go(\'ilerleme\')">Kalem yüzdelerini düzenle</button></div>';
   h+=hakDokum();
   if(isl.length){ h+='<div class="card"><div class="ch">İş artışı protokolleri<button class="tag" style="border:0" onclick="window.SH.openIsArtis()">+ Ekle</button></div>';
