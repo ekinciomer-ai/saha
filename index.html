@@ -8,7 +8,7 @@
   try{
     var o=JSON.parse(localStorage.getItem('ae_portal')||'null'),S=o&&o.S;
     if(!(S&&Date.now()<(o.son||0)&&(S.ka||(S.anahtarlar&&S.anahtarlar.saha)))){
-      location.replace((location.hostname.slice(-9)==='github.io'?'/aesun':'')+'/portal/?git=saha'); return;
+      location.replace((location.hostname.slice(-9)==='github.io'?'/aesun/portal/':location.hostname.indexOf('portal.')===0?'/':'/portal/')+'?git=saha'); return;
     }
   }catch(e){}
   location.replace('yeni.html'+location.search+location.hash);

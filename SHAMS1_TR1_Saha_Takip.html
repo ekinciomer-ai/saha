@@ -3,7 +3,7 @@
 /* Aksaray Enerji Portal girişi zorunlu: oturum ve "Saha İş Yönetimi" yetkisi yoksa portala gider */
 (function(){try{var o=JSON.parse(localStorage.getItem('ae_portal')||'null'),S=o&&o.S;
 if(S&&Date.now()<(o.son||0)&&(S.ka||(S.anahtarlar&&S.anahtarlar.saha)))return;}catch(e){}
-location.replace((location.hostname.slice(-9)==='github.io'?'/aesun':'')+'/portal/?git=saha');})();
+location.replace((location.hostname.slice(-9)==='github.io'?'/aesun/portal/':location.hostname.indexOf('portal.')===0?'/':'/portal/')+'?git=saha');})();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5">
 <title>SHAMS-1 · Saha Takip</title>
