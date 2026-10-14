@@ -261,7 +261,7 @@ details.acc[open]>summary{border-bottom:1.5px solid var(--line)}
 "use strict";
 (function(){
 /* ============================= SABİTLER ============================= */
-var BUILD='v97';  /* uygulama sürümü (önbellek/güncelleme takibi) */
+var BUILD='v98';  /* uygulama sürümü (önbellek/güncelleme takibi) */
 var MEK=0, ELK=0, SOZBEDEL=0, CFG=null;  /* tüm değerler projenin KENDİ cfg verisinden gelir */
 var MEK_ART=0;                           /* mekanik iş artışı (cfg'den) */
 var TGT={};                              /* aktif projenin hedefleri (cfg.tgt) */
@@ -1538,14 +1538,14 @@ function vPua(){
   var A=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
   var h='<div class="card"><div class="phd"><button class="ghost" id="pm_p">‹</button><b>'+A[+ym.slice(5,7)-1]+' '+ym.slice(0,4)+'</b><button class="ghost" id="pm_n">›</button></div>'
     +'<div class="gos" style="margin-top:10px"><button id="ps_pers" class="'+(PSUB==='pers'?'on':'')+'">👷 Personel</button><button id="ps_arac" class="'+(PSUB==='arac'?'on':'')+'">🚜 Araç / Ekipman</button></div>'
-    +'<div class="plg">Dokun: durum değiştir · Basılı tut: görev / mesai ata</div></div>';
+    +'<div class="plg">Dokun: durum değiştir · Basılı tut: görev / mesai ata'+(ROLE==='admin'?' · <a href="#" id="pu_add2" style="color:#E8622A;font-weight:700">+ Personel ekle</a>':'')+'</div></div>';
   if(PSUB==='arac')return h+gridArac(ym);
   return h+gridPers(ym);
 }
 function gridPers(ym){
   var team=TEAM().filter(function(p){return p.aktif!==false;});
   var dim=new Date(+ym.slice(0,4),+ym.slice(5,7),0).getDate();
-  if(!team.length)return '<div class="card"><div class="empty">Ekip listesi boş — Daha → Ekip\'ten personel ekleyin</div></div>';
+  if(!team.length)return '<div class="card"><div class="empty" style="padding-bottom:8px">Ekip listesi boş</div>'+(ROLE==='admin'?'<button class="prim" id="pu_add" style="width:100%">+ Personel ekle</button>':'')+'</div>';
   var pj=PJ(),pjg=PJG();
   /* gün sırası: içinde bulunduğumuz ayda bugünden geriye (bugün solda); geçmiş ayda son günden geriye */
   var isCur=(ym===today().slice(0,7)), son=isCur?+today().slice(8,10):dim, days=[];
@@ -1601,6 +1601,8 @@ function gridArac(ym){
   return h;
 }
 function bPua(){
+  if($('pu_add'))$('pu_add').onclick=function(){personForm(null);};
+  if($('pu_add2'))$('pu_add2').onclick=function(){personForm(null);};
   PYM=curYM();
   $('pm_p').onclick=function(){PYM=ymShift(curYM(),-1);render();};
   $('pm_n').onclick=function(){PYM=ymShift(curYM(),1);render();};
