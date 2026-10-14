@@ -261,7 +261,7 @@ details.acc[open]>summary{border-bottom:1.5px solid var(--line)}
 "use strict";
 (function(){
 /* ============================= SABİTLER ============================= */
-var BUILD='v92';  /* uygulama sürümü (önbellek/güncelleme takibi) */
+var BUILD='v93';  /* uygulama sürümü (önbellek/güncelleme takibi) */
 var MEK=0, ELK=0, SOZBEDEL=0, CFG=null;  /* tüm değerler projenin KENDİ cfg verisinden gelir */
 var MEK_ART=0;                           /* mekanik iş artışı (cfg'den) */
 var TGT={};                              /* aktif projenin hedefleri (cfg.tgt) */
@@ -765,6 +765,60 @@ function vIsEmri(){ var H=+CFG.hafta||13,w=Math.max(1,haftaNo()),pr=canPara(),ad
         +'<div style="display:flex;gap:8px;align-items:center;margin-top:3px;font:600 12px Barlow"><span style="flex:1;color:#2B2F35">Bu hafta hedef: <b>'+n0(haftalik)+' '+ob+'</b> <small style="color:#9aa0a6">(kümülatif '+n0(hed)+')</small></span><span style="color:'+col+';font-weight:800">'+(kalan<=0?'✓ planda':('kalan '+n0(kalan)+' '+ob))+'</span></div></div>'; }); });
   if(!any)h+='<div class="empty">Bu hafta planlı kalem yok</div>';
   return h; }
+/* ---- PERFORMANS: plan–gerçek–ekip (S-eğrisi + kalem sapmaları + yorum) ---- */
+function adamGunHafta(w){ /* puantajdan: hafta w'de sahada bulunan adam-gün */
+  var bas=CFG.bas?new Date(CFG.bas+'T00:00:00'):null; if(!bas)return 0; var pj=PJ(),t=0;
+  for(var i=0;i<7;i++){ var d=new Date(bas.getTime()+((w-1)*7+i)*86400000); if(d.getTime()>Date.now())break; var iso=d.toISOString().slice(0,10),ym=iso.slice(0,7),dd=+iso.slice(8,10);
+    TEAM().forEach(function(p){ if(pjMeta(cell(pj,ym,p.id,dd)).v>0)t++; }); }
+  return t; }
+function perfKaydet(){ try{ var w=haftaNo(); if(w<1)return; var b=mwpBedel(); if(!b)return; var pct=mwpToplamHak()/b*100; var h=get('perfhist',{})||{}; var cur=+h[w]||0; if(pct>cur+0.01){ h[w]=Math.round(pct*100)/100; set('perfhist',h); } }catch(e){} }
+function vPerformans(){ var H=+CFG.hafta||13,w=Math.max(1,Math.min(H,haftaNo())),b=mwpBedel(),pr=canPara(); if(!b)return '<div class="empty">Kalem yok</div>';
+  var hist=get('perfhist',{})||{}, hg=mwpToplamHak(), gp=hg/b*100, pp=planHak(w)/b*100, fark=gp-pp;
+  /* S-eğrisi */
+  var W=320,Hh=150,L=28,R=8,T=10,B=26,pw=W-L-R,ph=Hh-T-B; function X(i){return L+pw*i/H;} function Y(v){return T+ph*(1-v/100);}
+  var plan=[],ger=[]; for(var i=0;i<=H;i++){ plan.push(X(i).toFixed(1)+','+Y(planHak(i)/b*100).toFixed(1)); }
+  ger.push(X(0).toFixed(1)+','+Y(0).toFixed(1)); for(var i=1;i<=w;i++){ var v=(i===w)?gp:(hist[i]!=null?+hist[i]:null); if(v==null)continue; ger.push(X(i).toFixed(1)+','+Y(v).toFixed(1)); }
+  var svg='<svg viewBox="0 0 '+W+' '+Hh+'" style="width:100%;height:auto;display:block">';
+  [0,25,50,75,100].forEach(function(g){ svg+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(g)+'" y2="'+Y(g)+'" stroke="#eceeea" stroke-width="1"/><text x="'+(L-4)+'" y="'+(Y(g)+3)+'" font-size="8" fill="#9aa0a6" text-anchor="end" font-family="Barlow">%'+g+'</text>'; });
+  for(var i=1;i<=H;i++)svg+='<text x="'+X(i)+'" y="'+(Hh-10)+'" font-size="8" fill="'+(i===w?'#E8622A':'#9aa0a6')+'" text-anchor="middle" font-family="Barlow" font-weight="'+(i===w?'800':'600')+'">H'+i+'</text>';
+  svg+='<line x1="'+X(w)+'" x2="'+X(w)+'" y1="'+T+'" y2="'+(T+ph)+'" stroke="#E8622A" stroke-dasharray="3 3" stroke-width="1"/>';
+  svg+='<polyline points="'+plan.join(' ')+'" fill="none" stroke="#9aa0a6" stroke-width="2" stroke-dasharray="5 3"/>';
+  svg+='<polyline points="'+ger.join(' ')+'" fill="none" stroke="'+(fark>=0?'#16a34a':'#dc2626')+'" stroke-width="3" stroke-linejoin="round"/>';
+  svg+='<circle cx="'+X(w)+'" cy="'+Y(gp)+'" r="4" fill="'+(fark>=0?'#16a34a':'#dc2626')+'"/><circle cx="'+X(w)+'" cy="'+Y(pp)+'" r="3.5" fill="#fff" stroke="#9aa0a6" stroke-width="2"/>';
+  svg+='<text x="'+(W-R)+'" y="'+(T+8)+'" font-size="9" fill="#9aa0a6" text-anchor="end" font-family="Barlow">— — plan · <tspan fill="'+(fark>=0?'#16a34a':'#dc2626')+'" font-weight="800">━ gerçek</tspan></text></svg>';
+  var h='<div style="background:#fff;border-radius:10px;padding:6px 4px 0">'+svg+'</div>';
+  /* ekip ve tempo */
+  var agBu=adamGunHafta(w), agTop=0, hf=0; for(var i=1;i<=w;i++){ var x=adamGunHafta(i); agTop+=x; if(x>0)hf++; }
+  var ortKisi=hf?agTop/(hf*6):0;                       /* 6 gün/hafta */
+  var haftaTempo=w>1?(gp-(+hist[w-1]||0)):gp;             /* bu hafta kazanılan puan */
+  var ortTempo=gp/w;                                      /* haftalık ortalama puan */
+  var kalanPuan=100-gp, kalanHafta=H-w, gerekTempo=kalanHafta>0?kalanPuan/kalanHafta:Infinity;
+  var bitisHafta=ortTempo>0?Math.ceil(w+kalanPuan/ortTempo):null;
+  var gerekKisi=(ortTempo>0&&ortKisi>0)?Math.ceil(ortKisi*gerekTempo/ortTempo):null;
+  var verim=agTop>0?(hg/agTop):0;                          /* $/adam-gün */
+  h+='<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">'
+    +'<div class="mini" style="flex:1 1 30%"><div class="k">Plan (H'+w+')</div><div class="v" style="font-size:16px;color:#9aa0a6">%'+pp.toFixed(1)+'</div></div>'
+    +'<div class="mini" style="flex:1 1 30%"><div class="k">Gerçek</div><div class="v" style="font-size:16px;color:'+(fark>=0?'#16a34a':'#dc2626')+'">%'+gp.toFixed(1)+'</div></div>'
+    +'<div class="mini" style="flex:1 1 30%"><div class="k">Fark</div><div class="v" style="font-size:16px;color:'+(fark>=0?'#16a34a':'#dc2626')+'">'+(fark>=0?'+':'')+fark.toFixed(1)+' p</div></div>'
+    +'<div class="mini" style="flex:1 1 30%"><div class="k">Ort. ekip</div><div class="v" style="font-size:16px">'+(ortKisi?ortKisi.toFixed(0):'—')+'</div><div style="font:600 10px Barlow;color:#9aa0a6">kişi/gün · '+n0(agTop)+' adam-gün</div></div>'
+    +'<div class="mini" style="flex:1 1 30%"><div class="k">Tempo</div><div class="v" style="font-size:16px">%'+ortTempo.toFixed(1)+'</div><div style="font:600 10px Barlow;color:#9aa0a6">/hafta · gerekli %'+(isFinite(gerekTempo)?gerekTempo.toFixed(1):'—')+'</div></div>'
+    +'<div class="mini" style="flex:1 1 30%"><div class="k">Tahmini bitiş</div><div class="v" style="font-size:16px;color:'+(bitisHafta&&bitisHafta>H?'#dc2626':'#16a34a')+'">'+(bitisHafta?('H'+bitisHafta):'—')+'</div><div style="font:600 10px Barlow;color:#9aa0a6">'+(bitisHafta?(bitisHafta>H?('+'+(bitisHafta-H)+' hafta gecikme'):'planda'):'tempo yok')+'</div></div></div>';
+  /* kalem sapmaları — çift çubuk */
+  h+='<div class="ch2" style="margin:10px 0 4px">Kalem bazında plan ⟷ gerçek</div>';
+  mwpKalemler().forEach(function(k){ if(k.ayri||k.disi)return; var kp=kalemPlanPct(k,w),kg=mwpKalemPct(k),d=kg-kp; if(kp===0&&kg===0)return; var col=d<-10?'#dc2626':(d<0?'#e39a00':'#16a34a');
+    h+='<div style="margin:5px 0"><div style="display:flex;justify-content:space-between;font:600 11px Barlow"><span><b style="color:#9aa0a6">'+esc(k.kod)+'</b> '+esc(k.ad.length>26?k.ad.slice(0,25)+'…':k.ad)+'</span><span style="color:'+col+';font-weight:800">'+(d>=0?'+':'')+d.toFixed(0)+' p</span></div>'
+      +'<div style="position:relative;height:9px;background:#f1f1ee;border-radius:5px;margin-top:2px"><div style="position:absolute;left:0;top:0;height:9px;width:'+Math.min(100,kp)+'%;background:#d9dce1;border-radius:5px"></div><div style="position:absolute;left:0;top:2px;height:5px;width:'+Math.min(100,kg)+'%;background:'+col+';border-radius:5px"></div></div></div>'; });
+  h+='<div class="gt" style="color:#9aa0a6;margin-top:2px">gri = plan · renkli = gerçek</div>';
+  /* yorum */
+  var y=[];
+  y.push(fark>=0?('Genel ilerleme planın <b>'+fark.toFixed(1)+' puan önünde</b>.'):('Genel ilerleme planın <b>'+Math.abs(fark).toFixed(1)+' puan gerisinde</b>.'));
+  if(ortKisi)y.push('Sahada ortalama <b>'+ortKisi.toFixed(0)+' kişi/gün</b> çalıştı ('+n0(agTop)+' adam-gün'+(pr&&verim?(', '+n0(verim)+' $/adam-gün'):'')+').');
+  if(isFinite(gerekTempo)&&ortTempo>0){ if(gerekTempo>ortTempo*1.05) y.push('Kalan '+kalanHafta+' haftada %'+kalanPuan.toFixed(0)+' iş var → haftada <b>%'+gerekTempo.toFixed(1)+'</b> gerekli, şu an <b>%'+ortTempo.toFixed(1)+'</b>. '+(gerekKisi?('Aynı verimle ekip ≈ <b>'+gerekKisi+' kişi</b> olmalı (+'+Math.max(0,gerekKisi-Math.round(ortKisi))+').'):'Tempo artmalı.')); else y.push('Mevcut tempo (%'+ortTempo.toFixed(1)+'/hafta) kalan işi süresinde bitirmeye yeter.'); }
+  if(bitisHafta&&bitisHafta>H)y.push('Bu tempoyla bitiş <b>H'+bitisHafta+'</b> — sözleşmeden <b>'+(bitisHafta-H)+' hafta geç</b>'+(mwpSoz().ceza?(' (gecikme cezası riski)'):'')+'.');
+  var geri=mwpKalemler().filter(function(k){return !k.ayri&&!k.disi&&kalemPlanPct(k,w)-mwpKalemPct(k)>10;}).map(function(k){return k.kod+' '+k.ad.split(' ')[0];});
+  if(geri.length)y.push('En geride: <b>'+esc(geri.slice(0,4).join(', '))+'</b> — bu kalemlere ekip/makine kaydır.');
+  h+='<div style="background:#FFF8F2;border:1px solid #F3D9C4;border-radius:10px;padding:10px;margin-top:10px;font:600 12.5px Barlow;line-height:1.5">💬 '+y.join(' ')+'</div>';
+  return h; }
 /* ---- ANA EKRAN (Bugün + İlerleme birleşik) ---- */
 function vAnaMwp(){
   var bedel=mwpBedel(),hak=mwpToplamHak(),pct=bedel>0?hak/bedel*100:0,pr=canPara(),w=haftaNo();
@@ -779,6 +833,8 @@ function vAnaMwp(){
   /* alt bölümler */
   function sec(id,ttl,inner,open){ return '<details class="acc"'+(open?' open':'')+' id="'+id+'"><summary><span class="accl"><b>'+ttl+'</b></span><span class="accr">▾</span></summary><div class="accb">'+inner+'</div></details>'; }
   if(mwpHasLayout()){ YERACIK=true; h+=sec('sec_vaz','🗺️ Vaziyet planı',vYerlesim().replace('id="yer_tgl"','id="yer_tgl" hidden'),false); }
+  perfKaydet();
+  h+=sec('sec_perf','📊 Performans · plan–gerçek–ekip',vPerformans(),false);
   h+=sec('sec_plan','📅 Detaylı iş planı · plan–gerçek',vIsPlani(),false);
   h+=sec('sec_ode','💰 Ödeme (hakediş) planı',vOdemePlani(),false);
   return h; }
