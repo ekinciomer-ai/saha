@@ -261,7 +261,7 @@ details.acc[open]>summary{border-bottom:1.5px solid var(--line)}
 "use strict";
 (function(){
 /* ============================= SABİTLER ============================= */
-var BUILD='v79';  /* uygulama sürümü (önbellek/güncelleme takibi) */
+var BUILD='v80';  /* uygulama sürümü (önbellek/güncelleme takibi) */
 var MEK=0, ELK=0, SOZBEDEL=0, CFG=null;  /* tüm değerler projenin KENDİ cfg verisinden gelir */
 var MEK_ART=0;                           /* mekanik iş artışı (cfg'den) */
 var TGT={};                              /* aktif projenin hedefleri (cfg.tgt) */
@@ -486,7 +486,16 @@ function mwpBedel(){var t=0;mwpKalemler().forEach(function(k){t+=mwpKalemBedel(k
 var YER=null;  /* {bbox,m:[[id,x0,y0,x1,y1,t,inv,kol],...]} — projeye özel statik geometri */
 function mwpHasLayout(){return !!(YER&&YER.m&&YER.m.length);}
 function masaPan(r){return r[5]?26:52;}
+function masaK(r){return r.length>8?(+r[8]||0):0;}        /* trafo/köşk bölgesi 0-5 */
+function masaKot(r){return r.length>9?r[9]:null;}         /* zemin kotu (m) */
+function masaWk(r){return r.length>10?r[10]:null;}        /* plan delgi haftası */
+function trafoSay(){return (YER&&YER.trafo)||6;}
+function invId(idx){return (YER&&YER.I&&YER.I[idx])||('INV-'+idx);}
 function mdurum(){return get('mdurum',{})||{};}
+function mwpTrafoAgg(){ var out={}; if(!mwpHasLayout())return out; var md=mdurum();
+  YER.m.forEach(function(r){var k=masaK(r),s=md[r[0]]||{},kol=r[7]||0,pan=masaPan(r); out[k]=out[k]||{masa:0,kol:0,pan:0,bitti:0,apl:0,rok:0,kolon:0,kons:0,panel:0};
+    out[k].masa++; out[k].kol+=kol; out[k].pan+=pan; if(s.a)out[k].apl++; if(s.d)out[k].rok+=kol; if(s.k)out[k].kolon+=kol; if(s.s)out[k].kons++; if(s.p)out[k].panel+=pan;
+    if(s.d&&s.k&&s.s&&s.p)out[k].bitti++; }); return out; }
 function mwpMasaAgg(){ var a={apl:0,rok:0,kolon:0,kons:0,panel:0,dc:0,sbt:0,masaBitti:0}; if(!mwpHasLayout())return a; var md=mdurum();
   YER.m.forEach(function(r){var s=md[r[0]]||{},kol=r[7]||0,pan=masaPan(r); if(s.a)a.apl+=1; if(s.d)a.rok+=kol; if(s.k)a.kolon+=kol; if(s.s)a.kons+=1; if(s.p)a.panel+=pan; if(s.e)a.dc+=1; if(s.b)a.sbt+=kol; if(s.d&&s.k&&s.s&&s.p)a.masaBitti+=1;}); return a; }
 function mwpMan(kod){ var m=mwpIlp(); return (m[kod]!=null&&m[kod]!=='')?(+m[kod]||0):null; } /* kalem bazlı elle % / adet (MEK/ELK/ROK-G override) */
@@ -521,19 +530,26 @@ function vYerlesim(){
     +'<div class="mini" style="flex:1 1 22%"><div class="k">Delgi</div><div class="v" style="color:#E8622A">%'+Math.round(a.rok/(+sb.kolon||1)*100)+'</div></div>'
     +'<div class="mini" style="flex:1 1 22%"><div class="k">Kolon</div><div class="v">%'+Math.round(a.kolon/(+sb.kolon||1)*100)+'</div></div>'
     +'<div class="mini" style="flex:1 1 22%"><div class="k">Panel</div><div class="v" style="color:#1e8e4e">%'+Math.round(a.panel/(+sb.panel||1)*100)+'</div></div></div>';
+  var ta=mwpTrafoAgg(); h+='<div class="ch2" style="margin:2px 0 6px">Trafo bölgeleri (biten masa)</div><div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap">';
+  for(var ti=0;ti<trafoSay();ti++){ var tt=ta[ti]||{masa:0,bitti:0}; var tpc=tt.masa?Math.round(tt.bitti/tt.masa*100):0;
+    h+='<div class="mini" style="flex:1 1 30%;border-color:#F3D9C4"><div class="k">TR'+(ti+1)+'</div><div class="v" style="font-size:16px;color:#E8622A">%'+tpc+'</div><div style="font:600 10px Barlow;color:#9aa0a6">'+tt.bitti+'/'+tt.masa+' masa</div></div>'; }
+  h+='</div>';
   if(YERACIK){
     var svg='<svg id="yersvg" viewBox="'+bb[0]+' '+bb[1]+' '+w+' '+hgt+'" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;max-height:66vh;background:#fbfbf9;border:1px solid #e5e7eb;border-radius:8px;touch-action:none;cursor:grab;display:block">';
     var md=mdurum();
+    if(YER.f&&YER.f.length){ svg+='<polyline points="'+YER.f.map(function(p){return p[0]+','+p[1];}).join(' ')+'" fill="none" stroke="#9aa0a6" stroke-width="0.7" stroke-dasharray="2.5 2" opacity="0.65"/>'; }
     YER.m.forEach(function(r){ var id=r[0],x=Math.min(r[1],r[3]),y=Math.min(r[2],r[4]),ww=Math.abs(r[3]-r[1])||0.6,hh=Math.abs(r[4]-r[2])||0.6; var s=md[id]||{},dn=(s.d?1:0)+(s.k?1:0)+(s.s?1:0)+(s.p?1:0); var col=dn>=4?'#16a34a':(dn>0?'#e39a00':'#cfd4da'); var kol=r[7]||0,pan=masaPan(r),fs=Math.max(0.8,Math.min(ww,hh)*0.55);
       svg+='<rect class="msa" data-id="'+esc(id)+'" x="'+x+'" y="'+y+'" width="'+ww+'" height="'+hh+'" fill="'+col+'" stroke="#fff" stroke-width="0.25"/>'
         +'<text x="'+(x+ww/2)+'" y="'+(y+hh/2)+'" font-size="'+fs.toFixed(2)+'" fill="#1b1b1b" text-anchor="middle" dominant-baseline="central" style="pointer-events:none;font-family:Barlow,sans-serif">'+kol+'·'+pan+'</text>'; });
+    (YER.K||[]).forEach(function(k,i){var x=Math.min(k[0],k[2]),y=Math.min(k[1],k[3]),ww=Math.abs(k[2]-k[0])||1.5,hh=Math.abs(k[3]-k[1])||1.5; svg+='<rect x="'+x+'" y="'+y+'" width="'+ww+'" height="'+hh+'" fill="#dc2626" stroke="#fff" stroke-width="0.3"/><text x="'+(x+ww/2)+'" y="'+(y-1.5)+'" font-size="5" fill="#dc2626" text-anchor="middle" style="font-family:Barlow;font-weight:800;pointer-events:none">TR'+(i+1)+'</text>';});
+    (YER.T||[]).forEach(function(t){var x=Math.min(t[0],t[2]),y=Math.min(t[1],t[3]),ww=Math.abs(t[2]-t[0])||1,hh=Math.abs(t[3]-t[1])||1; svg+='<rect x="'+x+'" y="'+y+'" width="'+ww+'" height="'+hh+'" fill="#f59e0b" stroke="#7a3b00" stroke-width="0.3"/>';});
     svg+='</svg>';
     var zbst='width:36px;height:36px;border-radius:50%;border:1px solid #d9dce1;background:#fff;color:#2B2F35;font:700 18px Barlow;box-shadow:0 2px 6px rgba(0,0,0,.15);cursor:pointer;line-height:1';
     var zoom='<div style="position:absolute;right:10px;bottom:10px;display:flex;flex-direction:column;gap:6px">'
       +'<button class="yzb" data-z="in" style="'+zbst+'">+</button>'
       +'<button class="yzb" data-z="out" style="'+zbst+'">−</button>'
       +'<button class="yzb" data-z="reset" style="'+zbst+';font-size:15px">⟲</button></div>';
-    h+='<div style="position:relative">'+svg+zoom+'</div><div class="gt" style="margin-top:6px;color:#9aa0a6">Masa içindeki sayı = <b>ayak·panel</b> (yakınlaşınca okunur) · dokun = masa detayı · iki parmak/tekerlek = yakınlaştır · sürükle = gez</div>';
+    h+='<div style="position:relative">'+svg+zoom+'</div><div class="gt" style="margin-top:6px;color:#9aa0a6"><span style="color:#dc2626">■</span> köşk+trafo TR1–TR6 · masa içi sayı = <b>ayak·panel</b> · dokun = masa detayı · iki parmak/tekerlek = yakınlaştır · sürükle = gez</div>';
   }
   h+='</div>';
   return h;
@@ -566,12 +582,13 @@ function masaSheet(id){ var r=null; (YER&&YER.m||[]).forEach(function(x){if(x[0]
   var kol=r[7]||0,pan=masaPan(r),inv=r[6],s=mdurum()[id]||{};
   var cx=((r[1]+r[3])/2).toFixed(1),cy=((r[2]+r[4])/2).toFixed(1);
   var stages=[['a','Aplikasyon (yer tespiti)'],['d','Delgi (rok)'],['k','Kolon montaj'],['s','Konstrüksiyon (masa)'],['p','Panel montaj'],['e','Kablo / DC'],['b','Süs beton']];
-  var tip=(r[5]?'küçük masa':'büyük masa');
-  var h='<div class="gt" style="margin-bottom:8px">'+esc(id)+' <small style="color:#9aa0a6">· '+tip+' · inv '+inv+'</small></div>'
-    +'<div style="display:flex;gap:6px;margin-bottom:8px">'
+  var tip=(r[5]?'2V13 (küçük)':'2V26 (büyük)'),tr=masaK(r),kot=masaKot(r),wk=masaWk(r);
+  var h='<div class="gt" style="margin-bottom:8px">'+esc(id)+' <small style="color:#9aa0a6">· '+tip+'</small></div>'
+    +'<div style="display:flex;gap:6px;margin-bottom:6px">'
     +'<div class="mini" style="flex:1"><div class="k">Ayak (kolon)</div><div class="v">'+kol+'</div></div>'
     +'<div class="mini" style="flex:1"><div class="k">Panel</div><div class="v" style="color:#1e8e4e">'+pan+'</div></div>'
-    +'<div class="mini" style="flex:1"><div class="k">İnverter</div><div class="v">'+inv+'</div></div></div>'
+    +'<div class="mini" style="flex:1"><div class="k">Trafo</div><div class="v" style="color:#E8622A">TR'+(tr+1)+'</div></div></div>'
+    +'<div class="gt" style="margin-bottom:8px;color:#9aa0a6">İnverter '+esc(invId(inv))+' · köşk K'+(tr+1)+(kot!=null?(' · kot '+kot+' m'):'')+(wk!=null?(' · plan hafta '+wk):'')+'</div>'
     +'<div class="gt" style="margin-bottom:8px;color:#9aa0a6">📍 Aplikasyon: X '+cx+' · Y '+cy+' (saha gridi, m)</div><div class="ch2">İş durumu</div>';
   stages.forEach(function(st){ h+='<label class="row" style="cursor:pointer"><span>'+st[1]+'</span><input type="checkbox" class="mst" data-s="'+st[0]+'"'+(s[st[0]]?' checked':'')+(ROLE==='admin'?'':' disabled')+'></label>'; });
   openSheet('Masa '+id,h);
