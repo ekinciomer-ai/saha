@@ -261,7 +261,7 @@ details.acc[open]>summary{border-bottom:1.5px solid var(--line)}
 "use strict";
 (function(){
 /* ============================= SABİTLER ============================= */
-var BUILD='v95';  /* uygulama sürümü (önbellek/güncelleme takibi) */
+var BUILD='v96';  /* uygulama sürümü (önbellek/güncelleme takibi) */
 var MEK=0, ELK=0, SOZBEDEL=0, CFG=null;  /* tüm değerler projenin KENDİ cfg verisinden gelir */
 var MEK_ART=0;                           /* mekanik iş artışı (cfg'den) */
 var TGT={};                              /* aktif projenin hedefleri (cfg.tgt) */
@@ -545,6 +545,7 @@ function mwpTrPlanAll(){ var n=(YER&&YER.m&&YER.m.length)||0; if(_trPlanC&&_trPl
   _trPlanC=c; return c; }
 function mwpTrPlan(tr){ return mwpTrPlanAll()[tr]||{masa:0,kolon:0,kiris:0,asik:0,payanda:0,ruzgarlik:0,panel:0}; }
 function trShare(tr){ var c=mwpTrPlanAll(); return c.tot?(mwpTrPlan(tr).panel/c.tot):(1/trafoSay()); }
+function trMwp(tr){ return (+CFG.mwp||0)*trShare(tr); }   /* sahanın DC gücü (MWp) — panel payından */
 var MET2PLAN={apl:'masa',rok:'kolon',kolon:'kolon',sbt:'kolon',kiris:'kiris',asik:'asik',payanda:'payanda',ruzgarlik:'ruzgarlik',panel:'panel',dc:'masa',kons:'masa'};
 /* trafo bazlı elle giriş: mwptr = { trIdx: { kalemId: değer } } */
 function mwpTr(){return get('mwptr',{})||{};}
@@ -706,11 +707,11 @@ function haftaTarih(w){ var bas=CFG.bas?new Date(CFG.bas+'T00:00:00'):null; if(!
 function vTrSecim(){ var n=trafoSay(),h='<div class="card"><div class="ch">Trafo sahaları <small style="color:#9aa0a6;font-weight:600">'+(TRSEC==null?'· giriş için birine dokun':'· TR'+(TRSEC+1)+' açık')+'</small></div><div style="display:flex;gap:6px;flex-wrap:wrap">';
   for(var ti=0;ti<n;ti++){ var sel=(TRSEC===ti),tp=trafoPct(ti),pl=mwpTrPlan(ti),ag=mwpTrafoAgg()[ti]||trBos();
     h+='<button class="trsec" data-tr="'+ti+'" style="flex:1 1 30%;border:2px solid '+(sel?'#E8622A':'#e5e7eb')+';background:'+(sel?'#E8622A':'#fff')+';color:'+(sel?'#fff':'#2B2F35')+';border-radius:12px;padding:10px 6px;cursor:pointer;text-align:center">'
-      +'<div style="font:800 15px Barlow">TR'+(ti+1)+'</div><div style="font:800 18px Barlow;color:'+(sel?'#fff':'#E8622A')+'">%'+tp.toFixed(0)+'</div><div style="font:600 10px Barlow;color:'+(sel?'#FFE6D6':'#9aa0a6')+'">'+n0(ag.bitti)+' / '+n0(pl.masa)+' masa</div></button>'; }
+      +'<div style="font:800 15px Barlow">TR'+(ti+1)+' <small style="font-weight:700;color:'+(sel?'#FFE6D6':'#6b7280')+'">'+trMwp(ti).toFixed(2).replace('.',',')+' MWp</small></div><div style="font:800 18px Barlow;color:'+(sel?'#fff':'#E8622A')+'">%'+tp.toFixed(0)+'</div><div style="font:600 10px Barlow;color:'+(sel?'#FFE6D6':'#9aa0a6')+'">'+n0(ag.bitti)+' / '+n0(pl.masa)+' masa</div></button>'; }
   return h+'</div></div>'; }
 function vTrBolum(tr){ var adm=(ROLE==='admin'),pr=canPara(),tp=mwpTrPlan(tr),ag=mwpTrafoAgg()[tr]||trBos();
   var h='<div style="background:#FFF4EC;border:2px solid #E8622A;border-radius:14px;padding:12px;margin-top:2px">';
-  h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><div><div style="font:800 18px Barlow;color:#E8622A">TR'+(tr+1)+' sahası</div><div style="font:600 11px Barlow;color:#9a5b09">köşk K'+(tr+1)+' · %'+trafoPct(tr).toFixed(0)+(pr?(' · '+n0(trafoHak(tr))+' $'):'')+'</div></div><button class="trkapat" style="background:#fff;border:1px solid #F3D9C4;color:#9a5b09;font:700 12px Barlow;cursor:pointer;border-radius:8px;padding:6px 10px">✕ Kapat</button></div>';
+  h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><div><div style="font:800 18px Barlow;color:#E8622A">TR'+(tr+1)+' sahası <small style="font-size:13px;color:#2B2F35">'+trMwp(tr).toFixed(2).replace('.',',')+' MWp</small></div><div style="font:600 11px Barlow;color:#9a5b09">köşk K'+(tr+1)+' · %'+trafoPct(tr).toFixed(0)+(pr?(' · '+n0(trafoHak(tr))+' $'):'')+'</div></div><button class="trkapat" style="background:#fff;border:1px solid #F3D9C4;color:#9a5b09;font:700 12px Barlow;cursor:pointer;border-radius:8px;padding:6px 10px">✕ Kapat</button></div>';
   h+='<div class="ch2" style="margin:0 0 6px;color:#9a5b09">Bu sahanın masa verisi</div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px">'
     +trKutu('Masa',tp.masa)+trKutu('Kolon',tp.kolon)+trKutu('Kiriş',tp.kiris)+trKutu('Aşık',tp.asik)+trKutu('Payanda',tp.payanda)+trKutu('Rüzgarlık',tp.ruzgarlik)+trKutu('Panel',tp.panel)+trKutu('Biten masa',ag.bitti)+'</div>';
   [['mekanik','Mekanik'],['elektrik','Elektrik']].forEach(function(g){ var ks=mwpKalemler().filter(function(k){return (k.grup||'')===g[0];}); if(!ks.length)return;
@@ -872,7 +873,7 @@ function vHakedisMwp(){
   h+='<table style="border-collapse:collapse;width:100%;font:600 12px Barlow"><tr style="color:#9aa0a6"><th style="text-align:left;padding:5px 2px">Saha</th><th style="text-align:right;padding:5px 2px">Bedel</th><th style="text-align:right;padding:5px 2px">Hak edilen</th><th style="text-align:right;padding:5px 2px">Kalan</th><th style="text-align:right;padding:5px 2px">%</th></tr>';
   var TB=0,TH=0;
   for(var t=0;t<trafoSay();t++){ var tb=0,th=0; mwpKalemler().forEach(function(k){ if(k.ayri)return; tb+=kalemTrBedel(k,t); th+=kalemTrHak(k,t); }); TB+=tb; TH+=th; var tp=tb?th/tb*100:0;
-    h+='<tr class="trhak" data-tr="'+t+'" style="border-top:1px solid #f0f0f0;cursor:pointer"><td style="padding:7px 2px;font-weight:800;color:#E8622A">TR'+(t+1)+' <small style="color:#9aa0a6;font-weight:600">'+n0(mwpTrPlan(t).masa)+' masa ▸</small></td><td style="text-align:right;padding:7px 2px;color:#9aa0a6">'+n0(tb)+'</td><td style="text-align:right;padding:7px 2px;font-weight:800;color:#1e8e4e">'+n0(th)+'</td><td style="text-align:right;padding:7px 2px">'+n0(tb-th)+'</td><td style="text-align:right;padding:7px 2px;font-weight:800">%'+tp.toFixed(0)+'</td></tr>';
+    h+='<tr class="trhak" data-tr="'+t+'" style="border-top:1px solid #f0f0f0;cursor:pointer"><td style="padding:7px 2px;font-weight:800;color:#E8622A">TR'+(t+1)+' <small style="color:#2B2F35;font-weight:700">'+trMwp(t).toFixed(2).replace('.',',')+' MWp</small> <small style="color:#9aa0a6;font-weight:600">'+n0(mwpTrPlan(t).masa)+' masa ▸</small></td><td style="text-align:right;padding:7px 2px;color:#9aa0a6">'+n0(tb)+'</td><td style="text-align:right;padding:7px 2px;font-weight:800;color:#1e8e4e">'+n0(th)+'</td><td style="text-align:right;padding:7px 2px">'+n0(tb-th)+'</td><td style="text-align:right;padding:7px 2px;font-weight:800">%'+tp.toFixed(0)+'</td></tr>';
     h+='<tr class="trhakd" data-tr="'+t+'" style="display:none"><td colspan="5" style="padding:4px 6px 8px;background:#FFF8F2">';
     mwpKalemler().forEach(function(k){ if(k.ayri)return; var kb=kalemTrBedel(k,t),kh=kalemTrHak(k,t); if(!kb)return; h+='<div class="row" style="padding:3px 0;font-size:11.5px"><span><b style="color:#9aa0a6">'+esc(k.kod)+'</b> '+esc(k.ad.length>30?k.ad.slice(0,29)+'…':k.ad)+' <small style="color:#9aa0a6">%'+kalemTrPct(k,t).toFixed(0)+'</small></span><b>'+n0(kh)+' <small style="color:#9aa0a6">/ '+n0(kb)+'</small></b></div>'; });
     h+='</td></tr>'; }
