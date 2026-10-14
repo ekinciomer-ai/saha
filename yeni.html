@@ -261,7 +261,7 @@ details.acc[open]>summary{border-bottom:1.5px solid var(--line)}
 "use strict";
 (function(){
 /* ============================= SABİTLER ============================= */
-var BUILD='v90';  /* uygulama sürümü (önbellek/güncelleme takibi) */
+var BUILD='v91';  /* uygulama sürümü (önbellek/güncelleme takibi) */
 var MEK=0, ELK=0, SOZBEDEL=0, CFG=null;  /* tüm değerler projenin KENDİ cfg verisinden gelir */
 var MEK_ART=0;                           /* mekanik iş artışı (cfg'den) */
 var TGT={};                              /* aktif projenin hedefleri (cfg.tgt) */
@@ -302,7 +302,7 @@ function ASUNIM_KALEM(){
  /* MEKANİK — kullanıcı numaraları; hb/hs = plan hafta başlangıç/bitiş (13 haftalık program) */
  {id:'m1a',kod:'1a',ad:'Harita (aplikasyon)',grup:'mekanik',esas:'birim',bf:0,plan:1000,olcu:'masa',met:'apl',hb:1,hs:2},
  {id:'m1b',kod:'1b',ad:'Rok (delgi)',grup:'mekanik',esas:'birim',bf:11,plan:23044,olcu:'delik',met:'rok',hb:1,hs:9},
- {id:'m1c',kod:'1c',ad:'Süs beton',grup:'mekanik',esas:'birim',bf:0.60,plan:23044,olcu:'adet',met:'sbt',hb:2,hs:10},
+ {id:'m1c',kod:'1c',ad:'Süs beton',grup:'mekanik',esas:'birim',bf:0.60,plan:23044,olcu:'adet',met:'sbt',hb:10,hs:12},
  {id:'m3a',kod:'3a',ad:'Kolon (ayak) montajı + beton',grup:'mekanik',esas:'birim',bf:bfK,plan:23044,olcu:'kolon',met:'kolon',pursantaj:42,hb:1,hs:9},
  {id:'m3b',kod:'3b',ad:'Kiriş',grup:'mekanik',esas:'birim',bf:bfU,plan:11522,olcu:'adet',met:'kiris',hb:3,hs:10},
  {id:'m3c',kod:'3c',ad:'Aşık',grup:'mekanik',esas:'birim',bf:bfU,plan:26336,olcu:'adet',met:'asik',hb:3,hs:10},
@@ -316,12 +316,12 @@ function ASUNIM_KALEM(){
  {id:'e2c',kod:'2c',ad:'AC kablo',grup:'elektrik',esas:'yuzde',tutar:E(8),pursantaj:8,hb:5,hs:11},
  {id:'e3a',kod:'3a',ad:'Trafo montajı',grup:'elektrik',esas:'yuzde',tutar:E(10),pursantaj:10,hb:6,hs:11},
  {id:'e3b',kod:'3b',ad:'Topraklama',grup:'elektrik',esas:'yuzde',tutar:E(5),pursantaj:5,hb:4,hs:10},
- {id:'e4', kod:'4', ad:'Bakanlık kabulü',grup:'elektrik',esas:'yuzde',tutar:E(5),pursantaj:5,hb:12,hs:13},
- {id:'e5', kod:'5', ad:'İşveren kabulü (test / devreye alma)',grup:'elektrik',esas:'yuzde',tutar:E(5),pursantaj:5,hb:13,hs:13}
+ {id:'e4', kod:'4', ad:'Bakanlık kabulü',grup:'elektrik',esas:'yuzde',tutar:E(5),pursantaj:5,hb:14,hs:15,disi:true},
+ {id:'e5', kod:'5', ad:'İşveren kabulü (test / devreye alma)',grup:'elektrik',esas:'yuzde',tutar:E(5),pursantaj:5,hb:14,hs:15,disi:true}
 ];}
 function mwpCfgFix(){ try{ if(!isMwp()||PROJE!=='pmv796yvn2c')return;
-  if(CFG.isv===6)return;   /* zaten güncel sürüm */
-  var fix={motor:'mwp',isv:6,mwp:31.241,
+  if(CFG.isv===7)return;   /* zaten güncel sürüm */
+  var fix={motor:'mwp',isv:7,mwp:31.241,
     ad:'Asunim Nahçıvan GES',konum:'Nahçıvan, Azerbaycan',lat:39.23344,lon:45.29610,
     isveren:'Asunim Yenilenebilir Enerji A.Ş.',bas:'2026-10-15',bit:'2027-01-14',hafta:13,
     sabit:(CFG.sabit&&CFG.sabit.kolon?CFG.sabit:{masa:1000,panel:42796,kolon:23044,kosk:6,trafo:6}),
@@ -700,7 +700,7 @@ function ilerKalemRow(k,adm,pr,tr){
 function haftaNo(d){ var bas=CFG.bas?Date.parse(CFG.bas+'T00:00:00'):NaN; if(isNaN(bas))return 1; var t=d?Date.parse(d+'T00:00:00'):Date.now(); var w=Math.floor((t-bas)/(7*86400000))+1; return Math.max(0,Math.min((+CFG.hafta||13)+1,w)); }
 function kalemPlanPct(k,w){ var hb=+k.hb||1,hs=+k.hs||hb; if(w<hb)return 0; if(w>=hs)return 100; return (w-hb+1)/(hs-hb+1)*100; }   /* hafta sonu itibarıyla plan % (doğrusal) */
 function planHak(w){ var t=0; mwpKalemler().forEach(function(k){ if(!k.ayri)t+=mwpKalemBedel(k)*kalemPlanPct(k,w)/100; }); return t; }
-function odemeDonemleri(){ var H=+CFG.hafta||13,out=[],no=1; for(var w=1;w<=H;w+=2){ var w2=Math.min(H,w+1); out.push({no:no++,h1:w,h2:w2,plan:planHak(w2)-planHak(w-1),kum:planHak(w2)}); } return out; }
+function odemeDonemleri(){ var H=+CFG.hafta||13,out=[],no=1; for(var w=1;w<=H;w+=2){ var w2=Math.min(H,w+1); out.push({no:no++,h1:w,h2:w2,plan:planHak(w2)-planHak(w-1),kum:planHak(w2)}); } var son=planHak(99)-planHak(H); if(son>0.5)out.push({no:no,h1:H+1,h2:H+2,plan:son,kum:planHak(99),disi:true}); return out; }
 function haftaTarih(w){ var bas=CFG.bas?new Date(CFG.bas+'T00:00:00'):null; if(!bas)return ''; var d=new Date(bas.getTime()+(w-1)*7*86400000); return ('0'+d.getDate()).slice(-2)+'.'+('0'+(d.getMonth()+1)).slice(-2); }
 /* ---- trafo seçici + seçili saha bölümü (tek giriş yeri) ---- */
 function vTrSecim(){ var n=trafoSay(),h='<div class="card"><div class="ch">Trafo sahaları <small style="color:#9aa0a6;font-weight:600">'+(TRSEC==null?'· giriş için birine dokun':'· TR'+(TRSEC+1)+' açık')+'</small></div><div style="display:flex;gap:6px;flex-wrap:wrap">';
@@ -729,10 +729,11 @@ function vIsPlani(){ var H=+CFG.hafta||13,w=haftaNo(),pr=canPara();
   var h='<div class="gt" style="color:#9aa0a6;margin-bottom:6px">Program '+esc((CFG.bas||'').split('-').reverse().join('.'))+' → '+esc((CFG.bit||'').split('-').reverse().join('.'))+' · '+H+' hafta · bugün <b>H'+Math.max(1,Math.min(H,w))+'</b></div>';
   h+='<div style="overflow-x:auto"><table style="border-collapse:collapse;width:100%;font:600 11px Barlow"><tr><th style="text-align:left;padding:4px 2px;color:#9aa0a6">Kalem</th>';
   for(var i=1;i<=H;i++)h+='<th style="padding:4px 1px;color:'+(i===w?'#E8622A':'#9aa0a6')+';font-size:10px">H'+i+'</th>';
-  h+='<th style="padding:4px 2px;color:#9aa0a6">Plan</th><th style="padding:4px 2px;color:#9aa0a6">Gerçek</th></tr>';
+  h+='<th style="padding:4px 1px;color:#7c3aed;font-size:10px">Sonra</th><th style="padding:4px 2px;color:#9aa0a6">Plan</th><th style="padding:4px 2px;color:#9aa0a6">Gerçek</th></tr>';
   mwpKalemler().forEach(function(k){ if(k.ayri)return; var pp=kalemPlanPct(k,w),gp=mwpKalemPct(k),sap=gp-pp; var col=sap<-10?'#dc2626':(sap<0?'#e39a00':'#16a34a');
     h+='<tr style="border-top:1px solid #f0f0f0"><td style="padding:4px 2px;white-space:nowrap"><b style="color:#9aa0a6">'+esc(k.kod)+'</b> '+esc(k.ad.length>22?k.ad.slice(0,21)+'…':k.ad)+'</td>';
     for(var i=1;i<=H;i++){ var inW=(i>=(+k.hb||1)&&i<=(+k.hs||+k.hb||1)); h+='<td style="padding:0 1px"><div style="height:10px;border-radius:3px;background:'+(inW?((k.grup==='elektrik')?'#7c3aed':'#1e8e4e'):'#f1f1ee')+';opacity:'+(inW&&i>w?'.35':'1')+'"></div></td>'; }
+    h+='<td style="padding:0 1px"><div style="height:10px;border-radius:3px;background:'+(k.disi?'#c4b5fd':'#f1f1ee')+'"></div></td>';
     h+='<td style="text-align:right;padding:4px 2px;color:#9aa0a6">%'+pp.toFixed(0)+'</td><td style="text-align:right;padding:4px 2px;color:'+col+';font-weight:800">%'+gp.toFixed(0)+'</td></tr>'; });
   h+='</table></div>';
   var hp=planHak(w),hg=mwpToplamHak(),b=mwpBedel();
@@ -744,8 +745,25 @@ function vOdemePlani(){ var pr=canPara(),w=haftaNo(),hg=mwpToplamHak(),soz=mwpSo
   h+='<table style="border-collapse:collapse;width:100%;font:600 12px Barlow"><tr style="color:#9aa0a6"><th style="text-align:left;padding:5px 2px">Dönem</th><th style="text-align:left;padding:5px 2px">Haftalar</th><th style="text-align:right;padding:5px 2px">Plan</th><th style="text-align:right;padding:5px 2px">Kümülatif</th><th style="text-align:right;padding:5px 2px">Gerçek</th></tr>';
   var ds=odemeDonemleri();
   ds.forEach(function(d){ var cur=(w>=d.h1&&w<=d.h2),past=(w>d.h2); var ger=past?Math.min(hg,d.kum):(cur?hg:0);
-    h+='<tr style="border-top:1px solid #f0f0f0;'+(cur?'background:#FFF4EC':'')+'"><td style="padding:6px 2px;font-weight:800">'+d.no+'. hakediş</td><td style="padding:6px 2px;color:#9aa0a6">H'+d.h1+'–H'+d.h2+' · '+haftaTarih(d.h1)+'–'+haftaTarih(d.h2+1)+'</td><td style="text-align:right;padding:6px 2px">'+n0(d.plan)+'</td><td style="text-align:right;padding:6px 2px;color:#9aa0a6">'+n0(d.kum)+'</td><td style="text-align:right;padding:6px 2px;font-weight:800;color:'+((cur||past)?(ger>=d.kum?'#16a34a':'#e39a00'):'#cfd4da')+'">'+((cur||past)?n0(ger):'—')+'</td></tr>'; });
+    h+='<tr style="border-top:1px solid #f0f0f0;'+(cur?'background:#FFF4EC':'')+(d.disi?'color:#7c3aed':'')+'"><td style="padding:6px 2px;font-weight:800">'+(d.disi?'Kabuller':(d.no+'. hakediş'))+'</td><td style="padding:6px 2px;color:#9aa0a6">'+(d.disi?'sözleşme süresi sonrası':('H'+d.h1+'–H'+d.h2+' · '+haftaTarih(d.h1)+'–'+haftaTarih(d.h2+1)))+'</td><td style="text-align:right;padding:6px 2px">'+n0(d.plan)+'</td><td style="text-align:right;padding:6px 2px;color:#9aa0a6">'+n0(d.kum)+'</td><td style="text-align:right;padding:6px 2px;font-weight:800;color:'+((cur||past)?(ger>=d.kum?'#16a34a':'#e39a00'):'#cfd4da')+'">'+((cur||past)?n0(ger):'—')+'</td></tr>'; });
   h+='<tr style="border-top:2px solid #E8C4A8"><td style="padding:6px 2px;font-weight:800">Toplam</td><td></td><td style="text-align:right;padding:6px 2px;font-weight:800">'+n0(b)+'</td><td></td><td style="text-align:right;padding:6px 2px;font-weight:800;color:#1e8e4e">'+n0(hg)+'</td></tr></table>';
+  return h; }
+/* ---- bu haftanın iş emri (plana göre hedefler) ---- */
+function vIsEmri(){ var H=+CFG.hafta||13,w=Math.max(1,haftaNo()),pr=canPara(),adm=(ROLE==='admin');
+  if(w>H)return '<div class="gt" style="color:#9aa0a6">Sözleşme süresi doldu (H'+H+'). Kalan: kabuller.</div>';
+  var h='<div class="gt" style="color:#9aa0a6;margin-bottom:8px">Hafta <b>H'+w+'</b> ('+haftaTarih(w)+' – '+haftaTarih(w+1)+') · plana göre bu hafta yapılması gerekenler</div>';
+  /* delgi sırası: bu hafta planlanan masalar (yerleşimdeki plan delgi haftası), trafo bazında */
+  if(mwpHasLayout()){ var byTr={},tot=0,md=mdurum(); YER.m.forEach(function(r){ if(masaWk(r)!==w)return; var k=masaK(r),s=md[r[0]]||{}; byTr[k]=byTr[k]||{masa:0,delik:0,bitti:0}; byTr[k].masa++; byTr[k].delik+=(r[7]||0); if(s.d)byTr[k].bitti++; tot+=(r[7]||0); });
+    var ks=Object.keys(byTr).sort(); if(ks.length){ h+='<div style="background:#FFF4EC;border:1px solid #F3D9C4;border-radius:10px;padding:8px 10px;margin-bottom:8px"><div style="font:800 12px Barlow;color:#9a5b09;margin-bottom:4px">🎯 Delgi sırası bu hafta · '+n0(tot)+' delik</div>';
+      ks.forEach(function(k){ var o=byTr[k]; h+='<div class="row" style="padding:4px 0"><span>TR'+(+k+1)+' <small style="color:#9aa0a6">'+o.masa+' masa · '+n0(o.delik)+' delik</small></span><b style="color:'+(o.bitti>=o.masa?'#16a34a':'#E8622A')+'">'+o.bitti+'/'+o.masa+' delindi</b></div>'; }); h+='</div>'; } }
+  var any=false;
+  [['mekanik','Mekanik'],['elektrik','Elektrik']].forEach(function(g){ var ks=mwpKalemler().filter(function(k){return !k.ayri&&(k.grup||'')===g[0]&&w>=(+k.hb||1)&&w<=(+k.hs||+k.hb||1);}); if(!ks.length)return; any=true;
+    h+='<div class="ch2" style="margin:6px 0 2px">'+g[1]+'</div>';
+    ks.forEach(function(k){ var yuzde=(k.esas==='yuzde'),plan=yuzde?100:(+k.plan||0),haftaSay=((+k.hs||+k.hb||1)-(+k.hb||1)+1),hed=kalemPlanPct(k,w)/100*plan,ger=yuzde?mwpKalemPct(k):mwpKalemVal(k),haftalik=plan/haftaSay,kalan=Math.max(0,hed-ger),ob=yuzde?'%':(k.olcu||'adet');
+      var col=kalan<=0?'#16a34a':(ger<kalemPlanPct(k,w-1)/100*plan?'#dc2626':'#E8622A');
+      h+='<div class="pit" style="padding:6px 0"><div class="prt"><span><b style="color:#9aa0a6;margin-right:6px">'+esc(k.kod)+'</b>'+esc(k.ad)+'</span><small>hafta '+(w-(+k.hb||1)+1)+'/'+haftaSay+'</small></div>'
+        +'<div style="display:flex;gap:8px;align-items:center;margin-top:3px;font:600 12px Barlow"><span style="flex:1;color:#2B2F35">Bu hafta hedef: <b>'+n0(haftalik)+' '+ob+'</b> <small style="color:#9aa0a6">(kümülatif '+n0(hed)+')</small></span><span style="color:'+col+';font-weight:800">'+(kalan<=0?'✓ planda':('kalan '+n0(kalan)+' '+ob))+'</span></div></div>'; }); });
+  if(!any)h+='<div class="empty">Bu hafta planlı kalem yok</div>';
   return h; }
 /* ---- ANA EKRAN (Bugün + İlerleme birleşik) ---- */
 function vAnaMwp(){
@@ -760,6 +778,7 @@ function vAnaMwp(){
   if(TRSEC!=null)h+=vTrBolum(TRSEC);
   /* alt bölümler */
   function sec(id,ttl,inner,open){ return '<details class="acc"'+(open?' open':'')+' id="'+id+'"><summary><span class="accl"><b>'+ttl+'</b></span><span class="accr">▾</span></summary><div class="accb">'+inner+'</div></details>'; }
+  h+=sec('sec_emri','📋 Bu haftanın iş emri (H'+Math.max(1,w)+')',vIsEmri(),true);
   if(mwpHasLayout()){ YERACIK=true; h+=sec('sec_vaz','🗺️ Vaziyet planı',vYerlesim().replace('id="yer_tgl"','id="yer_tgl" hidden'),false); }
   h+=sec('sec_plan','📅 Detaylı iş planı · plan–gerçek',vIsPlani(),false);
   h+=sec('sec_ode','💰 Ödeme (hakediş) planı',vOdemePlani(),false);
