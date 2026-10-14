@@ -261,7 +261,7 @@ details.acc[open]>summary{border-bottom:1.5px solid var(--line)}
 "use strict";
 (function(){
 /* ============================= SABİTLER ============================= */
-var BUILD='v91';  /* uygulama sürümü (önbellek/güncelleme takibi) */
+var BUILD='v92';  /* uygulama sürümü (önbellek/güncelleme takibi) */
 var MEK=0, ELK=0, SOZBEDEL=0, CFG=null;  /* tüm değerler projenin KENDİ cfg verisinden gelir */
 var MEK_ART=0;                           /* mekanik iş artışı (cfg'den) */
 var TGT={};                              /* aktif projenin hedefleri (cfg.tgt) */
@@ -778,7 +778,6 @@ function vAnaMwp(){
   if(TRSEC!=null)h+=vTrBolum(TRSEC);
   /* alt bölümler */
   function sec(id,ttl,inner,open){ return '<details class="acc"'+(open?' open':'')+' id="'+id+'"><summary><span class="accl"><b>'+ttl+'</b></span><span class="accr">▾</span></summary><div class="accb">'+inner+'</div></details>'; }
-  h+=sec('sec_emri','📋 Bu haftanın iş emri (H'+Math.max(1,w)+')',vIsEmri(),true);
   if(mwpHasLayout()){ YERACIK=true; h+=sec('sec_vaz','🗺️ Vaziyet planı',vYerlesim().replace('id="yer_tgl"','id="yer_tgl" hidden'),false); }
   h+=sec('sec_plan','📅 Detaylı iş planı · plan–gerçek',vIsPlani(),false);
   h+=sec('sec_ode','💰 Ödeme (hakediş) planı',vOdemePlani(),false);
@@ -1111,7 +1110,8 @@ function bIler(){ if(isMwp())return bIlerMwp(); if(ROLE!=='admin')return;
 function vGunMwp(){
   var list=GUN();
   var en=ENGEL.map(function(e){return '<option value="'+e[0]+'">'+esc(e[1])+'</option>';}).join('');
-  var h='<div class="card"><div class="ch">Günlük saha notu</div>'
+  var h='<div class="card"><div class="ch">📋 Bu haftanın iş emri (H'+Math.max(1,haftaNo())+')</div>'+vIsEmri()+'</div>';
+  h+='<div class="card"><div class="ch">Günlük saha notu</div>'
     +'<div class="gt" style="margin:-2px 0 8px;color:#9aa0a6">İş adetleri <b>İlerleme → trafo sahası seç</b> ile girilir. Burası günlük not/kişi/engel içindir.</div>'
     +'<button class="ghost" style="width:100%;margin-bottom:10px" onclick="SH.go(\'ilerleme\')">⚡ İş girişine git (trafo sahası seç)</button>'
     +'<div class="frow"><input id="g_t" type="date" value="'+today()+'"><input id="g_p" type="number" inputmode="numeric" placeholder="Sahadaki kişi"></div>'
