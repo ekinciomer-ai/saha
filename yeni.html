@@ -261,7 +261,7 @@ details.acc[open]>summary{border-bottom:1.5px solid var(--line)}
 "use strict";
 (function(){
 /* ============================= SABİTLER ============================= */
-var BUILD='v84';  /* uygulama sürümü (önbellek/güncelleme takibi) */
+var BUILD='v85';  /* uygulama sürümü (önbellek/güncelleme takibi) */
 var MEK=0, ELK=0, SOZBEDEL=0, CFG=null;  /* tüm değerler projenin KENDİ cfg verisinden gelir */
 var MEK_ART=0;                           /* mekanik iş artışı (cfg'den) */
 var TGT={};                              /* aktif projenin hedefleri (cfg.tgt) */
@@ -297,8 +297,11 @@ function ASUNIM_KALEM(){return [
  {id:'m1a',kod:'1a',ad:'Harita (aplikasyon)',grup:'mekanik',esas:'birim',bf:0,plan:1000,olcu:'masa',met:'apl'},
  {id:'m1b',kod:'1b',ad:'Rok (delgi)',grup:'mekanik',esas:'birim',bf:12,plan:23044,olcu:'delik',met:'rok'},
  {id:'m1c',kod:'1c',ad:'Süs beton',grup:'mekanik',esas:'birim',bf:0,plan:23044,olcu:'kolon',met:'sbt'},
- {id:'m3a',kod:'3a',ad:'Kolon montajı + betonlama',grup:'mekanik',esas:'birim',bf:14.235,plan:23044,olcu:'kolon',met:'kolon',pursantaj:42},
- {id:'m3',kod:'3',ad:'Üst montaj — masa (kiriş/aşık/rüzgarlık/payanda)',grup:'mekanik',esas:'birim',bf:242.1184,plan:1000,olcu:'masa',met:'kons',pursantaj:31},
+ {id:'m3a',kod:'3a',ad:'Kolon (ayak) montajı + beton',grup:'mekanik',esas:'birim',bf:14.235,plan:23044,olcu:'kolon',met:'kolon',pursantaj:42},
+ {id:'m3b',kod:'3b',ad:'Kiriş',grup:'mekanik',esas:'birim',bf:4.0864,plan:11522,olcu:'adet',met:'kiris'},
+ {id:'m3c',kod:'3c',ad:'Aşık',grup:'mekanik',esas:'birim',bf:4.0864,plan:26336,olcu:'adet',met:'asik'},
+ {id:'m3d',kod:'3d',ad:'Payanda',grup:'mekanik',esas:'birim',bf:4.0864,plan:11522,olcu:'adet',met:'payanda'},
+ {id:'m3e',kod:'3e',ad:'Rüzgarlık',grup:'mekanik',esas:'birim',bf:4.0864,plan:9876,olcu:'adet',met:'ruzgarlik'},
  {id:'m4',kod:'4',ad:'Panel (PV) montajı',grup:'mekanik',esas:'birim',bf:4.9275,plan:42796,olcu:'panel',met:'panel',pursantaj:27},
  /* ELEKTRİK — kullanıcının numaraları (1,2a..5). $ dağılımı sözleşmeye en yakın eşleme (düzeltilebilir) */
  {id:'e1',kod:'1',ad:'Kanal (AG-OG kablo kanalı)',grup:'elektrik',esas:'yuzde',tutar:187446.48},
@@ -311,8 +314,8 @@ function ASUNIM_KALEM(){return [
  {id:'e5',kod:'5',ad:'İşveren kabulü (test / devreye alma)',grup:'elektrik',esas:'yuzde',tutar:31241.08}
 ];}
 function mwpCfgFix(){ try{ if(!isMwp()||PROJE!=='pmv796yvn2c')return;
-  if(CFG.isv===3)return;   /* zaten kullanıcı-numaralı sürüm */
-  var fix={motor:'mwp',isv:3,mwp:31.241,sabit:(CFG.sabit&&CFG.sabit.kolon?CFG.sabit:{masa:1000,panel:42796,kolon:23044,kosk:6,trafo:6}),kalemler:ASUNIM_KALEM(),sozlesme:CFG.sozlesme||{avans_pct:20,nakdi_teminat_pct:5,kesin_teminat_pct:10,ceza:[1500,3000,5000],dilimler:[]}};
+  if(CFG.isv===4)return;   /* zaten güncel kullanıcı-numaralı sürüm */
+  var fix={motor:'mwp',isv:4,mwp:31.241,sabit:(CFG.sabit&&CFG.sabit.kolon?CFG.sabit:{masa:1000,panel:42796,kolon:23044,kosk:6,trafo:6}),kalemler:ASUNIM_KALEM(),sozlesme:CFG.sozlesme||{avans_pct:20,nakdi_teminat_pct:5,kesin_teminat_pct:10,ceza:[1500,3000,5000],dilimler:[]}};
   set('cfg',fix); CFG=fix; SOZBEDEL=mwpBedel(); }catch(e){} }
 
 var PJST=[{c:'',l:'—',v:0,bg:'',fg:'#9aa0a6'},{c:'V',l:'●',v:1,bg:'#16a34a',fg:'#fff'},
@@ -519,8 +522,10 @@ function mwpTrafoAgg(){ var out={}; if(!mwpHasLayout())return out; var md=mdurum
   YER.m.forEach(function(r){var k=masaK(r),s=md[r[0]]||{},kol=r[7]||0,pan=masaPan(r); out[k]=out[k]||{masa:0,kol:0,pan:0,bitti:0,apl:0,rok:0,kolon:0,kons:0,panel:0};
     out[k].masa++; out[k].kol+=kol; out[k].pan+=pan; if(s.a)out[k].apl++; if(s.d)out[k].rok+=kol; if(s.k)out[k].kolon+=kol; if(s.s)out[k].kons++; if(s.p)out[k].panel+=pan;
     if(s.d&&s.k&&s.s&&s.p)out[k].bitti++; }); return out; }
-function mwpMasaAgg(){ var a={apl:0,rok:0,kolon:0,kons:0,panel:0,dc:0,sbt:0,masaBitti:0}; if(!mwpHasLayout())return a; var md=mdurum();
-  YER.m.forEach(function(r){var s=md[r[0]]||{},kol=r[7]||0,pan=masaPan(r); if(s.a)a.apl+=1; if(s.d)a.rok+=kol; if(s.k)a.kolon+=kol; if(s.s)a.kons+=1; if(s.p)a.panel+=pan; if(s.e)a.dc+=1; if(s.b)a.sbt+=kol; if(s.d&&s.k&&s.s&&s.p)a.masaBitti+=1;}); return a; }
+/* bir masanın bileşen adetleri (tipe göre) — kullanıcı verdiği BOM */
+function masaBOM(r){ var big=!r[5]; return big?{kolon:28,kiris:14,asik:32,payanda:14,ruzgarlik:12,panel:52}:{kolon:14,kiris:7,asik:16,payanda:7,ruzgarlik:6,panel:26}; }
+function mwpMasaAgg(){ var a={apl:0,rok:0,kolon:0,kons:0,panel:0,dc:0,sbt:0,kiris:0,asik:0,payanda:0,ruzgarlik:0,masaBitti:0}; if(!mwpHasLayout())return a; var md=mdurum();
+  YER.m.forEach(function(r){var s=md[r[0]]||{},kol=r[7]||0,pan=masaPan(r),bom=masaBOM(r); if(s.a)a.apl+=1; if(s.d)a.rok+=kol; if(s.k)a.kolon+=kol; if(s.s){a.kons+=1;a.kiris+=bom.kiris;a.asik+=bom.asik;a.payanda+=bom.payanda;a.ruzgarlik+=bom.ruzgarlik;} if(s.p)a.panel+=pan; if(s.e)a.dc+=1; if(s.b)a.sbt+=kol; if(s.d&&s.k&&s.s&&s.p)a.masaBitti+=1;}); return a; }
 function mwpMan(kod){ var m=mwpIlp(); return (m[kod]!=null&&m[kod]!=='')?(+m[kod]||0):null; } /* kalem bazlı elle % / adet (MEK/ELK/ROK-G override) */
 function mwpSay(){return get('mwpsay',{})||{};}                 /* kümülatif fiili sayaçlar — günlük girişlerden toplanır */
 function mwpSayVal(m){var s=mwpSay();return (s[m]!=null&&s[m]!=='')?(+s[m]||0):null;}
@@ -617,15 +622,21 @@ function attachPanZoom(){
 function masaSheet(id){ var r=null; (YER&&YER.m||[]).forEach(function(x){if(x[0]===id)r=x;}); if(!r)return;
   var kol=r[7]||0,pan=masaPan(r),inv=r[6],s=mdurum()[id]||{};
   var cx=((r[1]+r[3])/2).toFixed(1),cy=((r[2]+r[4])/2).toFixed(1);
-  var stages=[['a','1a · Aplikasyon (harita)'],['d','1b · Delgi (rok)'],['k','3a · Kolon montaj + beton'],['s','3b-3e · Üst montaj (aşık/kiriş/rüzgarlık/payanda)'],['p','4 · Panel montaj'],['e','E · DC kablo']];
-  var tip=(r[5]?'2V13 (küçük)':'2V26 (büyük)'),tr=masaK(r),kot=masaKot(r),wk=masaWk(r);
+  var stages=[['a','1a · Aplikasyon (harita)'],['d','1b · Delgi (rok)'],['k','3a · Kolon montaj + beton'],['s','3b-3e · Üst montaj (kiriş/aşık/payanda/rüzgarlık)'],['p','4 · Panel montaj'],['e','E · DC kablo']];
+  var tip=(r[5]?'V1 · 2V13 (küçük)':'V2 · 2V26 (büyük)'),tr=masaK(r),kot=masaKot(r),wk=masaWk(r),bom=masaBOM(r);
   var h='<div class="gt" style="margin-bottom:8px">'+esc(id)+' <small style="color:#9aa0a6">· '+tip+'</small></div>'
     +'<div style="display:flex;gap:6px;margin-bottom:6px">'
-    +'<div class="mini" style="flex:1"><div class="k">Ayak (kolon)</div><div class="v">'+kol+'</div></div>'
     +'<div class="mini" style="flex:1"><div class="k">Panel</div><div class="v" style="color:#1e8e4e">'+pan+'</div></div>'
-    +'<div class="mini" style="flex:1"><div class="k">Trafo</div><div class="v" style="color:#E8622A">TR'+(tr+1)+'</div></div></div>'
-    +'<div class="gt" style="margin-bottom:8px;color:#9aa0a6">İnverter '+esc(invId(inv))+' · köşk K'+(tr+1)+(kot!=null?(' · kot '+kot+' m'):'')+(wk!=null?(' · plan hafta '+wk):'')+'</div>'
-    +'<div class="gt" style="margin-bottom:8px;color:#9aa0a6">📍 Aplikasyon: X '+cx+' · Y '+cy+' (saha gridi, m)</div><div class="ch2">İş durumu</div>';
+    +'<div class="mini" style="flex:1"><div class="k">Trafo</div><div class="v" style="color:#E8622A">TR'+(tr+1)+'</div></div>'
+    +'<div class="mini" style="flex:1"><div class="k">İnverter</div><div class="v" style="font-size:13px">'+esc(invId(inv)).replace(/^INV-/,'')+'</div></div></div>'
+    +'<div class="ch2" style="margin:4px 0">Masa bileşenleri (3a–3e)</div>'
+    +'<div style="display:flex;gap:5px;margin-bottom:8px;flex-wrap:wrap">'
+    +'<div class="mini" style="flex:1 1 18%"><div class="k">Kolon</div><div class="v" style="font-size:15px">'+bom.kolon+'</div></div>'
+    +'<div class="mini" style="flex:1 1 18%"><div class="k">Kiriş</div><div class="v" style="font-size:15px">'+bom.kiris+'</div></div>'
+    +'<div class="mini" style="flex:1 1 18%"><div class="k">Aşık</div><div class="v" style="font-size:15px">'+bom.asik+'</div></div>'
+    +'<div class="mini" style="flex:1 1 18%"><div class="k">Payanda</div><div class="v" style="font-size:15px">'+bom.payanda+'</div></div>'
+    +'<div class="mini" style="flex:1 1 18%"><div class="k">Rüzgarlık</div><div class="v" style="font-size:15px">'+bom.ruzgarlik+'</div></div></div>'
+    +'<div class="gt" style="margin-bottom:8px;color:#9aa0a6">köşk K'+(tr+1)+(kot!=null?(' · kot '+kot+' m'):'')+(wk!=null?(' · plan hafta '+wk):'')+' · 📍 X '+cx+' Y '+cy+'</div><div class="ch2">İş durumu</div>';
   stages.forEach(function(st){ h+='<label class="row" style="cursor:pointer"><span>'+st[1]+'</span><input type="checkbox" class="mst" data-s="'+st[0]+'"'+(s[st[0]]?' checked':'')+(ROLE==='admin'?'':' disabled')+'></label>'; });
   openSheet('Masa '+id,h);
   document.querySelectorAll('#sbox .mst').forEach(function(cb){ cb.onchange=function(){ if(!roOk())return; var m=mdurum(),o=m[id]||{}; o[cb.getAttribute('data-s')]=cb.checked; m[id]=o; set('mdurum',m); render(); }; });
