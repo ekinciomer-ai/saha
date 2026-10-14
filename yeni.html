@@ -261,7 +261,7 @@ details.acc[open]>summary{border-bottom:1.5px solid var(--line)}
 "use strict";
 (function(){
 /* ============================= SABİTLER ============================= */
-var BUILD='v70';  /* uygulama sürümü (önbellek/güncelleme takibi) */
+var BUILD='v71';  /* uygulama sürümü (önbellek/güncelleme takibi) */
 var MEK=0, ELK=0, SOZBEDEL=0, CFG=null;  /* tüm değerler projenin KENDİ cfg verisinden gelir */
 var MEK_ART=0;                           /* mekanik iş artışı (cfg'den) */
 var TGT={};                              /* aktif projenin hedefleri (cfg.tgt) */
@@ -325,9 +325,15 @@ function allowedProjeler(){ return PROJELER.filter(function(p){return projeIzinl
 function aktifProje(){try{var u=new URLSearchParams(location.search).get('proje');if(u){try{localStorage.setItem('sh2:aktif',u);}catch(e){}return u;}}catch(e){} try{var a=localStorage.getItem('sh2:aktif');if(a)return a;}catch(e){}return 'tr1';}
 function loadReg(){try{var r=localStorage.getItem('sh2:projeler');if(r){var l=JSON.parse(r);if(l&&l.length)PROJELER=l;}}catch(e){}
   if(!projGet('tr1'))PROJELER.unshift({id:'tr1',ad:'SHAMS-1 GES',renk:'#E8622A'});}
+/* kayıt defteri SAĞLAM: her proje AYRI satır (p:<id>) = asıl kaynak; 'projeler' blob(lar)ı eski istemci yedeği (çoklu/çakışık blob'lar BİRLEŞTİRİLİR) */
 function saveReg(){try{localStorage.setItem('sh2:projeler',JSON.stringify(PROJELER));}catch(e){}
-  try{fetch(N8N_BASE+'/saha-set',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({proje:'SHAMS1-reg',cihaz:(N8N&&N8N.dev)||'',items:[{anahtar:'projeler',deger:JSON.stringify(PROJELER)}]})}).catch(function(){});}catch(e){}}
-function regFetch(cb){try{fetch(N8N_BASE+'/saha-get?proje=SHAMS1-reg&t='+Date.now()).then(function(r){return r.ok?r.json():null;}).then(function(rows){var arr=Array.isArray(rows)?rows:(rows&&rows.data)||[];var p=null;arr.forEach(function(x){if(x.anahtar==='projeler'){try{p=JSON.parse(x.deger);}catch(e){}}});if(p&&p.length){PROJELER=p;if(!projGet('tr1'))PROJELER.unshift({id:'tr1',ad:'SHAMS-1 GES',renk:'#E8622A'});try{localStorage.setItem('sh2:projeler',JSON.stringify(PROJELER));}catch(e){}}cb&&cb();}).catch(function(){cb&&cb();});}catch(e){cb&&cb();}}
+  try{var items=PROJELER.map(function(p){return {anahtar:'p:'+p.id,deger:JSON.stringify(p)};}); items.push({anahtar:'projeler',deger:JSON.stringify(PROJELER)});
+    fetch(N8N_BASE+'/saha-set',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({proje:'SHAMS1-reg',cihaz:(N8N&&N8N.dev)||'',items:items})}).catch(function(){});}catch(e){}}
+function regParse(rows){ var arr=Array.isArray(rows)?rows:(rows&&rows.data)||[]; var map={},blob={};
+  arr.forEach(function(x){ var k=x.anahtar||''; if(k.indexOf('p:')===0){ try{var o=JSON.parse(x.deger); if(o&&o.id&&!o.sil)map[o.id]=o;}catch(e){} } else if(k==='projeler'){ try{var a=JSON.parse(x.deger); if(a&&a.length)a.forEach(function(p){if(p&&p.id&&!blob[p.id])blob[p.id]=p;});}catch(e){} } });
+  var list=Object.keys(map).map(function(k){return map[k];}); if(!list.length)list=Object.keys(blob).map(function(k){return blob[k];}); /* yedek: tüm blob'ların birleşimi */
+  if(!list.some(function(p){return p.id==='tr1';}))list.unshift({id:'tr1',ad:'SHAMS-1 GES',renk:'#E8622A'}); return list; }
+function regFetch(cb){try{fetch(N8N_BASE+'/saha-get?proje=SHAMS1-reg&t='+Date.now()).then(function(r){return r.ok?r.json():null;}).then(function(rows){var list=regParse(rows);if(list&&list.length){PROJELER=list;try{localStorage.setItem('sh2:projeler',JSON.stringify(list));}catch(e){}}cb&&cb();}).catch(function(){cb&&cb();});}catch(e){cb&&cb();}}
 function applyTheme(){var p=projGet(PROJE),c=(p&&p.renk)||'#E8622A';try{document.documentElement.style.setProperty('--org',c);}catch(e){}}
 function projeSwitch(id){if(id===PROJE)return;if(!projeIzinli(id)){toast('Bu projeye erişim yetkiniz yok');return;}try{localStorage.setItem('sh2:aktif',id);}catch(e){}location.reload();}
 function projeAdd(ad,renk){var id='p'+Date.now().toString(36)+Math.floor(Math.random()*1296).toString(36);var p={id:id,ad:(ad||'Yeni proje').trim(),renk:renk||'#3f6fb0',oln:Date.now()};PROJELER.push(p);saveReg();
