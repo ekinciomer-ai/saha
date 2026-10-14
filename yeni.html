@@ -261,7 +261,7 @@ details.acc[open]>summary{border-bottom:1.5px solid var(--line)}
 "use strict";
 (function(){
 /* ============================= SABİTLER ============================= */
-var BUILD='v87';  /* uygulama sürümü (önbellek/güncelleme takibi) */
+var BUILD='v88';  /* uygulama sürümü (önbellek/güncelleme takibi) */
 var MEK=0, ELK=0, SOZBEDEL=0, CFG=null;  /* tüm değerler projenin KENDİ cfg verisinden gelir */
 var MEK_ART=0;                           /* mekanik iş artışı (cfg'den) */
 var TGT={};                              /* aktif projenin hedefleri (cfg.tgt) */
@@ -723,7 +723,14 @@ function vIlerMwp(){
   /* iş kalemleri (bu saha) */
   [['mekanik','Mekanik'],['elektrik','Elektrik']].forEach(function(g){ var ks=mwpKalemler().filter(function(k){return (k.grup||'')===g[0];}); if(!ks.length)return;
     h+='<div style="background:#fff;border-radius:12px;padding:10px;margin-bottom:8px"><div class="ch2" style="margin:0 0 4px">'+g[1]+' — bu sahada</div>';
-    ks.forEach(function(k){ h+=ilerKalemRow(k,adm,pr,tr); }); h+='</div>'; });
+    /* "3" ile başlayan kalemler = masa grubu → soft ayrı zemin */
+    var inM=false;
+    ks.forEach(function(k,i){ var isM=(g[0]==='mekanik'&&/^3/.test(String(k.kod||'')));
+      if(isM&&!inM){ inM=true; h+='<div style="background:#EEF4FB;border:1px solid #CFE0F5;border-radius:10px;padding:8px 10px 2px;margin:8px 0"><div style="font:800 12px Barlow;color:#2F5F9E;margin-bottom:2px">3 · Masa <small style="font-weight:600;color:#6B8DB8">kolon · kiriş · aşık · payanda · rüzgarlık</small></div>'; }
+      if(!isM&&inM){ inM=false; h+='</div>'; }
+      h+=ilerKalemRow(k,adm,pr,tr); });
+    if(inM)h+='</div>';
+    h+='</div>'; });
   h+='<div class="gt" style="color:#9a5b09;margin-top:4px">Adet = bu sahada yapılan toplam. Haritada bu sahanın masalarını işaretlersen otomatik dolar; elle yazınca onu geçersin.</div>';
   h+='</div>';
   if(mwpHasLayout())h+=vYerlesim();
