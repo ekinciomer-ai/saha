@@ -261,7 +261,7 @@ details.acc[open]>summary{border-bottom:1.5px solid var(--line)}
 "use strict";
 (function(){
 /* ============================= SABİTLER ============================= */
-var BUILD='v78';  /* uygulama sürümü (önbellek/güncelleme takibi) */
+var BUILD='v79';  /* uygulama sürümü (önbellek/güncelleme takibi) */
 var MEK=0, ELK=0, SOZBEDEL=0, CFG=null;  /* tüm değerler projenin KENDİ cfg verisinden gelir */
 var MEK_ART=0;                           /* mekanik iş artışı (cfg'den) */
 var TGT={};                              /* aktif projenin hedefleri (cfg.tgt) */
@@ -524,15 +524,16 @@ function vYerlesim(){
   if(YERACIK){
     var svg='<svg id="yersvg" viewBox="'+bb[0]+' '+bb[1]+' '+w+' '+hgt+'" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;max-height:66vh;background:#fbfbf9;border:1px solid #e5e7eb;border-radius:8px;touch-action:none;cursor:grab;display:block">';
     var md=mdurum();
-    YER.m.forEach(function(r){ var id=r[0],x=Math.min(r[1],r[3]),y=Math.min(r[2],r[4]),ww=Math.abs(r[3]-r[1])||0.6,hh=Math.abs(r[4]-r[2])||0.6; var s=md[id]||{},dn=(s.d?1:0)+(s.k?1:0)+(s.s?1:0)+(s.p?1:0); var col=dn>=4?'#16a34a':(dn>0?'#e39a00':'#cfd4da');
-      svg+='<rect class="msa" data-id="'+esc(id)+'" x="'+x+'" y="'+y+'" width="'+ww+'" height="'+hh+'" fill="'+col+'" stroke="#fff" stroke-width="0.25"/>'; });
+    YER.m.forEach(function(r){ var id=r[0],x=Math.min(r[1],r[3]),y=Math.min(r[2],r[4]),ww=Math.abs(r[3]-r[1])||0.6,hh=Math.abs(r[4]-r[2])||0.6; var s=md[id]||{},dn=(s.d?1:0)+(s.k?1:0)+(s.s?1:0)+(s.p?1:0); var col=dn>=4?'#16a34a':(dn>0?'#e39a00':'#cfd4da'); var kol=r[7]||0,pan=masaPan(r),fs=Math.max(0.8,Math.min(ww,hh)*0.55);
+      svg+='<rect class="msa" data-id="'+esc(id)+'" x="'+x+'" y="'+y+'" width="'+ww+'" height="'+hh+'" fill="'+col+'" stroke="#fff" stroke-width="0.25"/>'
+        +'<text x="'+(x+ww/2)+'" y="'+(y+hh/2)+'" font-size="'+fs.toFixed(2)+'" fill="#1b1b1b" text-anchor="middle" dominant-baseline="central" style="pointer-events:none;font-family:Barlow,sans-serif">'+kol+'·'+pan+'</text>'; });
     svg+='</svg>';
     var zbst='width:36px;height:36px;border-radius:50%;border:1px solid #d9dce1;background:#fff;color:#2B2F35;font:700 18px Barlow;box-shadow:0 2px 6px rgba(0,0,0,.15);cursor:pointer;line-height:1';
     var zoom='<div style="position:absolute;right:10px;bottom:10px;display:flex;flex-direction:column;gap:6px">'
       +'<button class="yzb" data-z="in" style="'+zbst+'">+</button>'
       +'<button class="yzb" data-z="out" style="'+zbst+'">−</button>'
       +'<button class="yzb" data-z="reset" style="'+zbst+';font-size:15px">⟲</button></div>';
-    h+='<div style="position:relative">'+svg+zoom+'</div><div class="gt" style="margin-top:6px;color:#9aa0a6">İki parmak/tekerlek ile yakınlaştır · sürükle = gez · dokun = masa</div>';
+    h+='<div style="position:relative">'+svg+zoom+'</div><div class="gt" style="margin-top:6px;color:#9aa0a6">Masa içindeki sayı = <b>ayak·panel</b> (yakınlaşınca okunur) · dokun = masa detayı · iki parmak/tekerlek = yakınlaştır · sürükle = gez</div>';
   }
   h+='</div>';
   return h;
@@ -565,7 +566,12 @@ function masaSheet(id){ var r=null; (YER&&YER.m||[]).forEach(function(x){if(x[0]
   var kol=r[7]||0,pan=masaPan(r),inv=r[6],s=mdurum()[id]||{};
   var cx=((r[1]+r[3])/2).toFixed(1),cy=((r[2]+r[4])/2).toFixed(1);
   var stages=[['a','Aplikasyon (yer tespiti)'],['d','Delgi (rok)'],['k','Kolon montaj'],['s','Konstrüksiyon (masa)'],['p','Panel montaj'],['e','Kablo / DC'],['b','Süs beton']];
-  var h='<div class="gt" style="margin-bottom:4px">'+esc(id)+' · '+kol+' kolon · '+pan+' panel · inv '+inv+'</div>'
+  var tip=(r[5]?'küçük masa':'büyük masa');
+  var h='<div class="gt" style="margin-bottom:8px">'+esc(id)+' <small style="color:#9aa0a6">· '+tip+' · inv '+inv+'</small></div>'
+    +'<div style="display:flex;gap:6px;margin-bottom:8px">'
+    +'<div class="mini" style="flex:1"><div class="k">Ayak (kolon)</div><div class="v">'+kol+'</div></div>'
+    +'<div class="mini" style="flex:1"><div class="k">Panel</div><div class="v" style="color:#1e8e4e">'+pan+'</div></div>'
+    +'<div class="mini" style="flex:1"><div class="k">İnverter</div><div class="v">'+inv+'</div></div></div>'
     +'<div class="gt" style="margin-bottom:8px;color:#9aa0a6">📍 Aplikasyon: X '+cx+' · Y '+cy+' (saha gridi, m)</div><div class="ch2">İş durumu</div>';
   stages.forEach(function(st){ h+='<label class="row" style="cursor:pointer"><span>'+st[1]+'</span><input type="checkbox" class="mst" data-s="'+st[0]+'"'+(s[st[0]]?' checked':'')+(ROLE==='admin'?'':' disabled')+'></label>'; });
   openSheet('Masa '+id,h);
