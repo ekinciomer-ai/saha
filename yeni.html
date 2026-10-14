@@ -261,7 +261,7 @@ details.acc[open]>summary{border-bottom:1.5px solid var(--line)}
 "use strict";
 (function(){
 /* ============================= SABİTLER ============================= */
-var BUILD='v81';  /* uygulama sürümü (önbellek/güncelleme takibi) */
+var BUILD='v82';  /* uygulama sürümü (önbellek/güncelleme takibi) */
 var MEK=0, ELK=0, SOZBEDEL=0, CFG=null;  /* tüm değerler projenin KENDİ cfg verisinden gelir */
 var MEK_ART=0;                           /* mekanik iş artışı (cfg'den) */
 var TGT={};                              /* aktif projenin hedefleri (cfg.tgt) */
@@ -548,9 +548,7 @@ function vYerlesim(){
     if(YER.f&&YER.f.length){ svg+='<polyline points="'+YER.f.map(function(p){return p[0]+','+p[1];}).join(' ')+'" fill="none" stroke="#9aa0a6" stroke-width="0.7" stroke-dasharray="2.5 2" opacity="0.65"/>'; }
     YER.m.forEach(function(r){ var id=r[0],x=Math.min(r[1],r[3]),y=Math.min(r[2],r[4]),ww=Math.abs(r[3]-r[1])||0.6,hh=Math.abs(r[4]-r[2])||0.6; var s=md[id]||{},dn=(s.d?1:0)+(s.k?1:0)+(s.s?1:0)+(s.p?1:0),tr=masaK(r);
       var col=(YERMOD==='ilerleme')?(dn>=4?'#16a34a':(dn>0?'#e39a00':'#cfd4da')):TRCOL[tr%TRCOL.length];
-      var no=id.replace(/^M-/,''),fs=Math.max(0.7,Math.min(ww,hh)*0.6),txt=(YERMOD==='ilerleme')?(r[7]||0)+'·'+masaPan(r):no;
-      svg+='<rect class="msa" data-id="'+esc(id)+'" x="'+x+'" y="'+y+'" width="'+ww+'" height="'+hh+'" fill="'+col+'" fill-opacity="'+(YERMOD==='tr'&&dn>=4?'1':YERMOD==='tr'?'0.55':'1')+'" stroke="#fff" stroke-width="0.25"/>'
-        +'<text x="'+(x+ww/2)+'" y="'+(y+hh/2)+'" font-size="'+fs.toFixed(2)+'" fill="#fff" text-anchor="middle" dominant-baseline="central" style="pointer-events:none;font-family:Barlow,sans-serif;font-weight:700">'+esc(txt)+'</text>'; });
+      svg+='<rect class="msa" data-id="'+esc(id)+'" x="'+x+'" y="'+y+'" width="'+ww+'" height="'+hh+'" fill="'+col+'" fill-opacity="'+(YERMOD==='tr'&&dn>=4?'1':YERMOD==='tr'?'0.5':'1')+'" stroke="#fff" stroke-width="0.25"/>'; });
     (YER.K||[]).forEach(function(k,i){var x=Math.min(k[0],k[2]),y=Math.min(k[1],k[3]),ww=Math.abs(k[2]-k[0])||1.5,hh=Math.abs(k[3]-k[1])||1.5; svg+='<rect x="'+x+'" y="'+y+'" width="'+ww+'" height="'+hh+'" fill="#dc2626" stroke="#fff" stroke-width="0.3"/><text x="'+(x+ww/2)+'" y="'+(y-1.5)+'" font-size="5" fill="#dc2626" text-anchor="middle" style="font-family:Barlow;font-weight:800;pointer-events:none">TR'+(i+1)+'</text>';});
     (YER.T||[]).forEach(function(t){var x=Math.min(t[0],t[2]),y=Math.min(t[1],t[3]),ww=Math.abs(t[2]-t[0])||1,hh=Math.abs(t[3]-t[1])||1; svg+='<rect x="'+x+'" y="'+y+'" width="'+ww+'" height="'+hh+'" fill="#f59e0b" stroke="#7a3b00" stroke-width="0.3"/>';});
     svg+='</svg>';
@@ -563,7 +561,7 @@ function vYerlesim(){
     h+='<div style="display:flex;gap:0;margin-bottom:6px;border-radius:8px;overflow:hidden;border:1px solid #d9dce1">'
       +'<button class="ymod" data-m="tr" style="'+mbst+';background:'+(YERMOD==='tr'?'#E8622A':'#fff')+';color:'+(YERMOD==='tr'?'#fff':'#2B2F35')+'">Trafo bölgesi (renk)</button>'
       +'<button class="ymod" data-m="ilerleme" style="'+mbst+';border-left:1px solid #d9dce1;background:'+(YERMOD==='ilerleme'?'#1e8e4e':'#fff')+';color:'+(YERMOD==='ilerleme'?'#fff':'#2B2F35')+'">İlerleme (renk)</button></div>';
-    h+='<div style="position:relative">'+svg+zoom+'</div><div class="gt" style="margin-top:6px;color:#9aa0a6">'+(YERMOD==='tr'?'Renk = trafo (TR1–TR6), masa içi = <b>masa no</b>, soluk = iş bitmedi':'Renk = iş durumu (yeşil=bitti), masa içi = <b>ayak·panel</b>')+' · dokun = masa detayı · iki parmak = yakınlaştır</div>';
+    h+='<div style="position:relative">'+svg+zoom+'</div><div class="gt" style="margin-top:6px;color:#9aa0a6">'+(YERMOD==='tr'?'Renk = trafo (TR1–TR6), soluk = iş bitmedi':'Renk = iş durumu (yeşil=bitti)')+' · dokun = masa detayı (no, ayak, panel, TR) · iki parmak = yakınlaştır</div>';
   }
   h+='</div>';
   return h;
