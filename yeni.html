@@ -261,7 +261,7 @@ details.acc[open]>summary{border-bottom:1.5px solid var(--line)}
 "use strict";
 (function(){
 /* ============================= SABİTLER ============================= */
-var BUILD='v89';  /* uygulama sürümü (önbellek/güncelleme takibi) */
+var BUILD='v90';  /* uygulama sürümü (önbellek/güncelleme takibi) */
 var MEK=0, ELK=0, SOZBEDEL=0, CFG=null;  /* tüm değerler projenin KENDİ cfg verisinden gelir */
 var MEK_ART=0;                           /* mekanik iş artışı (cfg'den) */
 var TGT={};                              /* aktif projenin hedefleri (cfg.tgt) */
@@ -599,15 +599,7 @@ function vYerlesim(){
   if(!mwpHasLayout())return '';
   var bb=YER.bbox||[0,0,100,100], w=(bb[2]-bb[0])||1, hgt=(bb[3]-bb[1])||1, sb=mwpSabit(), a=mwpMasaAgg();
   var h='<div class="card" style="padding:10px"><button id="yer_tgl" class="mod" style="width:100%;justify-content:space-between"><span class="mtx"><b>🗺️ Yerleşim · '+YER.m.length+' masa</b><small>'+(YERACIK?'gizlemek için dokun':'göstermek için dokun')+'</small></span><span style="font-size:18px;color:#9aa0a6">'+(YERACIK?'▲':'▼')+'</span></button>'
-    +'<div style="display:flex;gap:6px;margin:8px 0;flex-wrap:wrap">'
-    +'<div class="mini" style="flex:1 1 22%"><div class="k">Aplikasyon</div><div class="v" style="color:#7c3aed">%'+Math.round(a.apl/((YER.m||[]).length||1)*100)+'</div></div>'
-    +'<div class="mini" style="flex:1 1 22%"><div class="k">Delgi</div><div class="v" style="color:#E8622A">%'+Math.round(a.rok/(+sb.kolon||1)*100)+'</div></div>'
-    +'<div class="mini" style="flex:1 1 22%"><div class="k">Kolon</div><div class="v">%'+Math.round(a.kolon/(+sb.kolon||1)*100)+'</div></div>'
-    +'<div class="mini" style="flex:1 1 22%"><div class="k">Panel</div><div class="v" style="color:#1e8e4e">%'+Math.round(a.panel/(+sb.panel||1)*100)+'</div></div></div>';
-  var ta=mwpTrafoAgg(); h+='<div class="ch2" style="margin:2px 0 6px">Trafo bölgeleri (biten masa)</div><div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap">';
-  for(var ti=0;ti<trafoSay();ti++){ var tt=ta[ti]||{masa:0,bitti:0}; var tpc=tt.masa?Math.round(tt.bitti/tt.masa*100):0;
-    h+='<div class="mini" style="flex:1 1 30%;border-color:#F3D9C4"><div class="k">TR'+(ti+1)+'</div><div class="v" style="font-size:16px;color:#E8622A">%'+tpc+'</div><div style="font:600 10px Barlow;color:#9aa0a6">'+tt.bitti+'/'+tt.masa+' masa</div></div>'; }
-  h+='</div>';
+    +'';
   if(YERACIK){
     var svg='<svg id="yersvg" viewBox="'+bb[0]+' '+bb[1]+' '+w+' '+hgt+'" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;max-height:66vh;background:#fbfbf9;border:1px solid #e5e7eb;border-radius:8px;touch-action:none;cursor:grab;display:block">';
     var md=mdurum();
