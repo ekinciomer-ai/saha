@@ -261,7 +261,7 @@ details.acc[open]>summary{border-bottom:1.5px solid var(--line)}
 "use strict";
 (function(){
 /* ============================= SABİTLER ============================= */
-var BUILD='v73';  /* uygulama sürümü (önbellek/güncelleme takibi) */
+var BUILD='v75';  /* uygulama sürümü (önbellek/güncelleme takibi) */
 var MEK=0, ELK=0, SOZBEDEL=0, CFG=null;  /* tüm değerler projenin KENDİ cfg verisinden gelir */
 var MEK_ART=0;                           /* mekanik iş artışı (cfg'den) */
 var TGT={};                              /* aktif projenin hedefleri (cfg.tgt) */
@@ -487,8 +487,8 @@ var YER=null;  /* {bbox,m:[[id,x0,y0,x1,y1,t,inv,kol],...]} — projeye özel st
 function mwpHasLayout(){return !!(YER&&YER.m&&YER.m.length);}
 function masaPan(r){return r[5]?26:52;}
 function mdurum(){return get('mdurum',{})||{};}
-function mwpMasaAgg(){ var a={rok:0,kolon:0,kons:0,panel:0,dc:0,sbt:0,masaBitti:0}; if(!mwpHasLayout())return a; var md=mdurum();
-  YER.m.forEach(function(r){var s=md[r[0]]||{},kol=r[7]||0,pan=masaPan(r); if(s.d)a.rok+=kol; if(s.k)a.kolon+=kol; if(s.s)a.kons+=1; if(s.p)a.panel+=pan; if(s.e)a.dc+=1; if(s.b)a.sbt+=kol; if(s.d&&s.k&&s.s&&s.p)a.masaBitti+=1;}); return a; }
+function mwpMasaAgg(){ var a={apl:0,rok:0,kolon:0,kons:0,panel:0,dc:0,sbt:0,masaBitti:0}; if(!mwpHasLayout())return a; var md=mdurum();
+  YER.m.forEach(function(r){var s=md[r[0]]||{},kol=r[7]||0,pan=masaPan(r); if(s.a)a.apl+=1; if(s.d)a.rok+=kol; if(s.k)a.kolon+=kol; if(s.s)a.kons+=1; if(s.p)a.panel+=pan; if(s.e)a.dc+=1; if(s.b)a.sbt+=kol; if(s.d&&s.k&&s.s&&s.p)a.masaBitti+=1;}); return a; }
 function mwpKalemAdet(k){ if(mwpHasLayout()){var a=mwpMasaAgg(); if(k.kod==='ROK')return a.rok; if(k.kod==='SBT')return a.sbt;} return +((mwpIlp()[k.kod])||0)||0; }
 function mwpKalemPct(k){
   if(mwpHasLayout()&&k.kod==='MEK'){ var a=mwpMasaAgg(),sb=mwpSabit(),pur=k.pursantaj||[42,31,27]; var tk=+sb.kolon||1,tm=+sb.masa||1,tp=+sb.panel||1; return Math.max(0,Math.min(100,(pur[0]||0)*a.kolon/tk+(pur[1]||0)*a.kons/tm+(pur[2]||0)*a.panel/tp)); }
@@ -510,43 +510,76 @@ function vYerlesim(){
   var bb=YER.bbox||[0,0,100,100], w=(bb[2]-bb[0])||1, hgt=(bb[3]-bb[1])||1, sb=mwpSabit(), a=mwpMasaAgg();
   var h='<div class="card" style="padding:10px"><div class="ch">🗺️ Yerleşim · '+YER.m.length+' masa</div>'
     +'<div class="gt" style="margin-bottom:8px">Masaya dokun → iş durumunu gir. Veriler iş kalemlerine (ROK/MEK/panel) otomatik bağlanır.</div>'
-    +'<div class="three" style="margin-bottom:8px">'
-    +'<div class="mini"><div class="k">Delgi</div><div class="v" style="color:#E8622A">%'+Math.round(a.rok/(+sb.kolon||1)*100)+'</div></div>'
-    +'<div class="mini"><div class="k">Kolon</div><div class="v">%'+Math.round(a.kolon/(+sb.kolon||1)*100)+'</div></div>'
-    +'<div class="mini"><div class="k">Panel</div><div class="v" style="color:#1e8e4e">%'+Math.round(a.panel/(+sb.panel||1)*100)+'</div></div></div>';
-  var svg='<svg id="yersvg" viewBox="'+bb[0]+' '+bb[1]+' '+w+' '+hgt+'" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;max-height:64vh;background:#fbfbf9;border:1px solid #e5e7eb;border-radius:8px;touch-action:pinch-zoom">';
+    +'<div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap">'
+    +'<div class="mini" style="flex:1 1 22%"><div class="k">Aplikasyon</div><div class="v" style="color:#7c3aed">%'+Math.round(a.apl/((YER.m||[]).length||1)*100)+'</div></div>'
+    +'<div class="mini" style="flex:1 1 22%"><div class="k">Delgi</div><div class="v" style="color:#E8622A">%'+Math.round(a.rok/(+sb.kolon||1)*100)+'</div></div>'
+    +'<div class="mini" style="flex:1 1 22%"><div class="k">Kolon</div><div class="v">%'+Math.round(a.kolon/(+sb.kolon||1)*100)+'</div></div>'
+    +'<div class="mini" style="flex:1 1 22%"><div class="k">Panel</div><div class="v" style="color:#1e8e4e">%'+Math.round(a.panel/(+sb.panel||1)*100)+'</div></div></div>';
+  var svg='<svg id="yersvg" viewBox="'+bb[0]+' '+bb[1]+' '+w+' '+hgt+'" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;max-height:66vh;background:#fbfbf9;border:1px solid #e5e7eb;border-radius:8px;touch-action:none;cursor:grab;display:block">';
   var md=mdurum();
   YER.m.forEach(function(r){ var id=r[0],x=Math.min(r[1],r[3]),y=Math.min(r[2],r[4]),ww=Math.abs(r[3]-r[1])||0.6,hh=Math.abs(r[4]-r[2])||0.6; var s=md[id]||{},dn=(s.d?1:0)+(s.k?1:0)+(s.s?1:0)+(s.p?1:0); var col=dn>=4?'#16a34a':(dn>0?'#e39a00':'#cfd4da');
     svg+='<rect class="msa" data-id="'+esc(id)+'" x="'+x+'" y="'+y+'" width="'+ww+'" height="'+hh+'" fill="'+col+'" stroke="#fff" stroke-width="0.25"/>'; });
   svg+='</svg>';
-  h+=svg+'<div class="gt" style="margin-top:6px;color:#9aa0a6">🟩 tamam · 🟧 kısmi · ⬜ başlanmadı</div></div>';
+  var zbst='width:36px;height:36px;border-radius:50%;border:1px solid #d9dce1;background:#fff;color:#2B2F35;font:700 18px Barlow;box-shadow:0 2px 6px rgba(0,0,0,.15);cursor:pointer;line-height:1';
+  var zoom='<div style="position:absolute;right:10px;bottom:10px;display:flex;flex-direction:column;gap:6px">'
+    +'<button class="yzb" data-z="in" style="'+zbst+'">+</button>'
+    +'<button class="yzb" data-z="out" style="'+zbst+'">−</button>'
+    +'<button class="yzb" data-z="reset" style="'+zbst+';font-size:15px">⟲</button></div>';
+  h+='<div style="position:relative">'+svg+zoom+'</div><div class="gt" style="margin-top:6px;color:#9aa0a6">İki parmak/tekerlek ile yakınlaştır · sürükle = gez · dokun = masa</div></div>';
   return h;
+}
+/* harita yakınlaştır/gez — viewBox ile (dokunmatik pinch + sürükle + tekerlek + butonlar) */
+function attachPanZoom(){
+  var svg=document.getElementById('yersvg'); if(!svg||svg._pz)return; svg._pz=1;
+  var vb0=(svg.getAttribute('viewBox')||'0 0 100 100').split(/\s+/).map(Number), vb=vb0.slice();
+  function apply(){ svg.setAttribute('viewBox',vb.map(function(n){return Math.round(n*100)/100;}).join(' ')); }
+  function zoomAt(cx,cy,f){ var r=svg.getBoundingClientRect(); if(!r.width)return;
+    var px=vb[0]+(cx-r.left)/r.width*vb[2], py=vb[1]+(cy-r.top)/r.height*vb[3];
+    var nw=vb[2]/f, nh=vb[3]/f, minW=vb0[2]/40, maxW=vb0[2];
+    if(nw>maxW){nw=maxW;nh=vb0[3];} if(nw<minW){nw=minW;nh=vb0[3]*minW/vb0[2];}
+    vb[0]=px-(px-vb[0])*(nw/vb[2]); vb[1]=py-(py-vb[1])*(nh/vb[3]); vb[2]=nw; vb[3]=nh; apply(); }
+  svg.onwheel=function(e){ e.preventDefault(); zoomAt(e.clientX,e.clientY,e.deltaY<0?1.25:1/1.25); };
+  var drag=false,lx,ly,mv=false,pd0=0,pvb=null,pts={};
+  function cnt(){var k=Object.keys(pts);return k.length;}
+  function dist(){var k=Object.keys(pts);if(k.length<2)return 0;var a=pts[k[0]],b=pts[k[1]];return Math.hypot(a.x-b.x,a.y-b.y);}
+  function mid(){var k=Object.keys(pts);return {x:(pts[k[0]].x+pts[k[1]].x)/2,y:(pts[k[0]].y+pts[k[1]].y)/2};}
+  svg.addEventListener('pointerdown',function(e){ pts[e.pointerId]={x:e.clientX,y:e.clientY}; if(cnt()===1){drag=true;mv=false;lx=e.clientX;ly=e.clientY;svg.style.cursor='grabbing';} else if(cnt()===2){drag=false;pd0=dist();pvb=vb.slice();} try{svg.setPointerCapture(e.pointerId);}catch(x){} });
+  svg.addEventListener('pointermove',function(e){ if(!(e.pointerId in pts))return; pts[e.pointerId]={x:e.clientX,y:e.clientY};
+    if(cnt()===2&&pd0){ e.preventDefault(); vb=pvb.slice(); var m=mid(); zoomAt(m.x,m.y,dist()/pd0); return; }
+    if(drag){ var r=svg.getBoundingClientRect(); var dx=(e.clientX-lx)/r.width*vb[2],dy=(e.clientY-ly)/r.height*vb[3]; if(Math.abs(e.clientX-lx)+Math.abs(e.clientY-ly)>3)mv=true; vb[0]-=dx;vb[1]-=dy;lx=e.clientX;ly=e.clientY;apply(); } });
+  function end(e){ delete pts[e.pointerId]; if(cnt()<2)pd0=0; if(cnt()===0){drag=false;svg.style.cursor='grab';} }
+  svg.addEventListener('pointerup',end); svg.addEventListener('pointercancel',end);
+  svg.addEventListener('click',function(e){ if(mv){e.stopPropagation();e.preventDefault();mv=false;} },true);
+  document.querySelectorAll('#body .yzb').forEach(function(b){ b.onclick=function(ev){ ev.stopPropagation(); var z=b.getAttribute('data-z'); if(z==='reset'){vb=vb0.slice();apply();} else { var r=svg.getBoundingClientRect(); zoomAt(r.left+r.width/2,r.top+r.height/2,z==='in'?1.5:1/1.5); } }; });
 }
 function masaSheet(id){ var r=null; (YER&&YER.m||[]).forEach(function(x){if(x[0]===id)r=x;}); if(!r)return;
   var kol=r[7]||0,pan=masaPan(r),inv=r[6],s=mdurum()[id]||{};
-  var stages=[['d','Delgi (rok)'],['k','Kolon montaj'],['s','Konstrüksiyon (masa)'],['p','Panel montaj'],['e','Kablo / DC'],['b','Süs beton']];
-  var h='<div class="gt" style="margin-bottom:8px">'+esc(id)+' · '+kol+' kolon · '+pan+' panel · inv '+inv+'</div><div class="ch2">İş durumu</div>';
+  var cx=((r[1]+r[3])/2).toFixed(1),cy=((r[2]+r[4])/2).toFixed(1);
+  var stages=[['a','Aplikasyon (yer tespiti)'],['d','Delgi (rok)'],['k','Kolon montaj'],['s','Konstrüksiyon (masa)'],['p','Panel montaj'],['e','Kablo / DC'],['b','Süs beton']];
+  var h='<div class="gt" style="margin-bottom:4px">'+esc(id)+' · '+kol+' kolon · '+pan+' panel · inv '+inv+'</div>'
+    +'<div class="gt" style="margin-bottom:8px;color:#9aa0a6">📍 Aplikasyon: X '+cx+' · Y '+cy+' (saha gridi, m)</div><div class="ch2">İş durumu</div>';
   stages.forEach(function(st){ h+='<label class="row" style="cursor:pointer"><span>'+st[1]+'</span><input type="checkbox" class="mst" data-s="'+st[0]+'"'+(s[st[0]]?' checked':'')+(ROLE==='admin'?'':' disabled')+'></label>'; });
   openSheet('Masa '+id,h);
   document.querySelectorAll('#sbox .mst').forEach(function(cb){ cb.onchange=function(){ if(!roOk())return; var m=mdurum(),o=m[id]||{}; o[cb.getAttribute('data-s')]=cb.checked; m[id]=o; set('mdurum',m); render(); }; });
 }
 /* mwp — İLERLEME girişi (kalem % / fiili adet + sözleşme dilimleri) */
 function vIlerMwp(){
-  var bedel=mwpBedel(),hak=mwpToplamHak(),pct=bedel>0?hak/bedel*100:0,adm=(ROLE==='admin');
-  var h='<div class="two"><div class="stat go"><div class="k">Genel ilerleme</div><div class="v">%'+pct.toFixed(1).replace('.',',')+'</div><div class="s">'+n0(hak)+' $ hak edilen</div></div>'
-    +'<div class="stat"><div class="k">Sözleşme bedeli</div><div class="v" style="font-size:20px">'+n0(bedel)+'</div><div class="s">$</div></div></div>';
+  var bedel=mwpBedel(),hak=mwpToplamHak(),pct=bedel>0?hak/bedel*100:0,adm=(ROLE==='admin'),pr=canPara();
+  var ikinci = pr ? ('<div class="stat"><div class="k">Sözleşme bedeli</div><div class="v" style="font-size:20px">'+n0(bedel)+'</div><div class="s">$</div></div>')
+    : ('<div class="stat"><div class="k">'+(mwpHasLayout()?'Masa':'Kalem')+'</div><div class="v" style="font-size:20px">'+(mwpHasLayout()?n0((YER.m||[]).length):mwpKalemler().length)+'</div><div class="s">'+(mwpHasLayout()?'adet':'kalem')+'</div></div>');
+  var h='<div class="two"><div class="stat go"><div class="k">Genel ilerleme</div><div class="v">%'+pct.toFixed(1).replace('.',',')+'</div><div class="s">'+(pr?(n0(hak)+' $ hak edilen'):'tamamlanma')+'</div></div>'+ikinci+'</div>';
   if(mwpHasLayout())h+=vYerlesim();
   h+='<div class="card"><div class="ch">Kalem ilerlemesi</div>';
   mwpKalemler().forEach(function(k){
     var p=mwpKalemPct(k),hk=mwpKalemHak(k),birim=(k.esas==='birim');
-    if(!adm||mwpKalemMasali(k)){ h+='<div class="pit"><div class="prt"><span>'+esc(k.kod)+' · '+esc(k.ad)+(mwpKalemMasali(k)?' <small style="color:#1e8e4e">🗺️ yerleşimden</small>':'')+'</span><small>'+n0(hk)+' $</small></div><div class="trk"><i class="fm" style="width:'+Math.min(100,p)+'%"></i></div><div class="pstat"><span class="ppct">%'+p.toFixed(0)+'</span>'+(k.esas==='birim'?(' · '+n0(mwpKalemAdet(k))+(k.plan?' / '+n0(k.plan):'')):'')+'</div></div>'; return; }
+    if(!adm||mwpKalemMasali(k)){ h+='<div class="pit"><div class="prt"><span>'+esc(k.kod)+' · '+esc(k.ad)+(mwpKalemMasali(k)?' <small style="color:#1e8e4e">🗺️ yerleşimden</small>':'')+'</span><small>'+(pr?(n0(hk)+' $'):('%'+p.toFixed(0)))+'</small></div><div class="trk"><i class="fm" style="width:'+Math.min(100,p)+'%"></i></div><div class="pstat"><span class="ppct">%'+p.toFixed(0)+'</span>'+(birim?(' · '+n0(mwpKalemAdet(k))+(k.plan?' / '+n0(k.plan):'')):'')+'</div></div>'; return; }
     if(birim){ var ad=mwpKalemAdet(k),pl=+k.plan||0;
-      h+='<div class="pit" data-k="'+esc(k.kod)+'" data-esas="birim"><div class="prt"><span>'+esc(k.kod)+' · '+esc(k.ad)+(k.ayri?' <small style="color:#9aa0a6">(ayrı)</small>':'')+'</span><small>'+n2(k.bf)+' $/adet'+(pl?(' · plan '+n0(pl)):'')+'</small></div>'
-        +'<div class="ent"><input type="number" class="mnum" inputmode="numeric" min="0" value="'+ad+'" placeholder="fiili adet"><span class="ppct mval">'+n0(hk)+' $</span></div>'
+      h+='<div class="pit" data-k="'+esc(k.kod)+'" data-esas="birim"><div class="prt"><span>'+esc(k.kod)+' · '+esc(k.ad)+(k.ayri?' <small style="color:#9aa0a6">(ayrı)</small>':'')+'</span><small>'+(pr?(n2(k.bf)+' $/adet'+(pl?' · ':'')):'')+(pl?('plan '+n0(pl)):'')+'</small></div>'
+        +'<div class="ent"><input type="number" class="mnum" inputmode="numeric" min="0" value="'+ad+'" placeholder="fiili adet">'+(pr?('<span class="ppct mval">'+n0(hk)+' $</span>'):('<span class="ppct">%'+p.toFixed(0)+'</span>'))+'</div>'
         +(pl?('<div class="pstat"><span class="ppct">%'+p.toFixed(0)+'</span> · '+n0(ad)+' / '+n0(pl)+'</div>'):'')+'</div>';
     } else {
-      h+='<div class="pit" data-k="'+esc(k.kod)+'" data-esas="mwp"><div class="prt"><span>'+esc(k.kod)+' · '+esc(k.ad)+'</span><small>'+n0(mwpKalemBedel(k))+' $'+(k.pursantaj?(' · pursantaj %'+k.pursantaj.join(' / %')):'')+'</small></div>'
-        +'<div class="ent"><input type="range" class="mrange" min="0" max="100" step="1" value="'+p.toFixed(0)+'"><input type="number" class="mnum" inputmode="numeric" min="0" max="100" value="'+p.toFixed(0)+'"><span class="ppct mval">'+n0(hk)+' $</span></div>'
+      h+='<div class="pit" data-k="'+esc(k.kod)+'" data-esas="mwp"><div class="prt"><span>'+esc(k.kod)+' · '+esc(k.ad)+'</span><small>'+(pr?(n0(mwpKalemBedel(k))+' $'+(k.pursantaj?' · ':'')):'')+(k.pursantaj?('pursantaj %'+k.pursantaj.join(' / %')):'')+'</small></div>'
+        +'<div class="ent"><input type="range" class="mrange" min="0" max="100" step="1" value="'+p.toFixed(0)+'"><input type="number" class="mnum" inputmode="numeric" min="0" max="100" value="'+p.toFixed(0)+'">'+(pr?('<span class="ppct mval">'+n0(hk)+' $</span>'):('<span class="ppct">%'+p.toFixed(0)+'</span>'))+'</div>'
         +'<div class="pstat"><span class="ppct">%'+p.toFixed(0)+'</span></div></div>';
     }
   });
@@ -560,7 +593,8 @@ function vIlerMwp(){
   return h;
 }
 function bIlerMwp(){
-  document.querySelectorAll('#body .msa').forEach(function(rc){ rc.style.cursor='pointer'; rc.onclick=function(){ masaSheet(rc.getAttribute('data-id')); }; });
+  document.querySelectorAll('#body .msa').forEach(function(rc){ rc.onclick=function(){ masaSheet(rc.getAttribute('data-id')); }; });
+  attachPanZoom();
   if(ROLE!=='admin')return;
   document.querySelectorAll('#body .pit[data-k]').forEach(function(pr){
     var kod=pr.getAttribute('data-k');var rng=pr.querySelector('.mrange'),num=pr.querySelector('.mnum');
@@ -715,6 +749,8 @@ function syncHead(){
 /* ============================= RENDER ============================= */
 /* ---- görünürlük: portaldan gelen yetkilere göre ---- */
 var PIZIN=[]; /* portal: S.izinler.saha alt-yetkileri */
+/* para (parasal $) görme yetkisi: yönetici ya da hakediş yetkisi — iş-yapım ekranlarında $ bunlara gösterilir */
+function canPara(){ return ROLE==='admin'||canSee('od_hakedis')||canSee('rapor'); }
 function canSee(key){
   if(ROLE==='admin')return true;              /* parasal/yönetici = tüm ekranlar */
   if(key==='bugun'||key==='daha')return true;
@@ -794,9 +830,9 @@ function vIler(){
   if(isMwp())return vIlerMwp();
   var tot=cumUsd(),pct=SOZBEDEL>0?tot/SOZBEDEL*100:0;
   var mek=allItems().filter(function(x){return x.dis==='MEK';}),elk=allItems().filter(function(x){return x.dis==='ELK';});
-  var h='';
-  h+='<div class="two"><div class="stat go"><div class="k">Genel ilerleme</div><div class="v">%'+pct.toFixed(1).replace('.',',')+'</div><div class="s">'+n0(tot)+' $ hak edilen</div></div>'
-    +'<div class="stat"><div class="k">Toplam keşif</div><div class="v" style="font-size:20px">'+n0(SOZBEDEL)+'</div><div class="s">$ (mek+elk)</div></div></div>';
+  var h='',pr=canPara();
+  h+='<div class="two"><div class="stat go"><div class="k">Genel ilerleme</div><div class="v">%'+pct.toFixed(1).replace('.',',')+'</div><div class="s">'+(pr?(n0(tot)+' $ hak edilen'):'tamamlanma')+'</div></div>'
+    +(pr?('<div class="stat"><div class="k">Toplam keşif</div><div class="v" style="font-size:20px">'+n0(SOZBEDEL)+'</div><div class="s">$ (mek+elk)</div></div>'):('<div class="stat"><div class="k">Kalem</div><div class="v" style="font-size:20px">'+allItems().length+'</div><div class="s">iş kalemi</div></div>'))+'</div>';
   if(ROLE==='admin')h+='<div class="card" style="background:#FFF8F2;border-color:#F3D9C4"><div class="gt">Başlığa dokunun → kalemler açılır. Kaydırıcıyı sürükleyin, kutuya tam adet yazın veya <b>Bitti</b>\'ye basın; yüzde ve hakediş otomatik hesaplanır.</div></div>';
   h+=grp('Mekanik',mek,disBedel('MEK'),isArtisDis('MEK'),true);
   h+=grp('Elektrik',elk,disBedel('ELK'),isArtisDis('ELK'),false);
@@ -804,11 +840,11 @@ function vIler(){
 }
 function grp(ttl,items,base,artis,open){
   var earned=0; items.forEach(function(it){earned+=bedel(it)*itemPct(it)/100;});
-  var gp=base>0?earned/base*100:0;
-  var h='<details class="acc"'+(open?' open':'')+'><summary><span class="accl"><b>'+esc(ttl)+'</b><small>'+n0(base)+' $'+(artis?(' · iş artışı +'+n0(artis)+' $'):'')+'</small></span><span class="accr">%'+gp.toFixed(0)+'<small>'+n0(earned)+' $</small></span></summary><div class="accb">';
+  var gp=base>0?earned/base*100:0,pr=canPara();
+  var h='<details class="acc"'+(open?' open':'')+'><summary><span class="accl"><b>'+esc(ttl)+'</b><small>'+(pr?(n0(base)+' $'+(artis?(' · iş artışı +'+n0(artis)+' $'):'')):(items.length+' kalem'))+'</small></span><span class="accr">%'+gp.toFixed(0)+(pr?('<small>'+n0(earned)+' $</small>'):'')+'</span></summary><div class="accb">';
   items.forEach(function(it){var p=itemPct(it),u=bedel(it)*p/100,done=itemDone(it),hasM=it.mik&&it.mik>0;var mx=hasM?it.mik:100;var stp=hasM?Math.max(1,Math.round(it.mik/200)):1;var done2=(p>=100);
     h+='<div class="pit'+(done2?' ok':'')+'" data-it="'+it.id+'" data-mik="'+(hasM?it.mik:0)+'">'
-      +'<div class="prt"><span>'+esc(it.ad)+(it.mik?(' <small class="dim">· '+n0(it.mik)+' '+esc(it.birim||'')+'</small>'):'')+'</span><small>%'+(it.pur*100).toFixed(2).replace('.',',').replace(',00','')+' · '+n0(u)+' $</small></div>'
+      +'<div class="prt"><span>'+esc(it.ad)+(it.mik?(' <small class="dim">· '+n0(it.mik)+' '+esc(it.birim||'')+'</small>'):'')+'</span><small>%'+(it.pur*100).toFixed(2).replace('.',',').replace(',00','')+(pr?(' · '+n0(u)+' $'):'')+'</small></div>'
       +(ROLE==='admin'?(
         '<div class="ent"><input type="range" class="prange" min="0" max="'+mx+'" step="'+stp+'" value="'+done+'">'
         +'<input type="number" class="pnum" inputmode="numeric" min="0" max="'+mx+'" value="'+done+'">'
