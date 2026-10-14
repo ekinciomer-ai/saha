@@ -261,7 +261,7 @@ details.acc[open]>summary{border-bottom:1.5px solid var(--line)}
 "use strict";
 (function(){
 /* ============================= SABİTLER ============================= */
-var BUILD='v93';  /* uygulama sürümü (önbellek/güncelleme takibi) */
+var BUILD='v94';  /* uygulama sürümü (önbellek/güncelleme takibi) */
 var MEK=0, ELK=0, SOZBEDEL=0, CFG=null;  /* tüm değerler projenin KENDİ cfg verisinden gelir */
 var MEK_ART=0;                           /* mekanik iş artışı (cfg'den) */
 var TGT={};                              /* aktif projenin hedefleri (cfg.tgt) */
@@ -867,13 +867,17 @@ function vHakedisMwp(){
     +'<div class="row"><span>Kalan iş</span><b style="color:var(--org)">'+n0(bedel-hak)+' $</b></div>'
     +(ek>0?('<div class="row"><span>Ek iş (ROK-G vb.)</span><b>'+n0(ek)+' $</b></div>'):'')
     +'<button class="more" onclick="window.SH.go(\'ilerleme\')">İlerleme / adet gir</button></div>';
-  var dl=soz.dilimler||[],dd=mwpDilim(),adm=(ROLE==='admin');
-  if(dl.length){ var dsum=0;dl.forEach(function(d,i){if(dd[i])dsum+=+d.pct||0;});
-    h+='<div class="card"><div class="ch">Sözleşme dilimleri · tamamlanan %'+dsum+'<small style="color:#9aa0a6"> (+ avans %'+(soz.avans_pct||0)+')</small></div>';
-    if(adm)dl.forEach(function(d,i){h+='<label class="row" style="cursor:pointer"><span>'+esc(d.ad)+' <small style="color:#9aa0a6">%'+d.pct+'</small></span><input type="checkbox" class="mdil" data-i="'+i+'"'+(dd[i]?' checked':'')+'></label>';});
-    else dl.forEach(function(d,i){h+='<div class="row"><span>'+esc(d.ad)+' <small style="color:#9aa0a6">%'+d.pct+'</small></span><b style="color:'+(dd[i]?'#1e8e4e':'#9aa0a6')+'">'+(dd[i]?'✓':'—')+'</b></div>';});
-    h+='</div>';
-  }
+  /* trafo bazlı hakediş (parasal) */
+  h+='<div class="card"><div class="ch">Trafo sahası bazında hakediş <small style="color:#9aa0a6;font-weight:600">· USD</small></div>';
+  h+='<table style="border-collapse:collapse;width:100%;font:600 12px Barlow"><tr style="color:#9aa0a6"><th style="text-align:left;padding:5px 2px">Saha</th><th style="text-align:right;padding:5px 2px">Bedel</th><th style="text-align:right;padding:5px 2px">Hak edilen</th><th style="text-align:right;padding:5px 2px">Kalan</th><th style="text-align:right;padding:5px 2px">%</th></tr>';
+  var TB=0,TH=0;
+  for(var t=0;t<trafoSay();t++){ var tb=0,th=0; mwpKalemler().forEach(function(k){ if(k.ayri)return; tb+=kalemTrBedel(k,t); th+=kalemTrHak(k,t); }); TB+=tb; TH+=th; var tp=tb?th/tb*100:0;
+    h+='<tr class="trhak" data-tr="'+t+'" style="border-top:1px solid #f0f0f0;cursor:pointer"><td style="padding:7px 2px;font-weight:800;color:#E8622A">TR'+(t+1)+' <small style="color:#9aa0a6;font-weight:600">'+n0(mwpTrPlan(t).masa)+' masa ▸</small></td><td style="text-align:right;padding:7px 2px;color:#9aa0a6">'+n0(tb)+'</td><td style="text-align:right;padding:7px 2px;font-weight:800;color:#1e8e4e">'+n0(th)+'</td><td style="text-align:right;padding:7px 2px">'+n0(tb-th)+'</td><td style="text-align:right;padding:7px 2px;font-weight:800">%'+tp.toFixed(0)+'</td></tr>';
+    h+='<tr class="trhakd" data-tr="'+t+'" style="display:none"><td colspan="5" style="padding:4px 6px 8px;background:#FFF8F2">';
+    mwpKalemler().forEach(function(k){ if(k.ayri)return; var kb=kalemTrBedel(k,t),kh=kalemTrHak(k,t); if(!kb)return; h+='<div class="row" style="padding:3px 0;font-size:11.5px"><span><b style="color:#9aa0a6">'+esc(k.kod)+'</b> '+esc(k.ad.length>30?k.ad.slice(0,29)+'…':k.ad)+' <small style="color:#9aa0a6">%'+kalemTrPct(k,t).toFixed(0)+'</small></span><b>'+n0(kh)+' <small style="color:#9aa0a6">/ '+n0(kb)+'</small></b></div>'; });
+    h+='</td></tr>'; }
+  h+='<tr style="border-top:2px solid #E8C4A8"><td style="padding:7px 2px;font-weight:800">Toplam</td><td style="text-align:right;padding:7px 2px;font-weight:800">'+n0(TB)+'</td><td style="text-align:right;padding:7px 2px;font-weight:800;color:#1e8e4e">'+n0(TH)+'</td><td style="text-align:right;padding:7px 2px;font-weight:800">'+n0(TB-TH)+'</td><td style="text-align:right;padding:7px 2px;font-weight:800">%'+(TB?TH/TB*100:0).toFixed(0)+'</td></tr></table>';
+  h+='<div class="gt" style="color:#9aa0a6;margin-top:6px">Satıra dokun → o sahanın kalem bazında hak edişi. Yüzde kalemlerinin bedeli sahalara panel payına göre dağıtılır.</div></div>';
   return h;
 }
 function gRate(){var fx=get('fx',{})||{};return {usdazn:+fx.usdazn||0,usdtry:+fx.usdtry||0};}
@@ -1438,6 +1442,7 @@ function hakedisForm(no){ if(!roOk())return;
   if($('hf_del'))$('hf_del').onclick=function(){if(!confirm('Hakediş No.'+ex.no+' silinsin mi?'))return;del('hak:'+ex.no);closeSheet();toast('Silindi');render();};
 }
 function bHakedis(){
+  document.querySelectorAll('#body .trhak').forEach(function(r){r.onclick=function(){var d=document.querySelector('#body .trhakd[data-tr="'+r.getAttribute('data-tr')+'"]');if(d)d.style.display=(d.style.display==='none'?'':'none');};});
   document.querySelectorAll('#body .mdil').forEach(function(cb){cb.onchange=function(){if(!roOk())return;var d=mwpDilim();d[cb.getAttribute('data-i')]=cb.checked;set('mwpdilim',d);render();};});
   if($('hk_new'))$('hk_new').onclick=hakForm;
   if($('hk_add'))$('hk_add').onclick=function(){hakedisForm(null);};
@@ -1661,12 +1666,12 @@ function vDaha(){
     h+='<div class="card"><div class="ch">Proje</div>'
       +'<button class="mod" id="m_cfg"><span class="mic">⚙️</span><span class="mtx"><b>Proje ayarları</b><small>Metraj, birim bedel, iş kalemleri · hakediş bundan hesaplanır</small></span></button></div>';
   }
-  h+='<div class="card"><div class="ch">Arşiv</div>'
+  if(PROJE==='tr1')h+='<div class="card"><div class="ch">Arşiv</div>'
     +'<button class="mod" id="m_eski"><span class="mic">📺</span><span class="mtx"><b>Eski uygulama (arşiv)</b><small>Salt görüntüleme · eski SHAMS, veri girişi kapalı</small></span></button></div>';
   if(canSee('rapor')||canSee('yedek')){
     h+='<div class="card"><div class="ch">Rapor & veri</div>';
     if(canSee('rapor'))h+='<button class="mod" id="m_rapor"><span class="mic">📊</span><span class="mtx"><b>Saha raporu</b><small>İlerleme, hakediş, maliyet özeti</small></span></button>';
-    if(canSee('yedek'))h+='<button class="mod" id="m_import"><span class="mic">📥</span><span class="mtx"><b>Eski yedeği içe aktar</b><small>Eski SHAMS verisini bu uygulamaya al</small></span></button>'
+    if(canSee('yedek')&&PROJE==='tr1')h+='<button class="mod" id="m_import"><span class="mic">📥</span><span class="mtx"><b>Eski yedeği içe aktar</b><small>Eski SHAMS verisini bu uygulamaya al</small></span></button>'
       +'<button class="mod" id="m_sync"><span class="mic">☁</span><span class="mtx"><b>Yedek / senkron</b><small>n8n tam yedek gönder</small></span></button>'
       +'<button class="mod" id="m_yedek"><span class="mic">💾</span><span class="mtx"><b>Yedek al / geri yükle</b><small>Veriyi dosyaya indir ya da dosyadan geri yükle</small></span></button>';
     h+='</div>';
