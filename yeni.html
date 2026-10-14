@@ -261,7 +261,7 @@ details.acc[open]>summary{border-bottom:1.5px solid var(--line)}
 "use strict";
 (function(){
 /* ============================= SABİTLER ============================= */
-var BUILD='v94';  /* uygulama sürümü (önbellek/güncelleme takibi) */
+var BUILD='v95';  /* uygulama sürümü (önbellek/güncelleme takibi) */
 var MEK=0, ELK=0, SOZBEDEL=0, CFG=null;  /* tüm değerler projenin KENDİ cfg verisinden gelir */
 var MEK_ART=0;                           /* mekanik iş artışı (cfg'den) */
 var TGT={};                              /* aktif projenin hedefleri (cfg.tgt) */
@@ -1172,8 +1172,6 @@ function vGunMwp(){
   var en=ENGEL.map(function(e){return '<option value="'+e[0]+'">'+esc(e[1])+'</option>';}).join('');
   var h='<div class="card"><div class="ch">📋 Bu haftanın iş emri (H'+Math.max(1,haftaNo())+')</div>'+vIsEmri()+'</div>';
   h+='<div class="card"><div class="ch">Günlük saha notu</div>'
-    +'<div class="gt" style="margin:-2px 0 8px;color:#9aa0a6">İş adetleri <b>İlerleme → trafo sahası seç</b> ile girilir. Burası günlük not/kişi/engel içindir.</div>'
-    +'<button class="ghost" style="width:100%;margin-bottom:10px" onclick="SH.go(\'ilerleme\')">⚡ İş girişine git (trafo sahası seç)</button>'
     +'<div class="frow"><input id="g_t" type="date" value="'+today()+'"><input id="g_p" type="number" inputmode="numeric" placeholder="Sahadaki kişi"></div>'
     +'<textarea id="g_n" placeholder="Bugün ne yapıldı? (not)"></textarea>'
     +'<details class="eng"><summary>Engel / bekleme (varsa)</summary><div class="frow"><select id="g_et">'+en+'</select><input id="g_es" type="number" inputmode="numeric" placeholder="Süre (saat)"></div><input id="g_en" placeholder="Engel notu"></details>'
