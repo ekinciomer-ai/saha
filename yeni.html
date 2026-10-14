@@ -261,7 +261,7 @@ details.acc[open]>summary{border-bottom:1.5px solid var(--line)}
 "use strict";
 (function(){
 /* ============================= SABİTLER ============================= */
-var BUILD='v80';  /* uygulama sürümü (önbellek/güncelleme takibi) */
+var BUILD='v81';  /* uygulama sürümü (önbellek/güncelleme takibi) */
 var MEK=0, ELK=0, SOZBEDEL=0, CFG=null;  /* tüm değerler projenin KENDİ cfg verisinden gelir */
 var MEK_ART=0;                           /* mekanik iş artışı (cfg'den) */
 var TGT={};                              /* aktif projenin hedefleri (cfg.tgt) */
@@ -472,7 +472,7 @@ function ILP(){return get('ilp',{})||{};}                 // {id: tamamlanan ade
 function itemDone(it){return Math.max(0,+((ILP()[it.id])||0)||0);}   // girilen tamamlanan adet
 function itemPct(it){var d=itemDone(it); if(it&&it.mik&&it.mik>0)return Math.max(0,Math.min(100,d/it.mik*100)); return Math.max(0,Math.min(100,d));}
 function cumUsd(){ if(isMwp())return mwpToplamHak(); var t=0;allItems().forEach(function(it){t+=bedel(it)*itemPct(it)/100;});return t;}
-function disUsd(dis){ if(isMwp()){var k=mwpKalemler().filter(function(x){return x.kod===dis;})[0];return k?mwpKalemPct(k):0;} var s=0,w=0;allItems().forEach(function(it){if(it.dis===dis){s+=it.pur*itemPct(it);w+=it.pur;}});return w?s/w:0;}
+function disUsd(dis){ if(isMwp()){var gm={MEK:'mekanik',ELK:'elektrik',ROK:'rok'};return mwpGrupHak(gm[dis]||dis).pct;} var s=0,w=0;allItems().forEach(function(it){if(it.dis===dis){s+=it.pur*itemPct(it);w+=it.pur;}});return w?s/w:0;}
 /* ---- mwp hakediş motoru (Asunim tipi: MEK/ELK $/MWp×ilerleme%, ROK/ROK-G/SBT birim×fiili adet) ---- */
 function isMwp(){return !!(CFG&&CFG.motor==='mwp');}
 function mwpKalemler(){return (CFG&&CFG.kalemler)||[];}
@@ -504,15 +504,21 @@ function mwpSayVal(m){var s=mwpSay();return (s[m]!=null&&s[m]!=='')?(+s[m]||0):n
 function mwpAgg(){ /* efektif kümülatif adet: elle sayaç varsa o, yoksa haritadan */
   var a=mwpHasLayout()?mwpMasaAgg():{apl:0,rok:0,kolon:0,kons:0,panel:0,dc:0,sbt:0,masaBitti:0},s=mwpSay();
   ['apl','rok','kolon','kons','panel','dc','sbt'].forEach(function(k){ if(s[k]!=null&&s[k]!=='')a[k]=+s[k]||0; }); return a; }
-function mwpKalemAdet(k){ if(k.kod==='ROK')return mwpAgg().rok; if(k.kod==='SBT')return mwpAgg().sbt; var mv=mwpMan(k.kod); return mv!=null?mv:0; }
-function mwpKalemPct(k){
-  if(k.kod==='MEK'){ var mv=mwpMan('MEK'); if(mv!=null)return Math.max(0,Math.min(100,mv)); var a=mwpAgg(),sb=mwpSabit(),pur=k.pursantaj||[42,31,27],tk=+sb.kolon||1,tm=+sb.masa||1,tp=+sb.panel||1; return Math.max(0,Math.min(100,(pur[0]||0)*a.kolon/tk+(pur[1]||0)*a.kons/tm+(pur[2]||0)*a.panel/tp)); }
-  if(k.esas==='birim'){var pl=+k.plan||0,ad=mwpKalemAdet(k);return pl?Math.max(0,Math.min(100,ad/pl*100)):(ad>0?100:0);}
-  return Math.max(0,Math.min(100,+((mwpIlp()[k.kod])||0)||0)); }
-function mwpKalemMasali(k){ return mwpHasLayout()&&(k.kod==='ROK'||k.kod==='SBT'||k.kod==='MEK'); } /* bu kalem yerleşimden türüyor */
-function mwpKalemHak(k){ if(k.esas==='birim')return (+k.bf||0)*mwpKalemAdet(k); return mwpKalemBedel(k)*mwpKalemPct(k)/100; }
+function kalemByKod(kod){var a=mwpKalemler();for(var i=0;i<a.length;i++)if(a[i].kod===kod)return a[i];return null;}
+/* ham değer: başka kalemi izliyorsa (auto) ondan, değilse elle sayaç, yoksa haritadan (met), yoksa 0 */
+function mwpKalemVal(k){ if(!k)return 0;
+  if(k.auto){return mwpKalemVal(kalemByKod(k.auto));}
+  var s=mwpSay(); if(s[k.kod]!=null&&s[k.kod]!=='')return +s[k.kod]||0;
+  if(k.met&&mwpHasLayout()){var a=mwpMasaAgg();return +a[k.met]||0;}
+  return 0; }
+function mwpKalemAdet(k){ return mwpKalemVal(k); }
+function mwpKalemPct(k){ if(!k)return 0; if(k.esas==='yuzde')return Math.max(0,Math.min(100,mwpKalemVal(k)));
+  var pl=+k.plan||0,v=mwpKalemVal(k); return pl?Math.max(0,Math.min(100,v/pl*100)):(v>0?100:0); }
+function mwpKalemMasali(k){ return !!(k&&k.met&&mwpHasLayout()); } /* bu kalem haritadan türeyebilir */
+function mwpKalemHak(k){ if(!k)return 0; if(k.esas==='yuzde')return mwpKalemBedel(k)*mwpKalemPct(k)/100; return (+k.bf||0)*mwpKalemVal(k); }
 function mwpToplamHak(){var t=0;mwpKalemler().forEach(function(k){if(!k.ayri)t+=mwpKalemHak(k);});return t;}
 function mwpEkHak(){var t=0;mwpKalemler().forEach(function(k){if(k.ayri)t+=mwpKalemHak(k);});return t;}
+function mwpGrupHak(g){var h=0,b=0;mwpKalemler().forEach(function(k){if(!k.ayri&&(k.grup||'')===g){h+=mwpKalemHak(k);b+=mwpKalemBedel(k);}});return {hak:h,bedel:b,pct:b?h/b*100:0};}
 /* yerleşim dosyasını yükle: önce yerel önbellek, sonra sunucudan tazele (statik) */
 function loadYerlesim(cb){ YER=null; if(!isMwp()){cb&&cb();return;}
   try{var c=localStorage.getItem('sh2:'+PROJE+':__yer'); if(c){var d=JSON.parse(c); if(d&&d.m&&d.m.length)YER=d;}}catch(e){}
@@ -521,6 +527,8 @@ function loadYerlesim(cb){ YER=null; if(!isMwp()){cb&&cb();return;}
 }
 function masaDone(id){ var s=mdurum()[id]||{}; return (s.d?1:0)+(s.k?1:0)+(s.s?1:0)+(s.p?1:0); }
 var YERACIK=false;  /* yerleşim haritası açık mı (tıklayınca aç/kapa) */
+var YERMOD='tr';    /* harita renk modu: 'tr' (trafo bölgesi) | 'ilerleme' */
+var TRCOL=['#2563eb','#16a34a','#f59e0b','#db2777','#7c3aed','#0891b2','#be123c','#0d9488'];
 function vYerlesim(){
   if(!mwpHasLayout())return '';
   var bb=YER.bbox||[0,0,100,100], w=(bb[2]-bb[0])||1, hgt=(bb[3]-bb[1])||1, sb=mwpSabit(), a=mwpMasaAgg();
@@ -538,9 +546,11 @@ function vYerlesim(){
     var svg='<svg id="yersvg" viewBox="'+bb[0]+' '+bb[1]+' '+w+' '+hgt+'" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;max-height:66vh;background:#fbfbf9;border:1px solid #e5e7eb;border-radius:8px;touch-action:none;cursor:grab;display:block">';
     var md=mdurum();
     if(YER.f&&YER.f.length){ svg+='<polyline points="'+YER.f.map(function(p){return p[0]+','+p[1];}).join(' ')+'" fill="none" stroke="#9aa0a6" stroke-width="0.7" stroke-dasharray="2.5 2" opacity="0.65"/>'; }
-    YER.m.forEach(function(r){ var id=r[0],x=Math.min(r[1],r[3]),y=Math.min(r[2],r[4]),ww=Math.abs(r[3]-r[1])||0.6,hh=Math.abs(r[4]-r[2])||0.6; var s=md[id]||{},dn=(s.d?1:0)+(s.k?1:0)+(s.s?1:0)+(s.p?1:0); var col=dn>=4?'#16a34a':(dn>0?'#e39a00':'#cfd4da'); var kol=r[7]||0,pan=masaPan(r),fs=Math.max(0.8,Math.min(ww,hh)*0.55);
-      svg+='<rect class="msa" data-id="'+esc(id)+'" x="'+x+'" y="'+y+'" width="'+ww+'" height="'+hh+'" fill="'+col+'" stroke="#fff" stroke-width="0.25"/>'
-        +'<text x="'+(x+ww/2)+'" y="'+(y+hh/2)+'" font-size="'+fs.toFixed(2)+'" fill="#1b1b1b" text-anchor="middle" dominant-baseline="central" style="pointer-events:none;font-family:Barlow,sans-serif">'+kol+'·'+pan+'</text>'; });
+    YER.m.forEach(function(r){ var id=r[0],x=Math.min(r[1],r[3]),y=Math.min(r[2],r[4]),ww=Math.abs(r[3]-r[1])||0.6,hh=Math.abs(r[4]-r[2])||0.6; var s=md[id]||{},dn=(s.d?1:0)+(s.k?1:0)+(s.s?1:0)+(s.p?1:0),tr=masaK(r);
+      var col=(YERMOD==='ilerleme')?(dn>=4?'#16a34a':(dn>0?'#e39a00':'#cfd4da')):TRCOL[tr%TRCOL.length];
+      var no=id.replace(/^M-/,''),fs=Math.max(0.7,Math.min(ww,hh)*0.6),txt=(YERMOD==='ilerleme')?(r[7]||0)+'·'+masaPan(r):no;
+      svg+='<rect class="msa" data-id="'+esc(id)+'" x="'+x+'" y="'+y+'" width="'+ww+'" height="'+hh+'" fill="'+col+'" fill-opacity="'+(YERMOD==='tr'&&dn>=4?'1':YERMOD==='tr'?'0.55':'1')+'" stroke="#fff" stroke-width="0.25"/>'
+        +'<text x="'+(x+ww/2)+'" y="'+(y+hh/2)+'" font-size="'+fs.toFixed(2)+'" fill="#fff" text-anchor="middle" dominant-baseline="central" style="pointer-events:none;font-family:Barlow,sans-serif;font-weight:700">'+esc(txt)+'</text>'; });
     (YER.K||[]).forEach(function(k,i){var x=Math.min(k[0],k[2]),y=Math.min(k[1],k[3]),ww=Math.abs(k[2]-k[0])||1.5,hh=Math.abs(k[3]-k[1])||1.5; svg+='<rect x="'+x+'" y="'+y+'" width="'+ww+'" height="'+hh+'" fill="#dc2626" stroke="#fff" stroke-width="0.3"/><text x="'+(x+ww/2)+'" y="'+(y-1.5)+'" font-size="5" fill="#dc2626" text-anchor="middle" style="font-family:Barlow;font-weight:800;pointer-events:none">TR'+(i+1)+'</text>';});
     (YER.T||[]).forEach(function(t){var x=Math.min(t[0],t[2]),y=Math.min(t[1],t[3]),ww=Math.abs(t[2]-t[0])||1,hh=Math.abs(t[3]-t[1])||1; svg+='<rect x="'+x+'" y="'+y+'" width="'+ww+'" height="'+hh+'" fill="#f59e0b" stroke="#7a3b00" stroke-width="0.3"/>';});
     svg+='</svg>';
@@ -549,7 +559,11 @@ function vYerlesim(){
       +'<button class="yzb" data-z="in" style="'+zbst+'">+</button>'
       +'<button class="yzb" data-z="out" style="'+zbst+'">−</button>'
       +'<button class="yzb" data-z="reset" style="'+zbst+';font-size:15px">⟲</button></div>';
-    h+='<div style="position:relative">'+svg+zoom+'</div><div class="gt" style="margin-top:6px;color:#9aa0a6"><span style="color:#dc2626">■</span> köşk+trafo TR1–TR6 · masa içi sayı = <b>ayak·panel</b> · dokun = masa detayı · iki parmak/tekerlek = yakınlaştır · sürükle = gez</div>';
+    var mbst='flex:1;padding:7px;border:1px solid #d9dce1;background:#fff;font:700 12px Barlow;cursor:pointer';
+    h+='<div style="display:flex;gap:0;margin-bottom:6px;border-radius:8px;overflow:hidden;border:1px solid #d9dce1">'
+      +'<button class="ymod" data-m="tr" style="'+mbst+';background:'+(YERMOD==='tr'?'#E8622A':'#fff')+';color:'+(YERMOD==='tr'?'#fff':'#2B2F35')+'">Trafo bölgesi (renk)</button>'
+      +'<button class="ymod" data-m="ilerleme" style="'+mbst+';border-left:1px solid #d9dce1;background:'+(YERMOD==='ilerleme'?'#1e8e4e':'#fff')+';color:'+(YERMOD==='ilerleme'?'#fff':'#2B2F35')+'">İlerleme (renk)</button></div>';
+    h+='<div style="position:relative">'+svg+zoom+'</div><div class="gt" style="margin-top:6px;color:#9aa0a6">'+(YERMOD==='tr'?'Renk = trafo (TR1–TR6), masa içi = <b>masa no</b>, soluk = iş bitmedi':'Renk = iş durumu (yeşil=bitti), masa içi = <b>ayak·panel</b>')+' · dokun = masa detayı · iki parmak = yakınlaştır</div>';
   }
   h+='</div>';
   return h;
@@ -581,7 +595,7 @@ function attachPanZoom(){
 function masaSheet(id){ var r=null; (YER&&YER.m||[]).forEach(function(x){if(x[0]===id)r=x;}); if(!r)return;
   var kol=r[7]||0,pan=masaPan(r),inv=r[6],s=mdurum()[id]||{};
   var cx=((r[1]+r[3])/2).toFixed(1),cy=((r[2]+r[4])/2).toFixed(1);
-  var stages=[['a','Aplikasyon (yer tespiti)'],['d','Delgi (rok)'],['k','Kolon montaj'],['s','Konstrüksiyon (masa)'],['p','Panel montaj'],['e','Kablo / DC'],['b','Süs beton']];
+  var stages=[['a','1a · Aplikasyon (harita)'],['d','1b · Delgi (rok)'],['k','3a · Kolon montaj + beton'],['s','3b-3e · Üst montaj (aşık/kiriş/rüzgarlık/payanda)'],['p','4 · Panel montaj'],['e','E · DC kablo']];
   var tip=(r[5]?'2V13 (küçük)':'2V26 (büyük)'),tr=masaK(r),kot=masaKot(r),wk=masaWk(r);
   var h='<div class="gt" style="margin-bottom:8px">'+esc(id)+' <small style="color:#9aa0a6">· '+tip+'</small></div>'
     +'<div style="display:flex;gap:6px;margin-bottom:6px">'
@@ -594,47 +608,49 @@ function masaSheet(id){ var r=null; (YER&&YER.m||[]).forEach(function(x){if(x[0]
   openSheet('Masa '+id,h);
   document.querySelectorAll('#sbox .mst').forEach(function(cb){ cb.onchange=function(){ if(!roOk())return; var m=mdurum(),o=m[id]||{}; o[cb.getAttribute('data-s')]=cb.checked; m[id]=o; set('mdurum',m); render(); }; });
 }
-/* mwp — İLERLEME girişi (kalem % / fiili adet + sözleşme dilimleri) */
+/* mwp — İLERLEME = TEK veri giriş ekranı (gruplu: rok/mekanik/elektrik) */
+function ilerKalemRow(k,adm,pr){
+  var p=mwpKalemPct(k),hk=mwpKalemHak(k),yuzde=(k.esas==='yuzde'),auto=!!k.auto;
+  var val=mwpKalemVal(k),pl=+k.plan||0,ob=k.olcu||'adet';
+  var man=(mwpSayVal(k.kod)!=null),masali=mwpKalemMasali(k);
+  var bilgi=(pr?(yuzde?(n0(mwpKalemBedel(k))+' $'):(n2(k.bf)+' $/'+ob)):'')+(!yuzde&&pl?((pr?' · ':'')+'plan '+n0(pl)+' '+ob):'');
+  var badge=auto?' <small style="color:#9aa0a6">(oto)</small>':(masali?(' <small style="color:'+(man?'#E8622A':'#1e8e4e')+'">🗺️ '+(man?'elle':'harita')+'</small>'):'');
+  var right=(pr?('<span class="ppct mval">'+n0(hk)+' $</span>'):('<span class="ppct">%'+p.toFixed(0)+'</span>'));
+  var rev=((masali&&man&&!auto)?('<button class="mrev" data-k="'+esc(k.kod)+'" style="margin-top:6px;background:none;border:0;color:#7c3aed;font:600 12px Barlow;cursor:pointer;padding:0">↺ haritadan al</button>'):'');
+  if(!adm||auto){ return '<div class="pit"><div class="prt"><span>'+esc(k.kod)+' · '+esc(k.ad)+badge+'</span><small>'+(pr?(n0(hk)+' $'):('%'+p.toFixed(0)))+'</small></div><div class="trk"><i class="fm" style="width:'+Math.min(100,p)+'%"></i></div><div class="pstat"><span class="ppct">%'+p.toFixed(0)+'</span>'+(!yuzde?(' · '+n0(val)+(pl?' / '+n0(pl):'')):'')+'</div></div>'; }
+  if(yuzde){ return '<div class="pit" data-k="'+esc(k.kod)+'" data-esas="yuzde"><div class="prt"><span>'+esc(k.kod)+' · '+esc(k.ad)+badge+'</span><small>'+bilgi+'</small></div>'
+      +'<div class="ent"><input type="range" class="mrange" min="0" max="100" step="1" value="'+p.toFixed(0)+'"><input type="number" class="mnum" inputmode="numeric" min="0" max="100" value="'+Math.round(val)+'">'+right+'</div><div class="pstat"><span class="ppct">%'+p.toFixed(0)+'</span></div>'+rev+'</div>'; }
+  return '<div class="pit" data-k="'+esc(k.kod)+'" data-esas="birim"><div class="prt"><span>'+esc(k.kod)+' · '+esc(k.ad)+badge+'</span><small>'+bilgi+'</small></div>'
+    +'<div class="ent"><input type="number" class="mnum" inputmode="numeric" min="0" value="'+val+'" placeholder="toplam yapılan">'+right+'</div><div class="pstat"><span class="ppct">%'+p.toFixed(0)+'</span>'+(pl?(' · '+n0(val)+' / '+n0(pl)+' '+ob):'')+'</div>'+rev+'</div>';
+}
 function vIlerMwp(){
   var bedel=mwpBedel(),hak=mwpToplamHak(),pct=bedel>0?hak/bedel*100:0,adm=(ROLE==='admin'),pr=canPara();
   var ikinci = pr ? ('<div class="stat"><div class="k">Sözleşme bedeli</div><div class="v" style="font-size:20px">'+n0(bedel)+'</div><div class="s">$</div></div>')
-    : ('<div class="stat"><div class="k">'+(mwpHasLayout()?'Masa':'Kalem')+'</div><div class="v" style="font-size:20px">'+(mwpHasLayout()?n0((YER.m||[]).length):mwpKalemler().length)+'</div><div class="s">'+(mwpHasLayout()?'adet':'kalem')+'</div></div>');
+    : ('<div class="stat"><div class="k">Kalem</div><div class="v" style="font-size:20px">'+mwpKalemler().length+'</div><div class="s">iş kalemi</div></div>');
   var h='<div class="two"><div class="stat go"><div class="k">Genel ilerleme</div><div class="v">%'+pct.toFixed(1).replace('.',',')+'</div><div class="s">'+(pr?(n0(hak)+' $ hak edilen'):'tamamlanma')+'</div></div>'+ikinci+'</div>';
   if(mwpHasLayout())h+=vYerlesim();
-  h+='<div class="card"><div class="ch">Kalem ilerlemesi</div>';
-  h+='<div class="gt" style="margin:-4px 0 8px;color:#9aa0a6">Buradaki adet <b>toplam (kümülatif)</b>; günlük iş <b>Günlük</b> sekmesinden girilir, toplam otomatik artar.</div>';
-  mwpKalemler().forEach(function(k){
-    var p=mwpKalemPct(k),hk=mwpKalemHak(k),birim=(k.esas==='birim');
-    var sayK=(k.kod==='ROK'?'rok':k.kod==='SBT'?'sbt':null);
-    var masali=mwpKalemMasali(k), man=(sayK?(mwpSayVal(sayK)!=null):(mwpMan(k.kod)!=null)), sag=(pr?(n0(hk)+' $'):('%'+p.toFixed(0)));
-    if(!adm){ h+='<div class="pit"><div class="prt"><span>'+esc(k.kod)+' · '+esc(k.ad)+(masali?' <small style="color:#1e8e4e">🗺️</small>':'')+'</span><small>'+sag+'</small></div><div class="trk"><i class="fm" style="width:'+Math.min(100,p)+'%"></i></div><div class="pstat"><span class="ppct">%'+p.toFixed(0)+'</span>'+(birim?(' · '+n0(mwpKalemAdet(k))+(k.plan?' / '+n0(k.plan):'')):'')+'</div></div>'; return; }
-    var badge=(masali?(' <small style="color:'+(man?'#E8622A':'#1e8e4e')+'">🗺️ '+(man?'elle':'haritadan')+'</small>'):'')+((k.ayri&&birim)?' <small style="color:#9aa0a6">(ayrı)</small>':'');
-    var rev=(masali&&man?('<button class="mrev" data-k="'+esc(k.kod)+'" style="margin-top:6px;background:none;border:0;color:#7c3aed;font:600 12px Barlow;cursor:pointer;padding:0">↺ haritadan al</button>'):'');
-    if(birim){ var ad=mwpKalemAdet(k),pl=+k.plan||0;
-      h+='<div class="pit" data-k="'+esc(k.kod)+'" data-esas="birim"><div class="prt"><span>'+esc(k.kod)+' · '+esc(k.ad)+badge+'</span><small>'+(pr?(n2(k.bf)+' $/adet'+(pl?' · ':'')):'')+(pl?('plan '+n0(pl)):'')+'</small></div>'
-        +'<div class="ent"><input type="number" class="mnum" inputmode="numeric" min="0" value="'+ad+'" placeholder="fiili adet">'+(pr?('<span class="ppct mval">'+n0(hk)+' $</span>'):('<span class="ppct">%'+p.toFixed(0)+'</span>'))+'</div>'
-        +'<div class="pstat"><span class="ppct">%'+p.toFixed(0)+'</span>'+(pl?(' · '+n0(ad)+' / '+n0(pl)):'')+'</div>'+rev+'</div>';
-    } else {
-      h+='<div class="pit" data-k="'+esc(k.kod)+'" data-esas="mwp"><div class="prt"><span>'+esc(k.kod)+' · '+esc(k.ad)+badge+'</span><small>'+(pr?(n0(mwpKalemBedel(k))+' $'+(k.pursantaj?' · ':'')):'')+(k.pursantaj?('pursantaj %'+k.pursantaj.join(' / %')):'')+'</small></div>'
-        +'<div class="ent"><input type="range" class="mrange" min="0" max="100" step="1" value="'+p.toFixed(0)+'"><input type="number" class="mnum" inputmode="numeric" min="0" max="100" value="'+p.toFixed(0)+'">'+(pr?('<span class="ppct mval">'+n0(hk)+' $</span>'):('<span class="ppct">%'+p.toFixed(0)+'</span>'))+'</div>'
-        +'<div class="pstat"><span class="ppct">%'+p.toFixed(0)+'</span></div>'+rev+'</div>';
-    }
-  });
-  h+='</div>';
+  h+='<div class="gt" style="margin:2px 0 8px;color:#9aa0a6">Tüm veri girişi burada. Adet = <b>kümülatif toplam yapılan</b>. Haritada masa işaretlersen otomatik dolar; elle yazınca onu geçersin.</div>';
+  var gruplar=[['rok','Rok (delgi)'],['mekanik','Mekanik'],['elektrik','Elektrik']];
+  gruplar.forEach(function(g){ var ks=mwpKalemler().filter(function(k){return (k.grup||'')===g[0];}); if(!ks.length)return;
+    var gi=mwpGrupHak(g[0]);
+    h+='<div class="card"><div class="ch">'+g[1]+' <small style="color:#9aa0a6">'+(pr?(n0(gi.hak)+' / '+n0(gi.bedel)+' $ · '):'')+'%'+gi.pct.toFixed(0)+'</small></div>';
+    ks.forEach(function(k){ h+=ilerKalemRow(k,adm,pr); }); h+='</div>'; });
+  var diger=mwpKalemler().filter(function(k){return ['rok','mekanik','elektrik'].indexOf(k.grup||'')<0;});
+  if(diger.length){ h+='<div class="card"><div class="ch">Diğer</div>'; diger.forEach(function(k){h+=ilerKalemRow(k,adm,pr);}); h+='</div>'; }
   return h;
 }
 function bIlerMwp(){
   if($('yer_tgl'))$('yer_tgl').onclick=function(){ YERACIK=!YERACIK; render(); };
-  attachPanZoom();   /* harita açıkken: pinch/pan/zoom + dokun=masa seç */
+  document.querySelectorAll('#body .ymod').forEach(function(b){b.onclick=function(){YERMOD=b.getAttribute('data-m');render();};});
+  attachPanZoom();
   if(ROLE!=='admin')return;
-  function sayKod(kod){return kod==='ROK'?'rok':kod==='SBT'?'sbt':null;}
   document.querySelectorAll('#body .pit[data-k]').forEach(function(pr){
-    var kod=pr.getAttribute('data-k'),sk=sayKod(kod);var rng=pr.querySelector('.mrange'),num=pr.querySelector('.mnum');
-    function save(v){ if(!roOk())return; if(sk){var s=mwpSay();s[sk]=+v||0;set('mwpsay',s);} else {var m=mwpIlp();m[kod]=+v||0;set('mwpilp',m);} render(); }
+    var kod=pr.getAttribute('data-k');var rng=pr.querySelector('.mrange'),num=pr.querySelector('.mnum');
+    function save(v){ if(!roOk())return; var s=mwpSay();s[kod]=+v||0;set('mwpsay',s);render(); }
     if(rng){rng.oninput=function(){if(num)num.value=rng.value;};rng.onchange=function(){save(rng.value);};}
     if(num){num.onchange=function(){if(rng)rng.value=Math.min(100,+num.value||0);save(num.value);};}
   });
-  document.querySelectorAll('#body .mrev').forEach(function(b){b.onclick=function(){if(!roOk())return;var kod=b.getAttribute('data-k'),sk=sayKod(kod);if(sk){var s=mwpSay();delete s[sk];set('mwpsay',s);}else{var m=mwpIlp();delete m[kod];set('mwpilp',m);}render();};});
+  document.querySelectorAll('#body .mrev').forEach(function(b){b.onclick=function(){if(!roOk())return;var s=mwpSay();delete s[b.getAttribute('data-k')];set('mwpsay',s);render();};});
 }
 /* mwp — HAKEDİŞ özeti (sözleşme bedeli + hak edilen + dilim durumu) */
 function vHakedisMwp(){
@@ -768,7 +784,7 @@ function phAd(id){for(var i=0;i<PHASES.length;i++)if(PHASES[i][0]===id)return PH
 /* mwp günlük iş metrikleri: [anahtar, etiket, birim, sabit-plan-anahtarı] */
 var MWPMET=[['apl','Aplikasyon','masa','masa'],['rok','Delgi (ROK)','kolon','kolon'],['kolon','Kolon montaj','kolon','kolon'],['kons','Konstrüksiyon (masa)','masa','masa'],['panel','Panel montaj','panel','panel'],['dc','Kablo / DC','masa','masa'],['sbt','Süs beton (SBT)','kolon','kolon']];
 function metAd(k){for(var i=0;i<MWPMET.length;i++)if(MWPMET[i][0]===k)return MWPMET[i][1];return k;}
-function gunOzet(g){ if(g&&g.say){var p=[];MWPMET.forEach(function(m){var v=+g.say[m[0]]||0;if(v)p.push(metAd(m[0]).replace(/ \(.*/,'')+' +'+n0(v));});return p.length?p.join(' · '):(g.not?'Not':'—');} return phAd(g.kalem); }
+function gunOzet(g){ if(g&&g.not)return g.not; if(g&&g.say){var p=[];MWPMET.forEach(function(m){var v=+g.say[m[0]]||0;if(v)p.push(metAd(m[0]).replace(/ \(.*/,'')+' +'+n0(v));});return p.length?p.join(' · '):'—';} return phAd(g.kalem); }
 function engAd(t){for(var i=0;i<ENGEL.length;i++)if(ENGEL[i][0]===t)return ENGEL[i][1];return t||'';}
 
 /* ============================= HEADER ============================= */
@@ -910,36 +926,31 @@ function bIler(){ if(isMwp())return bIlerMwp(); if(ROLE!=='admin')return;
 
 /* ---- GÜNLÜK ---- */
 function vGunMwp(){
-  var list=GUN(), sb=mwpSabit(), agg=mwpAgg();
+  var list=GUN();
   var en=ENGEL.map(function(e){return '<option value="'+e[0]+'">'+esc(e[1])+'</option>';}).join('');
-  var h='<div class="card"><div class="ch">Günlük iş girişi · bugün yapılan</div>'
-    +'<div class="frow"><input id="g_t" type="date" value="'+today()+'"><input id="g_p" type="number" inputmode="numeric" placeholder="Kişi sayısı"></div>'
-    +'<div class="gt" style="margin:2px 0 8px;color:#9aa0a6">Her kalem için <b>bugün yapılan adedi</b> yaz; toplam otomatik artar. Boş bırakılan artmaz.</div>';
-  MWPMET.forEach(function(m){ var cum=+agg[m[0]]||0, pl=+sb[m[3]]||0, pc=pl?Math.min(100,Math.round(cum/pl*100)):0;
-    h+='<div class="pit"><div class="prt"><span>'+esc(m[1])+' <small style="color:#9aa0a6">'+esc(m[2])+'</small></span><small>toplam '+n0(cum)+(pl?(' / '+n0(pl)+' · %'+pc):'')+'</small></div>'
-      +'<div class="ent"><input type="number" class="gqty" data-m="'+m[0]+'" inputmode="numeric" min="0" placeholder="bugün + adet"></div></div>'; });
-  h+='<textarea id="g_n" placeholder="Not / açıklama (varsa)"></textarea>'
+  var h='<div class="card"><div class="ch">Günlük saha notu</div>'
+    +'<div class="gt" style="margin:-2px 0 8px;color:#9aa0a6">İş adetleri <b>İlerleme</b> sekmesinden girilir. Burası sadece günlük not/kişi/engel içindir.</div>'
+    +'<div class="frow"><input id="g_t" type="date" value="'+today()+'"><input id="g_p" type="number" inputmode="numeric" placeholder="Sahadaki kişi"></div>'
+    +'<textarea id="g_n" placeholder="Bugün ne yapıldı? (not)"></textarea>'
     +'<details class="eng"><summary>Engel / bekleme (varsa)</summary><div class="frow"><select id="g_et">'+en+'</select><input id="g_es" type="number" inputmode="numeric" placeholder="Süre (saat)"></div><input id="g_en" placeholder="Engel notu"></details>'
-    +'<button class="prim" id="g_save">Günü kaydet</button></div>';
+    +'<button class="prim" id="g_save">Kaydet</button></div>';
   h+='<div class="card"><div class="ch">Kayıtlar ('+list.length+')</div>';
   if(!list.length)h+='<div class="empty">Henüz kayıt yok</div>';
   list.slice(0,400).forEach(function(g){
     var eb=g.engelVar?('<div><span class="eb">⚠ '+esc(engAd(g.engelTip))+(g.engelSure?(' · '+g.engelSure+'s'):'')+'</span></div>'):'';
-    h+='<div class="gun"><div class="gd">'+esc((g.tarih||'').split('-').reverse().join('.'))+(g.kisi?(' · '+g.kisi+' kişi'):'')+'</div><div class="gt"><b>'+esc(gunOzet(g))+'</b>'+(g.not?('<br>'+esc(g.not)):'')+'</div>'+eb
+    h+='<div class="gun"><div class="gd">'+esc((g.tarih||'').split('-').reverse().join('.'))+(g.kisi?(' · '+g.kisi+' kişi'):'')+'</div><div class="gt">'+esc(g.not||gunOzet(g)||'—')+'</div>'+eb
       +(ROLE==='admin'?('<button class="del" data-id="'+esc(g.id)+'">sil</button>'):'')+'</div>';
   });
   return h+'</div>';
 }
 function bGunMwp(){
   $('g_save').onclick=function(){ if(!roOk())return;
-    var say={},tot=0; document.querySelectorAll('#body .gqty').forEach(function(i){var v=+i.value||0;if(v>0){say[i.getAttribute('data-m')]=v;tot+=v;}});
     var not=($('g_n').value||'').trim(),ki=+($('g_p').value||0)||0,es=+($('g_es').value||0)||0,en=($('g_en').value||'').trim(),et=$('g_et').value||'';
-    if(!tot&&!not){toast('En az bir adet ya da not girin');return;}
-    var s=mwpSay(); Object.keys(say).forEach(function(k){ s[k]=(+s[k]||0)+say[k]; }); set('mwpsay',s);
-    var rec={id:'g'+Date.now(),tarih:$('g_t').value||today(),kalem:'mwp',say:say,kisi:ki,not:not,gozlem:'',engelVar:!!(en||es),engelTip:et,engelSure:es,engelNot:en,by:ROLE,ts:Date.now()};
+    if(!not&&!ki&&!en){toast('Not ya da kişi girin');return;}
+    var rec={id:'g'+Date.now(),tarih:$('g_t').value||today(),kalem:'gun',kisi:ki,not:not,gozlem:'',engelVar:!!(en||es),engelTip:et,engelSure:es,engelNot:en,by:ROLE,ts:Date.now()};
     set('g:'+rec.id,rec); toast('Kaydedildi'); render();
   };
-  document.querySelectorAll('#body .del').forEach(function(b){b.onclick=function(){if(ROLE!=='admin')return;if(!confirm('Kayıt silinsin mi? (toplam sayaç geri alınmaz)'))return;del('g:'+b.getAttribute('data-id'));toast('Silindi');render();};});
+  document.querySelectorAll('#body .del').forEach(function(b){b.onclick=function(){if(ROLE!=='admin')return;if(!confirm('Kayıt silinsin mi?'))return;del('g:'+b.getAttribute('data-id'));toast('Silindi');render();};});
 }
 function vGun(){
   if(isMwp())return vGunMwp();
