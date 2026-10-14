@@ -261,7 +261,7 @@ details.acc[open]>summary{border-bottom:1.5px solid var(--line)}
 "use strict";
 (function(){
 /* ============================= SABİTLER ============================= */
-var BUILD='v96';  /* uygulama sürümü (önbellek/güncelleme takibi) */
+var BUILD='v97';  /* uygulama sürümü (önbellek/güncelleme takibi) */
 var MEK=0, ELK=0, SOZBEDEL=0, CFG=null;  /* tüm değerler projenin KENDİ cfg verisinden gelir */
 var MEK_ART=0;                           /* mekanik iş artışı (cfg'den) */
 var TGT={};                              /* aktif projenin hedefleri (cfg.tgt) */
@@ -1855,11 +1855,11 @@ function personForm(id){ if(!roOk())return;
     +'<span id="pf_pv">'+(PFOTO?('<img src="'+PFOTO+'" style="width:84px;height:84px;border-radius:50%;object-fit:cover;border:2px solid var(--line)">'):'<span style="width:84px;height:84px;border-radius:50%;background:#F4F1EA;display:flex;align-items:center;justify-content:center;font-size:34px">📷</span>')+'</span>'
     +'<div style="font:600 12px Barlow;color:var(--org);margin-top:6px">Foto ekle / değiştir</div><input id="pf_foto" type="file" accept="image/*" style="display:none"></label></div>';
   h+='<div class="ch2">Ad Soyad *</div><input id="pf_ad" value="'+esc(p.ad||'')+'" placeholder="Ad Soyad">';
-  h+='<div class="frow" style="margin-top:8px"><div style="flex:1"><div class="ch2">Telefon *</div><input id="pf_tel" type="tel" value="'+esc(p.tel||'')+'" placeholder="+994 / +90"></div><div style="flex:1"><div class="ch2">TC Kimlik No *</div><input id="pf_tc" type="tel" inputmode="numeric" value="'+esc(p.kimlikno||'')+'" placeholder="11 hane"></div></div>';
+  h+='<div class="frow" style="margin-top:8px"><div style="flex:1"><div class="ch2">Telefon</div><input id="pf_tel" type="tel" value="'+esc(p.tel||'')+'" placeholder="+994 / +90"></div><div style="flex:1"><div class="ch2">Kimlik No</div><input id="pf_tc" type="tel" inputmode="numeric" value="'+esc(p.kimlikno||'')+'" placeholder="TC / AZ kimlik"></div></div>';
   h+='<div class="frow" style="margin-top:8px"><div style="flex:1"><div class="ch2">Görev</div><select id="pf_gorev">'+rop+'</select></div><div style="flex:1"><div class="ch2">Uyruk</div><select id="pf_uyruk">'+uyr+'</select></div></div>';
   h+='<div class="ch2">Sigorta / SGK (ops.)</div><input id="pf_sig" value="'+esc(p.sigorta||'')+'" placeholder="SGK no / durum">';
   h+='<div class="frow" style="margin-top:8px"><div style="flex:1"><div class="ch2">İşe giriş</div><input id="pf_giris" type="date" value="'+esc(p.giris||today())+'"></div><div style="flex:1"><div class="ch2">Çıkış (ops.)</div><input id="pf_cikis" type="date" value="'+esc(p.cikis||'')+'"></div></div>';
-  h+='<div class="ch2" style="color:var(--org)">Yevmiye *</div><div class="frow"><input id="pf_yev" type="number" inputmode="decimal" value="'+esc(yev)+'" placeholder="Günlük ücret"><select id="pf_pb" style="max-width:88px">'+cop+'</select></div>';
+  h+='<div class="ch2" style="color:var(--org)">Yevmiye</div><div class="frow"><input id="pf_yev" type="number" inputmode="decimal" value="'+esc(yev)+'" placeholder="Günlük ücret"><select id="pf_pb" style="max-width:88px">'+cop+'</select></div>';
   h+='<div class="ch2">Yevmiye geçerlilik başlangıcı</div><input id="pf_wfrom" type="date" value="'+esc((p.giris||today()))+'">';
   if(id){ var hist=(WAGEHIST()[id]||[]).slice().sort(function(a,b){return (a.from||'').localeCompare(b.from||'');});
     h+='<div class="ch2">Yevmiye değişiklikleri</div>';
@@ -1874,12 +1874,12 @@ function personForm(id){ if(!roOk())return;
   if($('pf_cadd'))$('pf_cadd').onclick=function(){var cf=$('pf_cfrom').value,cr=+($('pf_crate').value||0)||0;if(!cr){toast('Yeni yevmiye girin');return;}var wh=WAGEHIST();wh[id]=wh[id]||[];wh[id].push({from:cf||today(),rate:cr,cur:$('pf_pb').value||'AZN'});set('wagehist',wh);var ww=WAGE();ww[id]=cr;set('wage',ww);toast('Değişiklik eklendi');personForm(id);render();};
   $('pf_save').onclick=function(){
     var ad=($('pf_ad').value||'').trim(),tel=($('pf_tel').value||'').trim(),tc=($('pf_tc').value||'').trim(),yv=+($('pf_yev').value||0)||0;
-    if(!ad){toast('Ad Soyad zorunlu');return;} if(!tel){toast('Telefon zorunlu');return;} if(!tc){toast('TC Kimlik No zorunlu');return;} if(!yv){toast('Yevmiye zorunlu');return;}
+    if(!ad){toast('Ad Soyad zorunlu');return;}
     var pid=id||('p'+Date.now().toString(36));
     var rec={id:pid,ad:ad,tel:tel,kimlikno:tc,sigorta:($('pf_sig').value||'').trim(),uyruk:$('pf_uyruk').value||'',gorev:$('pf_gorev').value||'Mekanik',giris:$('pf_giris').value||today(),cikis:$('pf_cikis').value||'',foto:PFOTO||'',aktif:(p.aktif!==false)};
     var tm=TEAM();var found=false;for(var i=0;i<tm.length;i++){if(tm[i].id===pid){tm[i]=rec;found=true;}}if(!found)tm.push(rec);set('team',tm);
-    var ww=WAGE();ww[pid]=yv;ww._c=ww._c||{};ww._c[pid]=$('pf_pb').value||'AZN';set('wage',ww);
-    var wfrom=$('pf_wfrom').value||rec.giris;var wh=WAGEHIST();if(!wh[pid]||!wh[pid].length){wh[pid]=[{from:wfrom,rate:yv,cur:$('pf_pb').value||'AZN'}];set('wagehist',wh);}
+    if(yv){ var ww=WAGE();ww[pid]=yv;ww._c=ww._c||{};ww._c[pid]=$('pf_pb').value||'AZN';set('wage',ww);
+    var wfrom=$('pf_wfrom').value||rec.giris;var wh=WAGEHIST();if(!wh[pid]||!wh[pid].length){wh[pid]=[{from:wfrom,rate:yv,cur:$('pf_pb').value||'AZN'}];set('wagehist',wh);} }
     closeSheet();toast('Kaydedildi');teamSheet();render();
   };
   if($('pf_del'))$('pf_del').onclick=function(){if(ROLE!=='admin')return;if(!confirm('Personel çıkarılsın mı?'))return;set('team',TEAM().filter(function(x){return x.id!==id;}));closeSheet();toast('Çıkarıldı');teamSheet();render();};
