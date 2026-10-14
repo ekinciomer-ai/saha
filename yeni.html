@@ -9,7 +9,7 @@
 /* Aksaray Enerji Portal girişi zorunlu — rol/yetki portaldan gelir, burada giriş yapılmaz */
 (function(){try{var o=JSON.parse(localStorage.getItem('ae_portal')||'null'),S=o&&o.S;
 if(S&&Date.now()<(o.son||0)&&(S.ka||(S.anahtarlar&&S.anahtarlar.saha)))return;}catch(e){}
-location.replace('/aesun/portal/?git=saha');})();
+location.replace((location.hostname.slice(-9)==='github.io'?'/aesun/portal/':location.hostname.indexOf('portal.')===0?'/':'/portal/')+'?git=saha');})();
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1490,7 +1490,7 @@ function portalOturum(){ try{ var o=JSON.parse(localStorage.getItem('ae_portal')
   return {S:S, admin:tamYetki, izin:iz, projeler:(prj||[]), user:(S.ad||S.isim||S.kad||S.k||(o&&o.kad)||(o&&o.u)||'')}; }catch(e){return null;} }
 function startApp(){
   var pt=portalOturum();
-  if(!pt){ try{location.replace('/aesun/portal/?git=saha');}catch(e){} return; }
+  if(!pt){ try{location.replace((location.hostname.slice(-9)==='github.io'?'/aesun/portal/':location.hostname.indexOf('portal.')===0?'/':'/portal/')+'?git=saha');}catch(e){} return; }
   ROLE=pt.admin?'admin':'saha'; PIZIN=pt.izin||[]; PIZPROJ=pt.projeler||[]; USER=pt.user||(pt.admin?'Yönetici':'Saha'); RO=false;
   $('app').classList.remove('hidden'); $('sync').classList.remove('hidden');
   PROJE=aktifProje(); loadReg();
