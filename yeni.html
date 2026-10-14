@@ -261,7 +261,7 @@ details.acc[open]>summary{border-bottom:1.5px solid var(--line)}
 "use strict";
 (function(){
 /* ============================= SABİTLER ============================= */
-var BUILD='v85';  /* uygulama sürümü (önbellek/güncelleme takibi) */
+var BUILD='v86';  /* uygulama sürümü (önbellek/güncelleme takibi) */
 var MEK=0, ELK=0, SOZBEDEL=0, CFG=null;  /* tüm değerler projenin KENDİ cfg verisinden gelir */
 var MEK_ART=0;                           /* mekanik iş artışı (cfg'den) */
 var TGT={};                              /* aktif projenin hedefleri (cfg.tgt) */
@@ -298,10 +298,10 @@ function ASUNIM_KALEM(){return [
  {id:'m1b',kod:'1b',ad:'Rok (delgi)',grup:'mekanik',esas:'birim',bf:12,plan:23044,olcu:'delik',met:'rok'},
  {id:'m1c',kod:'1c',ad:'Süs beton',grup:'mekanik',esas:'birim',bf:0,plan:23044,olcu:'kolon',met:'sbt'},
  {id:'m3a',kod:'3a',ad:'Kolon (ayak) montajı + beton',grup:'mekanik',esas:'birim',bf:14.235,plan:23044,olcu:'kolon',met:'kolon',pursantaj:42},
- {id:'m3b',kod:'3b',ad:'Kiriş',grup:'mekanik',esas:'birim',bf:4.0864,plan:11522,olcu:'adet',met:'kiris'},
- {id:'m3c',kod:'3c',ad:'Aşık',grup:'mekanik',esas:'birim',bf:4.0864,plan:26336,olcu:'adet',met:'asik'},
- {id:'m3d',kod:'3d',ad:'Payanda',grup:'mekanik',esas:'birim',bf:4.0864,plan:11522,olcu:'adet',met:'payanda'},
- {id:'m3e',kod:'3e',ad:'Rüzgarlık',grup:'mekanik',esas:'birim',bf:4.0864,plan:9876,olcu:'adet',met:'ruzgarlik'},
+ {id:'m3b',kod:'3b',ad:'Kiriş',grup:'mekanik',esas:'birim',bf:4.085968,plan:11522,olcu:'adet',met:'kiris'},
+ {id:'m3c',kod:'3c',ad:'Aşık',grup:'mekanik',esas:'birim',bf:4.085968,plan:26336,olcu:'adet',met:'asik'},
+ {id:'m3d',kod:'3d',ad:'Payanda',grup:'mekanik',esas:'birim',bf:4.085968,plan:11522,olcu:'adet',met:'payanda'},
+ {id:'m3e',kod:'3e',ad:'Rüzgarlık',grup:'mekanik',esas:'birim',bf:4.085968,plan:9876,olcu:'adet',met:'ruzgarlik'},
  {id:'m4',kod:'4',ad:'Panel (PV) montajı',grup:'mekanik',esas:'birim',bf:4.9275,plan:42796,olcu:'panel',met:'panel',pursantaj:27},
  /* ELEKTRİK — kullanıcının numaraları (1,2a..5). $ dağılımı sözleşmeye en yakın eşleme (düzeltilebilir) */
  {id:'e1',kod:'1',ad:'Kanal (AG-OG kablo kanalı)',grup:'elektrik',esas:'yuzde',tutar:187446.48},
@@ -314,8 +314,13 @@ function ASUNIM_KALEM(){return [
  {id:'e5',kod:'5',ad:'İşveren kabulü (test / devreye alma)',grup:'elektrik',esas:'yuzde',tutar:31241.08}
 ];}
 function mwpCfgFix(){ try{ if(!isMwp()||PROJE!=='pmv796yvn2c')return;
-  if(CFG.isv===4)return;   /* zaten güncel kullanıcı-numaralı sürüm */
-  var fix={motor:'mwp',isv:4,mwp:31.241,sabit:(CFG.sabit&&CFG.sabit.kolon?CFG.sabit:{masa:1000,panel:42796,kolon:23044,kosk:6,trafo:6}),kalemler:ASUNIM_KALEM(),sozlesme:CFG.sozlesme||{avans_pct:20,nakdi_teminat_pct:5,kesin_teminat_pct:10,ceza:[1500,3000,5000],dilimler:[]}};
+  if(CFG.isv===5)return;   /* zaten güncel sürüm */
+  var fix={motor:'mwp',isv:5,mwp:31.241,
+    ad:'Asunim Nahçıvan GES',konum:'Nahçıvan, Azerbaycan',lat:39.23344,lon:45.29610,
+    isveren:'Asunim',bas:'2026-10-15',bit:'2027-01-13',hafta:13,
+    sabit:(CFG.sabit&&CFG.sabit.kolon?CFG.sabit:{masa:1000,panel:42796,kolon:23044,kosk:6,trafo:6}),
+    kalemler:ASUNIM_KALEM(),
+    sozlesme:CFG.sozlesme||{avans_pct:20,nakdi_teminat_pct:5,kesin_teminat_pct:10,ceza:[1500,3000,5000],dilimler:[]}};
   set('cfg',fix); CFG=fix; SOZBEDEL=mwpBedel(); }catch(e){} }
 
 var PJST=[{c:'',l:'—',v:0,bg:'',fg:'#9aa0a6'},{c:'V',l:'●',v:1,bg:'#16a34a',fg:'#fff'},
@@ -859,7 +864,7 @@ function applyNav(){ try{document.querySelectorAll('#nav button').forEach(functi
 function go(t){ if(!canSee(t))t='bugun'; TAB=t;var ns=document.querySelectorAll('#nav button');for(var i=0;i<ns.length;i++)ns[i].classList.toggle('on',ns[i].getAttribute('data-t')===t);render();$('body').scrollTop=0;}
 function render(){ syncHead(); applyNav(); var b=$('body');
   try{
-    if(TAB==='bugun')b.innerHTML=vBugun();
+    if(TAB==='bugun'){b.innerHTML=vBugun();bBugun();}
     else if(TAB==='ilerleme'){b.innerHTML=vIler();bIler();}
     else if(TAB==='gunluk'){b.innerHTML=vGun();bGun();}
     else if(TAB==='odeme'){b.innerHTML=vOde();bOde();}
@@ -869,6 +874,39 @@ function render(){ syncHead(); applyNav(); var b=$('body');
 }
 
 /* ---- BUGÜN ---- */
+/* ---- PROJE KARTI (üst bilgi + 3 nokta menü) ---- */
+function pkStat(v,k){return '<div style="flex:1 1 22%;text-align:center;background:rgba(255,255,255,.1);border-radius:8px;padding:8px 4px"><div style="font:800 16px Barlow;color:#fff">'+v+'</div><div style="font:600 10px Barlow;color:#cfd4da">'+k+'</div></div>';}
+function projeKart(){
+  var pp=projGet(PROJE)||{}, sb=mwpSabit(), pr=canPara();
+  var ad=CFG.ad||pp.ad||'Proje', konum=CFG.konum||'', guc=+CFG.mwp||0, bedel=mwpBedel();
+  var mapUrl=(CFG.lat&&CFG.lon)?('https://maps.google.com/?q='+CFG.lat+','+CFG.lon):'';
+  var h='<div class="card" style="background:linear-gradient(135deg,#2B2F35,#404853);color:#fff;border:0">'
+    +'<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">'
+    +'<div style="min-width:0"><div style="font:800 18px Barlow;line-height:1.15">'+esc(ad)+'</div>'
+    +'<div style="font:600 12px Barlow;color:#F3D9C4;margin-top:4px">'+(konum?(mapUrl?('<a href="'+mapUrl+'" target="_blank" rel="noopener" style="color:#F3D9C4;text-decoration:none">📍 '+esc(konum)+'</a>'):('📍 '+esc(konum))):'')+(guc?(' · '+n2(guc)+' MWp'):'')+'</div></div>'
+    +'<button id="pk_menu" style="flex:0 0 auto;background:rgba(255,255,255,.16);border:0;color:#fff;font-size:20px;cursor:pointer;line-height:1;padding:5px 11px;border-radius:9px">⋮</button></div>'
+    +'<div style="display:flex;gap:6px;margin-top:12px;flex-wrap:wrap">'
+    +pkStat(n0(sb.masa),'masa')+pkStat(n0(sb.panel),'panel')+pkStat(n0(sb.kolon),'kolon')+pkStat(n0(sb.trafo||sb.kosk),'trafo')+'</div>'
+    +(pr?('<div style="display:flex;justify-content:space-between;margin-top:11px;padding-top:10px;border-top:1px solid rgba(255,255,255,.16);font:700 13px Barlow"><span style="color:#cfd4da">Sözleşme bedeli</span><span style="color:#fff;font-size:15px">'+n0(bedel)+' $</span></div>'):'')
+    +(CFG.bas?('<div style="font:600 11px Barlow;color:#aab0b8;margin-top:'+(pr?'6px':'11px;padding-top:10px;border-top:1px solid rgba(255,255,255,.16)')+'">'+esc((CFG.bas||'').split('-').reverse().join('.'))+' → '+esc((CFG.bit||'').split('-').reverse().join('.'))+(CFG.hafta?(' · '+CFG.hafta+' hafta'):'')+'</div>'):'')
+    +'</div>';
+  return h;
+}
+function pmBtn(a,ic,t,s){return '<button class="pmi mod" data-a="'+a+'" style="width:100%"><span class="mic">'+ic+'</span><span class="mtx"><b>'+esc(t)+'</b>'+(s?('<small>'+esc(s)+'</small>'):'')+'</span></button>';}
+function projeMenu(){ var adm=(ROLE==='admin'),h='';
+  h+=pmBtn('switch','🔀','Proje değiştir','');
+  if(adm)h+=pmBtn('ayar','⚙️','Proje ayarları','iş kalemleri · bedeller');
+  if(CFG.lat)h+=pmBtn('harita','📍','Konumu haritada aç',CFG.konum||'');
+  h+=pmBtn('cikis','🚪','Çıkış','portala dön');
+  openSheet('Proje',h);
+  document.querySelectorAll('#sbox .pmi').forEach(function(b){b.onclick=function(){var a=b.getAttribute('data-a');closeSheet();
+    if(a==='switch'){if(typeof projeSheet==='function')projeSheet();}
+    else if(a==='ayar'){if(typeof cfgSheet==='function')cfgSheet();}
+    else if(a==='harita'){try{window.open('https://maps.google.com/?q='+CFG.lat+','+CFG.lon,'_blank');}catch(e){}}
+    else if(a==='cikis'){try{location.replace(location.hostname.indexOf('portal.')===0?'/':'/portal/');}catch(e){location.reload();}}
+  };});
+}
+function bBugun(){ if($('pk_menu'))$('pk_menu').onclick=projeMenu; }
 function vBugun(){
   var tgt=TGT;
   var tdIso=today(),ym=tdIso.slice(0,7),d=+tdIso.slice(8,10);
@@ -880,6 +918,7 @@ function vBugun(){
   var tdGun=GUN().filter(function(g){return g.tarih===tdIso;});
   var tdHarca=GIDER().filter(function(r){return r.tarih===tdIso;}).reduce(function(s,r){return s+toAZN(r.tutar,r.pb||'AZN');},0);
   var h='';
+  if(isMwp())h+=projeKart();
   h+='<div class="card" style="background:linear-gradient(135deg,#fff,#FFF7F1);border-color:#F3D9C4"><div style="font:600 13px Barlow;color:#9a5b09">'+A[dn.getDay()]+' · '+tdIso.split('-').reverse().join('.')+'</div>'
     +'<div class="three" style="margin:12px 0 2px">'
     +'<div class="mini" style="border-color:#F3D9C4"><div class="k">Sahada bugün</div><div class="v" style="color:#E8622A">'+(ekip||'—')+'<small style="font:600 12px Barlow;color:#9aa0a6"> kişi</small></div></div>'
