@@ -261,7 +261,7 @@ details.acc[open]>summary{border-bottom:1.5px solid var(--line)}
 "use strict";
 (function(){
 /* ============================= SABİTLER ============================= */
-var BUILD='v72';  /* uygulama sürümü (önbellek/güncelleme takibi) */
+var BUILD='v73';  /* uygulama sürümü (önbellek/güncelleme takibi) */
 var MEK=0, ELK=0, SOZBEDEL=0, CFG=null;  /* tüm değerler projenin KENDİ cfg verisinden gelir */
 var MEK_ART=0;                           /* mekanik iş artışı (cfg'den) */
 var TGT={};                              /* aktif projenin hedefleri (cfg.tgt) */
@@ -482,20 +482,64 @@ function mwpIlp(){return get('mwpilp',{})||{};}
 function mwpDilim(){return get('mwpdilim',{})||{};}
 function mwpKalemBedel(k){ if(!k||k.ayri)return 0; return k.esas==='birim'?((+k.bf||0)*(+k.plan||0)):(+k.tutar||0); }
 function mwpBedel(){var t=0;mwpKalemler().forEach(function(k){t+=mwpKalemBedel(k);});return t;}
-function mwpKalemAdet(k){return +((mwpIlp()[k.kod])||0)||0;}
-function mwpKalemPct(k){ if(k.esas==='birim'){var pl=+k.plan||0,ad=mwpKalemAdet(k);return pl?Math.max(0,Math.min(100,ad/pl*100)):(ad>0?100:0);} return Math.max(0,Math.min(100,+((mwpIlp()[k.kod])||0)||0)); }
+/* ---- yerleşim (masa planı) → iş kalemi bağlama ---- */
+var YER=null;  /* {bbox,m:[[id,x0,y0,x1,y1,t,inv,kol],...]} — projeye özel statik geometri */
+function mwpHasLayout(){return !!(YER&&YER.m&&YER.m.length);}
+function masaPan(r){return r[5]?26:52;}
+function mdurum(){return get('mdurum',{})||{};}
+function mwpMasaAgg(){ var a={rok:0,kolon:0,kons:0,panel:0,dc:0,sbt:0,masaBitti:0}; if(!mwpHasLayout())return a; var md=mdurum();
+  YER.m.forEach(function(r){var s=md[r[0]]||{},kol=r[7]||0,pan=masaPan(r); if(s.d)a.rok+=kol; if(s.k)a.kolon+=kol; if(s.s)a.kons+=1; if(s.p)a.panel+=pan; if(s.e)a.dc+=1; if(s.b)a.sbt+=kol; if(s.d&&s.k&&s.s&&s.p)a.masaBitti+=1;}); return a; }
+function mwpKalemAdet(k){ if(mwpHasLayout()){var a=mwpMasaAgg(); if(k.kod==='ROK')return a.rok; if(k.kod==='SBT')return a.sbt;} return +((mwpIlp()[k.kod])||0)||0; }
+function mwpKalemPct(k){
+  if(mwpHasLayout()&&k.kod==='MEK'){ var a=mwpMasaAgg(),sb=mwpSabit(),pur=k.pursantaj||[42,31,27]; var tk=+sb.kolon||1,tm=+sb.masa||1,tp=+sb.panel||1; return Math.max(0,Math.min(100,(pur[0]||0)*a.kolon/tk+(pur[1]||0)*a.kons/tm+(pur[2]||0)*a.panel/tp)); }
+  if(k.esas==='birim'){var pl=+k.plan||0,ad=mwpKalemAdet(k);return pl?Math.max(0,Math.min(100,ad/pl*100)):(ad>0?100:0);}
+  return Math.max(0,Math.min(100,+((mwpIlp()[k.kod])||0)||0)); }
+function mwpKalemMasali(k){ return mwpHasLayout()&&(k.kod==='ROK'||k.kod==='SBT'||k.kod==='MEK'); } /* bu kalem yerleşimden türüyor */
 function mwpKalemHak(k){ if(k.esas==='birim')return (+k.bf||0)*mwpKalemAdet(k); return mwpKalemBedel(k)*mwpKalemPct(k)/100; }
 function mwpToplamHak(){var t=0;mwpKalemler().forEach(function(k){if(!k.ayri)t+=mwpKalemHak(k);});return t;}
 function mwpEkHak(){var t=0;mwpKalemler().forEach(function(k){if(k.ayri)t+=mwpKalemHak(k);});return t;}
+/* yerleşim dosyasını yükle: önce yerel önbellek, sonra sunucudan tazele (statik) */
+function loadYerlesim(cb){ YER=null; if(!isMwp()){cb&&cb();return;}
+  try{var c=localStorage.getItem('sh2:'+PROJE+':__yer'); if(c){var d=JSON.parse(c); if(d&&d.m&&d.m.length)YER=d;}}catch(e){}
+  try{ fetch('yerlesim/'+encodeURIComponent(PROJE)+'.json?t='+Date.now()).then(function(r){return r.ok?r.json():null;}).then(function(d){ if(d&&d.m&&d.m.length){YER=d; try{localStorage.setItem('sh2:'+PROJE+':__yer',JSON.stringify(d));}catch(e){} if(cb){cb();cb=null;} } else { if(cb){cb();cb=null;} } }).catch(function(){ if(cb){cb();cb=null;} }); }catch(e){ if(cb){cb();cb=null;} }
+  if(YER&&cb){cb();cb=null;} /* önbeten varsa anında */
+}
+function masaDone(id){ var s=mdurum()[id]||{}; return (s.d?1:0)+(s.k?1:0)+(s.s?1:0)+(s.p?1:0); }
+function vYerlesim(){
+  if(!mwpHasLayout())return '';
+  var bb=YER.bbox||[0,0,100,100], w=(bb[2]-bb[0])||1, hgt=(bb[3]-bb[1])||1, sb=mwpSabit(), a=mwpMasaAgg();
+  var h='<div class="card" style="padding:10px"><div class="ch">🗺️ Yerleşim · '+YER.m.length+' masa</div>'
+    +'<div class="gt" style="margin-bottom:8px">Masaya dokun → iş durumunu gir. Veriler iş kalemlerine (ROK/MEK/panel) otomatik bağlanır.</div>'
+    +'<div class="three" style="margin-bottom:8px">'
+    +'<div class="mini"><div class="k">Delgi</div><div class="v" style="color:#E8622A">%'+Math.round(a.rok/(+sb.kolon||1)*100)+'</div></div>'
+    +'<div class="mini"><div class="k">Kolon</div><div class="v">%'+Math.round(a.kolon/(+sb.kolon||1)*100)+'</div></div>'
+    +'<div class="mini"><div class="k">Panel</div><div class="v" style="color:#1e8e4e">%'+Math.round(a.panel/(+sb.panel||1)*100)+'</div></div></div>';
+  var svg='<svg id="yersvg" viewBox="'+bb[0]+' '+bb[1]+' '+w+' '+hgt+'" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;max-height:64vh;background:#fbfbf9;border:1px solid #e5e7eb;border-radius:8px;touch-action:pinch-zoom">';
+  var md=mdurum();
+  YER.m.forEach(function(r){ var id=r[0],x=Math.min(r[1],r[3]),y=Math.min(r[2],r[4]),ww=Math.abs(r[3]-r[1])||0.6,hh=Math.abs(r[4]-r[2])||0.6; var s=md[id]||{},dn=(s.d?1:0)+(s.k?1:0)+(s.s?1:0)+(s.p?1:0); var col=dn>=4?'#16a34a':(dn>0?'#e39a00':'#cfd4da');
+    svg+='<rect class="msa" data-id="'+esc(id)+'" x="'+x+'" y="'+y+'" width="'+ww+'" height="'+hh+'" fill="'+col+'" stroke="#fff" stroke-width="0.25"/>'; });
+  svg+='</svg>';
+  h+=svg+'<div class="gt" style="margin-top:6px;color:#9aa0a6">🟩 tamam · 🟧 kısmi · ⬜ başlanmadı</div></div>';
+  return h;
+}
+function masaSheet(id){ var r=null; (YER&&YER.m||[]).forEach(function(x){if(x[0]===id)r=x;}); if(!r)return;
+  var kol=r[7]||0,pan=masaPan(r),inv=r[6],s=mdurum()[id]||{};
+  var stages=[['d','Delgi (rok)'],['k','Kolon montaj'],['s','Konstrüksiyon (masa)'],['p','Panel montaj'],['e','Kablo / DC'],['b','Süs beton']];
+  var h='<div class="gt" style="margin-bottom:8px">'+esc(id)+' · '+kol+' kolon · '+pan+' panel · inv '+inv+'</div><div class="ch2">İş durumu</div>';
+  stages.forEach(function(st){ h+='<label class="row" style="cursor:pointer"><span>'+st[1]+'</span><input type="checkbox" class="mst" data-s="'+st[0]+'"'+(s[st[0]]?' checked':'')+(ROLE==='admin'?'':' disabled')+'></label>'; });
+  openSheet('Masa '+id,h);
+  document.querySelectorAll('#sbox .mst').forEach(function(cb){ cb.onchange=function(){ if(!roOk())return; var m=mdurum(),o=m[id]||{}; o[cb.getAttribute('data-s')]=cb.checked; m[id]=o; set('mdurum',m); render(); }; });
+}
 /* mwp — İLERLEME girişi (kalem % / fiili adet + sözleşme dilimleri) */
 function vIlerMwp(){
   var bedel=mwpBedel(),hak=mwpToplamHak(),pct=bedel>0?hak/bedel*100:0,adm=(ROLE==='admin');
   var h='<div class="two"><div class="stat go"><div class="k">Genel ilerleme</div><div class="v">%'+pct.toFixed(1).replace('.',',')+'</div><div class="s">'+n0(hak)+' $ hak edilen</div></div>'
     +'<div class="stat"><div class="k">Sözleşme bedeli</div><div class="v" style="font-size:20px">'+n0(bedel)+'</div><div class="s">$</div></div></div>';
+  if(mwpHasLayout())h+=vYerlesim();
   h+='<div class="card"><div class="ch">Kalem ilerlemesi</div>';
   mwpKalemler().forEach(function(k){
     var p=mwpKalemPct(k),hk=mwpKalemHak(k),birim=(k.esas==='birim');
-    if(!adm){ h+='<div class="pit"><div class="prt"><span>'+esc(k.kod)+' · '+esc(k.ad)+'</span><small>'+n0(hk)+' $</small></div><div class="trk"><i class="fm" style="width:'+Math.min(100,p)+'%"></i></div><div class="pstat"><span class="ppct">%'+p.toFixed(0)+'</span></div></div>'; return; }
+    if(!adm||mwpKalemMasali(k)){ h+='<div class="pit"><div class="prt"><span>'+esc(k.kod)+' · '+esc(k.ad)+(mwpKalemMasali(k)?' <small style="color:#1e8e4e">🗺️ yerleşimden</small>':'')+'</span><small>'+n0(hk)+' $</small></div><div class="trk"><i class="fm" style="width:'+Math.min(100,p)+'%"></i></div><div class="pstat"><span class="ppct">%'+p.toFixed(0)+'</span>'+(k.esas==='birim'?(' · '+n0(mwpKalemAdet(k))+(k.plan?' / '+n0(k.plan):'')):'')+'</div></div>'; return; }
     if(birim){ var ad=mwpKalemAdet(k),pl=+k.plan||0;
       h+='<div class="pit" data-k="'+esc(k.kod)+'" data-esas="birim"><div class="prt"><span>'+esc(k.kod)+' · '+esc(k.ad)+(k.ayri?' <small style="color:#9aa0a6">(ayrı)</small>':'')+'</span><small>'+n2(k.bf)+' $/adet'+(pl?(' · plan '+n0(pl)):'')+'</small></div>'
         +'<div class="ent"><input type="number" class="mnum" inputmode="numeric" min="0" value="'+ad+'" placeholder="fiili adet"><span class="ppct mval">'+n0(hk)+' $</span></div>'
@@ -515,7 +559,9 @@ function vIlerMwp(){
   }
   return h;
 }
-function bIlerMwp(){ if(ROLE!=='admin')return;
+function bIlerMwp(){
+  document.querySelectorAll('#body .msa').forEach(function(rc){ rc.style.cursor='pointer'; rc.onclick=function(){ masaSheet(rc.getAttribute('data-id')); }; });
+  if(ROLE!=='admin')return;
   document.querySelectorAll('#body .pit[data-k]').forEach(function(pr){
     var kod=pr.getAttribute('data-k');var rng=pr.querySelector('.mrange'),num=pr.querySelector('.mnum');
     function save(v){ if(!roOk())return; var m=mwpIlp();m[kod]=+v||0;set('mwpilp',m);render(); }
@@ -1628,11 +1674,12 @@ function startApp(){
   seedCfg();                     /* SHAMS-1 bootstrap cfg (yoksa) → loadCFG öncesi */
   loadCFG(); applyTheme();       /* projenin iş kalemleri + renk teması */
   applyNav();
+  loadYerlesim(function(){ render(); });   /* mwp projelerde masa planı (statik) */
   N8N.loadBox();                 /* aktif projenin kalıcı kuyruğu */
   if(N8N.pend())N8N.schedule(300); /* önceki oturumdan bekleyen yazılar varsa gönder */
   var sv=(PROJE==='tr1');         /* tohum YALNIZ SHAMS-1'e; yeni projeler boş başlar */
   if(sv){seedIfEmpty(); seedHak(); seedIsArtis();} iaDedup(); go('bugun');    /* önce yerel veriyle anında aç */
-  N8N.pull(function(){ if(sv){seedIfEmpty(); seedHak(); seedIsArtis();} iaDedup(); loadCFG(); render(); });  /* ortak kaynaktan tazele */
+  N8N.pull(function(){ if(sv){seedIfEmpty(); seedHak(); seedIsArtis();} iaDedup(); loadCFG(); loadYerlesim(function(){render();}); render(); });  /* ortak kaynaktan tazele */
   regFetch();                    /* proje kayıt defterini buluttan güncelle */
   document.querySelectorAll('#nav button').forEach(function(b){b.onclick=function(){go(b.getAttribute('data-t'));};});
   $('h_sync').onclick=function(){N8N.pull(function(){render();toast('Yenilendi');});};
