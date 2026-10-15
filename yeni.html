@@ -356,6 +356,18 @@ var PIZPROJ=[];             // portaldan: kullanıcının erişebildiği proje i
 var D={};                   // bellekteki veri (tüm anahtarlar)
 var TAB='bugun', PYM='', PSUB='pers', OSUB='maas', PSHOW=false;
 var N8N_BASE=localStorage.getItem('sh2:n8n')||'https://xbay.app.n8n.cloud/webhook';
+/* Saha API yetkisi (16.10.2026): portal oturumundaki anahtardan türetilen belirteç her isteğe eklenir (GET: k=, POST: gövdede k). Anahtarın kendisi gönderilmez. */
+var SAHA_K=null;try{SAHA_K=localStorage.getItem('sh2:k');}catch(e){}
+(function(){try{var o=JSON.parse(localStorage.getItem('ae_portal')||'null'),S=o&&o.S;
+  if(!S){try{localStorage.removeItem('sh2:k');}catch(e){} SAHA_K=null;return;}
+  var src=S.ka?('aesun-api|yonetici|'+S.ka):(S.anahtarlar&&S.anahtarlar.saha?('aesun-api|saha|'+S.anahtarlar.saha):null);
+  if(!src||!window.crypto||!crypto.subtle)return;
+  crypto.subtle.digest('SHA-256',new TextEncoder().encode(src)).then(function(b){SAHA_K=Array.prototype.map.call(new Uint8Array(b),function(x){return ('0'+x.toString(16)).slice(-2);}).join('');try{localStorage.setItem('sh2:k',SAHA_K);}catch(e){}});
+}catch(e){}})();
+(function(){var of=window.fetch;window.fetch=function(u,o){try{if(typeof u==='string'&&SAHA_K&&u.indexOf(N8N_BASE)===0){o=o||{};
+  if(!o.method||String(o.method).toUpperCase()==='GET'){u+=(u.indexOf('?')<0?'?':'&')+'k='+SAHA_K;}
+  else if(typeof o.body==='string'&&o.body.charAt(0)==='{'){var bb=JSON.parse(o.body);bb.k=SAHA_K;o=Object.assign({},o,{body:JSON.stringify(bb)});}}}catch(e){}
+  return of.call(this,u,o);};})();
 /* ---- ÇOK PROJE (kayıt defteri + aktif proje + renk teması) ---- */
 var PROJELER=[{id:'tr1',ad:'SHAMS-1 GES',renk:'#E8622A'}];
 function projGet(id){for(var i=0;i<PROJELER.length;i++)if(PROJELER[i].id===id)return PROJELER[i];return null;}
@@ -450,7 +462,7 @@ var N8N={ dev:(localStorage.getItem('sh2:dev')||('c'+Math.floor(1000+Math.random
   /* kapanış/arka plan: kapanan sekme bile kuyruğu göndersin (onay beklemez; kuyruk temizlenmez) */
   beacon:function(){ try{ var ks=Object.keys(N8N.box); if(!ks.length||!navigator.sendBeacon)return;
     var items=ks.map(function(k){return {anahtar:k,deger:N8N.box[k].d,sil:(N8N.box[k].d===null),ts:N8N.box[k].ts};});
-    navigator.sendBeacon(N8N_BASE+'/saha-set', new Blob([JSON.stringify({proje:N8N.proje(),cihaz:N8N.dev,items:items})],{type:'application/json'})); }catch(e){} },
+    navigator.sendBeacon(N8N_BASE+'/saha-set', new Blob([JSON.stringify({proje:N8N.proje(),cihaz:N8N.dev,items:items,k:SAHA_K})],{type:'application/json'})); }catch(e){} },
   pull:function(cb){ if(!navigator.onLine){cb&&cb();return;} N8N.dot('busy');
     fetch(N8N_BASE+'/saha-get?proje='+encodeURIComponent(N8N.proje())).then(function(r){return r.ok?r.json():null;}).then(function(rows){
       try{ var arr=Array.isArray(rows)?rows:(rows&&rows.data)||[]; arr.forEach(function(row){ var k=row.anahtar,dv=row.deger;
