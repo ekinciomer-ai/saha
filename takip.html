@@ -30,7 +30,7 @@ a{color:inherit;text-decoration:none}
 /* header */
 #hdr{position:sticky;top:0;z-index:40;background:var(--char);color:#fff;padding:10px 16px calc(10px);display:flex;align-items:center;gap:12px;padding-top:calc(10px + env(safe-area-inset-top))}
 #hdr .lg{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#E8833A,#E50E2A);display:grid;place-items:center;font-size:19px;flex:none}
-#hdr .t{flex:1;min-width:0}
+#hdr .t{flex:1;min-width:0;cursor:pointer}
 #hdr .t b{display:block;font:800 17px/1.1 'Barlow Semi Condensed';letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #hdr .t small{display:block;font-size:12px;color:#B8BDC6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #hdr .dot{width:9px;height:9px;border-radius:50%;background:#9CA3AF;flex:none;box-shadow:0 0 0 3px rgba(255,255,255,.08)}
@@ -174,7 +174,7 @@ svg.ch{width:100%;height:auto;display:block}
 <script>
 (function(){
 'use strict';
-var BUILD='v3.1';
+var BUILD='v3.2';
 /* ============ temel ============ */
 var $=function(id){return document.getElementById(id);};
 var esc=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});};
@@ -207,7 +207,8 @@ var CAN=function(k){return OT.admin||OT.izin.indexOf(k)>=0;};
 
 /* ============ proje / API ============ */
 var API=(function(){try{return localStorage.getItem('sh2:n8n')||'https://xbay.app.n8n.cloud/webhook';}catch(e){return 'https://xbay.app.n8n.cloud/webhook';}})();
-var PROJE=(function(){try{return localStorage.getItem('sh2:aktif')||'tr1';}catch(e){return 'tr1';}})();
+/* proje: yeni.html'den bağımsız (v3:proje); varsayılan SHAMS-1 */
+var PROJE=(function(){try{var q=new URLSearchParams(location.search).get('proje');if(q){localStorage.setItem('v3:proje',q);return q;}return localStorage.getItem('v3:proje')||'tr1';}catch(e){return 'tr1';}})();
 var NS='SHAMS1-'+PROJE;
 var DEV=(function(){try{var d=localStorage.getItem('v3:dev');if(!d){d=uid('d');localStorage.setItem('v3:dev',d);}return d;}catch(e){return 'd0';}})();
 var PROJELER=[{id:'tr1',ad:'SHAMS-1 GES',renk:'#E8622A'}];
@@ -507,6 +508,9 @@ $('sheet').addEventListener('click',function(e){if(e.target.classList.contains('
     put('v3:g:'+gid,{id:gid,tarih:$('g_tar').value||today(),kisi:+$('g_kisi').value||0,gozlem:goz,arac:$('g_arac').value.trim(),engelVar:et!=='0',engelTip:et==='0'?'':et,engelSure:et==='0'?0:+$('g_sure').value||0,engelNot:et==='0'?'':$('g_enot').value.trim(),by:OT.user,ts:Date.now()});compute();sheetClose();SUB.g='hepsi';render();toast('Günlük kaydedildi');}
 });
 $('nav').addEventListener('click',function(e){var b=e.target.closest('button');if(b)go(b.getAttribute('data-v'));});
+$('hdr').addEventListener('click',function(e){if(!e.target.closest('.t'))return;var izinli=function(id){return !OT.projeler.length||OT.projeler.indexOf(id)>=0;};
+  var h='<h2>Proje seç<button data-close>×</button></h2>'+PROJELER.map(function(p){var on=p.id===PROJE;return '<div class="prow" data-proje="'+esc(p.id)+'" style="cursor:pointer;opacity:'+(izinli(p.id)?1:.4)+'"><div class="ava" style="background:'+esc(p.renk||'#E8622A')+';color:#fff;border:0">'+esc((p.ad||'?').slice(0,2).toUpperCase())+'</div><div class="i"><b>'+esc(p.ad)+'</b><small>'+esc(p.id)+(on?' · açık':'')+'</small></div>'+(on?'<span class="chip o">seçili</span>':'')+'</div>';}).join('')+'<div class="note">Bu seçim yalnız Saha Takip içindir; mevcut uygulamanın (yeni.html) projesini değiştirmez.</div>';sheet(h);});
+$('sh_pn').addEventListener('click',function(e){var p=e.target.closest('[data-proje]');if(!p)return;var id=p.getAttribute('data-proje');if(OT.projeler.length&&OT.projeler.indexOf(id)<0){toast('Bu projeye erişim yetkiniz yok');return;}if(id===PROJE){sheetClose();return;}try{localStorage.setItem('v3:proje',id);}catch(x){}location.href=location.pathname;});
 $('fab').addEventListener('click',function(){if(VIEW==='gunluk')gunSheet();else if(VIEW==='kalem'){var h='<h2>İlerleme ekle<button data-close>×</button></h2>'+D.items.map(function(it){return '<div class="krow" data-k="'+it.id+'"><div class="n"><small>'+DIS[it.dis]+'</small>'+esc(it.ad)+'</div><div class="p">'+pct(it.pct)+'</div></div>';}).join('');sheet(h);}});
 $('sh_pn').addEventListener('click',function(e){var k=e.target.closest('.krow');if(k&&k.getAttribute('data-k')){kalemSheet(k.getAttribute('data-k'));}});
 $('app').addEventListener('click',function(e){var t=e.target;
