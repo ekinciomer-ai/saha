@@ -261,7 +261,7 @@ details.acc[open]>summary{border-bottom:1.5px solid var(--line)}
 "use strict";
 (function(){
 /* ============================= SABİTLER ============================= */
-var BUILD='v99';  /* uygulama sürümü (önbellek/güncelleme takibi) */
+var BUILD='v100';  /* uygulama sürümü (önbellek/güncelleme takibi) */
 var MEK=0, ELK=0, SOZBEDEL=0, CFG=null;  /* tüm değerler projenin KENDİ cfg verisinden gelir */
 var MEK_ART=0;                           /* mekanik iş artışı (cfg'den) */
 var TGT={};                              /* aktif projenin hedefleri (cfg.tgt) */
@@ -1388,14 +1388,19 @@ function vHakedis(){
     ['kesinTeminat','ceza','osgb','allrisk','stopaj'].forEach(function(a){kk.diger+=+k[a]||0;});});
   var sumE=0;HAKED().forEach(function(x){sumE+=hakHesap(x).E;});
   var fark=sozAlacak-sumE, tem=kk.nakit;
-  h+='<div class="card"><div class="ch">🔍 Kalan alacak kırılımı <small style="color:#9aa0a6">(kesintiler dahil)</small></div>'
-    +'<div class="row"><span>🔒 Teminat %10 <small style="color:#9aa0a6">(içeride bekleyen, iş kabulünde iade)</small></span><b style="color:#E8622A">'+n0(tem)+' $</b></div>'
-    +'<div class="row"><span>SGK + maaş + Emi kesintisi</span><b>'+n0(kk.sgk)+' $</b></div>'
-    +'<div class="row"><span>Yemek + su + elektrik</span><b>'+n0(kk.yemek)+' $</b></div>'
-    +'<div class="row"><span>Damga vergisi</span><b>'+n0(kk.damga)+' $</b></div>'
-    +'<div class="row"><span>Diğer kesintiler</span><b>'+n0(kk.diger)+' $</b></div>'
-    +'<div class="row"><span>Hakedişe girmiş − sözleşme farkı</span><b>'+(fark<0?'−':'')+n0(Math.abs(fark))+' $</b></div>'
-    +'<div class="row" style="border-top:2px solid #E8C4A8"><span style="font-weight:800">Toplam = kalan alacak</span><b style="color:var(--org);font-size:17px">'+n0(tem+kk.sgk+kk.yemek+kk.damga+kk.diger+fark)+' $</b></div>'
+  var dusKes=kk.sgk+kk.yemek+kk.damga+kk.diger, gercekKalan=kalanAlacak-dusKes;
+  function kr(l,v,st){return '<div class="row"'+(st?' style="'+st+'"':'')+'><span>'+l+'</span><b>'+v+'</b></div>';}
+  h+='<div class="card"><div class="ch">🔍 Kalan alacak kırılımı <small style="color:#9aa0a6">(kesintiler düşülmüş)</small></div>'
+    +kr('Kalan alacak <small style="color:#9aa0a6">(kesintiler hariç)</small>',n0(kalanAlacak)+' $','font-weight:700')
+    +kr('− SGK + maaş + Emi kesintisi','−'+n0(kk.sgk)+' $')
+    +kr('− Yemek + su + elektrik','−'+n0(kk.yemek)+' $')
+    +kr('− Damga vergisi','−'+n0(kk.damga)+' $')
+    +kr('− Diğer kesintiler','−'+n0(kk.diger)+' $')
+    +kr('<b>Kesintiler düşülmüş kalan</b>',n0(gercekKalan)+' $','border-top:2px solid #E8C4A8;font-size:16px;color:var(--org)')
+    +'<div style="font-size:12px;color:#6b7280;margin:6px 0 2px">Bu kalanın içeriği:</div>'
+    +kr('🔒 Teminat %10 <small style="color:#9aa0a6">(içeride, iş kabulünde iade)</small>',n0(tem)+' $')
+    +kr('Hakedişe girmiş − sözleşme farkı',(fark<0?'−':'')+n0(Math.abs(fark))+' $')
+    +kr('<b>Toplam</b>',n0(tem+fark)+' $','border-top:1px solid #eee')
     +'</div>';
   h+='<div class="card"><div class="ch">İlerleme & hak ediş (KDV hariç)</div>'
     +'<div class="row"><span>Mekanik ilerleme</span><b>%'+disUsd('MEK').toFixed(0)+'</b></div>'
