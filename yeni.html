@@ -1375,6 +1375,21 @@ function vHakedis(){
     +'<div class="row"><span style="font-weight:700">Alınan (avans + hesaba yatan)</span><b style="color:#1e8e4e">'+n0(alinan)+' $</b></div>'
     +'<div class="row"><span style="font-weight:800">Kalan alacak <small style="color:#9aa0a6">(kesintiler hariç)</small></span><b style="color:'+(kalanAlacak>0.5?'#E8622A':'#1e8e4e')+';font-size:18px">'+n0(kalanAlacak)+' $</b></div>'
     +'</div>';
+  /* Kalan alacak kırılımı: kalan = (sözleşme alacağı − hakedişe girmiş KDV'li) + avans dışı kesintiler */
+  var kk={nakit:0,sgk:0,yemek:0,damga:0,diger:0};
+  HAKED().forEach(function(x){var k=x.k||{};Object.keys(kk).forEach(function(a){kk[a]+=+k[a]||0;});
+    ['kesinTeminat','ceza','osgb','allrisk','stopaj'].forEach(function(a){kk.diger+=+k[a]||0;});});
+  var sumE=0;HAKED().forEach(function(x){sumE+=hakHesap(x).E;});
+  var fark=sozAlacak-sumE, tem=kk.nakit;
+  h+='<div class="card"><div class="ch">🔍 Kalan alacak kırılımı <small style="color:#9aa0a6">(kesintiler dahil)</small></div>'
+    +'<div class="row"><span>🔒 Teminat %10 <small style="color:#9aa0a6">(içeride bekleyen, iş kabulünde iade)</small></span><b style="color:#E8622A">'+n0(tem)+' $</b></div>'
+    +'<div class="row"><span>SGK + maaş + Emi kesintisi</span><b>'+n0(kk.sgk)+' $</b></div>'
+    +'<div class="row"><span>Yemek + su + elektrik</span><b>'+n0(kk.yemek)+' $</b></div>'
+    +'<div class="row"><span>Damga vergisi</span><b>'+n0(kk.damga)+' $</b></div>'
+    +'<div class="row"><span>Diğer kesintiler</span><b>'+n0(kk.diger)+' $</b></div>'
+    +'<div class="row"><span>Hakedişe girmiş − sözleşme farkı</span><b>'+(fark<0?'−':'')+n0(Math.abs(fark))+' $</b></div>'
+    +'<div class="row" style="border-top:2px solid #E8C4A8"><span style="font-weight:800">Toplam = kalan alacak</span><b style="color:var(--org);font-size:17px">'+n0(tem+kk.sgk+kk.yemek+kk.damga+kk.diger+fark)+' $</b></div>'
+    +'</div>';
   h+='<div class="card"><div class="ch">İlerleme & hak ediş (KDV hariç)</div>'
     +'<div class="row"><span>Mekanik ilerleme</span><b>%'+disUsd('MEK').toFixed(0)+'</b></div>'
     +'<div class="row"><span>Elektrik ilerleme <small style="color:#9aa0a6">(CCTV hariç)</small></span><b>%'+disUsd('ELK').toFixed(0)+'</b></div>'
